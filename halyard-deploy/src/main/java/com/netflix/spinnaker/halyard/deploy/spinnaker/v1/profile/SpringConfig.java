@@ -12,40 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
+import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerEndpoints;
 import lombok.Data;
 
-import java.util.Map;
+@Data
+public class SpringConfig {
+  OAuth2 oauth2;
 
-abstract public class SpringProfile extends SpinnakerProfile {
-  public abstract String getProfileName();
-
-  @Override
-  public String getProfileFileName() {
-    return getProfileName() + ".yml";
-  }
-
-  @Override
-  public String commentPrefix() {
-    return "## ";
-  }
-
-  String yamlToString(Object o) {
-    return yamlParser.dump(objectMapper.convertValue(o, Map.class));
-  }
-
-
-  @Data
-  static class SpringProfileConfig {
-    ServerConfig server;
-    SpringConfig spring;
-
-    SpringProfileConfig(SpinnakerEndpoints.Service service) {
-      server = new ServerConfig(service);
+  public SpringConfig(Security security) {
+    OAuth2 oauth2 = security.getAuthn().getOauth2();
+    if (oauth2.isEnabled()) {
+      this.oauth2 = oauth2;
     }
   }
 }
