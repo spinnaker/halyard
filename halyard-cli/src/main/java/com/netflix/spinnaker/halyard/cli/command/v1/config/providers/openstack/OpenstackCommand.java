@@ -8,12 +8,12 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.AbstractNam
  */
 @Parameters()
 public class OpenstackCommand extends AbstractNamedProviderCommand {
-    protected String getProviderName() {
-        return "openstack";
-    }
+  protected String getProviderName() {
+    return "openstack";
+  }
 
-    public OpenstackCommand() {
-        super();
-        registerSubcommand(new OpenstackAccountCommand());
-    }
+  public OpenstackCommand() {
+    super();
+    registerSubcommand(new OpenstackAccountCommand());
+  }
 }

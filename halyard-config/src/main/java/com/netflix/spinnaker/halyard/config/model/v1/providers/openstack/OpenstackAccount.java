@@ -10,24 +10,25 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class OpenstackAccount extends Account {
-    private String authUrl;
-    private String username;
-    private String password;
-    private String projectName;
-    private String domainName;
-    private Boolean insecure = false;
-    @LocalFile private String userDataFile;
-    private OpenstackLbaasOptions lbaas = new OpenstackLbaasOptions();
-    private String regions;
+  private String authUrl;
+  private String username;
+  private String password;
+  private String projectName;
+  private String domainName;
+  private Boolean insecure = false;
+  @LocalFile
+  private String userDataFile;
+  private OpenstackLbaasOptions lbaas = new OpenstackLbaasOptions();
+  private String regions;
 
-    @Override
-    public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-        v.validate(psBuilder, this);
-    }
+  @Override
+  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
+    v.validate(psBuilder, this);
+  }
 
-    @Data
-    public static class OpenstackLbaasOptions {
-        private Integer pollTimeout = 60;
-        private Integer pollInterval = 5;
-    }
+  @Data
+  public static class OpenstackLbaasOptions {
+    private Integer pollTimeout = 60;
+    private Integer pollInterval = 5;
+  }
 }
