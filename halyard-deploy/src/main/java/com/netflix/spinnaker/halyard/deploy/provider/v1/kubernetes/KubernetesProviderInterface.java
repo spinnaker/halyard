@@ -121,6 +121,8 @@ public class KubernetesProviderInterface extends ProviderInterface<KubernetesAcc
     switch (artifact) {
       case REDIS:
         return "gcr.io/kubernetes-spinnaker/redis-cluster:v2";
+      case CONSUL:
+        throw new RuntimeException("Consul is not currently runnable in Kubernetes with Spinnaker.");
       default:
         String version = details.getBillOfMaterials().getArtifactVersion(artifact.getName());
 

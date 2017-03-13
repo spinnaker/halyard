@@ -45,7 +45,8 @@ public enum SpinnakerArtifact {
   SPINNAKER_MONITORING_THIRD_PARTY("monitoring-third-party", new String[]{}, true),
   SPINNAKER_MONITORING_DAEMON("monitoring-daemon", new String[]{}, true),
   // Non-spinnaker
-  REDIS("redis", new String[]{}, false);
+  REDIS("redis", new String[]{}, false),
+  CONSUL("consul", new String[]{}, false);
 
   @Getter final String name;
   @Getter final List<Pattern> profilePatterns;

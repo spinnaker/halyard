@@ -47,8 +47,8 @@ abstract public class FlotillaDeployment<T extends Account> extends Deployment {
     return deploymentDetails.getEndpoints();
   }
 
-  private ProviderInterface<T> providerInterface;
-  private AccountDeploymentDetails<T> deploymentDetails;
+  protected ProviderInterface<T> providerInterface;
+  protected AccountDeploymentDetails<T> deploymentDetails;
 
   private void waitForServiceUp(SpinnakerService service) {
     DaemonTaskHandler.log("Waiting for " + service.getArtifact().getName() + " to appear healthy");

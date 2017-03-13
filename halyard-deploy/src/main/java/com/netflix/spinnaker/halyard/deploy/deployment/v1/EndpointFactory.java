@@ -58,9 +58,9 @@ public class EndpointFactory {
     Account account = accountService.getAnyProviderAccount(deploymentConfiguration.getName(), accountName);
     Provider.ProviderType providerType = ((Provider) account.getParent()).providerType();
 
+    SpinnakerEndpoints.Services services = endpoints.getServices();
     switch (providerType) {
       case KUBERNETES:
-        SpinnakerEndpoints.Services services = endpoints.getServices();
 
         services.getClouddriver().setAddress("spin-clouddriver.spinnaker");
         services.getClouddriverBootstrap().setAddress("spin-clouddriver-bootstrap.spinnaker");
@@ -75,10 +75,26 @@ public class EndpointFactory {
         services.getRosco().setAddress("spin-rosco.spinnaker");
         services.getRedis().setAddress("spin-redis.spinnaker");
         services.getRedisBootstrap().setAddress("spin-redis-bootstrap.spinnaker");
+        break;
+      case GOOGLE:
+        services.getClouddriver().setAddress("clouddriver.service.consul");
+        services.getClouddriver().setAddress("clouddriver-bootstrap.service.consul");
+        services.getDeck().setAddress("deck.service.consul");
+        services.getEcho().setAddress("echo.service.consul");
+        services.getFiat().setAddress("fiat.service.consul");
+        services.getFront50().setAddress("front50.service.consul");
+        services.getGate().setAddress("gate.service.consul");
+        services.getIgor().setAddress("igor.service.consul");
+        services.getOrca().setAddress("orca.service.consul");
+        services.getOrca().setAddress("orca-bootstrap.service.consul");
+        services.getRosco().setAddress("rosco.service.consul");
+        services.getRedis().setAddress("redis.service.consul");
+        services.getRedis().setAddress("redis-bootstrap.service.consul");
 
-        return endpoints;
+        break;
       default:
         throw new IllegalArgumentException("No Clustered Simple Deployment for " + providerType.getId());
     }
+    return endpoints;
   }
 }
