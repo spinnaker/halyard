@@ -28,7 +28,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.ProblemBuilder;
 import com.netflix.spinnaker.halyard.deploy.config.v1.ConfigParser;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.Deployment;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeploymentFactory;
-import com.netflix.spinnaker.halyard.deploy.deployment.v1.EndpointFactory;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService.GenerateResult;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerEndpoints;
@@ -94,14 +93,25 @@ public class DeployService {
 
     Deployment.DeployResult result = deployment.deploy(spinnakerOutputPath);
 
-    if (!StringUtils.isNullOrEmpty(result.getPostInstallScript())) {
-      Path installPath = halconfigDirectoryStructure.getInstallScriptPath(deploymentName);
-      configParser.atomicWrite(installPath, result.getPostInstallScript());
-      result.setScriptPath(installPath.toString());
-      installPath.toFile().setExecutable(true);
+    String installScript = result.getPostInstallScript();
+    if (!StringUtils.isNullOrEmpty(installScript)) {
+      String resultPath = writeExecutable(installScript, halconfigDirectoryStructure.getInstallScriptPath(deploymentName));
+      result.setPostInstallScriptPath(resultPath);
+    }
+
+    String connectScript = result.getConnectScript();
+    if (!StringUtils.isNullOrEmpty(connectScript)) {
+      String resultPath = writeExecutable(connectScript, halconfigDirectoryStructure.getConnectScriptPath(deploymentName));
+      result.setConnectScriptPath(resultPath);
     }
 
     return result;
+  }
+
+  private String writeExecutable(String contents, Path path) {
+    configParser.atomicWrite(path, contents);
+    path.toFile().setExecutable(true);
+    return path.toString();
   }
 
   public RunningServiceDetails getRunningServiceDetails(String deploymentName, String serviceName) {
