@@ -598,6 +598,8 @@ hal config webhook jenkins master add MASTER [parameters]
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: The password of the jenkins user to authenticate as.
  * `--username`: The username of the jenkins user to authenticate as.
+#### Example
+`hal config webhook jenkins master add --address http://jenkins.host:8080/ --username user --password ee0f239267d7f0f1d33c49629aa2c9f`
 
 ---
 ## hal config webhook jenkins master edit
