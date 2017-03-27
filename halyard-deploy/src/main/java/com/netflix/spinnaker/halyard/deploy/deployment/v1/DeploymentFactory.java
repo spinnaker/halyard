@@ -21,12 +21,15 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment.DeploymentType;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.google.GoogleAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.google.GoogleFlotillaDeployment;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.kubernetes.KubernetesFlotillaDeployment;
+import com.netflix.spinnaker.halyard.deploy.provider.v1.google.GoogleProviderInterface;
 import com.netflix.spinnaker.halyard.deploy.provider.v1.kubernetes.KubernetesProviderInterface;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService.GenerateResult;
@@ -47,6 +50,9 @@ public class DeploymentFactory {
 
   @Autowired
   KubernetesProviderInterface kubernetesProviderInterface;
+
+  @Autowired
+  GoogleProviderInterface googleProviderInterface;
 
   @Value("${spinnaker.artifacts.debian:https://dl.bintray.com/spinnaker-team/spinnakerbuild}")
   private String DEBIAN_REPOSITORY;
@@ -87,10 +93,15 @@ public class DeploymentFactory {
 
     switch (providerType) {
       case KUBERNETES:
-        AccountDeploymentDetails<KubernetesAccount> accountDeploymentDetails = new AccountDeploymentDetails<KubernetesAccount>(deploymentDetails)
+        AccountDeploymentDetails<KubernetesAccount> kubernetesDetails = new AccountDeploymentDetails<KubernetesAccount>(deploymentDetails)
             .setAccount((KubernetesAccount) account);
 
-        return new KubernetesFlotillaDeployment(accountDeploymentDetails, kubernetesProviderInterface);
+        return new KubernetesFlotillaDeployment(kubernetesDetails, kubernetesProviderInterface);
+      case GOOGLE:
+        AccountDeploymentDetails<GoogleAccount> googleDetails = new AccountDeploymentDetails<GoogleAccount>(deploymentDetails)
+            .setAccount((GoogleAccount) account);
+
+        return new GoogleFlotillaDeployment(googleDetails, googleProviderInterface);
       default:
         throw new IllegalArgumentException("No Clustered Simple Deployment for " + providerType.getId());
     }

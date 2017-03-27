@@ -18,6 +18,7 @@
 package com.netflix.spinnaker.halyard.core.error.v1;
 
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.core.problem.v1.ProblemBuilder;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import lombok.Getter;
 
@@ -48,5 +49,11 @@ public class HalException extends RuntimeException {
   public HalException(List<Problem> problems) {
     super();
     this.problems = new ProblemSet(problems);
+  }
+
+  public HalException(Problem.Severity severity, String message) {
+    super();
+    Problem problem = new ProblemBuilder(severity, message).build();
+    this.problems.add(problem);
   }
 }
