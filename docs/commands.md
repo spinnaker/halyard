@@ -161,7 +161,7 @@
 
 A tool for configuring, installing, and updating Spinnaker.
 
-  Version: 0.20.0-SNAPSHOT
+  Version: 1.0.0-SNAPSHOT
 
 If this is your first time using Halyard to install Spinnaker we recommend that you skim the documentation on www.spinnaker.io/docs for some familiarity with the product. If at any point you get stuck using 'hal', every command can be suffixed with '--help' for usage information. Once you are ready, these are the steps you need to follow to get an initial configuration of Spinnaker up and running:
 
@@ -2374,10 +2374,11 @@ Edit configuration for the "gcs" persistent store.
 hal config storage gcs edit [parameters]
 ```
 #### Parameters
- * `--account-name`: The Spinnaker account that has access to a GCS bucket. This account does _not_ have to be separate from the accounts used to manage/deploy infrastructure, but it can be.
  * `--bucket`: The name of a storage bucket that your specified account has access to. If not specified, a random name will be chosen. If you specify a globally unique bucket name that doesn't exist yet, Halyard will create that bucket for you.
- * `--location`: This is only required if the bucket you specify doesn't exist yet. In that case, the bucket will be created in that location.
+ * `--bucket-location`: This is only required if the bucket you specify doesn't exist yet. In that case, the bucket will be created in that location. See https://cloud.google.com/storage/docs/managing-buckets#manage-class-location.
+ * `--json-path`: A path to a JSON service account with permission to read and write to the bucket to be used as a backing store.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--project`: The Google Cloud Platform project you are using to host the GCS bucket as a backing store.
  * `--root-folder`: (*Default*: `spinnaker`) The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
 
 ---
