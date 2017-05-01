@@ -16,6 +16,8 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,13 +50,18 @@ public abstract class PersistentStore extends Node {
     AZS("azs"),
     GCS("gcs");
 
-    @Getter
     String id;
 
     PersistentStoreType(String id) {
       this.id = id;
     }
 
+    @JsonValue
+    public String getId() {
+      return id;
+    }
+
+    @JsonCreator
     public static PersistentStoreType fromString(String value) {
       return Arrays.stream(values())
           .filter(v -> v.getId().equalsIgnoreCase(value))
