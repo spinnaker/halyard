@@ -21,6 +21,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 public abstract class PersistentStore extends Node {
@@ -51,6 +53,13 @@ public abstract class PersistentStore extends Node {
 
     PersistentStoreType(String id) {
       this.id = id;
+    }
+
+    public static PersistentStoreType fromString(String value) {
+      return Arrays.stream(values())
+          .filter(v -> v.getId().equalsIgnoreCase(value))
+          .findFirst()
+          .orElseThrow(() -> new IllegalArgumentException("Type " + value + " is not a valid persistent storage option. Choose from " + Arrays.toString(values())));
     }
   }
 }
