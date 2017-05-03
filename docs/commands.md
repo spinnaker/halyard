@@ -138,6 +138,8 @@
  * [**hal config security authz roles edit**](#hal-config-security-authz-roles-edit)
  * [**hal config security authz roles enable**](#hal-config-security-authz-roles-enable)
  * [**hal config security authz roles provider**](#hal-config-security-authz-roles-provider)
+ * [**hal config security authz roles provider github**](#hal-config-security-authz-roles-provider-github)
+ * [**hal config security authz roles provider github edit**](#hal-config-security-authz-roles-provider-github-edit)
  * [**hal config security authz roles provider google**](#hal-config-security-authz-roles-provider-google)
  * [**hal config security authz roles provider google edit**](#hal-config-security-authz-roles-provider-google-edit)
  * [**hal config security ui**](#hal-config-security-ui)
@@ -173,7 +175,7 @@
 
 A tool for configuring, installing, and updating Spinnaker.
 
-  Version: 1.0.0-SNAPSHOT
+  Version: 0.21.0-SNAPSHOT
 
 If this is your first time using Halyard to install Spinnaker we recommend that you skim the documentation on www.spinnaker.io/docs for some familiarity with the product. If at any point you get stuck using 'hal', every command can be suffixed with '--help' for usage information. Once you are ready, these are the steps you need to follow to get an initial configuration of Spinnaker up and running:
 
@@ -2351,7 +2353,37 @@ hal config security authz roles provider [parameters] [subcommands]
 #### Parameters
  * `--no-validate`: (*Default*: `false`) Skip validation.
 #### Subcommands
+ * `github`: Configure the github role provider.
  * `google`: Configure the google role provider.
+
+---
+## hal config security authz roles provider github
+
+Configure the github role provider.
+
+#### Usage
+```
+hal config security authz roles provider github [parameters] [subcommands]
+```
+#### Parameters
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+#### Subcommands
+ * `edit`: Edit the github role provider.
+
+---
+## hal config security authz roles provider github edit
+
+Edit the github role provider.
+
+#### Usage
+```
+hal config security authz roles provider github edit [parameters]
+```
+#### Parameters
+ * `--accessToken`: A personal access token of an account with access to your organization's GitHub Teams structure.
+ * `--baseUrl`: Used if using GitHub enterprise some other non github.com GitHub installation.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--organization`: The GitHub organization under which to query for GitHub Teams.
 
 ---
 ## hal config security authz roles provider google
