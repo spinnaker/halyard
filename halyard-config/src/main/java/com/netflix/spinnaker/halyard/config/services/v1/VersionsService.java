@@ -84,6 +84,6 @@ public class VersionsService {
   }
 
   public String getLatest() {
-    return getVersions().getLatest();
+    return getVersions().getLatestSpinnaker();
   }
 }
