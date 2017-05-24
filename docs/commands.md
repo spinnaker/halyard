@@ -1,4 +1,4 @@
-_Version: 0.21.0-SNAPSHOT_
+_Version: 0.25.0-SNAPSHOT_
 
 # Table of Contents
 
@@ -3015,7 +3015,7 @@ hal config storage gcs edit [parameters]
  * `--json-path`: A path to a JSON service account with permission to read and write to the bucket to be used as a backing store.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--project`: The Google Cloud Platform project you are using to host the GCS bucket as a backing store.
- * `--root-folder`: (*Default*: `spinnaker`) The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
+ * `--root-folder`: The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
 
 ---
 ## hal config storage oraclebmcs
@@ -3078,7 +3078,7 @@ hal config storage s3 edit [parameters]
  * `--bucket`: The name of a storage bucket that your specified account has access to. If not specified, a random name will be chosen. If you specify a globally unique bucket name that doesn't exist yet, Halyard will create that bucket for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--region`: This is only required if the bucket you specify doesn't exist yet. In that case, the bucket will be created in that region. See http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region.
- * `--root-folder`: (*Default*: `spinnaker`) The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
+ * `--root-folder`: The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
 
 ---
 ## hal config version
@@ -3105,7 +3105,7 @@ hal config version edit [parameters]
 ```
 #### Parameters
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--version`: (*Required*) Must be either a version number "X.Y.Z" for a specific release of Spinnaker, "latest" for the most recently validated Spinnaker, or "nightly" for the most recently built (unvalidated) Spinnaker.
+ * `--version`: (*Required*) Must be either a version number "X.Y.Z" for a specific release of Spinnaker, or "$BRANCH-latest-unvalidated" for the most recently built (unvalidated) Spinnaker on $BRANCH.
 
 ---
 ## hal deploy
@@ -3297,8 +3297,10 @@ All Spinnaker releases that have been fully validated are listed here. You can p
 
 #### Usage
 ```
-hal version list
+hal version list [parameters]
 ```
+#### Parameters
+ * `--no-validate`: (*Default*: `false`) Skip validation.
 
 ---
 
