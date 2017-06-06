@@ -26,22 +26,32 @@ import com.netflix.spinnaker.halyard.config.model.v1.persistentStorage.S3Persist
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.providers.aws.AwsAccountValidator;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class S3Validator extends Validator<S3PersistentStore> {
   @Override
   public void validate(ConfigProblemSetBuilder ps, S3PersistentStore n) {
-    AWSCredentialsProvider credentialsProvider = AwsAccountValidator.getAwsCredentialsProvider(n.getAccessKeyId(), n.getSecretAccessKey());
-    S3Config s3Config = new S3Config();
-    S3Properties s3Properties = new S3Properties();
-    s3Properties.setBucket(n.getBucket());
-    s3Properties.setRootFolder(n.getRootFolder());
-    s3Properties.setRegion(n.getRegion());
-    AmazonS3 s3Client = s3Config.awsS3Client(credentialsProvider, s3Properties);
-    StorageService s3StorageService = new S3Config().s3StorageService(s3Client, s3Properties);
+    if (StringUtils.isEmpty(n.getAccessKeyId())) {
+      ps.addProblem(Problem.Severity.ERROR, "The access key id must be supplied. STS based auth is not supported.");
+      return;
+    }
 
+    if (StringUtils.isEmpty(n.getSecretAccessKey())) {
+      ps.addProblem(Problem.Severity.ERROR, "The secret access key must be supplied. STS based auth is not supported.");
+      return;
+    }
+
+    AWSCredentialsProvider credentialsProvider = AwsAccountValidator.getAwsCredentialsProvider(n.getAccessKeyId(), n.getSecretAccessKey());
     try {
+      S3Config s3Config = new S3Config();
+      S3Properties s3Properties = new S3Properties();
+      s3Properties.setBucket(n.getBucket());
+      s3Properties.setRootFolder(n.getRootFolder());
+      s3Properties.setRegion(n.getRegion());
+      AmazonS3 s3Client = s3Config.awsS3Client(credentialsProvider, s3Properties);
+      StorageService s3StorageService = new S3Config().s3StorageService(s3Client, s3Properties);
       s3StorageService.ensureBucketExists();
     } catch (Exception e) {
       ps.addProblem(Problem.Severity.ERROR, "Failed to ensure the required bucket \"" + n.getBucket() + "\" exists: " + e.getMessage());
