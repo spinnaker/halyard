@@ -40,7 +40,7 @@ public class Notification extends Node {
     abstract public NotificationType notificationType();
 
     public enum NotificationType {
-        SLACK("slack"),
+        SLACK("slack");
 
         @Getter
         String name;
