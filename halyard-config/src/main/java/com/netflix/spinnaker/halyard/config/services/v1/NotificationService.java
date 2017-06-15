@@ -58,12 +58,12 @@ public class NotificationService {
     public ProblemSet validateNotification(String deploymentName, String notificationName) {
         NodeFilter filter = new NodeFilter()
                 .setDeployment(deploymentName)
-                .setProvider(notificationName);
+                .setNotification(notificationName);
 
         return validateService.validateMatchingFilter(filter);
     }
 
-    public ProblemSet validateAllProviders(String deploymentName) {
+    public ProblemSet validateAllNotifications(String deploymentName) {
         NodeFilter filter = new NodeFilter()
                 .setDeployment(deploymentName);
 

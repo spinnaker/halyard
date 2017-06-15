@@ -28,13 +28,13 @@ public class Notification extends Node {
     boolean enabled = false;
 
     @Override
-    public NodeIterator getChildren() {
-        return NodeIteratorFactory.makeListIterator(accounts.stream().map(a -> (Node) a).collect(Collectors.toList()));
+    public String getNodeName() {
+        return notificationType().getName();
     }
 
     @Override
-    public String getNodeName() {
-        return providerType().getName();
+    public NodeIterator getChildren() {
+        return NodeIteratorFactory.makeReflectiveIterator(this);
     }
 
     abstract public NotificationType notificationType();
