@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 URUP.com, Inc.
+ * Copyright 2017 Johan Kasselman.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package com.netflix.spinnaker.halyard.config.model.v1.node;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
-import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Notification extends Node {
+public abstract class Notification extends Node {
     boolean enabled = false;
 
     @Override
@@ -34,7 +34,7 @@ public class Notification extends Node {
 
     @Override
     public NodeIterator getChildren() {
-        return NodeIteratorFactory.makeReflectiveIterator(this);
+        return NodeIteratorFactory.makeEmptyIterator();
     }
 
     abstract public NotificationType notificationType();
