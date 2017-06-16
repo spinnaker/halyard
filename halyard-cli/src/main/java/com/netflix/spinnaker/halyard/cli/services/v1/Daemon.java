@@ -278,10 +278,10 @@ public class Daemon {
     };
   }
 
-  public static Supplier<Provider> getNotification(String deploymentName, String notificationName, boolean validate) {
+  public static Supplier<Notification> getNotification(String deploymentName, String notificationName, boolean validate) {
     return () -> {
-      Object provider = ResponseUnwrapper.get(getService().getProvider(deploymentName, notificationName, validate));
-      return getObjectMapper().convertValue(provider, Providers.translateProviderType(notificationName));
+      Object notification = ResponseUnwrapper.get(getService().getNotification(deploymentName, notificationName, validate));
+      return getObjectMapper().convertValue(notification, Notifications.translateNotificationType(notificationName));
     };
   }
 

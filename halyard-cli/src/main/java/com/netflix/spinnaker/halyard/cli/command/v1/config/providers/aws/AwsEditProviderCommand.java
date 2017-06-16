@@ -25,9 +25,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
 @Parameters(separators = "=")
 @Data
 public class AwsEditProviderCommand extends AbstractEditProviderCommand<AwsAccount, AwsProvider> {

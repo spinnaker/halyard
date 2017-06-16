@@ -60,7 +60,7 @@ public abstract class AbstractNotificationEnableDisableCommand extends AbstractN
         String notificationName = getNotificationName();
         boolean enable = isEnable();
         new OperationHandler<Void>()
-                .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + providerName)
+                .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + notificationName)
                 .setFailureMesssage("Failed to " + getCommandName() + " " + getNotificationName())
                 .setOperation(Daemon.setNotificationEnableDisable(currentDeployment, notificationName, !noValidate, enable))
                 .get();

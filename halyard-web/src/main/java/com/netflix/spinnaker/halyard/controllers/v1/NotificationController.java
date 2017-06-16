@@ -116,20 +116,20 @@ public class NotificationController {
 
         return DaemonTaskHandler.submitTask(builder::build, "Edit the " + notificationName + " notification");
     }
-
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    DaemonTask<Halconfig, List<Notification>> notifications(@PathVariable String deploymentName,
-                                                    @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-                                                    @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-        StaticRequestBuilder<List<Notification>> builder = new StaticRequestBuilder<>();
-
-        builder.setBuildResponse(() -> notificationService.getAllNotifications(deploymentName));
-        builder.setSeverity(severity);
-
-        if (validate) {
-            builder.setValidateResponse(() -> notificationService.validateAllNotifications(deploymentName));
-        }
-
-        return DaemonTaskHandler.submitTask(builder::build, "Get all notifications");
-    }
+//    TODO Get this to work.. :/
+//    @RequestMapping(value = "/", method = RequestMethod.GET)
+//    DaemonTask<Halconfig, List<Notification>> notifications(@PathVariable String deploymentName,
+//                                                    @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
+//                                                    @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+//        StaticRequestBuilder<List<Notification>> builder = new StaticRequestBuilder<>();
+//
+//        builder.setBuildResponse(() -> notificationService.getAllNotifications(deploymentName));
+//        builder.setSeverity(severity);
+//
+//        if (validate) {
+//            builder.setValidateResponse(() -> notificationService.validateAllNotifications(deploymentName));
+//        }
+//
+//        return DaemonTaskHandler.submitTask(builder::build, "Get all notifications");
+//    }
 }

@@ -188,7 +188,7 @@ public interface DaemonService {
           @Path("deploymentName") String deploymentName,
           @Path("notificationName") String notificationName,
           @Query("validate") boolean validate,
-          @Body Provider provider);
+          @Body Notification notification);
 
   @PUT("/v1/config/deployments/{deploymentName}/notifications/{notificationName}/enabled/")
   DaemonTask<Halconfig, Void> setNotificationEnabled(

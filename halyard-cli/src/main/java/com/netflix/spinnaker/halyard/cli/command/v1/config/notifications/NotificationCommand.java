@@ -34,7 +34,7 @@ public class NotificationCommand extends NestableCommand {
     private String commandName = "notification";
 
     @Getter(AccessLevel.PUBLIC)
-    private String description = "Configure, validate, and view the specified provider.";
+    private String description = "Configure, validate, and view the specified notification.";
 
     public NotificationCommand() {
         registerSubcommand(new SlackCommand());
