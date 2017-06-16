@@ -21,5 +21,5 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand
 
 @Parameters(separators = "=")
 public abstract class AbstractNotificationCommand extends AbstractConfigCommand {
-    abstract protected String getNotificationName();
+  abstract protected String getNotificationName();
 }

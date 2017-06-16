@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Johan Kasselman.
+ * Copyright 2017 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,19 @@ package com.netflix.spinnaker.halyard.config.model.v1.notifications;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notification;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class SlackNotification extends Notification {
+/**
+ * Created by johan on 2017/06/16.
+ */
+public class SmsNotification extends Notification {
+  private String account;
   private String token;
-  private String botName;
+  private String from;
 
   @Override
   public NotificationType notificationType() {
-        return NotificationType.SLACK;
-    }
+    return NotificationType.SMS;
+  }
 
   @Override
   public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {

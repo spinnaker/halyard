@@ -25,39 +25,39 @@ import static com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils.Format.STR
 
 @Parameters(separators = "=")
 public abstract class AbstractNamedNotificationCommand extends AbstractNotificationCommand {
-    @Override
-    public String getCommandName() {
-        return getNotificationName();
-    }
+  @Override
+  public String getCommandName() {
+    return getNotificationName();
+  }
 
-    @Override
-    protected String getShortDescription() {
-        return "Manage and view Spinnaker configuration for the " + getNotificationName() + " notification";
-    }
+  @Override
+  protected String getShortDescription() {
+    return "Manage and view Spinnaker configuration for the " + getNotificationName() + " notification";
+  }
 
-    @Override
-    public String getDescription() {
-        return "Manage and view Spinnaker configuration for the " + getNotificationName() + " notification";
-    }
+  @Override
+  public String getDescription() {
+    return "Manage and view Spinnaker configuration for the " + getNotificationName() + " notification";
+  }
 
-    protected AbstractNamedNotificationCommand() {
-        registerSubcommand(new NotificationEnableDisableCommandBuilder()
-                .setNotificationName(getNotificationName())
-                .setEnable(false)
-                .build()
-        );
-    }
+  protected AbstractNamedNotificationCommand() {
+    registerSubcommand(new NotificationEnableDisableCommandBuilder()
+      .setNotificationName(getNotificationName())
+      .setEnable(false)
+      .build()
+    );
+  }
 
-    @Override
-    protected void executeThis() {
-        String currentDeployment = getCurrentDeployment();
-        String notificationName = getNotificationName();
-        new OperationHandler<Notification>()
-                .setFailureMesssage("Failed to get notification " + notificationName + ".")
-                .setSuccessMessage("Successfully got notification " + notificationName + ".")
-                .setFormat(STRING)
-                .setUserFormatted(true)
-                .setOperation(Daemon.getNotification(currentDeployment, notificationName, !noValidate))
-                .get();
-    }
+  @Override
+  protected void executeThis() {
+    String currentDeployment = getCurrentDeployment();
+    String notificationName = getNotificationName();
+    new OperationHandler<Notification>()
+      .setFailureMesssage("Failed to get notification " + notificationName + ".")
+      .setSuccessMessage("Successfully got notification " + notificationName + ".")
+      .setFormat(STRING)
+      .setUserFormatted(true)
+      .setOperation(Daemon.getNotification(currentDeployment, notificationName, !noValidate))
+      .get();
+  }
 }

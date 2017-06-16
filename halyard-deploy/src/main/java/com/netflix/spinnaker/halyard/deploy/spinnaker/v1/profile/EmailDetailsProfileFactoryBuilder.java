@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class SlackDetailsProfileFactoryBuilder {
+public class EmailDetailsProfileFactoryBuilder {
   @Autowired
   protected ArtifactService artifactService;
 
@@ -44,35 +44,35 @@ public class SlackDetailsProfileFactoryBuilder {
   ObjectMapper objectMapper;
 
   @Setter
-  private String token;
+  private String host;
 
   @Setter
-  private String botName;
+  private String fromAddress;
 
   @Setter
   private SpinnakerArtifact artifact;
 
-  public SlackDetailsProfileFactory build() {
-    return new SlackDetailsProfileFactory(artifact, token, botName);
+  public EmailDetailsProfileFactory build() {
+    return new EmailDetailsProfileFactory(artifact, host, fromAddress);
   }
 
   public String getOutputFile(String spinnakerHome) {
     return Paths.get(spinnakerHome, "path/to/echo.yml").toString();
-  }
+  }s
 
   @EqualsAndHashCode(callSuper = false)
   @Data
-  public class SlackDetailsProfileFactory extends TemplateBackedProfileFactory {
-    public SlackDetailsProfileFactory(SpinnakerArtifact artifact, String token, String botName) {
+  public class EmailDetailsProfileFactory extends TemplateBackedProfileFactory {
+    public EmailDetailsProfileFactory(SpinnakerArtifact artifact, String host, String fromAddress) {
       super();
-      this.token = token;
-      this.botName = botName;
+      this.host = host;
+      this.fromAddress = fromAddress;
       this.artifact = artifact;
     }
 
-    final private String token;
+    final private String host;
 
-    final private String botName;
+    final private String fromAddress;
 
     @Override
     protected ArtifactService getArtifactService() {
@@ -80,16 +80,16 @@ public class SlackDetailsProfileFactoryBuilder {
     }
 
     private String template = String.join("\n",
-        "slack:",
-        "  token: {%token%}",
-        "  botName: {%botName%}"
+      "email:",
+      "  host: {%host%}",
+      "  fromAddress: {%fromAddress%}"
     );
 
     @Override
     protected Map<String, String> getBindings(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
       Map<String, String> result = new HashMap<>();
-      result.put("token", token);
-      result.put("botName", botName);
+      result.put("host", host);
+      result.put("fromAddress", fromAddress);
       return result;
     }
 

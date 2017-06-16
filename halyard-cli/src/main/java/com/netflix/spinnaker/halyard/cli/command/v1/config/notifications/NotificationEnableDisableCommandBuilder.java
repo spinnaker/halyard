@@ -24,28 +24,28 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class NotificationEnableDisableCommandBuilder implements CommandBuilder {
-    @Setter
-    String notificationName;
+  @Setter
+  String notificationName;
 
-    @Setter
+  @Setter
+  boolean enable;
+
+  @Override
+  public NestableCommand build() {
+    return new NotificationEnableDisableCommand(notificationName, enable);
+  }
+
+  @Parameters(separators = "=")
+  private static class NotificationEnableDisableCommand extends AbstractNotificationEnableDisableCommand {
+    private NotificationEnableDisableCommand(String notificationName, boolean enable) {
+      this.notificationName = notificationName;
+      this.enable = enable;
+    }
+
+    @Getter(AccessLevel.PROTECTED)
     boolean enable;
 
-    @Override
-    public NestableCommand build() {
-        return new NotificationEnableDisableCommand(notificationName, enable);
-    }
-
-    @Parameters(separators = "=")
-    private static class NotificationEnableDisableCommand extends AbstractNotificationEnableDisableCommand {
-        private NotificationEnableDisableCommand(String notificationName, boolean enable) {
-            this.notificationName = notificationName;
-            this.enable = enable;
-        }
-
-        @Getter(AccessLevel.PROTECTED)
-        boolean enable;
-
-        @Getter(AccessLevel.PROTECTED)
-        private String notificationName;
-    }
+    @Getter(AccessLevel.PROTECTED)
+    private String notificationName;
+  }
 }

@@ -28,41 +28,41 @@ import java.util.Map;
 
 @Parameters(separators = "=")
 public abstract class AbstractNotificationEnableDisableCommand extends AbstractNamedNotificationCommand {
-    @Override
-    public String getCommandName() {
+  @Override
+  public String getCommandName() {
         return isEnable() ? "enable" : "disable";
     }
 
-    private String subjunctivePerfectAction() {
+  private String subjunctivePerfectAction() {
         return isEnable() ? "enabled" : "disabled";
     }
 
-    private String indicativePastPerfectAction() {
-        return isEnable() ? "enabled" : "disabled";
-    }
+  private String indicativePastPerfectAction() {
+    return isEnable() ? "enabled" : "disabled";
+  }
 
-    protected abstract boolean isEnable();
+  protected abstract boolean isEnable();
 
-    @Getter(AccessLevel.PROTECTED)
-    private Map<String, NestableCommand> subcommands = new HashMap<>();
+  @Getter(AccessLevel.PROTECTED)
+  private Map<String, NestableCommand> subcommands = new HashMap<>();
 
-    @Override
-    public String getDescription() {
-        return "Set the " + getNotificationName() + " notification as " + subjunctivePerfectAction();
-    }
+  @Override
+  public String getDescription() {
+    return "Set the " + getNotificationName() + " notification as " + subjunctivePerfectAction();
+  }
 
-    private void setEnable() {
-    }
+  private void setEnable() {
+  }
 
-    @Override
-    protected void executeThis() {
-        String currentDeployment = getCurrentDeployment();
-        String notificationName = getNotificationName();
-        boolean enable = isEnable();
-        new OperationHandler<Void>()
-                .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + notificationName)
-                .setFailureMesssage("Failed to " + getCommandName() + " " + getNotificationName())
-                .setOperation(Daemon.setNotificationEnableDisable(currentDeployment, notificationName, !noValidate, enable))
-                .get();
-    }
+  @Override
+  protected void executeThis() {
+      String currentDeployment = getCurrentDeployment();
+      String notificationName = getNotificationName();
+      boolean enable = isEnable();
+      new OperationHandler<Void>()
+        .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + notificationName)
+        .setFailureMesssage("Failed to " + getCommandName() + " " + getNotificationName())
+        .setOperation(Daemon.setNotificationEnableDisable(currentDeployment, notificationName, !noValidate, enable))
+        .get();
+  }
 }

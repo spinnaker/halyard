@@ -1,5 +1,6 @@
 /*
- * Copyright 2017 Johan Kasselman
+ * Copyright 2017 Johan Kasselman.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -11,25 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.slack;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.email;
 
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.AbstractNamedNotificationCommand;
 
 /**
- * Interact with the slack notification
+ * Interact with the email notification
  */
 @Parameters(separators = "=")
-public class SlackCommand extends AbstractNamedNotificationCommand {
+public class EmailCommand extends AbstractNamedNotificationCommand {
   protected String getNotificationName() {
-        return "slack";
-    }
+    return "email";
+  }
 
-  public SlackCommand() {
+  public EmailCommand() {
     super();
-      registerSubcommand(new SlackEditNotificationCommand());
+    registerSubcommand(new EmailEditNotificationCommand());
   }
 }

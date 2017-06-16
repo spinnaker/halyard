@@ -19,6 +19,9 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.notifications;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.slack.SlackCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.email.EmailCommand;
+//import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.sms.SmsCommand;
+//import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.hipchat.HipchatCommand;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,18 +33,21 @@ import lombok.Getter;
  */
 @Parameters(separators = "=")
 public class NotificationCommand extends NestableCommand {
-    @Getter(AccessLevel.PUBLIC)
-    private String commandName = "notification";
+  @Getter(AccessLevel.PUBLIC)
+  private String commandName = "notification";
 
-    @Getter(AccessLevel.PUBLIC)
-    private String description = "Configure, validate, and view the specified notification.";
+  @Getter(AccessLevel.PUBLIC)
+  private String description = "Configure, validate, and view the specified notification.";
 
-    public NotificationCommand() {
-        registerSubcommand(new SlackCommand());
-    }
+  public NotificationCommand() {
+    registerSubcommand(new SlackCommand());
+    registerSubcommand(new EmailCommand());
+//    registerSubcommand(new SmsCommand());
+//    registerSubcommand(new HipchatCommand());
+  }
 
-    @Override
-    protected void executeThis() {
+  @Override
+  protected void executeThis() {
         showHelp();
     }
 }

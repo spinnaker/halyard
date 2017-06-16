@@ -33,18 +33,19 @@ public class SlackEditNotificationCommand extends AbstractEditNotificationComman
     String shortDescription = "Set properties for Slack notification";
 
     String longDescription = "The SLACK notification requires a TOKEN generated from your slack admin page"
-            + "and a botName to post as in slack channels!"
-            + "The bot must then be invited to join the channel to be able to send messages there.";
+      + "and a botName to post as in slack channels!"
+      + "The bot must then be invited to join the channel to be able to send messages there.";
 
     @Parameter(
-            names = "--token",
-            description = SlackCommandProperties.TOKEN
+      names = "--token",
+      description = SlackCommandProperties.TOKEN,
+      password = true
     )
     private String token;
 
     @Parameter(
-            names = "--bot-name",
-            description = SlackCommandProperties.BOT_NAME
+      names = "--bot-name",
+      description = SlackCommandProperties.BOT_NAME
     )
     private String botName;
 
@@ -55,8 +56,8 @@ public class SlackEditNotificationCommand extends AbstractEditNotificationComman
 
     @Override
     protected Notification editNotification(SlackNotification notification) {
-        notification.setToken(isSet(token) ? token : notification.getToken());
-        notification.setBotName(isSet(botName) ? botName : notification.getBotName());
-        return notification;
+      notification.setToken(isSet(token) ? token : notification.getToken());
+      notification.setBotName(isSet(botName) ? botName : notification.getBotName());
+      return notification;
     }
 }

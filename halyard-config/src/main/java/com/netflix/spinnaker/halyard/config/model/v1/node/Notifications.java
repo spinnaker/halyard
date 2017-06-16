@@ -16,7 +16,7 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
-import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotification;
+import com.netflix.spinnaker.halyard.config.model.v1.notifications.*;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 
 import java.lang.reflect.Field;
@@ -29,6 +29,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=false)
 public class Notifications extends Node implements Cloneable {
     SlackNotification slack = new SlackNotification();
+    EmailNotification email = new EmailNotification();
 
     @Override
     public String getNodeName() {

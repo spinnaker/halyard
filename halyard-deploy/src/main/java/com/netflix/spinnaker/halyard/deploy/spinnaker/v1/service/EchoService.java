@@ -19,16 +19,12 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
-import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotification;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.SlackDetailsProfileFactoryBuilder;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.EchoProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import retrofit.http.GET;
@@ -37,7 +33,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -61,10 +56,6 @@ abstract public class EchoService extends SpringService<EchoService.Echo> {
     return Type.ECHO;
   }
 
-
-  @Autowired
-  SlackDetailsProfileFactoryBuilder slackDetailsProfileFactoryBuilder;
-
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
@@ -75,23 +66,6 @@ abstract public class EchoService extends SpringService<EchoService.Echo> {
 
     profiles.add(profile);
     return profiles;
-  }
-
-  protected Optional<Profile> generateSlackProfile(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints, String spinnakerHome) {
-    SlackNotification slackNotification = deploymentConfiguration.getNotifications().getSlack();
-    if (slackNotification.isEnabled()
-            && !StringUtils.isEmpty(slackNotification.getToken())
-            && !StringUtils.isEmpty(slackNotification.getBotName())) {
-      String outputFile = slackDetailsProfileFactoryBuilder.getOutputFile(spinnakerHome);
-      return Optional.of(slackDetailsProfileFactoryBuilder
-              .setArtifact(SpinnakerArtifact.ECHO)
-              .setToken(slackNotification.getToken())
-              .setBotName(slackNotification.getBotName())
-              .build()
-              .getProfile("slack/slack-bot-config", outputFile, deploymentConfiguration, endpoints));
-    } else {
-      return Optional.empty();
-    }
   }
 
   public interface Echo {

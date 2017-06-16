@@ -19,19 +19,15 @@ package com.netflix.spinnaker.halyard.config.model.v1.notifications;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notification;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class SlackNotification extends Notification {
-  private String token;
-  private String botName;
+public class EmailNotification extends Notification {
+  private String host;
+  private String fromAddress;
 
   @Override
   public NotificationType notificationType() {
-        return NotificationType.SLACK;
-    }
+    return NotificationType.EMAIL;
+  }
 
   @Override
   public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {

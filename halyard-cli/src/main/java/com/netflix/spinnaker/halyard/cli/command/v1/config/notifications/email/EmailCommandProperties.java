@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Johan Kasselman
+ * Copyright 2017 Johan Kasselman.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,14 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.slack;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.email;
 
-public class SlackCommandProperties {
+public class EmailCommandProperties {
 
-  public static final String TOKEN = "Slack API token";
+  public static final String HOST = "Email SMTP host";
 
-  public static final String BOT_NAME = "Slack bot name";
+  public static final String FROM_ADDRESS = "From email address";
 }

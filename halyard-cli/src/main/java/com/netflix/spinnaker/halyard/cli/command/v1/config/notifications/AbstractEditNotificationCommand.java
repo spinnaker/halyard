@@ -28,33 +28,33 @@ import lombok.Data;
 @Data
 @Parameters(separators = "=")
 abstract public class AbstractEditNotificationCommand<N extends Notification> extends AbstractNotificationCommand {
-    String commandName = "edit";
+  String commandName = "edit";
 
-    @Override
-    protected void executeThis() {
-        String notificationName = getNotificationName();
-        String currentDeployment = getCurrentDeployment();
+  @Override
+  protected void executeThis() {
+    String notificationName = getNotificationName();
+    String currentDeployment = getCurrentDeployment();
 
-        Notification notification = new OperationHandler<Notification>()
-                .setFailureMesssage("Failed to get notification " + notificationName + ".")
-                .setOperation(Daemon.getNotification(currentDeployment, notificationName, false))
-                .get();
+    Notification notification = new OperationHandler<Notification>()
+      .setFailureMesssage("Failed to get notification " + notificationName + ".")
+      .setOperation(Daemon.getNotification(currentDeployment, notificationName, false))
+      .get();
 
-        int originalHash = notification.hashCode();
+      int originalHash = notification.hashCode();
 
-        notification = editNotification((N) notification);
+      notification = editNotification((N) notification);
 
-        if (originalHash == notification.hashCode()) {
-            AnsiUi.failure("No changes supplied.");
-            return;
-        }
+      if (originalHash == notification.hashCode()) {
+        AnsiUi.failure("No changes supplied.");
+        return;
+      }
 
-        new OperationHandler<Void>()
-                .setFailureMesssage("Failed to edit notification " + notificationName + ".")
-                .setSuccessMessage("Successfully edited notification " + notificationName + ".")
-                .setOperation(Daemon.setNotification(currentDeployment, notificationName, !noValidate, notification))
-                .get();
-    }
+      new OperationHandler<Void>()
+        .setFailureMesssage("Failed to edit notification " + notificationName + ".")
+        .setSuccessMessage("Successfully edited notification " + notificationName + ".")
+        .setOperation(Daemon.setNotification(currentDeployment, notificationName, !noValidate, notification))
+        .get();
+  }
 
-    protected abstract Notification editNotification(N notification);
+  protected abstract Notification editNotification(N notification);
 }
