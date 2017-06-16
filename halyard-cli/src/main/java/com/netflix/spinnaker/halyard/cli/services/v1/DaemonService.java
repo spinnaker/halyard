@@ -175,6 +175,30 @@ public interface DaemonService {
       @Query("validate") boolean validate,
       @Body boolean enabled);
 
+  //--------------------------
+  //---------------------
+  @GET("/v1/config/deployments/{deploymentName}/notifications/{notificationName}/")
+  DaemonTask<Halconfig, Object> getNotification(
+          @Path("deploymentName") String deploymentName,
+          @Path("notificationName") String notificationName,
+          @Query("validate") boolean validate);
+
+  @PUT("/v1/config/deployments/{deploymentName}/notifications/{notificationName}/")
+  DaemonTask<Halconfig, Object> setNotification(
+          @Path("deploymentName") String deploymentName,
+          @Path("notificationName") String notificationName,
+          @Query("validate") boolean validate,
+          @Body Provider provider);
+
+  @PUT("/v1/config/deployments/{deploymentName}/notifications/{notificationName}/enabled/")
+  DaemonTask<Halconfig, Void> setNotificationEnabled(
+          @Path("deploymentName") String deploymentName,
+          @Path("notificationName") String notificationName,
+          @Query("validate") boolean validate,
+          @Body boolean enabled);
+  //---------------------
+  //--------------------------
+
   @POST("/v1/config/deployments/{deploymentName}/providers/{providerName}/accounts/")
   DaemonTask<Halconfig, Void> addAccount(
       @Path("deploymentName") String deploymentName,

@@ -19,6 +19,10 @@ package com.netflix.spinnaker.halyard.config.model.v1.node;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotification;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Optional;
+
 public class Notifications extends Node implements Cloneable {
     SlackNotification slack = new SlackNotification();
 
@@ -37,4 +41,16 @@ public class Notifications extends Node implements Cloneable {
         v.validate(psBuilder, this);
     }
 
+    public static Class<? extends Notification> translateNotificationType(String notificationName) {
+        Optional<? extends Class<?>> res = Arrays.stream(Notification.class.getDeclaredFields())
+                .filter(f -> f.getName().equals(notificationName))
+                .map(Field::getType)
+                .findFirst();
+
+        if (res.isPresent()) {
+            return (Class<? extends Notification>)res.get();
+        } else {
+            throw new IllegalArgumentException("No notification with name \"" + notificationName + "\" handled by halyard");
+        }
+    }
 }

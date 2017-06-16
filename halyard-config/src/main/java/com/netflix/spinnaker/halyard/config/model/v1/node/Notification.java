@@ -24,7 +24,7 @@ import lombok.Getter;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public abstract class Notification extends Node {
+public abstract class Notification extends Node implements Cloneable {
     boolean enabled = false;
 
     @Override
@@ -40,7 +40,10 @@ public abstract class Notification extends Node {
     abstract public NotificationType notificationType();
 
     public enum NotificationType {
-        SLACK("slack");
+        SLACK("slack"),
+        EMAIL("email"),
+        SMS("sms"),
+        HIPCHAT("hipchat");
 
         @Getter
         String name;

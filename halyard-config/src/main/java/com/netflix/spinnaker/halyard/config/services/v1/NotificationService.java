@@ -65,6 +65,15 @@ public class NotificationService {
 //        DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
 //        Notifications notifications = deploymentConfiguration.getNotifications();
 //        switch (notification.notificationType()) {
+//            case EMAIL:
+//                notifications.setEmail((EmailNotification) notification);
+//                break;
+//            case SMS:
+//                notifications.setSms((SmsNotification) notification);
+//                break;
+//            case HIPCHAT:
+//                notifications.setHipchat((HipchatNotification) notification);
+//                break;
 //            case SLACK:
 //                notifications.setSlack((SlackNotification) notification);
 //                break;
