@@ -25,7 +25,9 @@ import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper=false)
 @Data
 @Parameters(separators = "=")
 abstract public class AbstractEditProviderCommand<A extends Account, P extends Provider<A>> extends AbstractProviderCommand {

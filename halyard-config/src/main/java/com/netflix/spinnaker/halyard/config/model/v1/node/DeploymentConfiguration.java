@@ -53,6 +53,11 @@ public class DeploymentConfiguration extends Node {
   Providers providers = new Providers();
 
   /**
+   * Notifications, e.g. Slack, SMS, EMAIL, etc...
+   */
+  Notifications notifications = new Notifications();
+
+  /**
    * Details about how Spinnaker is deployed, e.g. which account is it running in, what's the footprint, etc...
    */
   DeploymentEnvironment deploymentEnvironment = new DeploymentEnvironment();

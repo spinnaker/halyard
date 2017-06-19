@@ -202,6 +202,12 @@ public class NodeFilter implements Cloneable {
     return this;
   }
 
+  public NodeFilter setNotification(String name) {
+    matchers.add(Node.thisNodeAcceptor(Notifications.class));
+    matchers.add(Node.namedNodeAcceptor(Notifications.class, name));
+    return this;
+  }
+
   public NodeFilter() {
     withAnyHalconfigFile();
   }

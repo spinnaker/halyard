@@ -47,6 +47,7 @@ class HalconfigSpec extends Specification {
     deployment.getName()
     deployment.getProviders()
     deployment.getCi()
+    deployment.getPNotifications()
   }
 
   void "default deployment is selected when instantiated"() {

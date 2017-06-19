@@ -20,6 +20,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.*;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.CiCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.NotificationCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ProviderCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
@@ -55,6 +56,7 @@ public class ConfigCommand extends AbstractConfigCommand {
     registerSubcommand(new MetricStoresCommand());
     registerSubcommand(new PersistentStorageCommand());
     registerSubcommand(new ProviderCommand());
+    registerSubcommand(new NotificationCommand());
     registerSubcommand(new SecurityCommand());
     registerSubcommand(new VersionConfigCommand());
     registerSubcommand(new CiCommand());

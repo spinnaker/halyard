@@ -271,6 +271,27 @@ public class Daemon {
     };
   }
 
+  public static Supplier<Void> setNotification(String deploymentName, String notificationName, boolean validate, Notification notification) {
+    return () -> {
+      ResponseUnwrapper.get(getService().setNotification(deploymentName, notificationName, validate, notification));
+      return null;
+    };
+  }
+
+  public static Supplier<Notification> getNotification(String deploymentName, String notificationName, boolean validate) {
+    return () -> {
+      Object notification = ResponseUnwrapper.get(getService().getNotification(deploymentName, notificationName, validate));
+      return getObjectMapper().convertValue(notification, Notifications.translateNotificationType(notificationName));
+    };
+  }
+
+  public static Supplier<Void> setNotificationEnableDisable(String deploymentName, String notificationName, boolean validate, boolean enable) {
+    return () -> {
+      ResponseUnwrapper.get(getService().setNotificationEnabled(deploymentName, notificationName, validate, enable));
+      return null;
+    };
+  }
+
   public static Supplier<Master> getMaster(String deploymentName, String ciName, String masterName, boolean validate) {
     return () -> {
       Object rawMaster = ResponseUnwrapper.get(getService().getMaster(deploymentName, ciName, masterName, validate));
