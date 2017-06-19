@@ -15,7 +15,6 @@
  */
 
 package com.netflix.spinnaker.halyard.cli.command.v1.config.notifications;
-
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
 

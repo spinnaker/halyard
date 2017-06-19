@@ -32,12 +32,12 @@ public abstract class AbstractNamedNotificationCommand extends AbstractNotificat
 
   @Override
   protected String getShortDescription() {
-    return "Manage and view Spinnaker configuration for the " + getNotificationName() + " notification";
+    return "Configuration for " + getNotificationName() + " notification";
   }
 
   @Override
-  public String getDescription() {
-    return "Manage and view Spinnaker configuration for the " + getNotificationName() + " notification";
+  public String getLongDescription() {
+    return "Manage and view Spinnaker configuration for " + getNotificationName() + " notification";
   }
 
   protected AbstractNamedNotificationCommand() {

@@ -18,7 +18,9 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.email;
 
 public class EmailCommandProperties {
 
-  public static final String HOST = "Email SMTP host";
+  public static final String HOST = "Email SMTP host,"
+    + "E.g: smtp.example.com:25";
 
-  public static final String FROM_ADDRESS = "From email address";
+  public static final String FROM_ADDRESS = "From email address,"
+    + "notify@example.com";
 }

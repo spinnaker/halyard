@@ -23,9 +23,15 @@ import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotifica
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.HipchatNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.SmsNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.EmailNotification;
+import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.config.error.v1.ConfigNotFoundException;
+import com.netflix.spinnaker.halyard.config.error.v1.IllegalConfigException;
+import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
+
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 
 import java.util.List;
 
@@ -42,21 +48,19 @@ public class NotificationService {
   @Autowired
   private ValidateService validateService;
 
-  public Notification getNotification (String deploymentName, String notificationName){
+  public Notification getNotification(String deploymentName, String notificationName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setNotification(notificationName);
     List<Notification> matching = lookupService.getMatchingNodesOfType(filter, Notification.class);
 
     switch (matching.size()) {
       case 0:
-        //throw new ConfigNotFoundException(new ConfigProblemBuilder(Problem.Severity.FATAL,
-        //    "Notification with name \"" + notificationName + "\" not found/supported yet!").setRemediation(""));
-        return null;
+        throw new ConfigNotFoundException(new ConfigProblemBuilder(Problem.Severity.FATAL,
+            "Notification with name \"" + notificationName + "\" not found/supported yet!").setRemediation("Please see documentation for supported notifications!").build());
       case 1:
         return matching.get(0);
       default:
-      //throw new IllegalConfigException(new ConfigProblemBuilder(Problem.Severity.FATAL,
-      //    "More than one notification with name \"" + notificationName + "\" found").setRemediation("This is a bug!"));
-      return null;
+      throw new IllegalConfigException(new ConfigProblemBuilder(Problem.Severity.FATAL,
+          "More than one notification with name \"" + notificationName + "\" found").setRemediation("This is a bug!").build());
     }
   }
 
@@ -67,15 +71,13 @@ public class NotificationService {
 //
 //    switch (matching.size()) {
 //      case 0:
-//        //throw new ConfigNotFoundException(new ConfigProblemBuilder(Problem.Severity.FATAL,
-//        //    "Notification with name \"" + notificationName + "\" not found/supported yet!").setRemediation(""));
-//        return null;
+//        throw new ConfigNotFoundException(new ConfigProblemBuilder(Problem.Severity.FATAL,
+//            "Notification with name \"" + notificationName + "\" not found/supported yet!").setRemediation("").build());
 //      case 1:
 //        return matching.get(0);
 //      default:
-//        //throw new IllegalConfigException(new ConfigProblemBuilder(Problem.Severity.FATAL,
-//        //    "More than one notification with name \"" + notificationName + "\" found").setRemediation("This is a bug!"));
-//        return null;
+//        throw new IllegalConfigException(new ConfigProblemBuilder(Problem.Severity.FATAL,
+//            "More than one notification with name \"" + notificationName + "\" found").setRemediation("This is a bug!").build());
 //    }
 //  }
 

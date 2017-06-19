@@ -53,7 +53,7 @@ public class EmailEditNotificationCommand extends AbstractEditNotificationComman
   @Override
   protected Notification editNotification(EmailNotification notification) {
     notification.setHost(isSet(host) ? host : notification.getHost());
-    notification.setFromAdress(isSet(fromAddress) ? fromAddress : notification.getFromAddress());
+    notification.setFromAddress(isSet(fromAddress) ? fromAddress : notification.getFromAddress());
     return notification;
   }
 }

@@ -116,17 +116,19 @@ public class NotificationController {
 
         return DaemonTaskHandler.submitTask(builder::build, "Edit the " + notificationName + " notification");
     }
-//    TODO Get this to work.. :/
+
+    //TODO Get this to work.. :/
 //    @RequestMapping(value = "/", method = RequestMethod.GET)
-//    DaemonTask<Halconfig, List<Notification>> notifications(@PathVariable String deploymentName,
-//                                                    @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-//                                                    @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-//        StaticRequestBuilder<List<Notification>> builder = new StaticRequestBuilder<>();
+//    DaemonTask<Halconfig, List<Notification>> notifications(
+//      @PathVariable String deploymentName,
+//      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
+//      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+//      StaticRequestBuilder<List<Notification>> builder = new StaticRequestBuilder<>();
 //
-//        builder.setBuildResponse(() -> notificationService.getAllNotifications(deploymentName));
-//        builder.setSeverity(severity);
+//      builder.setBuildResponse(() -> notificationService.getAllNotifications(deploymentName));
+//      builder.setSeverity(severity);
 //
-//        if (validate) {
+//      if (validate) {
 //            builder.setValidateResponse(() -> notificationService.validateAllNotifications(deploymentName));
 //        }
 //

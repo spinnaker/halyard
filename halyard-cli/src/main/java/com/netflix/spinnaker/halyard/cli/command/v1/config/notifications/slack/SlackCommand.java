@@ -25,8 +25,8 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.Abstrac
 @Parameters(separators = "=")
 public class SlackCommand extends AbstractNamedNotificationCommand {
   protected String getNotificationName() {
-        return "slack";
-    }
+    return "slack";
+  }
 
   public SlackCommand() {
     super();

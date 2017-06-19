@@ -30,12 +30,12 @@ public abstract class Notification extends Node implements Cloneable {
 
     @Override
     public String getNodeName() {
-        return notificationType().getName();
+      return notificationType().getName();
     }
 
     @Override
     public NodeIterator getChildren() {
-        return NodeIteratorFactory.makeEmptyIterator();
+      return NodeIteratorFactory.makeEmptyIterator();
     }
 
     abstract public NotificationType notificationType();

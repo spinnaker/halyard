@@ -24,9 +24,11 @@ import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notification;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Parameters(separators = "=")
+@EqualsAndHashCode(callSuper=false)
 abstract public class AbstractEditNotificationCommand<N extends Notification> extends AbstractNotificationCommand {
   String commandName = "edit";
 

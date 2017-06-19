@@ -30,12 +30,12 @@ import java.util.Map;
 public abstract class AbstractNotificationEnableDisableCommand extends AbstractNamedNotificationCommand {
   @Override
   public String getCommandName() {
-        return isEnable() ? "enable" : "disable";
-    }
+    return isEnable() ? "enable" : "disable";
+  }
 
   private String subjunctivePerfectAction() {
-        return isEnable() ? "enabled" : "disabled";
-    }
+    return isEnable() ? "enabled" : "disabled";
+  }
 
   private String indicativePastPerfectAction() {
     return isEnable() ? "enabled" : "disabled";
@@ -47,7 +47,12 @@ public abstract class AbstractNotificationEnableDisableCommand extends AbstractN
   private Map<String, NestableCommand> subcommands = new HashMap<>();
 
   @Override
-  public String getDescription() {
+  public String getShortDescription() {
+    return "Set the " + getNotificationName() + " notification as " + subjunctivePerfectAction();
+  }
+
+  @Override
+  public String getLongDescription() {
     return "Set the " + getNotificationName() + " notification as " + subjunctivePerfectAction();
   }
 
