@@ -6,8 +6,7 @@ COPY . workdir/
 
 WORKDIR workdir
 
-RUN GRADLE_USER_HOME=cache ./gradlew installDist -x test -Prelease.useLastTag=true && \
-  cp -r ./halyard-web/build/install/halyard /opt && \
+RUN cp -r ./halyard-web/build/install/halyard /opt && \
   cd .. && \
   rm -rf workdir
 

@@ -124,7 +124,7 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     if (openstackProvider.getPrimaryAccount() != null) {
       OpenstackAccount openstackAccount = (OpenstackAccount) accountService.getProviderAccount(deploymentConfiguration.getName(), "openstack", openstackProvider.getPrimaryAccount());
       //Regions in openstack are a comma separated list. Use the first as primary.
-      String firstRegion = StringUtils.substringBefore(openstackAccount.getRegions(), ",");
+      String firstRegion = openstackAccount.getRegions().get(0);
       bindings.put("openstack.default.region", firstRegion);
     }
 
