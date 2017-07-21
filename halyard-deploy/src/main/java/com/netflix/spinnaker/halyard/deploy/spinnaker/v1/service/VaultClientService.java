@@ -65,6 +65,7 @@ abstract public class VaultClientService extends SpinnakerService<VaultClientSer
     Boolean monitored = false;
     Boolean sidecar = true;
     Map<String, String> env = new HashMap<>();
+    Map<String, String> volumeMounts = new HashMap<>();
 
     public Settings() { }
   }

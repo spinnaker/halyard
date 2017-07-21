@@ -114,6 +114,7 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
     String host = "0.0.0.0";
     String scheme = "http";
     Map<String, String> env = new HashMap<>();
+    Map<String, String> volumeMounts = new HashMap<>();
   }
 
   @Override

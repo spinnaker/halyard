@@ -25,6 +25,9 @@ import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @EqualsAndHashCode(callSuper = true)
 @Component
 @Data
@@ -45,7 +48,11 @@ public class KubernetesEcrTokenRefreshService extends EcrTokenRefreshService {
       }
     }
 
+    Map<String, String> volumeMounts = new HashMap<>();
+    volumeMounts.put("/opt/passwords/", "ecr-pass");
+
     settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
+        .setVolumeMounts(volumeMounts)
         .setLocation("spinnaker")
         .setEnabled(enabled);
 

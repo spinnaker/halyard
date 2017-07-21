@@ -126,6 +126,7 @@ abstract public class ClouddriverService extends SpringService<ClouddriverServic
     Boolean sidecar = false;
     Integer targetSize = 1;
     Map<String, String> env = new HashMap<>();
+    Map<String, String> volumeMounts = new HashMap<>();
 
     public Settings() {}
 

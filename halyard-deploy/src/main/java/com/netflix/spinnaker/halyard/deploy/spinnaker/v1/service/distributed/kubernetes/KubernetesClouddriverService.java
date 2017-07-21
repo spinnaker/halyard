@@ -17,7 +17,12 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes;
 
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesEmptyDir;
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesSecretVolumeSource;
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeSource;
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeSourceType;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryAccount;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverService;
@@ -32,7 +37,10 @@ import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Component
@@ -41,6 +49,8 @@ public class KubernetesClouddriverService extends ClouddriverService implements 
   @Delegate
   @Autowired
   KubernetesDistributedServiceDelegate distributedServiceDelegate;
+
+  private List<KubernetesVolumeSource> kubernetesVolumeSources;
 
   @Delegate(excludes = HasServiceSettings.class)
   public DistributedLogCollector getLogCollector() {
@@ -59,10 +69,24 @@ public class KubernetesClouddriverService extends ClouddriverService implements 
     KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
     Settings settings = new Settings();
     String location = kubernetesSharedServiceSettings.getDeployLocation();
+
+    // Add our ecr password storage mount point if we have any ecr registries.
+    for (DockerRegistryAccount account : deploymentConfiguration.getProviders().getDockerRegistry().getAccounts()) {
+      if (!account.isEcr()) {
+        break;
+      }
+
+      Map<String, String> volumeMounts = new HashMap<>();
+      volumeMounts.put("/opt/passwords/", "ecr-pass");
+
+      settings.setVolumeMounts(volumeMounts);
+    }
+
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(location)
         .setEnabled(true);
+
     return settings;
   }
 
@@ -74,11 +98,30 @@ public class KubernetesClouddriverService extends ClouddriverService implements 
     EcrTokenRefreshService ecrTokenRefreshService = getEcrTokenRefreshService();
     ServiceSettings ecrTokenRefreshSettings = runtimeSettings.getServiceSettings(ecrTokenRefreshService);
 
-    if (ecrTokenRefreshSettings.getEnabled()) {
-      sidecars.add(ecrTokenRefreshService);
+    if (!ecrTokenRefreshSettings.getEnabled()) {
+      return sidecars;
     }
 
+    sidecars.add(ecrTokenRefreshService);
+
+    System.out.println("Getting sidecars for clouddriver.");
+
+    kubernetesVolumeSources = new ArrayList<>();
+    KubernetesVolumeSource ecrPassVolume = new KubernetesVolumeSource();
+
+    ecrPassVolume.setName("ecr-pass");
+    ecrPassVolume.setType(KubernetesVolumeSourceType.EmptyDir);
+    ecrPassVolume.setEmptyDir(new KubernetesEmptyDir());
+
+    kubernetesVolumeSources.add(ecrPassVolume);
+
     return sidecars;
+  }
+
+  @Override
+  public List<KubernetesVolumeSource> getAdditionalVolumeSources() {
+    System.out.println("Getting additional volume sources.");
+    return kubernetesVolumeSources;
   }
 
   public String getArtifactId(String deploymentName) {
