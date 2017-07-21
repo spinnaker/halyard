@@ -21,8 +21,11 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.EcrTokenRefreshService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.HasServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedLogCollector;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
@@ -61,6 +64,21 @@ public class KubernetesClouddriverService extends ClouddriverService implements 
         .setLocation(location)
         .setEnabled(true);
     return settings;
+  }
+
+  @Override
+  public List<SidecarService> getSidecars(SpinnakerRuntimeSettings runtimeSettings) {
+    List<SidecarService> sidecars = KubernetesDistributedService.super.getSidecars(runtimeSettings);
+
+    // Add ECR Token Refresh sidecar.
+    EcrTokenRefreshService monitoringService = getEcrTokenRefreshService();
+    ServiceSettings monitoringSettings = runtimeSettings.getServiceSettings(monitoringService);
+
+    if (monitoringSettings.getEnabled()) {
+      sidecars.add(monitoringService);
+    }
+
+    return sidecars;
   }
 
   public String getArtifactId(String deploymentName) {

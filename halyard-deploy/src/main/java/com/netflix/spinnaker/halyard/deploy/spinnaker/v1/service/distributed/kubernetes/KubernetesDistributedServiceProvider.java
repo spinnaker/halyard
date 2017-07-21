@@ -56,6 +56,9 @@ public class KubernetesDistributedServiceProvider extends DistributedServiceProv
   KubernetesMonitoringDaemonService monitoringDaemonService;
 
   @Autowired
+  KubernetesEcrTokenRefreshService ecrTokenRefreshService;
+
+  @Autowired
   KubernetesOrcaBootstrapService orcaBootstrapService;
 
   @Autowired

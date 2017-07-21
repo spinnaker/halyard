@@ -16,6 +16,7 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
@@ -25,10 +26,14 @@ import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class DockerRegistryAccount extends Account {
+  protected static final String ECR_URL_PATTERN = "^https://([0-9]+)\\.dkr\\.ecr\\.([a-z0-9\\-]+)\\.amazonaws.com";
+
   private String address;
   private String username;
   private String password;
@@ -44,6 +49,36 @@ public class DockerRegistryAccount extends Account {
     } else {
       return "https://" + address;
     }
+  }
+
+  @JsonIgnore
+  public boolean isEcr() {
+    Pattern regexp = Pattern.compile(ECR_URL_PATTERN);
+    return regexp.matcher(getAddress()).find();
+  }
+
+  @JsonIgnore
+  public String getEcrRegistryId() {
+    Pattern regexp = Pattern.compile(ECR_URL_PATTERN);
+    Matcher matches = regexp.matcher(getAddress());
+
+    if (!matches.find()) {
+      throw new IllegalArgumentException("Tried getting the ECR registry id of a non-ECR registry.");
+    }
+
+    return matches.group(1);
+  }
+
+  @JsonIgnore
+  public String getEcrRegistryRegion() {
+    Pattern regexp = Pattern.compile(ECR_URL_PATTERN);
+    Matcher matches = regexp.matcher(getAddress());
+
+    if (!matches.find()) {
+      throw new IllegalArgumentException("Tried getting the ECR registry region of a non-ECR registry.");
+    }
+
+    return matches.group(2);
   }
 
   @Override
