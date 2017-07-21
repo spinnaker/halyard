@@ -24,6 +24,7 @@ import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,7 +41,7 @@ public class DockerRegistryAccount extends Account {
   private String email;
   private Long cacheIntervalSeconds = 30L;
   private List<String> repositories = new ArrayList<>();
-  @LocalFile private String passwordFile;
+  private String passwordFile;
   @LocalFile private String dockerconfigFile;
 
   public String getAddress() {
@@ -49,6 +50,14 @@ public class DockerRegistryAccount extends Account {
     } else {
       return "https://" + address;
     }
+  }
+
+  public String getPasswordFile() {
+    if (isEcr()) {
+      return Paths.get("/opt/passwords/", getEcrRegistryId() + ".pass").toString();
+    }
+
+    return passwordFile;
   }
 
   @JsonIgnore

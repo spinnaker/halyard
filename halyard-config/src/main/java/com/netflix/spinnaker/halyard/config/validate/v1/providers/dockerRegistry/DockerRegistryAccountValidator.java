@@ -39,6 +39,13 @@ public class DockerRegistryAccountValidator extends Validator<DockerRegistryAcco
     boolean passwordProvided = password != null && !password.isEmpty();
     boolean passwordFileProvided = passwordFile != null && !passwordFile.isEmpty();
 
+    if (n.isEcr()) {
+      n.setPassword(null);
+      n.setPasswordFile(null);
+      p.addProblem(Severity.WARNING, "You have specified an ECR Registry. At this time ECR registries are only supported on Kubernetes environment running on AWS with all the necessary IAM roles.");
+      return;
+    }
+
     if (passwordProvided && passwordFileProvided) {
       p.addProblem(Severity.ERROR, "You have provided both a password and a password file for your docker registry. You can specify at most one.");
       return;

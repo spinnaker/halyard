@@ -22,6 +22,11 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.Abs
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.PathExpandingConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryAccount;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,10 +86,19 @@ class DockerRegistryAddAccountCommand extends AbstractAddAccountCommand {
   protected Account buildAccount(String accountName) {
     DockerRegistryAccount account = (DockerRegistryAccount) new DockerRegistryAccount().setName(accountName);
 
+    if (passwordFile != null) {
+      File pwdFile = new File(passwordFile);
+
+      if (pwdFile.exists() && !pwdFile.isDirectory() && pwdFile.canRead()) {
+        try {
+          password = new String(Files.readAllBytes(Paths.get(passwordFile)));
+        } catch (IOException ignored) {}
+      }
+    }
+
     account.setAddress(address)
         .setRepositories(repositories)
         .setPassword(password)
-        .setPasswordFile(passwordFile)
         .setUsername(username)
         .setEmail(email)
         .setCacheIntervalSeconds(cacheIntervalSeconds);
