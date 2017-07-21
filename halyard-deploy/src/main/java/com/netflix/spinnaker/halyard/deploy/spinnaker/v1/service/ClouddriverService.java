@@ -20,6 +20,7 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryAccount;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.AwsCredentialsProfileFactoryBuilder;
@@ -97,6 +98,21 @@ abstract public class ClouddriverService extends SpringService<ClouddriverServic
     } else {
       return Optional.empty();
     }
+  }
+
+  protected Map<String, String> generateVolumeMounts(DeploymentConfiguration deploymentConfiguration) {
+    Map<String, String> volumeMounts = new HashMap<>();
+
+    // Create a volume mount for our password storage if there are any ecr registries.
+    for (DockerRegistryAccount account : deploymentConfiguration.getProviders().getDockerRegistry().getAccounts()) {
+      if (!account.isEcr()) {
+        break;
+      }
+
+      volumeMounts.put("/opt/passwords/", "ecr-pass");
+    }
+
+    return volumeMounts;
   }
 
   public interface Clouddriver {
