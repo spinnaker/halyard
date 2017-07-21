@@ -71,11 +71,11 @@ public class KubernetesClouddriverService extends ClouddriverService implements 
     List<SidecarService> sidecars = KubernetesDistributedService.super.getSidecars(runtimeSettings);
 
     // Add ECR Token Refresh sidecar.
-    EcrTokenRefreshService monitoringService = getEcrTokenRefreshService();
-    ServiceSettings monitoringSettings = runtimeSettings.getServiceSettings(monitoringService);
+    EcrTokenRefreshService ecrTokenRefreshService = getEcrTokenRefreshService();
+    ServiceSettings ecrTokenRefreshSettings = runtimeSettings.getServiceSettings(ecrTokenRefreshService);
 
-    if (monitoringSettings.getEnabled()) {
-      sidecars.add(monitoringService);
+    if (ecrTokenRefreshSettings.getEnabled()) {
+      sidecars.add(ecrTokenRefreshService);
     }
 
     return sidecars;

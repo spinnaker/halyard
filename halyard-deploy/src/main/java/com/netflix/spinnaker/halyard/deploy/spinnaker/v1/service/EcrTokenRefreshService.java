@@ -39,8 +39,6 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
   protected static final String CONFIG_PROFILE_NAME = "config.yaml";
   public static final String PASSWORD_BASE_PATH = "/opt/passwords/";
 
-  protected List<EcrTokenRefreshConfig.EcrRegistry> registries = new ArrayList<>();
-
   @Override
   public SpinnakerArtifact getArtifact() {
     return null;
@@ -59,6 +57,7 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> results = new ArrayList<>();
+    List<EcrTokenRefreshConfig.EcrRegistry> registries = new ArrayList<>();
 
     for (DockerRegistryAccount account : deploymentConfiguration.getProviders().getDockerRegistry().getAccounts()) {
       if (!account.isEcr()) {
@@ -81,7 +80,7 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
     Profile profile = new Profile(CONFIG_PROFILE_NAME, "1.0.0", path, "");
 
     EcrTokenRefreshConfig config = new EcrTokenRefreshConfig();
-    config.setInterval("30m"); // TODO
+    config.setInterval("30m"); // TODO(orfeasz) make this configurable
     config.setRegistries(registries);
 
     ObjectMapper strictObjectMapper = new ObjectMapper();
@@ -97,9 +96,9 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
   @Override
   public List<Profile> getSidecarProfiles(GenerateService.ResolvedConfiguration resolvedConfiguration, SpinnakerService service) {
     List<Profile> results = new ArrayList<>();
-    Map<String, Profile> monitoringProfiles = resolvedConfiguration.getProfilesForService(getType());
+    Map<String, Profile> mainProfiles = resolvedConfiguration.getProfilesForService(getType());
 
-    Profile profile = monitoringProfiles.get(CONFIG_PROFILE_NAME);
+    Profile profile = mainProfiles.get(CONFIG_PROFILE_NAME);
     results.add(profile);
 
     return results;
