@@ -617,6 +617,17 @@ public class Daemon {
     };
   }
 
+  public static Supplier<String> getLocation(String deploymentName, boolean validate) {
+    return () -> ResponseUnwrapper.get(getService().getLocation(deploymentName, validate));
+  }
+
+  public static Supplier<Void> setLocation(String deploymentName, boolean validate, String location) {
+    return () -> {
+      ResponseUnwrapper.get(getService().setLocation(deploymentName, validate, new StringBodyRequest(location)));
+      return null;
+    };
+  }
+
   static <C, T> DaemonTask<C, T> getTask(String uuid) {
     return getService().getTask(uuid);
   }

@@ -34,6 +34,8 @@
  * [**hal config features**](#hal-config-features)
  * [**hal config features edit**](#hal-config-features-edit)
  * [**hal config generate**](#hal-config-generate)
+ * [**hal config location**](#hal-config-location)
+ * [**hal config location edit**](#hal-config-location-edit)
  * [**hal config metric-stores**](#hal-config-metric-stores)
  * [**hal config metric-stores datadog**](#hal-config-metric-stores-datadog)
  * [**hal config metric-stores datadog disable**](#hal-config-metric-stores-datadog-disable)
@@ -446,6 +448,7 @@ hal config [parameters] [subcommands]
  * `edit`: Configure top-level, global configuration parameters.
  * `features`: Display the state of Spinnaker's feature flags.
  * `generate`: Generate the full Spinnaker config for your current deployment.
+ * `location`: Configure & view the current deployment of Spinnaker's target location.
  * `metric-stores`: Configure Spinnaker's metric stores. This configuration only affects the publishing of metrics against whichever metric stores you enable (it can be more than one).
  * `provider`: Configure, validate, and view the specified provider.
  * `security`: Configure Spinnaker's security. This includes external SSL, authentication mechanisms, and authorization policies.
@@ -723,6 +726,39 @@ hal config generate [parameters]
 
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config location
+
+Configure & view the current deployment of Spinnaker's target location.
+
+#### Usage
+```
+hal config location [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `edit`: Set the desired Spinnaker deployment location.
+
+---
+## hal config location edit
+
+Set the desired Spinnaker deployment location.
+
+#### Usage
+```
+hal config location edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--location`: (*Required*) The namespace to deploy Spinnaker to within Kubernetes.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 

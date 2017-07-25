@@ -39,7 +39,7 @@ public class KubernetesMonitoringDaemonService extends SpinnakerMonitoringDaemon
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     Settings settings = new Settings();
     settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
-        .setLocation("spinnaker")
+        .setLocation(deploymentConfiguration.getLocation())
         .setEnabled(deploymentConfiguration.getMetricStores().isEnabled());
     return settings;
   }

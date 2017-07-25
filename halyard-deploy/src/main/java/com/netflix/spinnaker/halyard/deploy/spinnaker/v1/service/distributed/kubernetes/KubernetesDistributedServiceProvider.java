@@ -75,7 +75,7 @@ public class KubernetesDistributedServiceProvider extends DistributedServiceProv
 
   @Override
   public RemoteAction clean(AccountDeploymentDetails<KubernetesAccount> details, SpinnakerRuntimeSettings runtimeSettings) {
-    KubernetesProviderUtils.kubectlDeleteNamespaceCommand(DaemonTaskHandler.getJobExecutor(), details, "spinnaker");
+    KubernetesProviderUtils.kubectlDeleteNamespaceCommand(DaemonTaskHandler.getJobExecutor(), details, runtimeSettings.getServiceSettings(clouddriverService).getLocation());
     return new RemoteAction();
   }
 }

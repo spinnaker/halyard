@@ -43,7 +43,7 @@ public class KubernetesRoscoService extends RoscoService implements KubernetesDi
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     Settings settings = new Settings();
-    String location = "spinnaker";
+    String location = deploymentConfiguration.getLocation();
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(location)

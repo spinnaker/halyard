@@ -70,6 +70,7 @@ abstract public class VaultServerService extends SpinnakerService<VaultServerSer
   @Autowired
   HalconfigDirectoryStructure halconfigDirectoryStructure;
 
+  //TODO - this won't work with multiple deployments
   public static String getSpinnakerSecretName(String secretName) {
     return String.join("/", "spinnaker", secretName);
   }
