@@ -8,7 +8,7 @@ set -o pipefail
 # install redis as a local service
 INSTALL_REDIS="{%install-redis%}"
 
-# export PREPARE_ENVIRONMENT="no" can disable installing the dependencies.
+# export PREPARE_ENVIRONMENT="false" can disable installing the dependencies.
 # unset PREPARE_ENVIRONMENT will use predefined value below.
 if [ "x$PREPARE_ENVIRONMENT" == "x" ];then
   # install first-time spinnaker dependencies (java, setup apt repos)
