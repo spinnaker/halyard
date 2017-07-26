@@ -20,4 +20,12 @@ public class OpenstackCommandProperties {
   static final String LBAAS_POLL_TIMEOUT_DESCRIPTION = "Time to stop polling octavia when a status of an entity does not change. Default 60.";
 
   static final String LBAAS_POLL_INTERVAL_DESCRIPTION = "Interval in seconds to poll octavia when an entity is created, updated, or deleted. Default 5.";
+
+  static final String INSTANCE_TYPE_DESCRIPTION = "The instance type for the baking configuration.";
+
+  static final String SOURCE_IMAGE_ID_DESCRIPTION = "The source image ID for the baking configuration.";
+
+  static final String SSH_USER_NAME_DESCRIPTION = "The ssh username for the baking configuration.";
+
+  static final String REGION_DESCRIPTION = "The region for the baking configuration.";
 }
