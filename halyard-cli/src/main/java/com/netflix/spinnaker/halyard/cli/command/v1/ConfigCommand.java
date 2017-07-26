@@ -58,6 +58,7 @@ public class ConfigCommand extends AbstractConfigCommand {
     registerSubcommand(new SecurityCommand());
     registerSubcommand(new VersionConfigCommand());
     registerSubcommand(new CiCommand());
+    registerSubcommand(new LocationCommand());
   }
 
   @Override

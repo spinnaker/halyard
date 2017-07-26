@@ -99,6 +99,16 @@ public class DeploymentService {
     return deploymentConfiguration.getVersion();
   }
 
+  public String getLocation(String deploymentName) {
+    DeploymentConfiguration deploymentConfiguration = getDeploymentConfiguration(deploymentName);
+    return deploymentConfiguration.getLocation();
+  }
+
+  public void setLocation(String deploymentName, String location) {
+    DeploymentConfiguration deploymentConfiguration = getDeploymentConfiguration(deploymentName);
+    deploymentConfiguration.setLocation(location);
+  }
+
   public List<DeploymentConfiguration> getAllDeploymentConfigurations() {
     NodeFilter filter = new NodeFilter().withAnyDeployment();
 

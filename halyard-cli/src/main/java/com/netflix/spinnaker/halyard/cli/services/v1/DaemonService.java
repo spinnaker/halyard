@@ -299,6 +299,17 @@ public interface DaemonService {
       @Query("validate") boolean validate,
       @Body Versions.Version version);
 
+  @GET("/v1/config/deployments/{deploymentName}/location/")
+  DaemonTask<Halconfig, String> getLocation(
+          @Path("deploymentName") String deploymentName,
+          @Query("validate") boolean validate);
+
+  @PUT("/v1/config/deployments/{deploymentName}/location/")
+  DaemonTask<Halconfig, Void> setLocation(
+          @Path("deploymentName") String deploymentName,
+          @Query("validate") boolean validate,
+          @Body StringBodyRequest location);
+
   @GET("/v1/config/deployments/{deploymentName}/details/{serviceName}/")
   DaemonTask<Halconfig, Object> getServiceDetails(
       @Path("deploymentName") String deploymentName,

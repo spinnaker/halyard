@@ -49,7 +49,7 @@ public class KubernetesClouddriverBootstrapService extends ClouddriverBootstrapS
     List<String> profiles = new ArrayList<>();
     profiles.add("bootstrap");
     Settings settings = new Settings(profiles);
-    String location = "spinnaker";
+    String location = deploymentConfiguration.getLocation();
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(location)

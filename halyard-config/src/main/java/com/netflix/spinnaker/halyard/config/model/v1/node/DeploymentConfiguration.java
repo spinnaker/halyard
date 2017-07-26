@@ -41,6 +41,11 @@ public class DeploymentConfiguration extends Node {
   String name = "default";
 
   /**
+   * The configured location name for the halyard deployment.
+   */
+  String location = "spinnaker";
+
+  /**
    * Version of Spinnaker being deployed (not to be confused with the halyard version).
    *
    * @see Halconfig#halyardVersion

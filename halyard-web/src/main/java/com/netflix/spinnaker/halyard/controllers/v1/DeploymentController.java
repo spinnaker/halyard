@@ -25,6 +25,7 @@ import com.netflix.spinnaker.halyard.config.services.v1.DeploymentService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.StaticRequestBuilder;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
 import com.netflix.spinnaker.halyard.core.RemoteAction;
+import com.netflix.spinnaker.halyard.core.StringBodyRequest;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
@@ -297,6 +298,44 @@ public class DeploymentController {
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get Spinnaker version");
+  }
+
+  @RequestMapping(value = "/{deploymentName:.+}/location/", method = RequestMethod.GET)
+  DaemonTask<Halconfig, String> getLocation(@PathVariable String deploymentName,
+                                           @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
+                                           @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+    StaticRequestBuilder<String> builder = new StaticRequestBuilder<>();
+    builder.setSeverity(severity);
+
+    builder.setBuildResponse(() -> deploymentService.getLocation(deploymentName));
+
+    if (validate) {
+      builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
+    }
+
+    return DaemonTaskHandler.submitTask(builder::build, "Get Spinnaker deployment location");
+  }
+
+  @RequestMapping(value = "/{deploymentName:.+}/location/", method = RequestMethod.PUT)
+  DaemonTask<Halconfig, Void> setLocation(@PathVariable String deploymentName,
+                                         @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
+                                         @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+                                         @RequestBody StringBodyRequest location) {
+    UpdateRequestBuilder builder = new UpdateRequestBuilder();
+
+    builder.setUpdate(() -> deploymentService.setLocation(deploymentName, location.getValue()));
+    builder.setSeverity(severity);
+
+    Supplier<ProblemSet> doValidate = ProblemSet::new;
+    if (validate) {
+      doValidate = () -> deploymentService.validateDeploymentShallow(deploymentName);
+    }
+
+    builder.setValidate(doValidate);
+    builder.setRevert(() -> halconfigParser.undoChanges());
+    builder.setSave(() -> halconfigParser.saveConfig());
+
+    return DaemonTaskHandler.submitTask(builder::build, "Edit Spinnaker deployment location");
   }
 
   @RequestMapping(value = "/{deploymentName:.+}/details/{serviceName:.+}/", method = RequestMethod.GET)
