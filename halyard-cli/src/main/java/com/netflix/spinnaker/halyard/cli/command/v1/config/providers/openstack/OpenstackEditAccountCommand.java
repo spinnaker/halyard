@@ -19,17 +19,6 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
     return "openstack";
   }
 
-  private String environment;
-  private String accountType;
-  private String authUrl;
-  private String username;
-  private String password;
-  private String projectName;
-  private String domainName;
-  private Boolean insecure = false;
-  private String heatTemplateLocation;
-  private String lbaasConfig;
-
   @Parameter(
           names = "--environment",
           description = OpenstackCommandProperties.ENVIRONMENT_DESCRIPTION

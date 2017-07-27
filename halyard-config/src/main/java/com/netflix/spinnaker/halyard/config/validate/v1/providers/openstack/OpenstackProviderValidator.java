@@ -23,9 +23,8 @@ public class OpenstackProviderValidator extends Validator<OpenstackProvider> {
 
         n.getAccounts().forEach(openstackAccount -> openstackAccountValidator.validate(p, openstackAccount));
 
-        new OpenstackBakeryDefaultsValidator(credentialsList, halyardVersion).validate(p, n.getBakeryDefaults());
+//        new OpenstackBakeryDefaultsValidator(credentialsList, halyardVersion).validate(p, n.getBakeryDefaults());
 
     }
 
-}
 }

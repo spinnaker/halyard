@@ -18,11 +18,7 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.providers.openstack;
 
 
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.AbstractBakeryCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.bakery.AbstractBaseImageCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.openstack.OpenstackAddBaseImageCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.openstack.OpenstackEditBaseImageCommand;
-import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackBaseImage;
 
 @Parameters(separators = "=")
 public class OpenstackBaseImageCommand extends AbstractBaseImageCommand {

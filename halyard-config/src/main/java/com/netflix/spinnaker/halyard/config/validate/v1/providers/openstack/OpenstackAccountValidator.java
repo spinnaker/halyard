@@ -1,5 +1,6 @@
 package com.netflix.spinnaker.halyard.config.validate.v1.providers.openstack;
 
+import com.netflix.spinnaker.clouddriver.consul.config.ConsulConfig;
 import com.netflix.spinnaker.clouddriver.openstack.config.OpenstackConfigurationProperties;
 import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackCredentials;
 import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackNamedAccountCredentials;
@@ -28,15 +29,22 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
   @Override
   public void validate(ConfigProblemSetBuilder psBuilder, OpenstackAccount account) {
     DaemonTaskHandler.message("Validating " + account.getNodeName() + " with " + OpenstackAccountValidator.class.getSimpleName());
-    String authUrl = account.getAuthUrl();
+
+    String accountName = account.getAccountName();
+    String environment = account.getEnvironment();
+    String accountType = account.getAccountType();
     String username = account.getUsername();
     String password = account.getPassword();
     String projectName = account.getPassword();
     String domainName = account.getDomainName();
+    String authUrl = account.getAuthUrl();
+    List<String> regions = Arrays.asList(StringUtils.split(account.getRegions(), ","));
     Boolean insecure = account.getInsecure();
+    String heatTemplateLocation = account.getHeatTemplateLocation();
+    OpenstackConfigurationProperties.LbaasConfig lbaas = account.getLbaasConfig();
+    // TODO: consul config does not yet exist for OpenStack
+    ConsulConfig consulConfig = new ConsulConfig();
     String userDataFile = account.getUserDataFile();
-    OpenstackAccount.OpenstackLbaasOptions lbaas = account.getLbaas();
-    String regions = account.getRegions();
     OpenstackNamedAccountCredentials credentials = new OpenstackNamedAccountCredentials (
       accountName,
       environment,
@@ -49,9 +57,10 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
       regions,
       insecure,
       heatTemplateLocation,
-      lbaasConfig,
+      lbaas,
+      consulConfig,
       userDataFile
-    )
+    );
 
 
     if (password == null || password.isEmpty() || username == null || username.isEmpty()) {
@@ -102,7 +111,6 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
     lbaasConfig.setPollTimeout(lbaas.getPollTimeout());
 
     try {
-      List<String> regionsList = Arrays.asList(StringUtils.split(regions, ","));
       OpenstackNamedAccountCredentials openstackCredentials = new OpenstackNamedAccountCredentials.Builder()
           .name(account.getName())
           .authUrl(authUrl)
@@ -110,7 +118,7 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
           .password(password)
           .projectName(projectName)
           .domainName(domainName)
-          .regions(regionsList)
+          .regions(regions)
           .insecure(insecure)
           .lbaasConfig(lbaasConfig)
           .userDataFile(userDataFile)
