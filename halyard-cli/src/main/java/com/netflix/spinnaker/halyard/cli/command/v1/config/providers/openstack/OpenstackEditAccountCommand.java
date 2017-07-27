@@ -117,8 +117,8 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
   private String consulConfig;
 
   @Parameter(
-          names = "--remove-consul-config",
-          description = OpenstackCommandProperties.CONSUL_CONFIG_DESCRIPTION
+      names = "--remove-consul-config",
+      description = "Removes currently configured consul config file."
   )
   private boolean removeConsulConfig;
 
@@ -164,6 +164,15 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
       account.setHeatTemplateLocation(null);
     }else if (userHeatTemplateLocationSet && removeHeatTemplateLocation) {
       throw new IllegalArgumentException("Set either --heat-template-location or --remove-heat-template-location");
+    }
+
+    boolean consulConfigSet = isSet(consulConfig);
+    if (consulConfigSet && !removeConsulConfig) {
+      account.setHeatTemplateLocation(isSet(heatTemplateLocation) ? heatTemplateLocation : account.getHeatTemplateLocation());
+    }else if (removeConsulConfig && !consulConfigSet) {
+      account.setHeatTemplateLocation(null);
+    }else if (consulConfigSet && removeConsulConfig) {
+      throw new IllegalArgumentException("Set either --consul-config or --remove-consul-config");
     }
 
     account.setAccountType(isSet(accountType) ? accountType : account.getAccountType());

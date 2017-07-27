@@ -35,4 +35,5 @@ public class OpenstackCommandProperties {
 
   static final String REGION_DESCRIPTION = "The region for the baking configuration.";
 
+  static final String CONSUL_CONFIG_DESCRIPTION = "This is the path for your consul config file";
 }
