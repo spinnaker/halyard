@@ -1,23 +1,33 @@
 package com.netflix.spinnaker.halyard.config.validate.v1.providers.openstack;
 
 import com.netflix.spinnaker.clouddriver.openstack.config.OpenstackConfigurationProperties;
+import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackCredentials;
 import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackAccount;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
-public class OpenstackAcountValidator extends Validator<OpenstackAccount> {
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
+
+  final private List<OpenstackNamedAccountCredentials> credentialsList;
+
+  final private String halyardVersion;
+
   @Override
   public void validate(ConfigProblemSetBuilder psBuilder, OpenstackAccount account) {
+    DaemonTaskHandler.message("Validating " + account.getNodeName() + " with " + OpenstackAccountValidator.class.getSimpleName());
     String authUrl = account.getAuthUrl();
     String username = account.getUsername();
     String password = account.getPassword();
@@ -27,6 +37,22 @@ public class OpenstackAcountValidator extends Validator<OpenstackAccount> {
     String userDataFile = account.getUserDataFile();
     OpenstackAccount.OpenstackLbaasOptions lbaas = account.getLbaas();
     String regions = account.getRegions();
+    OpenstackNamedAccountCredentials credentials = new OpenstackNamedAccountCredentials (
+      accountName,
+      environment,
+      accountType,
+      username,
+      password,
+      projectName,
+      domainName,
+      authUrl,
+      regions,
+      insecure,
+      heatTemplateLocation,
+      lbaasConfig,
+      userDataFile
+    )
+
 
     if (password == null || password.isEmpty() || username == null || username.isEmpty()) {
       psBuilder.addProblem(Problem.Severity.ERROR, "You must provide a both a username and a password");

@@ -10,12 +10,19 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class OpenstackAccount extends Account {
+  private String accountName;
+  private String environment;
+  private String accountType;
   private String authUrl;
   private String username;
   private String password;
   private String projectName;
   private String domainName;
   private Boolean insecure = false;
+  private String heatTemplateLocation;
+  private String consulConfig;
+  private String lbaasConfig;
+
   @LocalFile
   private String userDataFile;
   private OpenstackLbaasOptions lbaas = new OpenstackLbaasOptions();

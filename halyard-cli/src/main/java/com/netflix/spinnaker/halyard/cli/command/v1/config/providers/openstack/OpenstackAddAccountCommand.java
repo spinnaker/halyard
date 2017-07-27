@@ -18,6 +18,18 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
   }
 
   @Parameter(
+      names = "--environment",
+      description = OpenstackCommandProperties.ENVIRONMENT_DESCRIPTION
+  )
+  private String environment;
+
+  @Parameter(
+      names = "--account-type",
+      description = OpenstackCommandProperties.ACCOUNT_TYPE_DESCRIPTION
+  )
+  private String accountType;
+
+  @Parameter(
       names = "--auth-url",
       required = true,
       description = OpenstackCommandProperties.AUTH_URL_DESCRIPTION
@@ -67,6 +79,21 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
   private boolean insecure;
 
   @Parameter(
+      names = "--heat-template-location",
+      converter = PathExpandingConverter.class,
+      description = OpenstackCommandProperties.HEAT_TEMPLATE_LOCATION_DESCRIPTION
+
+  )
+  private String heatTemplateLocation;
+
+  @Parameter(
+      names = "--consul-config",
+      converter = PathExpandingConverter.class,
+      description = OpenstackCommandProperties.CONSUL_CONFIG_DESCRIPTION
+  )
+  private String consulConfig;
+
+  @Parameter(
       names = "--user-data-file",
       converter = PathExpandingConverter.class,
       description = OpenstackCommandProperties.USER_DATA_FILE_DESCRIPTION
@@ -74,7 +101,7 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
   private String userDataFile;
 
   @Parameter(
-      names = "--lbaas-poll-timout",
+      names = "--lbaas-poll-timeout",
       description = OpenstackCommandProperties.LBAAS_POLL_TIMEOUT_DESCRIPTION
   )
   private Integer lbaasPollTimeout;
@@ -84,6 +111,7 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
       description = OpenstackCommandProperties.LBAAS_POLL_INTERVAL_DESCRIPTION
   )
   private Integer lbaasPollInterval;
+
 
   @Override
   protected Account buildAccount(String accountName) {
@@ -100,11 +128,15 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
     account.setAuthUrl(authUrl)
         .setUsername(username)
         .setPassword(password)
+        .setEnvironment(environment)
+        .setAccountType(accountType)
+        .setHeatTemplateLocation(heatTemplateLocation)
         .setProjectName(projectName)
         .setDomainName(domainName)
         .setRegions(StringUtils.join(regions, ","))
         .setInsecure(insecure)
         .setUserDataFile(userDataFile)
+        .setConsulConfig(consulConfig)
         .setLbaas(lbaas);
 
     return account;

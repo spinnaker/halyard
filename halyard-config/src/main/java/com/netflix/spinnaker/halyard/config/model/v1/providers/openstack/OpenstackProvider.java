@@ -4,9 +4,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.HasImageProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import com.netflix.spinnaker.halyard.config.validate.v1.providers.openstack.OpenstackAcountValidator;
 
-public class OpenstackProvider extends HasImageProvider<OpenstackAccount, OpenstackBakeryDefaults> implements Cloneable{
+public class OpenstackProvider extends HasImageProvider<OpenstackAccount, OpenstackBakeryDefaults> implements Cloneable {
   //TODO(emjburns): add support for rosco options
 
   @Override

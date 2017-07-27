@@ -19,6 +19,29 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
     return "openstack";
   }
 
+  private String environment;
+  private String accountType;
+  private String authUrl;
+  private String username;
+  private String password;
+  private String projectName;
+  private String domainName;
+  private Boolean insecure = false;
+  private String heatTemplateLocation;
+  private String lbaasConfig;
+
+  @Parameter(
+          names = "--environment",
+          description = OpenstackCommandProperties.ENVIRONMENT_DESCRIPTION
+  )
+  private String environment;
+
+  @Parameter(
+          names = "--account-type",
+          description = OpenstackCommandProperties.ACCOUNT_TYPE_DESCRIPTION
+  )
+  private String accountType;
+
   @Parameter(
       names = "--auth-url",
       description = OpenstackCommandProperties.AUTH_URL_DESCRIPTION
@@ -75,8 +98,32 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
   private Boolean insecure;
 
   @Parameter(
-      names = "--user-data-file",
+      names = "--heat-template-location",
       converter = PathExpandingConverter.class,
+      description = OpenstackCommandProperties.HEAT_TEMPLATE_LOCATION_DESCRIPTION
+  )
+  private String heatTemplateLocation;
+
+  @Parameter(
+      names = "--remove-heat-template-location",
+      description = "Removes currently configured heat template location."
+  )
+  private boolean removeHeatTemplateLocation;
+
+  @Parameter(
+      names = "--consul-config",
+      description = OpenstackCommandProperties.CONSUL_CONFIG_DESCRIPTION
+  )
+  private String consulConfig;
+
+  @Parameter(
+          names = "--remove-consul-config",
+          description = OpenstackCommandProperties.CONSUL_CONFIG_DESCRIPTION
+  )
+  private boolean removeConsulConfig;
+
+  @Parameter(
+      names = "--user-data-file",
       description = OpenstackCommandProperties.USER_DATA_FILE_DESCRIPTION
   )
   private String userDataFile;
@@ -88,7 +135,7 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
   private boolean removeUserDataFile;
 
   @Parameter(
-      names = "--lbaas-poll-timout",
+      names = "--lbaas-poll-timeout",
       description = OpenstackCommandProperties.LBAAS_POLL_TIMEOUT_DESCRIPTION
   )
   private Integer lbaasPollTimeout;
@@ -110,6 +157,17 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
       throw new IllegalArgumentException("Set either --user-data-file or --remove-user-data-file");
     }
 
+    boolean userHeatTemplateLocationSet = isSet(heatTemplateLocation);
+    if (userHeatTemplateLocationSet && !removeHeatTemplateLocation) {
+      account.setHeatTemplateLocation(isSet(heatTemplateLocation) ? heatTemplateLocation : account.getHeatTemplateLocation());
+    }else if (removeHeatTemplateLocation && !userHeatTemplateLocationSet) {
+      account.setHeatTemplateLocation(null);
+    }else if (userHeatTemplateLocationSet && removeHeatTemplateLocation) {
+      throw new IllegalArgumentException("Set either --heat-template-location or --remove-heat-template-location");
+    }
+
+    account.setAccountType(isSet(accountType) ? accountType : account.getAccountType());
+    account.setEnvironment(isSet(environment) ? environment : account.getEnvironment());
     account.setAuthUrl(isSet(authUrl) ? authUrl : account.getAuthUrl());
     account.setUsername(isSet(username) ? username : account.getUsername());
     account.setPassword(isSet(password) ? password : account.getPassword());
