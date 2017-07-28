@@ -2,7 +2,6 @@ package com.netflix.spinnaker.halyard.config.validate.v1.providers.openstack;
 
 import com.netflix.spinnaker.clouddriver.consul.config.ConsulConfig;
 import com.netflix.spinnaker.clouddriver.openstack.config.OpenstackConfigurationProperties;
-import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackCredentials;
 import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackAccount;
@@ -30,7 +29,6 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
   public void validate(ConfigProblemSetBuilder psBuilder, OpenstackAccount account) {
     DaemonTaskHandler.message("Validating " + account.getNodeName() + " with " + OpenstackAccountValidator.class.getSimpleName());
 
-//    String accountName = account.getAccountName();
     String environment = account.getEnvironment();
     String accountType = account.getAccountType();
     String username = account.getUsername();
@@ -88,8 +86,6 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
           .setRemediation("Update this value to be reasonable. Default is 60.");
     }
 
-    DaemonTaskHandler.message("GOT1");
-
     boolean userDataProvided = userDataFile != null && !userDataFile.isEmpty();
     if (userDataProvided) {
       String resolvedUserData = ValidatingFileReader.contents(psBuilder, userDataFile);
@@ -119,7 +115,6 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
     try {
       OpenstackNamedAccountCredentials openstackCredentials = new OpenstackNamedAccountCredentials.Builder()
           .name(account.getName())
-//          .name(accountName)
           .environment(environment)
           .accountType(accountType)
           .authUrl(authUrl)

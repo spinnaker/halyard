@@ -61,6 +61,7 @@ public class OpenstackAddBaseImageCommand extends AbstractAddBaseImageCommand{
         virtualizationSettings.setRegion(region);
         virtualizationSettings.setInstanceType(instanceType);
         virtualizationSettings.setSshUserName(sshUserName);
+        baseImage.setVirtualizationSettings(virtualizationSettings);
 
         return baseImage;
     }
