@@ -25,7 +25,7 @@ public class OpenstackAccount extends Account {
   private Boolean insecure = false;
   private String heatTemplateLocation;
   private String consulConfig;
-  private OpenstackConfigurationProperties.LbaasConfig lbaasConfig;
+//  private  lbaasConfig;
 
   @LocalFile
   private String userDataFile;

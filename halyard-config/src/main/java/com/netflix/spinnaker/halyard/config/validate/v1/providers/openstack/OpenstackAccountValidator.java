@@ -30,7 +30,7 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
   public void validate(ConfigProblemSetBuilder psBuilder, OpenstackAccount account) {
     DaemonTaskHandler.message("Validating " + account.getNodeName() + " with " + OpenstackAccountValidator.class.getSimpleName());
 
-    String accountName = account.getAccountName();
+//    String accountName = account.getAccountName();
     String environment = account.getEnvironment();
     String accountType = account.getAccountType();
     String username = account.getUsername();
@@ -38,51 +38,57 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
     String projectName = account.getPassword();
     String domainName = account.getDomainName();
     String authUrl = account.getAuthUrl();
-    List<String> regions = Arrays.asList(StringUtils.split(account.getRegions(), ","));
+    List<String> regions = account.getRegions();
     Boolean insecure = account.getInsecure();
     String heatTemplateLocation = account.getHeatTemplateLocation();
-    OpenstackConfigurationProperties.LbaasConfig lbaas = account.getLbaasConfig();
+    OpenstackAccount.OpenstackLbaasOptions lbaas = account.getLbaas();
     // TODO: consul config does not yet exist for OpenStack
     ConsulConfig consulConfig = new ConsulConfig();
     String userDataFile = account.getUserDataFile();
-    OpenstackNamedAccountCredentials credentials = new OpenstackNamedAccountCredentials (
-      accountName,
-      environment,
-      accountType,
-      username,
-      password,
-      projectName,
-      domainName,
-      authUrl,
-      regions,
-      insecure,
-      heatTemplateLocation,
-      lbaas,
-      consulConfig,
-      userDataFile
-    );
 
+    if (environment == null || environment.isEmpty()) {
+      psBuilder.addProblem(Problem.Severity.ERROR, "You must provide an environment name");
+    }
 
     if (password == null || password.isEmpty() || username == null || username.isEmpty()) {
       psBuilder.addProblem(Problem.Severity.ERROR, "You must provide a both a username and a password");
+    }
+
+    if (projectName == null || projectName.isEmpty()) {
+      psBuilder.addProblem(Problem.Severity.ERROR, "You must provide a project name");
     }
 
     if (!StringUtils.endsWith(authUrl, "/v3")) {
       psBuilder.addProblem(Problem.Severity.WARNING, "You must use Keystone v3. The default auth url will be of the format IP:5000/v3.");
     }
 
-    if (lbaas.getPollInterval() < 0) {
-      psBuilder.addProblem(Problem.Severity.ERROR, "Poll interval cannot be less than 0.")
-          .setRemediation("Update this value to be reasonable. Default is 5.");
+    if (domainName == null || domainName.isEmpty()) {
+      psBuilder.addProblem(Problem.Severity.ERROR, "You must provide a domain name");
     }
-    if (lbaas.getPollTimeout() < 0) {
-      psBuilder.addProblem(Problem.Severity.ERROR, "Poll timeout cannot be less than 0.")
-          .setRemediation("Update this value to be reasonable. Default is 60.");
+
+    if (regions == null || regions.size() == 0 || regions.get(0).isEmpty()) {
+      psBuilder.addProblem(Problem.Severity.ERROR, "You must provide one region");
     }
 
     if (insecure) {
       psBuilder.addProblem(Problem.Severity.WARNING, "You've chosen to not validate SSL connections. This setup is not recommended in production deployments.");
     }
+
+    if ( heatTemplateLocation != null && heatTemplateLocation.isEmpty()) {
+      psBuilder.addProblem(Problem.Severity.ERROR, "Not a valid Heat template location: ''");
+    }
+
+    if (lbaas.getPollInterval() < 0) {
+      psBuilder.addProblem(Problem.Severity.ERROR, "Poll interval cannot be less than 0.")
+          .setRemediation("Update this value to be reasonable. Default is 5.");
+    }
+
+    if (lbaas.getPollTimeout() < 0) {
+      psBuilder.addProblem(Problem.Severity.ERROR, "Poll timeout cannot be less than 0.")
+          .setRemediation("Update this value to be reasonable. Default is 60.");
+    }
+
+    DaemonTaskHandler.message("GOT1");
 
     boolean userDataProvided = userDataFile != null && !userDataFile.isEmpty();
     if (userDataProvided) {
@@ -113,6 +119,9 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
     try {
       OpenstackNamedAccountCredentials openstackCredentials = new OpenstackNamedAccountCredentials.Builder()
           .name(account.getName())
+//          .name(accountName)
+          .environment(environment)
+          .accountType(accountType)
           .authUrl(authUrl)
           .username(username)
           .password(password)
@@ -120,9 +129,16 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
           .domainName(domainName)
           .regions(regions)
           .insecure(insecure)
+          .heatTemplateLocation(heatTemplateLocation)
+          .consulConfig(consulConfig)
           .lbaasConfig(lbaasConfig)
           .userDataFile(userDataFile)
           .build();
+      if (openstackCredentials == null) {
+        return;
+      } else {
+        credentialsList.add(openstackCredentials);
+      }
       //TODO(emjburns) verify that these credentials can connect w/o error to the openstack instance
     } catch (Exception e) {
       psBuilder.addProblem(Problem.Severity.ERROR, "Failed to instantiate openstack credentials for account \"" + account.getName() + "\".");

@@ -51,7 +51,8 @@ public class OpenstackBakeryDefaultsValidator extends Validator<OpenstackBakeryD
             return;
         }
 
-//        if (StringUtils.isEmpty(zone)) {
+//        if (StringUtils.
+// isEmpty(zone)) {
 //            p.addProblem(Problem.Severity.ERROR, "No zone supplied for google bakery defaults.");
 //        } else {
 //            int i = 0;
