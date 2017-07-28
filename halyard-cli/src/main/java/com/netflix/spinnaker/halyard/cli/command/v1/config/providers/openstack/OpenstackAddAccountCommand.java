@@ -133,7 +133,7 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
         .setHeatTemplateLocation(heatTemplateLocation)
         .setProjectName(projectName)
         .setDomainName(domainName)
-        .setRegions(StringUtils.join(regions, ","))
+        .setRegions(regions)
         .setInsecure(insecure)
         .setUserDataFile(userDataFile)
         .setConsulConfig(consulConfig)

@@ -174,9 +174,9 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
     account.setInsecure(isSet(insecure) ? insecure : account.getInsecure());
 
     try {
-      List<String> existingRegions = Arrays.stream(StringUtils.split(account.getRegions(), ",")).collect(Collectors.toList());
+      List<String> existingRegions = account.getRegions();
       List<String> newRegions = updateStringList(existingRegions, regions, addRegion, removeRegion);
-      account.setRegions(StringUtils.join(newRegions, ","));
+      account.setRegions(newRegions);
     }catch (IllegalArgumentException e) {
       throw new IllegalArgumentException("Set either --regions or --[add/remove]-region");
     }

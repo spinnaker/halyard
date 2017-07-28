@@ -30,8 +30,7 @@ public class OpenstackAccount extends Account {
   @LocalFile
   private String userDataFile;
   private OpenstackLbaasOptions lbaas = new OpenstackLbaasOptions();
-//  private List<String> regions; OR String regions; ??
-  private String regions;
+  private List<String> regions;
 
   @Override
   public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
