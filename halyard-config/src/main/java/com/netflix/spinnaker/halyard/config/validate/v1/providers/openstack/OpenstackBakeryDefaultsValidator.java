@@ -67,8 +67,6 @@ public class OpenstackBakeryDefaultsValidator extends Validator<OpenstackBakeryD
             return;
         }
 
-
-        // Check if all inputs are valid
         if (StringUtils.isEmpty(authUrl)) {
             p.addProblem(Problem.Severity.ERROR, "No auth url supplied for openstack bakery defaults.");
         }
@@ -101,10 +99,8 @@ public class OpenstackBakeryDefaultsValidator extends Validator<OpenstackBakeryD
             p.addProblem(Problem.Severity.WARNING, "You've chosen to not validate SSL connections. This setup is not recommended in production deployments.");
         }
 
-
         OpenstackBaseImageValidator openstackBaseImageValidator = new OpenstackBaseImageValidator(credentialsList, halyardVersion);
 
         baseImages.forEach(openstackBaseImage ->  openstackBaseImageValidator.validate(p, openstackBaseImage));
     }
-
 }

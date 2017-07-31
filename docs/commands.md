@@ -2778,11 +2778,8 @@ hal config provider openstack account edit ACCOUNT [parameters]
  * `--password`: The password used to access your cloud.
  * `--project-name`: The name of the project (formerly tenant) within the cloud. Can be found in the RC file.
  * `--regions`: (*Default*: `[]`) The region(s) of the cloud. Can be found in the RC file.
- * `--remove-consul-config`: (*Default*: `false`) Removes currently configured consul config file.
- * `--remove-heat-template-location`: (*Default*: `false`) Removes currently configured heat template location.
  * `--remove-region`: Remove this region from the list of managed regions.
  * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
- * `--remove-user-data-file`: (*Default*: `false`) Removes currently configured user data file.
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--user-data-file`: User data passed to Heat Orchestration Template. Replacement of tokens supported, see http://www.spinnaker.io/v1.0/docs/target-deployment-configuration#section-openstack for details.
  * `--username`: The username used to access your cloud.
@@ -2965,17 +2962,17 @@ hal config provider openstack bakery edit [parameters]
 ```
 
 #### Parameters
- * `--auth-url`: Set the default auth URL your images will be baked in.
+ * `--auth-url`: (*Required*) Set the default auth URL your images will be baked in.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--domain-name`: Set the default domainName your images will be baked in.
- * `--floating-ip-pool`: Set the default floating IP pool your images will be baked in.
+ * `--domain-name`: (*Required*) Set the default domainName your images will be baked in.
+ * `--floating-ip-pool`: (*Required*) Set the default floating IP pool your images will be baked in.
  * `--insecure`: (*Default*: `false`) Set the default security setting (true or false) to connect to the openstack account.
- * `--network-id`: Set the default network your images will be baked in.
+ * `--network-id`: (*Required*) Set the default network your images will be baked in.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--password`: Set the default password your images will be baked with.
- * `--project-name`: Set the default project name your images will be baked in.
- * `--security-groups`: Set the default security group your images will be baked in.
- * `--username`: Set the default username your images will be baked with.
+ * `--password`: (*Required*) Set the default password your images will be baked with.
+ * `--project-name`: (*Required*) Set the default project name your images will be baked in.
+ * `--security-groups`: (*Required*) Set the default security group your images will be baked in.
+ * `--username`: (*Required*) Set the default username your images will be baked with.
 
 
 ---

@@ -59,7 +59,6 @@ public class OpenstackBaseImageValidator extends Validator<OpenstackBaseImage> {
         if (StringUtils.isEmpty(sshUserName)) {
             p.addProblem(Problem.Severity.ERROR, "No ssh username supplied for openstack base image.");
         }
-
-        // TODO(shazy792) Add check to see if image actually exists on openstack instance(thum
+        // TODO(shazy792) Add check to see if image actually exists on openstack instance
     }
 }

@@ -94,34 +94,16 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
   private String heatTemplateLocation;
 
   @Parameter(
-      names = "--remove-heat-template-location",
-      description = "Removes currently configured heat template location."
-  )
-  private boolean removeHeatTemplateLocation;
-
-  @Parameter(
       names = "--consul-config",
       description = OpenstackCommandProperties.CONSUL_CONFIG_DESCRIPTION
   )
   private String consulConfig;
 
   @Parameter(
-      names = "--remove-consul-config",
-      description = "Removes currently configured consul config file."
-  )
-  private boolean removeConsulConfig;
-
-  @Parameter(
       names = "--user-data-file",
       description = OpenstackCommandProperties.USER_DATA_FILE_DESCRIPTION
   )
   private String userDataFile;
-
-  @Parameter(
-      names = "--remove-user-data-file",
-      description = "Removes currently configured user data file."
-  )
-  private boolean removeUserDataFile;
 
   @Parameter(
       names = "--lbaas-poll-timeout",
@@ -137,33 +119,9 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
 
   @Override
   protected Account editAccount(OpenstackAccount account) {
-    boolean userDataSet = isSet(userDataFile);
-    if (userDataSet && !removeUserDataFile) {
-      account.setUserDataFile(isSet(userDataFile) ? userDataFile : account.getUserDataFile());
-    }else if (removeUserDataFile && !userDataSet) {
-      account.setUserDataFile(null);
-    }else if (userDataSet && removeUserDataFile) {
-      throw new IllegalArgumentException("Set either --user-data-file or --remove-user-data-file");
-    }
-
-    boolean userHeatTemplateLocationSet = isSet(heatTemplateLocation);
-    if (userHeatTemplateLocationSet && !removeHeatTemplateLocation) {
-      account.setHeatTemplateLocation(isSet(heatTemplateLocation) ? heatTemplateLocation : account.getHeatTemplateLocation());
-    }else if (removeHeatTemplateLocation && !userHeatTemplateLocationSet) {
-      account.setHeatTemplateLocation(null);
-    }else if (userHeatTemplateLocationSet && removeHeatTemplateLocation) {
-      throw new IllegalArgumentException("Set either --heat-template-location or --remove-heat-template-location");
-    }
-
-    boolean consulConfigSet = isSet(consulConfig);
-    if (consulConfigSet && !removeConsulConfig) {
-      account.setHeatTemplateLocation(isSet(heatTemplateLocation) ? heatTemplateLocation : account.getHeatTemplateLocation());
-    }else if (removeConsulConfig && !consulConfigSet) {
-      account.setHeatTemplateLocation(null);
-    }else if (consulConfigSet && removeConsulConfig) {
-      throw new IllegalArgumentException("Set either --consul-config or --remove-consul-config");
-    }
-
+    account.setUserDataFile(isSet(userDataFile) ? userDataFile : account.getUserDataFile());
+    account.setHeatTemplateLocation(isSet(heatTemplateLocation) ? heatTemplateLocation : account.getHeatTemplateLocation());
+    account.setConsulConfig(isSet(consulConfig) ? consulConfig : account.getConsulConfig());
     account.setAccountType(isSet(accountType) ? accountType : account.getAccountType());
     account.setEnvironment(isSet(environment) ? environment : account.getEnvironment());
     account.setAuthUrl(isSet(authUrl) ? authUrl : account.getAuthUrl());

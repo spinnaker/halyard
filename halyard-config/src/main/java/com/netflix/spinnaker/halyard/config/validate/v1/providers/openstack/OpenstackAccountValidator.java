@@ -40,19 +40,18 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
     Boolean insecure = account.getInsecure();
     String heatTemplateLocation = account.getHeatTemplateLocation();
     OpenstackAccount.OpenstackLbaasOptions lbaas = account.getLbaas();
-    // TODO: consul config does not yet exist for OpenStack
     ConsulConfig consulConfig = new ConsulConfig();
     String userDataFile = account.getUserDataFile();
 
-    if (environment == null || environment.isEmpty()) {
+    if (StringUtils.isEmpty(environment)) {
       psBuilder.addProblem(Problem.Severity.ERROR, "You must provide an environment name");
     }
 
-    if (password == null || password.isEmpty() || username == null || username.isEmpty()) {
+    if (StringUtils.isEmpty(password) || StringUtils.isEmpty(username)) {
       psBuilder.addProblem(Problem.Severity.ERROR, "You must provide a both a username and a password");
     }
 
-    if (projectName == null || projectName.isEmpty()) {
+    if (StringUtils.isEmpty(projectName)) {
       psBuilder.addProblem(Problem.Severity.ERROR, "You must provide a project name");
     }
 
@@ -60,11 +59,11 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
       psBuilder.addProblem(Problem.Severity.WARNING, "You must use Keystone v3. The default auth url will be of the format IP:5000/v3.");
     }
 
-    if (domainName == null || domainName.isEmpty()) {
+    if (StringUtils.isEmpty(domainName)) {
       psBuilder.addProblem(Problem.Severity.ERROR, "You must provide a domain name");
     }
 
-    if (regions == null || regions.size() == 0 || regions.get(0).isEmpty()) {
+    if (regions.size() == 0 || StringUtils.isEmpty(regions.get(0))) {
       psBuilder.addProblem(Problem.Severity.ERROR, "You must provide one region");
     }
 

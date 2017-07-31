@@ -33,48 +33,56 @@ public class OpenstackEditBakeryDefaultsCommand extends AbstractEditBakeryDefaul
 
     @Parameter(
         names = "--auth-url",
+        required = true,
         description = "Set the default auth URL your images will be baked in."
     )
     private String authUrl;
 
     @Parameter(
         names = "--domain-name",
+        required = true,
         description = "Set the default domainName your images will be baked in."
     )
     private String domainName;
 
     @Parameter(
         names = "--network-id",
+        required = true,
         description = "Set the default network your images will be baked in."
     )
     private String networkId;
 
     @Parameter(
         names = "--floating-ip-pool",
+        required = true,
         description = "Set the default floating IP pool your images will be baked in."
     )
     private String floatingIpPool;
 
     @Parameter(
         names = "--security-groups",
+        required = true,
         description = "Set the default security group your images will be baked in."
     )
     private String securityGroups;
 
     @Parameter(
         names = "--project-name",
+        required = true,
         description = "Set the default project name your images will be baked in."
     )
     private String projectName;
 
     @Parameter(
         names = "--username",
+        required = true,
         description = "Set the default username your images will be baked with."
     )
     private String username;
 
     @Parameter(
         names = "--password",
+        required = true,
         description = "Set the default password your images will be baked with."
     )
     private String password;
