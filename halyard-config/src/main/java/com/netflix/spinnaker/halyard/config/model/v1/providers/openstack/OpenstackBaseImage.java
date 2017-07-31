@@ -38,7 +38,9 @@ public class OpenstackBaseImage extends BaseImage<OpenstackBaseImage.OpenstackIm
     @EqualsAndHashCode(callSuper = true)
     @Data
     @ToString(callSuper = true)
-    public static class OpenstackImageSettings extends BaseImage.ImageSettings {}
+    public static class OpenstackImageSettings extends BaseImage.ImageSettings {
+        // We have none to set
+    }
 
     @Data
     @ToString

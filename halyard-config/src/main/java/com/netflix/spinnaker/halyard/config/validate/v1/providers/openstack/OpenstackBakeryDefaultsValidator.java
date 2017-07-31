@@ -2,6 +2,7 @@ package com.netflix.spinnaker.halyard.config.validate.v1.providers.openstack;
 
 import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
 import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackCredentials;
+import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackBakeryDefaults;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackBaseImage;
@@ -20,7 +21,7 @@ import java.util.List;
 @Data
 public class OpenstackBakeryDefaultsValidator extends Validator<OpenstackBakeryDefaults> {
 
-    final private List<OpenstackCredentials> credentialsList;
+    final private List<OpenstackNamedAccountCredentials> credentialsList;
 
     final private String halyardVersion;
 
@@ -36,7 +37,6 @@ public class OpenstackBakeryDefaultsValidator extends Validator<OpenstackBakeryD
         String username = n.getUsername();
         String password = n.getPassword();
         boolean insecure = n.isInsecure();
-
         List<OpenstackBaseImage> baseImages = n.getBaseImages();
 
         if (StringUtils.isEmpty(authUrl) &&
@@ -51,52 +51,40 @@ public class OpenstackBakeryDefaultsValidator extends Validator<OpenstackBakeryD
             return;
         }
 
-//        if (StringUtils.isEmpty(zone)) {
-//            p.addProblem(Problem.Severity.ERROR, "No zone supplied for google bakery defaults.");
-//        } else {
-//            int i = 0;
-//            boolean foundZone = false;
-//
-//            while (!foundZone && i < credentialsList.size()) {
-//                GoogleNamedAccountCredentials credentials = credentialsList.get(i);
-//
-//                try {
-//                    credentials.getCompute().zones().get(credentials.getProject(), zone).execute();
-//                    foundZone = true;
-//                } catch (Exception e) {
-//                }
-//
-//                i++;
-//            }
-//
-//            if (!foundZone) {
-//                p.addProblem(Problem.Severity.ERROR, "Zone " + zone + " not found via any configured google account.");
-//            }
-//        }
-//
-//        if (StringUtils.isEmpty(network)) {
-//            p.addProblem(Problem.Severity.ERROR, "No network supplied for google bakery defaults.");
-//        } else {
-//            int j = 0;
-//            boolean foundNetwork = false;
-//
-//            while (!foundNetwork && j < credentialsList.size()) {
-//                GoogleNamedAccountCredentials credentials = credentialsList.get(j);
-//
-//                try {
-//                    String project = !StringUtils.isEmpty(networkProjectId) ? networkProjectId : credentials.getProject();
-//                    credentials.getCompute().networks().get(project, network).execute();
-//                    foundNetwork = true;
-//                } catch (Exception e) {
-//                }
-//
-//                j++;
-//            }
-//
-//            if (!foundNetwork) {
-//                p.addProblem(Problem.Severity.ERROR, "Network " + network + " not found via any configured google account.");
-//            }
-//        }
+
+        // Check if all inputs are valid
+        if (StringUtils.isEmpty(authUrl)) {
+            p.addProblem(Problem.Severity.ERROR, "No auth url supplied for openstack bakery defaults.");
+        }
+
+        if (StringUtils.isEmpty(networkId)) {
+            p.addProblem(Problem.Severity.ERROR, "No network id supplied for openstack bakery defaults.");
+        }
+
+        if (StringUtils.isEmpty(floatingIpPool)) {
+            p.addProblem(Problem.Severity.ERROR, "No floating ip pool supplied for openstack bakery defaults.");
+        }
+
+        if (StringUtils.isEmpty(securityGroups)) {
+            p.addProblem(Problem.Severity.ERROR, "No security groups supplied for openstack bakery defaults.");
+        }
+
+        if (StringUtils.isEmpty(projectName)) {
+            p.addProblem(Problem.Severity.ERROR, "No project name supplied for openstack bakery defaults.");
+        }
+
+        if (StringUtils.isEmpty(username)) {
+            p.addProblem(Problem.Severity.ERROR, "No username supplied for openstack bakery defaults.");
+        }
+
+        if (StringUtils.isEmpty(password)) {
+            p.addProblem(Problem.Severity.ERROR, "No password supplied for openstack bakery defaults.");
+        }
+
+        if (insecure) {
+            p.addProblem(Problem.Severity.WARNING, "You've chosen to not validate SSL connections. This setup is not recommended in production deployments.");
+        }
+
 
         OpenstackBaseImageValidator openstackBaseImageValidator = new OpenstackBaseImageValidator(credentialsList, halyardVersion);
 
