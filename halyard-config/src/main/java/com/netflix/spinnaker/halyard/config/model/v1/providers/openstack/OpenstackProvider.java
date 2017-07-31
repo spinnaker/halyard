@@ -1,11 +1,15 @@
 package com.netflix.spinnaker.halyard.config.model.v1.providers.openstack;
 
+import com.netflix.spinnaker.halyard.config.model.v1.node.HasImageProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public class OpenstackProvider extends Provider<OpenstackAccount> {
-  //TODO(emjburns): add support for rosco options
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class OpenstackProvider extends HasImageProvider<OpenstackAccount, OpenstackBakeryDefaults> implements Cloneable {
 
   @Override
   public ProviderType providerType() {
@@ -15,5 +19,20 @@ public class OpenstackProvider extends Provider<OpenstackAccount> {
   @Override
   public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
     v.validate(psBuilder, this);
+  }
+
+  @Override
+  public  OpenstackBakeryDefaults emptyBakeryDefaults() {
+    OpenstackBakeryDefaults result = new OpenstackBakeryDefaults();
+    // Set defaults over here
+    result.setAuthUrl("http://default.com");
+    result.setFloatingIpPool("default_pool");
+    result.setInsecure(false);
+    result.setNetworkId("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx");
+    result.setPassword("default_password");
+    result.setUsername("default_username");
+    result.setProjectName("default_projectname");
+    result.setSecurityGroups("default");
+    return result;
   }
 }
