@@ -24,7 +24,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.Opensta
 
 @Parameters(separators = "=")
 public class OpenstackAddBaseImageCommand extends AbstractAddBaseImageCommand{
-    protected String getProviderName() {return "openstack"; }
+    protected String getProviderName() {
+        return "openstack";
+    }
 
     @Parameter(
         names = "--region",
