@@ -58,14 +58,14 @@ public class OpenstackEditBaseImageCommand  extends AbstractEditBaseImageCommand
         OpenstackBaseImage.OpenstackImageSettings imageSettings = baseImage.getBaseImage();
         imageSettings = imageSettings != null ? imageSettings : new OpenstackBaseImage.OpenstackImageSettings();
         baseImage.setBaseImage(imageSettings);
-
-        OpenstackBaseImage.OpenstackVirtualizationSettings virtualizationSettings = baseImage.getVirtualizationSettings();
+        //TODO(edwinavalos) make this work for multiple virtualization settings
+        OpenstackBaseImage.OpenstackVirtualizationSettings virtualizationSettings = baseImage.getVirtualizationSettings().get(0);
         virtualizationSettings = virtualizationSettings != null ? virtualizationSettings : new OpenstackBaseImage.OpenstackVirtualizationSettings();
         virtualizationSettings.setSourceImageId(isSet(sourceImageId) ? sourceImageId : virtualizationSettings.getSourceImageId());
         virtualizationSettings.setRegion(isSet(region) ? region : virtualizationSettings.getRegion());
         virtualizationSettings.setInstanceType(isSet(instanceType) ? instanceType : virtualizationSettings.getInstanceType());
         virtualizationSettings.setSshUserName(isSet(sshUserName) ? sshUserName : virtualizationSettings.getSshUserName());
-        baseImage.setVirtualizationSettings(virtualizationSettings);
+//        baseImage.setVirtualizationSettings(virtualizationSettings);
 
         return baseImage;
     }

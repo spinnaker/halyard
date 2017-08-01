@@ -2869,13 +2869,13 @@ hal config provider openstack bakery base-image add BASE-IMAGE [parameters]
 `BASE-IMAGE`: The name of the base image to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--detailed-description`: A long description to help human operators identify the image.
- * `--instance-type`: The instance type for the baking configuration.
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
- * `--region`: The region for the baking configuration.
+ * `--region`: (*Required*) The region for the baking configuration.
  * `--short-description`: A short description to help human operators identify the image.
- * `--source-image-id`: The source image ID for the baking configuration.
- * `--ssh-user-name`: The ssh username for the baking configuration.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
  * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer, or supplied as described here: https://spinnaker.io/setup/bakery/
 
 

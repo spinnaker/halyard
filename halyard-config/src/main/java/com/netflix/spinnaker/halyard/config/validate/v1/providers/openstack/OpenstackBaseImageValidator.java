@@ -38,10 +38,11 @@ public class OpenstackBaseImageValidator extends Validator<OpenstackBaseImage> {
     public void validate(ConfigProblemSetBuilder p, OpenstackBaseImage n) {
         DaemonTaskHandler.message("Validating " + n.getNodeName() + " with " + OpenstackBaseImageValidator.class.getSimpleName());
 
-        String region = n.getVirtualizationSettings().getRegion();
-        String instanceType = n.getVirtualizationSettings().getInstanceType();
-        String sourceImageId = n.getVirtualizationSettings().getSourceImageId();
-        String sshUserName = n.getVirtualizationSettings().getSshUserName();
+        OpenstackBaseImage.OpenstackVirtualizationSettings vs = n.getVirtualizationSettings().get(0);
+        String region = vs.getRegion();
+        String instanceType = vs.getInstanceType();
+        String sourceImageId = vs.getSourceImageId();
+        String sshUserName = vs.getSshUserName();
 
         if (StringUtils.isEmpty(region)) {
             p.addProblem(Problem.Severity.ERROR, "No region supplied for openstack base image.");

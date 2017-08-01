@@ -23,17 +23,20 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.List;
+
+
 @Data
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class OpenstackBaseImage extends BaseImage<OpenstackBaseImage.OpenstackImageSettings, OpenstackBaseImage.OpenstackVirtualizationSettings> {
+public class OpenstackBaseImage extends BaseImage<OpenstackBaseImage.OpenstackImageSettings, List<OpenstackBaseImage.OpenstackVirtualizationSettings>> {
     @Override
     public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
         v.validate(psBuilder, this);
     }
 
     private OpenstackImageSettings baseImage;
-    private OpenstackVirtualizationSettings virtualizationSettings;
+    private List<OpenstackVirtualizationSettings> virtualizationSettings;
 
     @EqualsAndHashCode(callSuper = true)
     @Data

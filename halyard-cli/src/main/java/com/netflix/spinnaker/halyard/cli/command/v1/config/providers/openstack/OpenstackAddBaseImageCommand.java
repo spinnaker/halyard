@@ -22,6 +22,9 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.bakery.Abst
 import com.netflix.spinnaker.halyard.config.model.v1.node.BaseImage;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackBaseImage;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Parameters(separators = "=")
 public class OpenstackAddBaseImageCommand extends AbstractAddBaseImageCommand{
     protected String getProviderName() {
@@ -30,24 +33,28 @@ public class OpenstackAddBaseImageCommand extends AbstractAddBaseImageCommand{
 
     @Parameter(
         names = "--region",
+        required = true,
         description = OpenstackCommandProperties.REGION_DESCRIPTION
     )
     private String region;
 
     @Parameter(
         names = "--instance-type",
+        required = true,
         description = OpenstackCommandProperties.INSTANCE_TYPE_DESCRIPTION
     )
     private String instanceType;
 
     @Parameter(
         names = "--source-image-id",
+        required = true,
         description = OpenstackCommandProperties.SOURCE_IMAGE_ID_DESCRIPTION
     )
     private String sourceImageId;
 
     @Parameter(
         names = "--ssh-user-name",
+        required = true,
         description = OpenstackCommandProperties.SSH_USER_NAME_DESCRIPTION
     )
     private String sshUserName;
@@ -57,13 +64,15 @@ public class OpenstackAddBaseImageCommand extends AbstractAddBaseImageCommand{
         OpenstackBaseImage baseImage = new OpenstackBaseImage();
         OpenstackBaseImage.OpenstackImageSettings imageSettings = new OpenstackBaseImage.OpenstackImageSettings();
         baseImage.setBaseImage(imageSettings);
-
+        //TODO(edwinavalos) Support multiple virtualization settings
+        List<OpenstackBaseImage.OpenstackVirtualizationSettings> vsList = new ArrayList<>();
         OpenstackBaseImage.OpenstackVirtualizationSettings virtualizationSettings = new OpenstackBaseImage.OpenstackVirtualizationSettings();
         virtualizationSettings.setSourceImageId(sourceImageId);
         virtualizationSettings.setRegion(region);
         virtualizationSettings.setInstanceType(instanceType);
         virtualizationSettings.setSshUserName(sshUserName);
-        baseImage.setVirtualizationSettings(virtualizationSettings);
+        vsList.add(virtualizationSettings);
+        baseImage.setVirtualizationSettings(vsList);
 
         return baseImage;
     }
