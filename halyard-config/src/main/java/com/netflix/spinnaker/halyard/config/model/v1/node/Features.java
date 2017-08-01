@@ -43,6 +43,7 @@ public class Features extends Node {
   private boolean chaos;
   private boolean entityTags;
   private boolean jobs;
+  private boolean pipelineTemplates;
 
   public boolean isAuth(DeploymentConfiguration deploymentConfiguration) {
     return deploymentConfiguration.getSecurity().getAuthn().isEnabled();
