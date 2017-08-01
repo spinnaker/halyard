@@ -6,7 +6,6 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.Abs
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.PathExpandingConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackAccount;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +110,6 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
       description = OpenstackCommandProperties.LBAAS_POLL_INTERVAL_DESCRIPTION
   )
   private Integer lbaasPollInterval;
-
 
   @Override
   protected Account buildAccount(String accountName) {

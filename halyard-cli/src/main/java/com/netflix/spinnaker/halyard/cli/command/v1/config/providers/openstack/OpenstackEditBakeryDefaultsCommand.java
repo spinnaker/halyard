@@ -22,8 +22,6 @@ import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.Opensta
 import com.netflix.spinnaker.halyard.config.model.v1.node.BakeryDefaults;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.bakery.AbstractEditBakeryDefaultsCommand;
 
-import java.net.NetworkInterface;
-
 /**
  * Interact with openstack provider's bakery
  */

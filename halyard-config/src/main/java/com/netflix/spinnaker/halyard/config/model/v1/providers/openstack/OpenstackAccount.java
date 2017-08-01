@@ -1,6 +1,5 @@
 package com.netflix.spinnaker.halyard.config.model.v1.providers.openstack;
 
-import com.netflix.spinnaker.clouddriver.openstack.config.OpenstackConfigurationProperties;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
@@ -25,7 +24,6 @@ public class OpenstackAccount extends Account {
   private Boolean insecure = false;
   private String heatTemplateLocation;
   private String consulConfig;
-//  private  lbaasConfig;
 
   @LocalFile
   private String userDataFile;

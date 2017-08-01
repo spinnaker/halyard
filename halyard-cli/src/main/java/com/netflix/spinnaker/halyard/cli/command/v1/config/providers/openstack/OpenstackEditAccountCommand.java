@@ -6,12 +6,9 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.Abs
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.PathExpandingConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackAccount;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Parameters(separators = "=")
 public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<OpenstackAccount> {
@@ -152,5 +149,4 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
 
     return account;
   }
-
 }

@@ -16,14 +16,11 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.providers.openstack;
 
-import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
-import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackCredentials;
 import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackBakeryDefaults;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackBaseImage;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import com.netflix.spinnaker.halyard.config.validate.v1.providers.google.GoogleBaseImageValidator;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import lombok.Data;

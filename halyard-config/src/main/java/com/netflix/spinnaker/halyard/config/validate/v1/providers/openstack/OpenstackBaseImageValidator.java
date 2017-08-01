@@ -16,7 +16,6 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.providers.openstack;
 
-import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackCredentials;
 import com.netflix.spinnaker.clouddriver.openstack.security.OpenstackNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackBaseImage;
