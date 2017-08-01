@@ -69,7 +69,7 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
 
     features.setChaos(chaos != null ? chaos : features.isChaos());
     features.setJobs(jobs != null ? jobs : features.isJobs());
-    features.setPipelineTemplates(pipelineTemplates != null ? pipelineTemplates : features.isPipelineTemplates());
+    features.setPipelineTemplates((pipelineTemplates == null || !pipelineTemplates) ? null : true);
 
     if (originalHash == features.hashCode()) {
       AnsiUi.failure("No changes supplied.");
