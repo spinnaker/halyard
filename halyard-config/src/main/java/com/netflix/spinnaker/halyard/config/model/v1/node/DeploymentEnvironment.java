@@ -94,6 +94,7 @@ public class DeploymentEnvironment extends Node {
   private String accountName;
   private Consul consul = new Consul();
   private Vault vault = new Vault();
+  private String location = "spinnaker";
 
   @Data
   public static class Consul {
