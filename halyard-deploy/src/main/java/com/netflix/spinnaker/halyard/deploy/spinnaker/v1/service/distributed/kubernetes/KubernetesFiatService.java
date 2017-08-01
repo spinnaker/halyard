@@ -40,11 +40,10 @@ public class KubernetesFiatService extends FiatService implements KubernetesDist
     return getLogCollectorFactory().build(this);
   }
 
-
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     Settings settings = new Settings();
-    String location = "spinnaker";
+    String location = deploymentConfiguration.getDeploymentEnvironment().getLocation();
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(location)
