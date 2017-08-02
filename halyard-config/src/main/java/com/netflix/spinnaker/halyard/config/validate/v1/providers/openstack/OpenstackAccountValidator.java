@@ -128,11 +128,7 @@ public class OpenstackAccountValidator extends Validator<OpenstackAccount> {
           .lbaasConfig(lbaasConfig)
           .userDataFile(userDataFile)
           .build();
-      if (openstackCredentials == null) {
-        return;
-      } else {
-        credentialsList.add(openstackCredentials);
-      }
+      credentialsList.add(openstackCredentials);
       //TODO(emjburns) verify that these credentials can connect w/o error to the openstack instance
     } catch (Exception e) {
       psBuilder.addProblem(Problem.Severity.ERROR, "Failed to instantiate openstack credentials for account \"" + account.getName() + "\".");

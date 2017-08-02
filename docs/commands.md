@@ -2966,7 +2966,7 @@ hal config provider openstack bakery edit [parameters]
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--domain-name`: (*Required*) Set the default domainName your images will be baked in.
  * `--floating-ip-pool`: (*Required*) Set the default floating IP pool your images will be baked in.
- * `--insecure`: (*Default*: `false`) Set the default security setting (true or false) to connect to the openstack account.
+ * `--insecure`: (*Required*) The security setting (true/false) for connecting to the Openstack account.
  * `--network-id`: (*Required*) Set the default network your images will be baked in.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: (*Required*) Set the default password your images will be baked with.

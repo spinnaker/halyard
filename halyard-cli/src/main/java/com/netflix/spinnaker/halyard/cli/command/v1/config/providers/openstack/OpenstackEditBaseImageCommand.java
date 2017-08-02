@@ -65,8 +65,6 @@ public class OpenstackEditBaseImageCommand  extends AbstractEditBaseImageCommand
         virtualizationSettings.setRegion(isSet(region) ? region : virtualizationSettings.getRegion());
         virtualizationSettings.setInstanceType(isSet(instanceType) ? instanceType : virtualizationSettings.getInstanceType());
         virtualizationSettings.setSshUserName(isSet(sshUserName) ? sshUserName : virtualizationSettings.getSshUserName());
-//        baseImage.setVirtualizationSettings(virtualizationSettings);
-
         return baseImage;
     }
 }

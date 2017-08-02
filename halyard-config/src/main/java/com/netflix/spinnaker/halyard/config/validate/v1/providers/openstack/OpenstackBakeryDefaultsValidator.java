@@ -49,7 +49,7 @@ public class OpenstackBakeryDefaultsValidator extends Validator<OpenstackBakeryD
         String projectName = n.getProjectName();
         String username = n.getUsername();
         String password = n.getPassword();
-        boolean insecure = n.isInsecure();
+        Boolean insecure = n.getInsecure();
         List<OpenstackBaseImage> baseImages = n.getBaseImages();
 
         if (StringUtils.isEmpty(authUrl) &&

@@ -23,15 +23,6 @@ public class OpenstackProvider extends HasImageProvider<OpenstackAccount, Openst
   @Override
   public OpenstackBakeryDefaults emptyBakeryDefaults() {
     OpenstackBakeryDefaults result = new OpenstackBakeryDefaults();
-    // Set defaults over here
-    result.setAuthUrl(null);
-    result.setFloatingIpPool(null);
-    result.setInsecure(false);
-    result.setNetworkId(null);
-    result.setPassword(null);
-    result.setUsername(null);
-    result.setProjectName(null);
-    result.setSecurityGroups(null);
     return result;
   }
 }

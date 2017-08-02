@@ -27,7 +27,9 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.bakery.Abst
  */
 @Parameters(separators = "=")
 public class OpenstackEditBakeryDefaultsCommand extends AbstractEditBakeryDefaultsCommand<OpenstackBakeryDefaults> {
-    protected String getProviderName() { return "openstack"; }
+    protected String getProviderName() {
+        return "openstack";
+    }
 
     @Parameter(
         names = "--auth-url",
@@ -87,9 +89,11 @@ public class OpenstackEditBakeryDefaultsCommand extends AbstractEditBakeryDefaul
 
     @Parameter(
         names = "--insecure",
-        description = "Set the default security setting (true or false) to connect to the openstack account."
+        required = true,
+        arity = 1,
+        description = "The security setting (true/false) for connecting to the Openstack account."
     )
-    private boolean insecure = false;
+    private Boolean insecure;
 
     @Override
     protected BakeryDefaults editBakeryDefaults(OpenstackBakeryDefaults bakeryDefaults) {
@@ -100,7 +104,7 @@ public class OpenstackEditBakeryDefaultsCommand extends AbstractEditBakeryDefaul
         bakeryDefaults.setProjectName(isSet(projectName) ? projectName : bakeryDefaults.getProjectName());
         bakeryDefaults.setUsername(isSet(username) ? username : bakeryDefaults.getUsername());
         bakeryDefaults.setPassword(isSet(password) ? password : bakeryDefaults.getPassword());
-        bakeryDefaults.setInsecure(isSet(insecure) ? insecure : bakeryDefaults.isInsecure());
+        bakeryDefaults.setInsecure(isSet(insecure) ? insecure : bakeryDefaults.getInsecure());
 
         return bakeryDefaults;
     }

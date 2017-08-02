@@ -37,7 +37,7 @@ public class OpenstackBakeryDefaults extends BakeryDefaults<OpenstackBaseImage> 
     private String projectName;
     private String username;
     private String password;
-    private boolean insecure;
+    private Boolean insecure;
 
 }
 
