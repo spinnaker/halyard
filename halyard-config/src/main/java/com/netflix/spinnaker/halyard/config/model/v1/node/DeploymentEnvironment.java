@@ -90,11 +90,11 @@ public class DeploymentEnvironment extends Node {
   }
 
   private Size size = Size.SMALL;
-  private DeploymentType type = DeploymentType.LocalDebian;
+  private DeploymentType type = DeploymentType.LocalDebian;   
   private String accountName;
   private Consul consul = new Consul();
   private Vault vault = new Vault();
-  private String location = "spinnaker";
+  private String location = "spinnaker"; // Do not set a default here
 
   @Data
   public static class Consul {
