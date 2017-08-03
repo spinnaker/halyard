@@ -17,9 +17,7 @@
 
 package com.netflix.spinnaker.halyard.config.services.v1;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
-import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,6 +34,9 @@ public class DeploymentEnvironmentService {
 
   @Autowired
   private ValidateService validateService;
+
+  @Autowired
+  private AccountService accountService;
 
   public DeploymentEnvironment getDeploymentEnvironment(String deploymentName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setDeploymentEnvironment();
@@ -57,6 +58,9 @@ public class DeploymentEnvironmentService {
   public void setDeploymentEnvironment(String deploymentName, DeploymentEnvironment newDeploymentEnvironment) {
     DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
     deploymentConfiguration.setDeploymentEnvironment(newDeploymentEnvironment);
+    String accountName = newDeploymentEnvironment.getAccountName();
+    Provider.ProviderType providerType = getProviderType(accountName, deploymentName);
+    Providers.translateProviderType(providerType.getName());
   }
 
   public ProblemSet validateDeploymentEnvironment(String deploymentName) {
@@ -65,5 +69,10 @@ public class DeploymentEnvironmentService {
         .setDeploymentEnvironment();
 
     return validateService.validateMatchingFilter(filter);
+  }
+
+  public Provider.ProviderType getProviderType(String accountName, String deploymentName) {
+    Account account = accountService.getAnyProviderAccount(deploymentName, accountName);
+    return ((Provider) account.getParent()).providerType();
   }
 }
