@@ -19,6 +19,7 @@ package com.netflix.spinnaker.halyard.config.services.v1;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -60,17 +61,16 @@ public class DeploymentEnvironmentService {
 
   public void setDeploymentEnvironment(String deploymentName, DeploymentEnvironment newDeploymentEnvironment) {
     DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
+
     String accountName = newDeploymentEnvironment.getAccountName();
     Provider.ProviderType providerType = getProviderType(accountName, deploymentName);
-    //Add get location to provider
-
-//    System.out.println(newDeploymentEnvironment.getLocation()); // Check if this is set if not then lets get the defaut  based in the provider
     Provider provider = providerService.getProvider(deploymentName, providerType.getName());
     String defaultLocation = provider.getDefaultLocation();
 
-    if(newDeploymentEnvironment.getLocation() == null) {
+    if (StringUtils.isEmpty(newDeploymentEnvironment.getLocation())) {
       newDeploymentEnvironment.setLocation(defaultLocation);
     }
+
     deploymentConfiguration.setDeploymentEnvironment(newDeploymentEnvironment);
   }
 
