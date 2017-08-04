@@ -38,6 +38,9 @@ public class DeploymentEnvironmentService {
   @Autowired
   private AccountService accountService;
 
+  @Autowired
+  private ProviderService providerService;
+
   public DeploymentEnvironment getDeploymentEnvironment(String deploymentName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setDeploymentEnvironment();
 
@@ -57,10 +60,18 @@ public class DeploymentEnvironmentService {
 
   public void setDeploymentEnvironment(String deploymentName, DeploymentEnvironment newDeploymentEnvironment) {
     DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
-    deploymentConfiguration.setDeploymentEnvironment(newDeploymentEnvironment);
     String accountName = newDeploymentEnvironment.getAccountName();
     Provider.ProviderType providerType = getProviderType(accountName, deploymentName);
-    Providers.translateProviderType(providerType.getName());
+    //Add get location to provider
+
+//    System.out.println(newDeploymentEnvironment.getLocation()); // Check if this is set if not then lets get the defaut  based in the provider
+    Provider provider = providerService.getProvider(deploymentName, providerType.getName());
+    String defaultLocation = provider.getDefaultLocation();
+
+    if(newDeploymentEnvironment.getLocation() == null) {
+      newDeploymentEnvironment.setLocation(defaultLocation);
+    }
+    deploymentConfiguration.setDeploymentEnvironment(newDeploymentEnvironment);
   }
 
   public ProblemSet validateDeploymentEnvironment(String deploymentName) {

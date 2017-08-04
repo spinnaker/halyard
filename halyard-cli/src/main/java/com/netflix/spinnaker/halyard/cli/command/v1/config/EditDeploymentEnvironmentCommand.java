@@ -118,10 +118,6 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
     deploymentEnvironment.setVault(vault);
 
     deploymentEnvironment.setLocation(isSet(location) ? location : deploymentEnvironment.getLocation());
-//    String location =  ? getProviderForAccount(accountName).getDefaultLocation : deploymentEnvironment.getLocation();
-//    if (!isSet(location)) {
-//      deploymentEnvironment.setLocation(location);
-//    }
 
     if (originalHash == deploymentEnvironment.hashCode()) {
       AnsiUi.failure("No changes supplied.");
