@@ -24,6 +24,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonito
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +40,7 @@ public class KubernetesMonitoringDaemonService extends SpinnakerMonitoringDaemon
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     Settings settings = new Settings();
     settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
-        .setLocation(deploymentConfiguration.getDeploymentEnvironment().getLocation())
+        .setLocation(StringUtils.isEmpty(deploymentConfiguration.getDeploymentEnvironment().getLocation()) ? "spinnaker" : deploymentConfiguration.getDeploymentEnvironment().getLocation())
         .setEnabled(deploymentConfiguration.getMetricStores().isEnabled());
     return settings;
   }

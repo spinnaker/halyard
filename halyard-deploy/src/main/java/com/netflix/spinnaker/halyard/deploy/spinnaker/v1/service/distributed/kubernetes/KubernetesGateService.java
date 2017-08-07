@@ -24,6 +24,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.Dis
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +45,7 @@ public class KubernetesGateService extends GateService implements KubernetesDist
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     Settings settings = new Settings(deploymentConfiguration.getSecurity().getApiSecurity());
     settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
-        .setLocation(deploymentConfiguration.getDeploymentEnvironment().getLocation())
+        .setLocation(StringUtils.isEmpty(deploymentConfiguration.getDeploymentEnvironment().getLocation()) ? "spinnaker" : deploymentConfiguration.getDeploymentEnvironment().getLocation())
         .setEnabled(true);
     return settings;
   }

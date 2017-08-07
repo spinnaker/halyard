@@ -33,6 +33,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.Dis
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
@@ -80,7 +81,7 @@ public class KubernetesRedisService extends RedisService implements KubernetesDi
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     Settings settings = new Settings();
-    String location = deploymentConfiguration.getDeploymentEnvironment().getLocation();
+    String location = StringUtils.isEmpty(deploymentConfiguration.getDeploymentEnvironment().getLocation()) ? "spinnaker" : deploymentConfiguration.getDeploymentEnvironment().getLocation();
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(location)
