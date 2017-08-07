@@ -34,4 +34,9 @@ public class KubernetesProvider extends Provider<KubernetesAccount> implements C
   public ProviderType providerType() {
     return ProviderType.KUBERNETES;
   }
+
+  @Override
+  public String getDefaultLocation() {
+    return "spinnaker";
+  }
 }
