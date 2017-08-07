@@ -43,9 +43,6 @@ public class DeploymentEnvironmentService {
   @Autowired
   private AccountService accountService;
 
-  @Autowired
-  private ProviderService providerService;
-
   public DeploymentEnvironment getDeploymentEnvironment(String deploymentName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setDeploymentEnvironment();
 
@@ -66,16 +63,17 @@ public class DeploymentEnvironmentService {
   public void setDeploymentEnvironment(String deploymentName, DeploymentEnvironment newDeploymentEnvironment) {
     DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
 
-    String accountName = newDeploymentEnvironment.getAccountName();
-    Provider.ProviderType providerType = getProviderType(accountName, deploymentName);
-    Provider provider = providerService.getProvider(deploymentName, providerType.getName());
-    String defaultLocation = provider.getDefaultLocation();
-
-    if (StringUtils.isEmpty(newDeploymentEnvironment.getLocation())) {
-      newDeploymentEnvironment.setLocation(defaultLocation);
-    }
+    String defaultLocation = lookupDefaultLocation(deploymentName, newDeploymentEnvironment.getAccountName());
+    String location = newDeploymentEnvironment.getLocation();
+    newDeploymentEnvironment.setLocation(StringUtils.isEmpty(location) ? defaultLocation : location);
 
     deploymentConfiguration.setDeploymentEnvironment(newDeploymentEnvironment);
+  }
+
+  private String lookupDefaultLocation(String deploymentName, String accountName) {
+    Account account = accountService.getAnyProviderAccount(deploymentName, accountName);
+    Provider provider = (Provider) account.getParent();
+    return provider.getDefaultLocation();
   }
 
   public ProblemSet validateDeploymentEnvironment(String deploymentName) {
@@ -86,8 +84,4 @@ public class DeploymentEnvironmentService {
     return validateService.validateMatchingFilter(filter);
   }
 
-  public Provider.ProviderType getProviderType(String accountName, String deploymentName) {
-    Account account = accountService.getAnyProviderAccount(deploymentName, accountName);
-    return ((Provider) account.getParent()).providerType();
-  }
 }
