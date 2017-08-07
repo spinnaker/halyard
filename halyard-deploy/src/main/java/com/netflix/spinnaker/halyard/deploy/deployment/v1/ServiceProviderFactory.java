@@ -74,8 +74,8 @@ public class ServiceProviderFactory {
           + "specified as the desired place to run your simple clustered deployment.").build());
     }
 
-    String deploymentConfigurationName = deploymentConfiguration.getName();
-    Provider.ProviderType providerType = getProviderType(accountName, deploymentConfigurationName);
+    Account account = accountService.getAnyProviderAccount(deploymentConfiguration.getName(), accountName);
+    Provider.ProviderType providerType = ((Provider) account.getParent()).providerType();
 
     switch (providerType) {
       case KUBERNETES:
@@ -85,10 +85,5 @@ public class ServiceProviderFactory {
       default:
         throw new IllegalArgumentException("No Clustered Simple Deployment for " + providerType.getName());
     }
-  }
-
-  public Provider.ProviderType getProviderType(String accountName, String deploymentConfigurationName) {
-    Account account = accountService.getAnyProviderAccount(deploymentConfigurationName, accountName);
-    return ((Provider) account.getParent()).providerType();
   }
 }

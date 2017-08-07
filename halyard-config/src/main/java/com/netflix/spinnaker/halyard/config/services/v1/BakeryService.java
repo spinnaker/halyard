@@ -77,8 +77,7 @@ public class BakeryService {
     }
   }
 
-  public BakeryDefaults
-  getBakeryDefaults(String deploymentName, String providerName) {
+  public BakeryDefaults getBakeryDefaults(String deploymentName, String providerName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setProvider(providerName).setBakeryDefaults();
 
     List<BakeryDefaults> matching = lookupService.getMatchingNodesOfType(filter, BakeryDefaults.class);

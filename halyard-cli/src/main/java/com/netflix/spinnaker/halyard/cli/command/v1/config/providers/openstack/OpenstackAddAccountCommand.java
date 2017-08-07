@@ -111,7 +111,6 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
   )
   private Integer lbaasPollInterval;
 
-
   @Override
   protected Account buildAccount(String accountName) {
     OpenstackAccount account = (OpenstackAccount) new OpenstackAccount().setName(accountName);
