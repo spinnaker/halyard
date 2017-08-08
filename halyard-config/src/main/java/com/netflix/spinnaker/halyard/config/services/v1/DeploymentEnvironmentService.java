@@ -62,19 +62,8 @@ public class DeploymentEnvironmentService {
 
   public void setDeploymentEnvironment(String deploymentName, DeploymentEnvironment newDeploymentEnvironment) {
     DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
-
-//    String defaultLocation = lookupDefaultLocation(deploymentName, newDeploymentEnvironment.getAccountName());
-//    String location = newDeploymentEnvironment.getLocation();
-//    newDeploymentEnvironment.setLocation(StringUtils.isEmpty(location) ? defaultLocation : location);
-
     deploymentConfiguration.setDeploymentEnvironment(newDeploymentEnvironment);
   }
-
-//  private String lookupDefaultLocation(String deploymentName, String accountName) {
-//    Account account = accountService.getAnyProviderAccount(deploymentName, accountName);
-//    Provider provider = (Provider) account.getParent();
-//    return provider.getDefaultLocation();
-//  }
 
   public ProblemSet validateDeploymentEnvironment(String deploymentName) {
     NodeFilter filter = new NodeFilter()
