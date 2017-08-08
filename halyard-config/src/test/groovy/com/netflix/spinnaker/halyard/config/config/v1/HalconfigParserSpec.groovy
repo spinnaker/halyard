@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets
 
 class HalconfigParserSpec extends Specification {
   String HALYARD_VERSION = "0.1.0"
-  String SPINNAKER_VERSION = "1.0.0"
+  String SPINNAKER_VERSION = "1.1.2"
   String CURRENT_DEPLOYMENT = "my-spinnaker-deployment"
   HalconfigParser parser
 
@@ -70,5 +70,22 @@ balyardVersion: $HALYARD_VERSION
     then:
     IllegalArgumentException ex = thrown()
     ex.message.contains("balyardVersion")
+  }
+
+  void "parses deployment location"() {
+    setup:
+    String config = """
+deploymentConfigurations:
+- deploymentEnvironment:
+    location: spinnaker
+"""
+    InputStream stream = new ByteArrayInputStream(config.getBytes(StandardCharsets.UTF_8))
+    Halconfig out = null
+
+    when:
+    out = parser.parseHalconfig(stream)
+
+    then:
+    out.deploymentConfigurations[0].deploymentEnvironment.location == 'spinnaker'
   }
 }

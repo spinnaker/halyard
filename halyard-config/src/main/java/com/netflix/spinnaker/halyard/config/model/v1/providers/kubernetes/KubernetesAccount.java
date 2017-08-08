@@ -96,14 +96,17 @@ public class KubernetesAccount extends Account implements Cloneable {
   public void makeBootstrappingAccount(ArtifactSourcesConfig artifactSourcesConfig) {
     super.makeBootstrappingAccount(artifactSourcesConfig);
 
+    // We may want this to use the value from the deployment config rather than the hard-code.
+    String location = "spinnaker";
+
     // These changes are only surfaced in the account used by the bootstrapping clouddriver,
     // the user's clouddriver will be unchanged.
-    if (!namespaces.isEmpty() && !namespaces.contains("spinnaker")) {
-      namespaces.add("spinnaker");
+    if (!namespaces.isEmpty() && !namespaces.contains(location)) {
+      namespaces.add(location);
     }
 
-    if (!omitNamespaces.isEmpty() && omitNamespaces.contains("spinnaker")) {
-      omitNamespaces.remove("spinnaker");
+    if (!omitNamespaces.isEmpty() && omitNamespaces.contains(location)) {
+      omitNamespaces.remove(location);
     }
   }
 }

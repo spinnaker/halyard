@@ -45,4 +45,9 @@ public class GoogleProvider extends HasImageProvider<GoogleAccount, GoogleBakery
     result.setTemplateFile("gce.json");
     return result;
   }
+
+  @Override
+  public String getDefaultLocation() {
+    return "us-central1-f";
+  }
 }

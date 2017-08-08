@@ -47,7 +47,7 @@ public class KubernetesIgorService extends IgorService implements KubernetesDist
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     Settings settings = new Settings();
-    String location = "spinnaker";
+    String location = deploymentConfiguration.getDeploymentEnvironment().getLocation();
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(location)

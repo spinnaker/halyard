@@ -17,10 +17,13 @@
 
 package com.netflix.spinnaker.halyard.config.services.v1;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +39,9 @@ public class DeploymentEnvironmentService {
 
   @Autowired
   private ValidateService validateService;
+
+  @Autowired
+  private AccountService accountService;
 
   public DeploymentEnvironment getDeploymentEnvironment(String deploymentName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setDeploymentEnvironment();
@@ -56,7 +62,18 @@ public class DeploymentEnvironmentService {
 
   public void setDeploymentEnvironment(String deploymentName, DeploymentEnvironment newDeploymentEnvironment) {
     DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
+
+    String defaultLocation = lookupDefaultLocation(deploymentName, newDeploymentEnvironment.getAccountName());
+    String location = newDeploymentEnvironment.getLocation();
+    newDeploymentEnvironment.setLocation(StringUtils.isEmpty(location) ? defaultLocation : location);
+
     deploymentConfiguration.setDeploymentEnvironment(newDeploymentEnvironment);
+  }
+
+  private String lookupDefaultLocation(String deploymentName, String accountName) {
+    Account account = accountService.getAnyProviderAccount(deploymentName, accountName);
+    Provider provider = (Provider) account.getParent();
+    return provider.getDefaultLocation();
   }
 
   public ProblemSet validateDeploymentEnvironment(String deploymentName) {
@@ -66,4 +83,5 @@ public class DeploymentEnvironmentService {
 
     return validateService.validateMatchingFilter(filter);
   }
+
 }
