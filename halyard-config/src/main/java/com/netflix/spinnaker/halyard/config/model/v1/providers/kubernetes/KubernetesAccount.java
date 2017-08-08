@@ -28,6 +28,7 @@ import io.fabric8.kubernetes.api.model.NamedContext;
 import io.fabric8.kubernetes.client.internal.KubeConfigUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,8 +97,8 @@ public class KubernetesAccount extends Account implements Cloneable {
   public void makeBootstrappingAccount(ArtifactSourcesConfig artifactSourcesConfig) {
     super.makeBootstrappingAccount(artifactSourcesConfig);
 
-    // We may want this to use the value from the deployment config rather than the hard-code.
-    String location = "spinnaker";
+    DeploymentConfiguration deploymentConfiguration = parentOfType(DeploymentConfiguration.class);
+    String location = StringUtils.isEmpty(deploymentConfiguration.getDeploymentEnvironment().getLocation()) ? "spinnaker" : deploymentConfiguration.getDeploymentEnvironment().getLocation();
 
     // These changes are only surfaced in the account used by the bootstrapping clouddriver,
     // the user's clouddriver will be unchanged.
