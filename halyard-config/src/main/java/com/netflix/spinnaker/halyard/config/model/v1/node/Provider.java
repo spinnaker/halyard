@@ -16,11 +16,9 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,15 +38,6 @@ public abstract class Provider<A extends Account> extends Node implements Clonea
       primaryAccount = accounts.get(0).getName();
     }
     return primaryAccount;
-  }
-
-  /**
-   * Providers with a default location such as a namespace for a container or a region for a cloud provider should
-   * override this with a reasonable default.
-   */
-  @JsonIgnore
-  public String getDefaultLocation() {
-    return null;
   }
 
   private boolean hasAccount(String name) {
