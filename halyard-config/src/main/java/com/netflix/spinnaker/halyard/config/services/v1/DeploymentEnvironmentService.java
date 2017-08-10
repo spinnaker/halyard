@@ -40,9 +40,6 @@ public class DeploymentEnvironmentService {
   @Autowired
   private ValidateService validateService;
 
-  @Autowired
-  private AccountService accountService;
-
   public DeploymentEnvironment getDeploymentEnvironment(String deploymentName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setDeploymentEnvironment();
 

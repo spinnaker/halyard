@@ -27,7 +27,6 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.Dis
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
