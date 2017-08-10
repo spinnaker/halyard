@@ -125,6 +125,7 @@
  * [**hal config provider google bakery base-image list**](#hal-config-provider-google-bakery-base-image-list)
  * [**hal config provider google bakery edit**](#hal-config-provider-google-bakery-edit)
  * [**hal config provider google disable**](#hal-config-provider-google-disable)
+ * [**hal config provider google edit**](#hal-config-provider-google-edit)
  * [**hal config provider google enable**](#hal-config-provider-google-enable)
  * [**hal config provider kubernetes**](#hal-config-provider-kubernetes)
  * [**hal config provider kubernetes account**](#hal-config-provider-kubernetes-account)
@@ -143,6 +144,14 @@
  * [**hal config provider openstack account edit**](#hal-config-provider-openstack-account-edit)
  * [**hal config provider openstack account get**](#hal-config-provider-openstack-account-get)
  * [**hal config provider openstack account list**](#hal-config-provider-openstack-account-list)
+ * [**hal config provider openstack bakery**](#hal-config-provider-openstack-bakery)
+ * [**hal config provider openstack bakery base-image**](#hal-config-provider-openstack-bakery-base-image)
+ * [**hal config provider openstack bakery base-image add**](#hal-config-provider-openstack-bakery-base-image-add)
+ * [**hal config provider openstack bakery base-image delete**](#hal-config-provider-openstack-bakery-base-image-delete)
+ * [**hal config provider openstack bakery base-image edit**](#hal-config-provider-openstack-bakery-base-image-edit)
+ * [**hal config provider openstack bakery base-image get**](#hal-config-provider-openstack-bakery-base-image-get)
+ * [**hal config provider openstack bakery base-image list**](#hal-config-provider-openstack-bakery-base-image-list)
+ * [**hal config provider openstack bakery edit**](#hal-config-provider-openstack-bakery-edit)
  * [**hal config provider openstack disable**](#hal-config-provider-openstack-disable)
  * [**hal config provider openstack enable**](#hal-config-provider-openstack-enable)
  * [**hal config provider oraclebmcs**](#hal-config-provider-oraclebmcs)
@@ -709,6 +718,7 @@ hal config features edit [parameters]
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--jobs`: Allow Spinnaker to run containers in Kubernetes and Titus as Job stages in pipelines.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pipeline-templates`: Enable pipeline template support. Read more at https://github.com/spinnaker/dcd-spec.
 
 
 ---
@@ -2154,6 +2164,7 @@ hal config provider google [parameters] [subcommands]
  * `account`: Manage and view Spinnaker configuration for the google provider's account
  * `bakery`: Manage and view Spinnaker configuration for the google provider's image bakery configuration.
  * `disable`: Set the google provider as disabled
+ * `edit`: Set provider-wide properties for the Google provider
  * `enable`: Set the google provider as enabled
 
 ---
@@ -2196,6 +2207,7 @@ hal config provider google account add ACCOUNT [parameters]
  * `--json-path`: The path to a JSON service account that Spinnaker will use as credentials. This is only needed if Spinnaker is not deployed on a Google Compute Engine VM, or needs permissions not afforded to the VM it is running on. See https://cloud.google.com/compute/docs/access/service-accounts for more information.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--project`: (*Required*) The Google Cloud Platform project this Spinnaker account will manage.
+ * `--regions`: A list of regions for caching and mutating calls. This overwrites any default-regions set on the provider.
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--user-data`: The path to user data template file. Spinnaker has the ability to inject userdata into generated instance templates. The mechanism is via a template file that is token replaced to provide some specifics about the deployment. See https://github.com/spinnaker/clouddriver/blob/master/clouddriver-aws/UserData.md for more information.
 
@@ -2229,13 +2241,16 @@ hal config provider google account edit ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
  * `--add-image-project`: Add this image project to the list of image projects to cache and deploy images from.
+ * `--add-region`: Add this region to the list of regions for caching and mutating calls.
  * `--add-required-group-membership`: Add this group to the list of required group memberships.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--image-projects`: A list of Google Cloud Platform projects Spinnaker will be able to cache and deploy images from. When this is omitted, it defaults to the current project. Each project must have granted the IAM role `compute.imageUser` to the service account associated with the json key used by this account, as well as to the 'Google APIs service account' automatically created for the project being managed (should look similar to `12345678912@cloudservices.gserviceaccount.com`). See https://cloud.google.com/compute/docs/images/sharing-images-across-projects for more information about sharing images across GCP projects.
  * `--json-path`: The path to a JSON service account that Spinnaker will use as credentials. This is only needed if Spinnaker is not deployed on a Google Compute Engine VM, or needs permissions not afforded to the VM it is running on. See https://cloud.google.com/compute/docs/access/service-accounts for more information.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--project`: The Google Cloud Platform project this Spinnaker account will manage.
+ * `--regions`: A list of regions for caching and mutating calls. This overwrites any default-regions set on the provider.
  * `--remove-image-project`: Remove this image project from the list of image projects to cache and deploy images from.
+ * `--remove-region`: Remove this region from the list of regions for caching and mutating calls.
  * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--set-alpha-listed`: Enable this flag if your project has access to alpha features and you want Spinnaker to take advantage of them.
@@ -2438,6 +2453,24 @@ hal config provider google disable [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider google edit
+
+You can edit the list of default regions used in caching and mutating calls here. This list will become the default for all accounts, unlessspecifically overridden on a per-account basis.
+
+#### Usage
+```
+hal config provider google edit [parameters]
+```
+
+#### Parameters
+ * `--add-default-region`: Add this region to the list of regions for caching and mutating calls.
+ * `--default-regions`: A list of regions for caching and mutating calls, applied to all accounts unless overridden.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--remove-default-region`: Remove this region from the list of regions for caching and mutating calls.
 
 
 ---
@@ -2669,6 +2702,7 @@ hal config provider openstack [parameters] [subcommands]
 
 #### Subcommands
  * `account`: Manage and view Spinnaker configuration for the openstack provider's account
+ * `bakery`: Manage and view Spinnaker configuration for the openstack provider's image bakery configuration.
  * `disable`: Set the openstack provider as disabled
  * `enable`: Set the openstack provider as enabled
 
@@ -2706,12 +2740,16 @@ hal config provider openstack account add ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
+ * `--account-type`: The type of Openstack account.
  * `--auth-url`: (*Required*) The auth url of your cloud, usually found in the Horizon console under Compute > Access & Security > API Access > url for Identity. Must be Keystone v3
+ * `--consul-config`: This is the path for your consul config file
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--domain-name`: (*Required*) The domain of the cloud. Can be found in the RC file.
+ * `--environment`: The name of your Openstack environment.
+ * `--heat-template-location`: The location of your heat template file. (Replacing the Heat template is not recommended)
  * `--insecure`: (*Default*: `false`) Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
  * `--lbaas-poll-interval`: Interval in seconds to poll octavia when an entity is created, updated, or deleted. Default 5.
- * `--lbaas-poll-timout`: Time to stop polling octavia when a status of an entity does not change. Default 60.
+ * `--lbaas-poll-timeout`: Time to stop polling octavia when a status of an entity does not change. Default 60.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: (*Required*) The password used to access your cloud.
  * `--project-name`: (*Required*) The name of the project (formerly tenant) within the cloud. Can be found in the RC file.
@@ -2749,21 +2787,24 @@ hal config provider openstack account edit ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
+ * `--account-type`: The type of Openstack account.
  * `--add-region`: Add this region to the list of managed regions.
  * `--add-required-group-membership`: Add this group to the list of required group memberships.
  * `--auth-url`: The auth url of your cloud, usually found in the Horizon console under Compute > Access & Security > API Access > url for Identity. Must be Keystone v3
+ * `--consul-config`: This is the path for your consul config file
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--domain-name`: The domain of the cloud. Can be found in the RC file.
+ * `--environment`: The name of your Openstack environment.
+ * `--heat-template-location`: The location of your heat template file. (Replacing the Heat template is not recommended)
  * `--insecure`: Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
  * `--lbaas-poll-interval`: Interval in seconds to poll octavia when an entity is created, updated, or deleted. Default 5.
- * `--lbaas-poll-timout`: Time to stop polling octavia when a status of an entity does not change. Default 60.
+ * `--lbaas-poll-timeout`: Time to stop polling octavia when a status of an entity does not change. Default 60.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: The password used to access your cloud.
  * `--project-name`: The name of the project (formerly tenant) within the cloud. Can be found in the RC file.
  * `--regions`: (*Default*: `[]`) The region(s) of the cloud. Can be found in the RC file.
  * `--remove-region`: Remove this region from the list of managed regions.
  * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
- * `--remove-user-data-file`: (*Default*: `false`) Removes currently configured user data file.
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--user-data-file`: User data passed to Heat Orchestration Template. Replacement of tokens supported, see http://www.spinnaker.io/v1.0/docs/target-deployment-configuration#section-openstack for details.
  * `--username`: The username used to access your cloud.
@@ -2798,6 +2839,165 @@ hal config provider openstack account list [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider openstack bakery
+
+Manage and view Spinnaker configuration for the openstack provider's image bakery configuration.
+
+#### Usage
+```
+hal config provider openstack bakery [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `base-image`: Manage and view Spinnaker configuration for the openstack provider's base image.
+ * `edit`: Edit the openstack provider's bakery default options.
+
+---
+## hal config provider openstack bakery base-image
+
+Manage and view Spinnaker configuration for the openstack provider's base image.
+
+#### Usage
+```
+hal config provider openstack bakery base-image [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a base image for the openstack provider's bakery.
+ * `delete`: Delete a specific openstack base image by name.
+ * `edit`: Edit a base image for the openstack provider's bakery.
+ * `get`: Get the specified base image details for the openstack provider.
+ * `list`: List the base image names for the openstack provider.
+
+---
+## hal config provider openstack bakery base-image add
+
+Add a base image for the openstack provider's bakery.
+
+#### Usage
+```
+hal config provider openstack bakery base-image add BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: (*Required*) The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer, or supplied as described here: https://spinnaker.io/setup/bakery/
+
+
+---
+## hal config provider openstack bakery base-image delete
+
+Delete a specific openstack base image by name.
+
+#### Usage
+```
+hal config provider openstack bakery base-image delete BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider openstack bakery base-image edit
+
+Edit a base image for the openstack provider's bakery.
+
+#### Usage
+```
+hal config provider openstack bakery base-image edit BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--id`: This is the identifier used by your cloud to find this base image.
+ * `--instance-type`: The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: The source image ID for the baking configuration.
+ * `--ssh-user-name`: The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer, or supplied as described here: https://spinnaker.io/setup/bakery/
+
+
+---
+## hal config provider openstack bakery base-image get
+
+Get the specified base image details for the openstack provider.
+
+#### Usage
+```
+hal config provider openstack bakery base-image get BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider openstack bakery base-image list
+
+List the base image names for the openstack provider.
+
+#### Usage
+```
+hal config provider openstack bakery base-image list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider openstack bakery edit
+
+Edit the openstack provider's bakery default options.
+
+#### Usage
+```
+hal config provider openstack bakery edit [parameters]
+```
+
+#### Parameters
+ * `--auth-url`: (*Required*) Set the default auth URL your images will be baked in.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--domain-name`: (*Required*) Set the default domainName your images will be baked in.
+ * `--floating-ip-pool`: (*Required*) Set the default floating IP pool your images will be baked in.
+ * `--insecure`: (*Required*) The security setting (true/false) for connecting to the Openstack account.
+ * `--network-id`: (*Required*) Set the default network your images will be baked in.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) Set the default password your images will be baked with.
+ * `--project-name`: (*Required*) Set the default project name your images will be baked in.
+ * `--security-groups`: (*Required*) Set the default security group your images will be baked in.
+ * `--username`: (*Required*) Set the default username your images will be baked with.
 
 
 ---

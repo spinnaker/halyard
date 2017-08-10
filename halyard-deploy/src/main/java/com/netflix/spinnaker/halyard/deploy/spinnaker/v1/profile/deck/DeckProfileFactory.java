@@ -35,7 +35,6 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.RegistryBackedProfileFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -90,6 +89,7 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     bindings.put("features.chaos", Boolean.toString(features.isChaos()));
     bindings.put("features.jobs", Boolean.toString(features.isJobs()));
     bindings.put("features.fiat", Boolean.toString(deploymentConfiguration.getSecurity().getAuthz().isEnabled()));
+    bindings.put("features.pipelineTemplates", Boolean.toString(features.getPipelineTemplates() != null ? features.getPipelineTemplates() : false));
 
     // Configure Kubernetes
     KubernetesProvider kubernetesProvider = deploymentConfiguration.getProviders().getKubernetes();
@@ -123,8 +123,7 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     bindings.put("openstack.default.account", openstackProvider.getPrimaryAccount());
     if (openstackProvider.getPrimaryAccount() != null) {
       OpenstackAccount openstackAccount = (OpenstackAccount) accountService.getProviderAccount(deploymentConfiguration.getName(), "openstack", openstackProvider.getPrimaryAccount());
-      //Regions in openstack are a comma separated list. Use the first as primary.
-      String firstRegion = StringUtils.substringBefore(openstackAccount.getRegions(), ",");
+      String firstRegion = openstackAccount.getRegions().get(0);
       bindings.put("openstack.default.region", firstRegion);
     }
 

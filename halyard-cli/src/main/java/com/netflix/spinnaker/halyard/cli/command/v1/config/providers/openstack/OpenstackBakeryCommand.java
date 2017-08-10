@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google, Inc.
+ * Copyright 2017 Target, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.providers.google;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.providers.openstack;
 
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.AbstractNamedProviderCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.AbstractBakeryCommand;
 
 /**
- * Interact with the google provider
+ * Interact with openstack provider's bakery
  */
 @Parameters(separators = "=")
-public class GoogleCommand extends AbstractNamedProviderCommand {
-  protected String getProviderName() {
-    return "google";
-  }
+public class OpenstackBakeryCommand extends AbstractBakeryCommand {
+    protected String getProviderName() { return "openstack"; }
 
-  public GoogleCommand() {
-    super();
-    registerSubcommand(new GoogleEditProviderCommand());
-    registerSubcommand(new GoogleAccountCommand());
-    registerSubcommand(new GoogleBakeryCommand());
-  }
+    public OpenstackBakeryCommand() {
+        super();
+        registerSubcommand(new OpenstackEditBakeryDefaultsCommand());
+        registerSubcommand(new OpenstackBaseImageCommand());
+    }
 }
-
