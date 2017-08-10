@@ -53,9 +53,10 @@ public class KubernetesDeckService extends DeckService implements KubernetesDist
 
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
+    KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
     Settings settings = new Settings(deploymentConfiguration.getSecurity().getUiSecurity());
     settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
-        .setLocation(StringUtils.isEmpty(deploymentConfiguration.getDeploymentEnvironment().getLocation()) ? "spinnaker" : deploymentConfiguration.getDeploymentEnvironment().getLocation())
+        .setLocation(kubernetesSharedServiceSettings.getDeployLocation())
         .setEnabled(true);
     return settings;
   }

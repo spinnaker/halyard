@@ -44,8 +44,9 @@ public class KubernetesRedisBootstrapService extends RedisBootstrapService imple
 
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
+    KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
     Settings settings = new Settings();
-    String location = StringUtils.isEmpty(deploymentConfiguration.getDeploymentEnvironment().getLocation()) ? "spinnaker" : deploymentConfiguration.getDeploymentEnvironment().getLocation();
+    String location = kubernetesSharedServiceSettings.getDeployLocation();
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(location)

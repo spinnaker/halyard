@@ -38,9 +38,10 @@ public class KubernetesMonitoringDaemonService extends SpinnakerMonitoringDaemon
 
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
+    KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
     Settings settings = new Settings();
     settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
-        .setLocation(StringUtils.isEmpty(deploymentConfiguration.getDeploymentEnvironment().getLocation()) ? "spinnaker" : deploymentConfiguration.getDeploymentEnvironment().getLocation())
+        .setLocation(kubernetesSharedServiceSettings.getDeployLocation())
         .setEnabled(deploymentConfiguration.getMetricStores().isEnabled());
     return settings;
   }
