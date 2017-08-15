@@ -31,40 +31,8 @@ import spock.lang.Unroll
 
 class ProvidersSpec extends Specification {
 
-  // This version makes use of groovy list comparisons. It's shorter and will actually
-  // detect if the set of actual providers has any extra values which aren't expected.
-  void "reports configurable providers"() {
-    setup:
-    def providers = new Providers()
-    def iterator = providers.getChildren()
-    def expectedProviders = [
-        AppengineProvider,
-        AwsProvider,
-        AzureProvider,
-        DCOSProvider,
-        DockerRegistryProvider,
-        GoogleProvider,
-        KubernetesProvider,
-        OracleBMCSProvider,
-        OpenstackProvider
-    ]
-
-    when:
-    List actualProviders = []
-    def child = iterator.getNext()
-    while (child != null) {
-      actualProviders << child.class
-      child = iterator.getNext()
-    }
-
-    then:
-    actualProviders.sort() == expectedProviders.sort()
-  }
-
-  // This version has the advantage that on failure, it's really clear which
-  // provider(s) is/are missing. Each one gets its own separate, labeled run.
-  @Unroll("children includes #provider")
-  void "reports all configurable providers"() {
+  @Unroll()
+  void "children includes #provider.simpleName"() {
 
     setup:
     def iterator = new Providers().getChildren()
