@@ -77,6 +77,12 @@ class DockerRegistryAddAccountCommand extends AbstractAddAccountCommand {
   )
   private Long cacheIntervalSeconds = 30L;
 
+  @Parameter(
+      names = "--insecure-registry",
+      description = DockerRegistryCommandProperties.INSECURE_REGISTRY_DESCRIPTION
+  )
+  private Boolean insecureRegistry = false;
+
   @Override
   protected Account buildAccount(String accountName) {
     DockerRegistryAccount account = (DockerRegistryAccount) new DockerRegistryAccount().setName(accountName);
@@ -87,7 +93,8 @@ class DockerRegistryAddAccountCommand extends AbstractAddAccountCommand {
         .setPasswordFile(passwordFile)
         .setUsername(username)
         .setEmail(email)
-        .setCacheIntervalSeconds(cacheIntervalSeconds);
+        .setCacheIntervalSeconds(cacheIntervalSeconds)
+        .setInsecureRegistry(insecureRegistry);
 
     return account;
   }

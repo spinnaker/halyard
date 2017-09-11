@@ -45,4 +45,6 @@ class DockerRegistryCommandProperties {
   static final String CACHE_INTERVAL_SECONDS_DESCRIPTION =
       "How many seconds elapse between polling your docker registry. Certain registries are sensitive to over-polling, and "
           + "larger intervals (e.g. 10 minutes = 600 seconds) are desirable if you're seeing rate limiting.";
+
+  static final String INSECURE_REGISTRY_DESCRIPTION = "Treat the docker registry as insecure (don't validate the ssl cert).";
 }

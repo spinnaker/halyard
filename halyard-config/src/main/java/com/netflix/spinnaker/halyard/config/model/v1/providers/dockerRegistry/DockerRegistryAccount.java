@@ -34,6 +34,7 @@ public class DockerRegistryAccount extends Account {
   private String password;
   private String email;
   private Long cacheIntervalSeconds = 30L;
+  private Boolean insecureRegistry = false;
   private List<String> repositories = new ArrayList<>();
   @LocalFile private String passwordFile;
   @LocalFile private String dockerconfigFile;

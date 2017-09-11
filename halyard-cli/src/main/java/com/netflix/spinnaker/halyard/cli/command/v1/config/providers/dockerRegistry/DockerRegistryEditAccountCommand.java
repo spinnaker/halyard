@@ -88,6 +88,12 @@ public class DockerRegistryEditAccountCommand extends AbstractEditAccountCommand
   )
   private Long cacheIntervalSeconds;
 
+  @Parameter(
+      names = "--insecure-registry",
+      description = DockerRegistryCommandProperties.INSECURE_REGISTRY_DESCRIPTION
+  )
+  private Boolean insecureRegistry;
+
   @Override
   protected Account editAccount(DockerRegistryAccount account) {
     account.setAddress(isSet(address) ? address : account.getAddress());
@@ -115,6 +121,7 @@ public class DockerRegistryEditAccountCommand extends AbstractEditAccountCommand
     account.setUsername(isSet(username) ? username : account.getUsername());
     account.setEmail(isSet(email) ? email : account.getEmail());
     account.setCacheIntervalSeconds(isSet(cacheIntervalSeconds) ? cacheIntervalSeconds : account.getCacheIntervalSeconds());
+    account.setInsecureRegistry(isSet(insecureRegistry) ? insecureRegistry : account.getInsecureRegistry());
 
     return account;
   }
