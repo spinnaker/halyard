@@ -79,7 +79,8 @@ class DockerRegistryAddAccountCommand extends AbstractAddAccountCommand {
 
   @Parameter(
       names = "--insecure-registry",
-      description = DockerRegistryCommandProperties.INSECURE_REGISTRY_DESCRIPTION
+      description = DockerRegistryCommandProperties.INSECURE_REGISTRY_DESCRIPTION,
+      arity = 1
   )
   private Boolean insecureRegistry = false;
 

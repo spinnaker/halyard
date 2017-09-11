@@ -90,7 +90,8 @@ public class DockerRegistryEditAccountCommand extends AbstractEditAccountCommand
 
   @Parameter(
       names = "--insecure-registry",
-      description = DockerRegistryCommandProperties.INSECURE_REGISTRY_DESCRIPTION
+      description = DockerRegistryCommandProperties.INSECURE_REGISTRY_DESCRIPTION,
+      arity = 1
   )
   private Boolean insecureRegistry;
 
