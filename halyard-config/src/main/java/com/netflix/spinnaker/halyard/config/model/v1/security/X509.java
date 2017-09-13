@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2017 Target, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,44 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Authn extends Node {
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
+public class X509 extends AuthnMethod {
 
-  @Getter
-  private String nodeName = "authn";
+  private final Method method = Method.X509;
+  private final String nodeName = "x509";
+
+  private String roleOid;
 
   @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
-  private OAuth2 oauth2 = new OAuth2();
-  private Saml saml = new Saml();
-  private X509 x509 = new X509();
-  private boolean enabled;
-
-  public boolean isEnabled() {
-    return getOauth2().isEnabled() || getSaml().isEnabled();
-  }
-
-  public void setEnabled(boolean _ignored) {}
+  public void accept(ConfigProblemSetBuilder psBuilder, Validator v ) { v.validate(psBuilder, this); }
 }

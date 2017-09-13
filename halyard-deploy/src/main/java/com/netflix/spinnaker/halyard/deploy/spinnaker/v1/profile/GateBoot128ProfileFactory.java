@@ -34,6 +34,10 @@ public class GateBoot128ProfileFactory extends GateProfileFactory {
       config.saml = new SamlConfig(security);
     }
 
+    if (security.getAuthn().getX509().isEnabled()) {
+      config.x509 = new X509Config(security);
+    }
+
     return config;
   }
 }
