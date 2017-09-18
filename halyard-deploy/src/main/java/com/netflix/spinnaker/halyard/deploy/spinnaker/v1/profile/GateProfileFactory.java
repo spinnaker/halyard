@@ -60,16 +60,21 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
     SpringConfig spring;
     SamlConfig saml;
     LdapConfig ldap;
+    X509Config x509;
 
     GateConfig(ServiceSettings gate, Security security) {
       super(gate);
       server.ssl = security.getApiSecurity().getSsl();
+      // Check this: do we or don't we want to allow multiple of these?
+      // If not, we probably want to error instead of ignoring.
       if (security.getAuthn().getOauth2().isEnabled()) {
         this.spring = new SpringConfig(security);
       } else if (security.getAuthn().getSaml().isEnabled()) {
         this.saml = new SamlConfig(security);
       } else if (security.getAuthn().getLdap().isEnabled()) {
         this.ldap = new LdapConfig(security);
+      } else if (security.getAuthn().getX509().isEnabled()) {
+        this.x509 = new X509Config(security);
       }
     }
 
