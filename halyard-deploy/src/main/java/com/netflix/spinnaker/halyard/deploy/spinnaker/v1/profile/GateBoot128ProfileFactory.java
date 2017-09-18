@@ -32,6 +32,8 @@ public class GateBoot128ProfileFactory extends GateProfileFactory {
       config.spring = new SpringConfig(security);
     } else if (security.getAuthn().getSaml().isEnabled()) {
       config.saml = new SamlConfig(security);
+    } else if (security.getAuthn().getLdap().isEnabled()) {
+      config.ldap = new LdapConfig(security);
     }
 
     if (security.getAuthn().getX509().isEnabled()) {
