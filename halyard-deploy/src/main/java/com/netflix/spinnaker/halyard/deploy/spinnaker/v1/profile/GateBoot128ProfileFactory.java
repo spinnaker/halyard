@@ -26,7 +26,6 @@ public class GateBoot128ProfileFactory extends GateProfileFactory {
   @Override
   protected GateConfig getGateConfig(ServiceSettings gate, Security security) {
     GateConfig config = new GateConfig(gate, security);
-    config.server.ssl = security.getApiSecurity().getSsl();
 
     if (security.getAuthn().getOauth2().isEnabled()) {
       config.spring = new SpringConfig(security);
