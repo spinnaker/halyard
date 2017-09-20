@@ -59,6 +59,7 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
     List<Profile> results = new ArrayList<>();
     List<EcrTokenRefreshConfig.EcrRegistry> registries = new ArrayList<>();
 
+    // Collect the configuration for all ECR docker registries.
     for (DockerRegistryAccount account : deploymentConfiguration.getProviders().getDockerRegistry().getAccounts()) {
       if (!account.isEcr()) {
         continue;
@@ -79,10 +80,12 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
     String path = Paths.get(CONFIG_PATH, CONFIG_PROFILE_NAME).toString();
     Profile profile = new Profile(CONFIG_PROFILE_NAME, "1.0.0", path, "");
 
+    // Create the necessary config for the ECR token refresh sidecar.
     EcrTokenRefreshConfig config = new EcrTokenRefreshConfig();
     config.setInterval("30m"); // TODO(orfeasz) make this configurable
     config.setRegistries(registries);
 
+    // Serialize the config to a yaml file.
     ObjectMapper strictObjectMapper = new ObjectMapper();
     String profileContents = yamlParser.dump(strictObjectMapper.convertValue(config, Map.class));
 
@@ -113,6 +116,7 @@ abstract public class EcrTokenRefreshService extends SpinnakerService<EcrTokenRe
     String address = "localhost";
     String host = "0.0.0.0";
     String scheme = "http";
+    String healthEndpoint = "/health";
     Map<String, String> env = new HashMap<>();
     Map<String, String> volumeMounts = new HashMap<>();
   }

@@ -40,6 +40,7 @@ public interface KubernetesClouddriverServiceBase {
 
     sidecars.add(ecrTokenRefreshService);
 
+    // Create an emptyDir volume source for storing the ECR token file.
     KubernetesVolumeSource ecrPassVolume = new KubernetesVolumeSource();
 
     ecrPassVolume.setName("ecr-pass");

@@ -48,6 +48,7 @@ public class KubernetesEcrTokenRefreshService extends EcrTokenRefreshService {
       }
     }
 
+    // Create our custom volume mount. This is where the ECR token will be stored.
     Map<String, String> volumeMounts = new HashMap<>();
     volumeMounts.put("/opt/passwords/", "ecr-pass");
 
@@ -60,6 +61,6 @@ public class KubernetesEcrTokenRefreshService extends EcrTokenRefreshService {
   }
 
   private String getArtifactId(String deploymentName) {
-    return "quay.io/orfeasz/ecr-token-refresh:latest";
+    return "quay.io/skuid/ecr-token-refresh:1.1.0";
   }
 }
