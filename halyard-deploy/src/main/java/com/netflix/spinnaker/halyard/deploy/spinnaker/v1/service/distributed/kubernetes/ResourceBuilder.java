@@ -18,6 +18,8 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes;
 
+import com.netflix.spinnaker.halyard.config.model.v1.node.CustomSizing;
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ConfigSource;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import io.fabric8.kubernetes.api.model.*;
@@ -26,7 +28,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class ResourceBuilder {
-  static Container buildContainer(String name, ServiceSettings settings, List<ConfigSource> configSources) {
+
+  static Container buildContainer(String name, ServiceSettings settings, List<ConfigSource> configSources, DeploymentEnvironment deploymentEnvironment) {
     int port = settings.getPort();
     List<EnvVar> envVars = settings.getEnv().entrySet().stream().map(e -> {
       EnvVarBuilder envVarBuilder = new EnvVarBuilder();
@@ -62,16 +65,37 @@ class ResourceBuilder {
     List<VolumeMount> volumeMounts = configSources.stream().map(c -> {
       return new VolumeMountBuilder().withMountPath(c.getMountPath()).withName(c.getId()).build();
     }).collect(Collectors.toList());
-    ContainerBuilder containerBuilder = new ContainerBuilder();
 
+    ContainerBuilder containerBuilder = new ContainerBuilder();
     containerBuilder = containerBuilder
         .withName(name)
         .withImage(settings.getArtifactId())
         .withPorts(new ContainerPortBuilder().withContainerPort(port).build())
         .withVolumeMounts(volumeMounts)
         .withEnv(envVars)
-        .withReadinessProbe(probeBuilder.build());
+        .withReadinessProbe(probeBuilder.build())
+        .withResources(buildResourceRequirements(name, deploymentEnvironment));
 
     return containerBuilder.build();
+  }
+
+  static ResourceRequirements buildResourceRequirements(String serviceName, DeploymentEnvironment deploymentEnvironment) {
+    CustomSizing customSizing = deploymentEnvironment.getCustomSizing().get(serviceName);
+
+    if (customSizing == null) {
+      return null;
+    }
+
+    ResourceRequirementsBuilder resourceRequirementsBuilder = new ResourceRequirementsBuilder();
+    if (customSizing.getRequests() != null) {
+      resourceRequirementsBuilder.addToRequests("memory", new QuantityBuilder().withAmount(customSizing.getRequests().getMemory()).build());
+      resourceRequirementsBuilder.addToRequests("cpu", new QuantityBuilder().withAmount(customSizing.getRequests().getCpu()).build());
+    }
+    if (customSizing.getLimits() != null) {
+      resourceRequirementsBuilder.addToLimits("memory", new QuantityBuilder().withAmount(customSizing.getLimits().getMemory()).build());
+      resourceRequirementsBuilder.addToLimits("cpu", new QuantityBuilder().withAmount(customSizing.getLimits().getCpu()).build());
+    }
+
+    return resourceRequirementsBuilder.build();
   }
 }

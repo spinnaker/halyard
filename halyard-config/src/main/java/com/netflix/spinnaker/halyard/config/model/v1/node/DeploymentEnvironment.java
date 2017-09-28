@@ -22,6 +22,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A DeploymentEnvironment is a location where Spinnaker is installed.
@@ -95,6 +97,7 @@ public class DeploymentEnvironment extends Node {
   private Consul consul = new Consul();
   private Vault vault = new Vault();
   private String location;
+  private Map<String, CustomSizing> customSizing = new HashMap();
 
   @Data
   public static class Consul {

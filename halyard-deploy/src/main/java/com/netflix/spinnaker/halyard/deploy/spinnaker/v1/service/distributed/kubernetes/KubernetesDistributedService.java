@@ -23,20 +23,8 @@ import com.netflix.frigga.Names;
 import com.netflix.spinnaker.clouddriver.kubernetes.deploy.KubernetesUtil;
 import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.loadbalancer.KubernetesLoadBalancerDescription;
 import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.loadbalancer.KubernetesNamedServicePort;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.DeployKubernetesAtomicOperationDescription;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesContainerDescription;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesContainerPort;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesEnvVar;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesHandler;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesHandlerType;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesHttpGetAction;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesImageDescription;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesProbe;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesSecretVolumeSource;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesTcpSocketAction;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeMount;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeSource;
-import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeSourceType;
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.*;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CustomSizing;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
@@ -299,10 +287,9 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
     DeployKubernetesAtomicOperationDescription description = new DeployKubernetesAtomicOperationDescription();
     SpinnakerMonitoringDaemonService monitoringService = getMonitoringDaemonService();
     ServiceSettings settings = runtimeSettings.getServiceSettings(getService());
-    DeploymentEnvironment.Size size = details
+    DeploymentEnvironment deploymentEnvironment = details
         .getDeploymentConfiguration()
-        .getDeploymentEnvironment()
-        .getSize();
+        .getDeploymentEnvironment();
 
     String accountName = details.getAccount().getName();
     String namespace = getNamespace(settings);
@@ -335,13 +322,13 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
 
     List<KubernetesContainerDescription> containers = new ArrayList<>();
     ServiceSettings serviceSettings = runtimeSettings.getServiceSettings(getService());
-    KubernetesContainerDescription container = buildContainer(name, serviceSettings, configSources, size);
+    KubernetesContainerDescription container = buildContainer(name, serviceSettings, configSources, deploymentEnvironment);
     containers.add(container);
 
     ServiceSettings monitoringSettings = runtimeSettings.getServiceSettings(monitoringService);
     if (monitoringSettings.getEnabled() && serviceSettings.getMonitored()) {
       serviceSettings = runtimeSettings.getServiceSettings(monitoringService);
-      container = buildContainer(monitoringService.getServiceName(), serviceSettings, configSources, size);
+      container = buildContainer(monitoringService.getServiceName(), serviceSettings, configSources, deploymentEnvironment);
       containers.add(container);
     }
 
@@ -350,7 +337,7 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
     return getObjectMapper().convertValue(description, new TypeReference<Map<String, Object>>() { });
   }
 
-  default KubernetesContainerDescription buildContainer(String name, ServiceSettings settings, List<ConfigSource> configSources, DeploymentEnvironment.Size size) {
+  default KubernetesContainerDescription buildContainer(String name, ServiceSettings settings, List<ConfigSource> configSources, DeploymentEnvironment deploymentEnvironment) {
     KubernetesContainerDescription container = new KubernetesContainerDescription();
     KubernetesProbe readinessProbe = new KubernetesProbe();
     KubernetesHandler handler = new KubernetesHandler();
@@ -373,14 +360,7 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
     readinessProbe.setHandler(handler);
     container.setReadinessProbe(readinessProbe);
 
-    /* TODO(lwander) this needs work
-    SizingTranslation.ServiceSize serviceSize = sizingTranslation.getServiceSize(size, service);
-    KubernetesResourceDescription resources = new KubernetesResourceDescription();
-    resources.setCpu(serviceSize.getCpu());
-    resources.setMemory(serviceSize.getRam());
-    container.setRequests(resources);
-    container.setLimits(resources);
-    */
+    applyCustomSize(container, deploymentEnvironment, name);
 
     KubernetesImageDescription imageDescription = KubernetesUtil.buildImageDescription(settings.getArtifactId());
     container.setImageDescription(imageDescription);
@@ -426,6 +406,30 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
     return container;
   }
 
+  default void applyCustomSize(KubernetesContainerDescription container, DeploymentEnvironment deploymentEnvironment, String componentName) {
+    CustomSizing customSizingForComponent = deploymentEnvironment.getCustomSizing().get(componentName);
+
+    if (customSizingForComponent != null) {
+
+      if (customSizingForComponent.getRequests() != null) {
+        KubernetesResourceDescription requests = new KubernetesResourceDescription();
+        requests.setCpu(customSizingForComponent.getRequests().getCpu());
+        requests.setMemory(customSizingForComponent.getRequests().getMemory());
+        container.setRequests(requests);
+      }
+
+      if (customSizingForComponent.getLimits() != null) {
+        KubernetesResourceDescription limits = new KubernetesResourceDescription();
+        limits.setCpu(customSizingForComponent.getLimits().getCpu());
+        limits.setMemory(customSizingForComponent.getLimits().getMemory());
+        container.setLimits(limits);
+      }
+    }
+
+    /* TODO(lwander) this needs work
+      SizingTranslation.ServiceSize serviceSize = sizingTranslation.getServiceSize(deploymentEnvironment.getSize(), service);
+    */
+  }
 
   default void ensureRunning(
       AccountDeploymentDetails<KubernetesAccount> details,
@@ -477,12 +481,13 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
     }
 
     List<Container> containers = new ArrayList<>();
-    containers.add(ResourceBuilder.buildContainer(serviceName, settings, configSources));
+    DeploymentEnvironment deploymentEnvironment = details.getDeploymentConfiguration().getDeploymentEnvironment();
+    containers.add(ResourceBuilder.buildContainer(serviceName, settings, configSources, deploymentEnvironment));
 
     for (SidecarService sidecarService : getSidecars(runtimeSettings)) {
       String sidecarName = sidecarService.getService().getServiceName();
       ServiceSettings sidecarSettings = resolvedConfiguration.getServiceSettings(sidecarService.getService());
-      containers.add(ResourceBuilder.buildContainer(sidecarName, sidecarSettings, configSources));
+      containers.add(ResourceBuilder.buildContainer(sidecarName, sidecarSettings, configSources, deploymentEnvironment));
     }
 
     List<Volume> volumes = configSources.stream().map(c -> {
