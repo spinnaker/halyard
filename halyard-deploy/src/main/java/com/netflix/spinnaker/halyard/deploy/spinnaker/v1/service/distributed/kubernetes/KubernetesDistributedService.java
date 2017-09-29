@@ -37,6 +37,8 @@ import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergro
 import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeMount;
 import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeSource;
 import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeSourceType;
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesStorageMediumType;
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesKeyToPath;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
@@ -69,6 +71,12 @@ import io.fabric8.kubernetes.api.model.ServiceBuilder;
 import io.fabric8.kubernetes.api.model.ServicePortBuilder;
 import io.fabric8.kubernetes.api.model.Volume;
 import io.fabric8.kubernetes.api.model.VolumeBuilder;
+import io.fabric8.kubernetes.api.model.HostPathVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.EmptyDirVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.KeyToPath;
+import io.fabric8.kubernetes.api.model.KeyToPathBuilder;
 import io.fabric8.kubernetes.api.model.extensions.ReplicaSet;
 import io.fabric8.kubernetes.api.model.extensions.ReplicaSetBuilder;
 import io.fabric8.kubernetes.client.KubernetesClient;
@@ -94,6 +102,10 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
   ArtifactService getArtifactService();
   ServiceInterfaceFactory getServiceInterfaceFactory();
   ObjectMapper getObjectMapper();
+
+  default List<KubernetesVolumeSource> getAdditionalVolumeSources() {
+    return new ArrayList<>();
+  }
 
   default String getHomeDirectory() {
     return "/root";
@@ -327,6 +339,9 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
       volumeSources.add(volumeSource);
     }
 
+    // Add any additional service-defined arbitrary volume sources.
+    volumeSources.addAll(getAdditionalVolumeSources());
+
     description.setVolumeSources(volumeSources);
 
     List<String> loadBalancers = new ArrayList<>();
@@ -397,6 +412,13 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
       KubernetesVolumeMount volumeMount = new KubernetesVolumeMount();
       volumeMount.setName(configSource.getId());
       volumeMount.setMountPath(configSource.getMountPath());
+      volumeMounts.add(volumeMount);
+    }
+
+    for (Map.Entry<String, String> mount : settings.getVolumeMounts().entrySet()) {
+      KubernetesVolumeMount volumeMount = new KubernetesVolumeMount();
+      volumeMount.setMountPath(mount.getKey());
+      volumeMount.setName(mount.getValue());
       volumeMounts.add(volumeMount);
     }
 
@@ -494,6 +516,9 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
                   .build())
           .build();
     }).collect(Collectors.toList());
+
+    volumes.addAll(convertVolumes(getAdditionalVolumeSources()));
+
     ReplicaSetBuilder replicaSetBuilder = new ReplicaSetBuilder();
 
     replicaSetBuilder = replicaSetBuilder
@@ -670,5 +695,87 @@ public interface KubernetesDistributedService<T> extends DistributedService<T, K
     String name = getVersionedName(version);
     String namespace = getNamespace(settings);
     KubernetesProviderUtils.deleteReplicaSet(details, namespace, name);
+  }
+
+  default List<Volume> convertVolumes(List<KubernetesVolumeSource> from) {
+    List<Volume> volumes = new ArrayList<>();
+
+    for (KubernetesVolumeSource volume : from) {
+      volumes.add(convertVolume(volume));
+    }
+
+    return volumes;
+  }
+
+  default Volume convertVolume(KubernetesVolumeSource from) {
+    Volume volume = new VolumeBuilder().withName(from.getName()).build();
+
+    switch (from.getType()) {
+      case HostPath:
+        volume.setHostPath(new HostPathVolumeSourceBuilder()
+                .withPath(from.getHostPath().getPath())
+                .build()
+        );
+
+        break;
+      case EmptyDir:
+        String medium = from.getEmptyDir().getMedium() == KubernetesStorageMediumType.Memory
+                ? "Memory"
+                : null;
+
+        volume.setEmptyDir(new EmptyDirVolumeSourceBuilder()
+                .withMedium(medium)
+                .build());
+
+        break;
+      case PersistentVolumeClaim:
+        volume.setPersistentVolumeClaim(new PersistentVolumeClaimVolumeSourceBuilder()
+                .withReadOnly(from.getPersistentVolumeClaim().getReadOnly())
+                .withClaimName(from.getPersistentVolumeClaim().getClaimName())
+                .build()
+        );
+
+        break;
+      case Secret:
+        volume.setSecret(new SecretVolumeSourceBuilder()
+                .withSecretName(from.getSecret().getSecretName())
+                .build()
+        );
+
+        break;
+      case ConfigMap:
+        volume.setConfigMap(new ConfigMapVolumeSourceBuilder()
+                .withName(from.getConfigMap().getConfigMapName())
+                .withDefaultMode(from.getConfigMap().getDefaultMode())
+                .withItems(convertKeyToPaths(from.getConfigMap().getItems()))
+                .build()
+        );
+
+        break;
+    }
+
+    return volume;
+  }
+
+  default List<KeyToPath> convertKeyToPaths(List<KubernetesKeyToPath> from) {
+    List<KeyToPath> ktps = new ArrayList<>();
+
+    if (from == null) {
+      return ktps;
+    }
+
+    for (KubernetesKeyToPath ktp : from) {
+      ktps.add(convertKeyToPath(ktp));
+    }
+
+    return ktps;
+  }
+
+  default KeyToPath convertKeyToPath(KubernetesKeyToPath from) {
+    return new KeyToPathBuilder()
+            .withKey(from.getKey())
+            .withPath(from.getPath())
+            .withMode(from.getDefaultMode())
+            .build();
   }
 }

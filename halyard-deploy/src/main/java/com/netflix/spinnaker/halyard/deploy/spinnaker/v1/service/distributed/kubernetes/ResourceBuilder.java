@@ -18,11 +18,13 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes;
 
+import com.netflix.spinnaker.clouddriver.kubernetes.deploy.description.servergroup.KubernetesVolumeMount;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ConfigSource;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import io.fabric8.kubernetes.api.model.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class ResourceBuilder {
@@ -62,6 +64,15 @@ class ResourceBuilder {
     List<VolumeMount> volumeMounts = configSources.stream().map(c -> {
       return new VolumeMountBuilder().withMountPath(c.getMountPath()).withName(c.getId()).build();
     }).collect(Collectors.toList());
+
+    for (Map.Entry<String, String> mount : settings.getVolumeMounts().entrySet()) {
+      volumeMounts.add(new VolumeMountBuilder()
+              .withMountPath(mount.getKey())
+              .withName(mount.getValue())
+              .build()
+      );
+    }
+
     ContainerBuilder containerBuilder = new ContainerBuilder();
 
     containerBuilder = containerBuilder

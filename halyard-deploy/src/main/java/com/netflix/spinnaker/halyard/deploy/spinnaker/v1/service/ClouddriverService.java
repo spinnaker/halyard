@@ -20,11 +20,13 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryAccount;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.AwsCredentialsProfileFactoryBuilder;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ClouddriverProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService;
 import com.squareup.okhttp.Response;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -98,6 +100,21 @@ abstract public class ClouddriverService extends SpringService<ClouddriverServic
     }
   }
 
+  protected Map<String, String> generateVolumeMounts(DeploymentConfiguration deploymentConfiguration) {
+    Map<String, String> volumeMounts = new HashMap<>();
+
+    // Create a volume mount for our password storage if there are any ecr registries.
+    for (DockerRegistryAccount account : deploymentConfiguration.getProviders().getDockerRegistry().getAccounts()) {
+      if (!account.isEcr()) {
+        break;
+      }
+
+      volumeMounts.put("/opt/passwords/", "ecr-pass");
+    }
+
+    return volumeMounts;
+  }
+
   public interface Clouddriver {
     @POST("/{provider}/ops")
     Response providerOp(@Path("provider") String provider, @Body List<Map<String, Object>> payload);
@@ -125,6 +142,7 @@ abstract public class ClouddriverService extends SpringService<ClouddriverServic
     Boolean sidecar = false;
     Integer targetSize = 1;
     Map<String, String> env = new HashMap<>();
+    Map<String, String> volumeMounts = new HashMap<>();
 
     public Settings() {}
 

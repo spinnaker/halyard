@@ -54,6 +54,7 @@ public class SpinnakerRuntimeSettings {
     ServiceSettings redis;
     ServiceSettings redisBootstrap;
     ServiceSettings monitoringDaemon;
+    ServiceSettings ecrTokenRefresh;
     ServiceSettings vaultClient;
     ServiceSettings vaultServer;
   }

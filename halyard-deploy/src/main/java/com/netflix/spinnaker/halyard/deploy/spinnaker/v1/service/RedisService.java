@@ -69,6 +69,7 @@ abstract public class RedisService extends SpinnakerService<Jedis> {
     Boolean sidecar = false;
     Integer targetSize = 1;
     Map<String, String> env = new HashMap<>();
+    Map<String, String> volumeMounts = new HashMap<>();
 
     public Settings() {
       env.put("MASTER", "true");

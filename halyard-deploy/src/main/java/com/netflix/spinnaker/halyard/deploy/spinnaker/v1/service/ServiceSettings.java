@@ -51,6 +51,7 @@ public class ServiceSettings {
   @JsonIgnore String username;
   @JsonIgnore String password;
   Map<String, String> env;
+  Map<String, String> volumeMounts;
   String artifactId;
   String overrideBaseUrl;
   String location;

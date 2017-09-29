@@ -51,4 +51,8 @@ public class KubernetesDistributedServiceDelegate {
   @Autowired
   @Getter
   KubernetesMonitoringDaemonService monitoringDaemonService;
+
+  @Autowired
+  @Getter
+  KubernetesEcrTokenRefreshService ecrTokenRefreshService;
 }

@@ -125,6 +125,7 @@ abstract public class SpinnakerMonitoringDaemonService extends SpinnakerService<
     Boolean sidecar = true;
     Integer targetSize = 1;
     Map<String, String> env = new HashMap<>();
+    Map<String, String> volumeMounts = new HashMap<>();
   }
 
   @Override
