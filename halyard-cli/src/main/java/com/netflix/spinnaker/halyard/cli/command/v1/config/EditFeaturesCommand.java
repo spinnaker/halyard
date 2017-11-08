@@ -64,9 +64,9 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   private Boolean artifacts = null;
 
   @Parameter(
-      names = "--legacyCanary",
-      description = "Enable legacy canary support. For this to work, you'll need a canary judge configured." 
-           + "Currently, halyard does not configure canary judge for you",
+      names = "--mine-canary",
+      description = "Enable canary support. For this to work, you'll need a canary judge configured. " 
+           + "Currently, Halyard does not configure canary judge for you.",
       arity = 1
   )
   private Boolean legacyCanary = null;
