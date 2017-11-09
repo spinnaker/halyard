@@ -48,7 +48,7 @@ public class Features extends Node {
   @ValidForSpinnakerVersion(lowerBound = "1.5.0", message = "Artifacts are not configurable prior to this release. Will be stable at a later release.")
   private Boolean artifacts;
   @ValidForSpinnakerVersion(lowerBound = "1.5.0", message = "Canary is not configurable prior to this release. Will be stable at a later release.")
-  private Boolean legacyCanary;
+  private Boolean mineCanary;
 
   public boolean isAuth(DeploymentConfiguration deploymentConfiguration) {
     return deploymentConfiguration.getSecurity().getAuthn().isEnabled();
