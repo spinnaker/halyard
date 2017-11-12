@@ -21,7 +21,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.AbstractEditAccountCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.PathExpandingConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
-import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.DockerRegistryReference;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.DockerRegistryReference;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
 
 import java.util.ArrayList;
@@ -117,6 +117,13 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
   )
   private String removeDockerRegistry;
 
+  @Parameter(
+      names = "--configure-image-pull-secrets",
+      arity = 1,
+      description = KubernetesCommandProperties.CONFIGURE_IMAGE_PULL_SECRETS_DESCRIPTION
+  )
+  public Boolean configureImagePullSecrets;
+
   @Override
   protected Account editAccount(KubernetesAccount account) {
     boolean contextSet = context != null && !context.isEmpty();
@@ -129,6 +136,7 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
     }
 
     account.setKubeconfigFile(isSet(kubeconfigFile) ? kubeconfigFile : account.getKubeconfigFile());
+    account.setConfigureImagePullSecrets(isSet(configureImagePullSecrets) ? configureImagePullSecrets : account.getConfigureImagePullSecrets());
 
     try {
       account.setNamespaces(

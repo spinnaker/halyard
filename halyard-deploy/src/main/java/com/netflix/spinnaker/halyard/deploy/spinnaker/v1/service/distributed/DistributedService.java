@@ -26,9 +26,17 @@ import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetai
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.*;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ConfigSource;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.HasServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonitoringDaemonService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This interface represents the cloud-environments specific information/operations required to install a service.
@@ -55,6 +63,7 @@ public interface DistributedService<T, A extends Account> extends HasServiceSett
   Provider.ProviderType getProviderType();
   RunningServiceDetails getRunningServiceDetails(AccountDeploymentDetails<A> details, SpinnakerRuntimeSettings runtimeSettings);
   String getServiceName();
+  String getCanonicalName();
   SpinnakerMonitoringDaemonService getMonitoringDaemonService();
   <S> S connectToService(AccountDeploymentDetails<A> details, SpinnakerRuntimeSettings runtimeSettings, SpinnakerService<S> sidecar);
   <S> S connectToInstance(AccountDeploymentDetails<A> details, SpinnakerRuntimeSettings runtimeSettings, SpinnakerService<S> sidecar, String instanceId);
@@ -173,7 +182,20 @@ public interface DistributedService<T, A extends Account> extends HasServiceSett
       List<ConfigSource> configSources,
       Integer maxRemaining,
       boolean scaleDown) {
+    String accountName = details.getAccount().getName();
+    String region = runtimeSettings.getServiceSettings(getService()).getLocation();
     Map<String, Object> deployDescription  = getServerGroupDescription(details, runtimeSettings, configSources);
+    Map<String, String> source = new HashMap<>();
+    RunningServiceDetails runningServiceDetails = getRunningServiceDetails(details, runtimeSettings);
+    if (runningServiceDetails.getLatestEnabledVersion() == null) {
+      throw new HalException(Problem.Severity.FATAL, "No prior server group to clone for " + getServiceName());
+    }
+    source.put("account", accountName);
+    source.put("credentials", accountName);
+    source.put("serverGroupName", getVersionedName(runningServiceDetails.getLatestEnabledVersion()));
+    source.put("region", region);
+    source.put("namespace", region);
+    deployDescription.put("source", source);
     deployDescription.put("interestingHealthProviders", getHealthProviders());
     deployDescription.put("type", AtomicOperations.CLONE_SERVER_GROUP);
     deployDescription.put("cloudProvider", getProviderType().getId());

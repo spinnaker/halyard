@@ -59,6 +59,8 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
     Cors cors = new Cors();
     SpringConfig spring;
     SamlConfig saml;
+    LdapConfig ldap;
+    X509Config x509;
 
     GateConfig(ServiceSettings gate, Security security) {
       super(gate);

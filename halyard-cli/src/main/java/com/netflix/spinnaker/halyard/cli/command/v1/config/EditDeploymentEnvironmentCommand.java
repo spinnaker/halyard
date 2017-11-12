@@ -44,9 +44,24 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
   private String accountName;
 
   @Parameter(
+      names = "--bootstrap-only",
+      description = "A bootstrap-only account is the account in which Spinnaker itself is deployed. " +
+          "When true, this account will not be included the accounts managed by Spinnaker."
+  )
+  Boolean bootstrapOnly;
+
+  @Parameter(
+      names = "--update-versions",
+      description = "When set to \"false\", any *local* version of Spinnaker components will be used instead of attempting " +
+          "to update. This does not work for distributed installations of Spinnaker, where no *local* version exists."
+  )
+  Boolean updateVersions;
+
+  @Parameter(
       names = "--type",
-      description = "Flotilla: Deploy Spinnaker with one server group per microservice, and a single shared Redis.\n"
-          + "LocalhostDebian: Download and run the Spinnaker debians on the machine running the Daemon.",
+      description = "Distributed: Deploy Spinnaker with one server group per microservice, and a single shared Redis.\n"
+          + "LocalDebian: Download and run the Spinnaker debians on the machine running the Daemon.\n"
+          + "LocalGit: Download and run the Spinnaker git repos on the machine running the Daemon.",
       converter = DeploymentTypeConverter.class
   )
   private DeploymentType type;
@@ -85,6 +100,18 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
   )
   private String location;
 
+  @Parameter(
+      names = "--git-upstream-user",
+      description = "This is the upstream git user you are configuring to pull changes from & push PRs to."
+  )
+  private String gitUpstreamUser;
+
+  @Parameter(
+      names = "--git-origin-user",
+      description = "This is the git user your github fork exists under."
+  )
+  private String gitOriginUser;
+
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
@@ -95,6 +122,15 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
         .get();
 
     int originalHash = deploymentEnvironment.hashCode();
+
+    DeploymentEnvironment.GitConfig gitConfig = deploymentEnvironment.getGitConfig();
+    if (gitConfig == null) {
+      gitConfig = new DeploymentEnvironment.GitConfig();
+    }
+
+    gitConfig.setOriginUser(isSet(gitOriginUser) ? gitOriginUser : gitConfig.getOriginUser());
+    gitConfig.setUpstreamUser(isSet(gitUpstreamUser) ? gitUpstreamUser : gitConfig.getUpstreamUser());
+    deploymentEnvironment.setGitConfig(gitConfig);
 
     DeploymentEnvironment.Consul consul = deploymentEnvironment.getConsul();
     if (consul == null) {
@@ -107,6 +143,8 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
     }
 
     deploymentEnvironment.setAccountName(isSet(accountName) ? accountName : deploymentEnvironment.getAccountName());
+    deploymentEnvironment.setBootstrapOnly(isSet(bootstrapOnly) ? bootstrapOnly : deploymentEnvironment.getBootstrapOnly());
+    deploymentEnvironment.setUpdateVersions(isSet(updateVersions) ? updateVersions : deploymentEnvironment.getUpdateVersions());
     deploymentEnvironment.setType(type != null ? type : deploymentEnvironment.getType());
 
     consul.setAddress(isSet(consulAddress) ? consulAddress : consul.getAddress());

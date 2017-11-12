@@ -21,7 +21,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.AbstractAddAccountCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.PathExpandingConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
-import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.DockerRegistryReference;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.DockerRegistryReference;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,11 +61,17 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
 
   @Parameter(
       names = "--docker-registries",
-      required = true,
       variableArity = true,
       description = KubernetesCommandProperties.DOCKER_REGISTRIES_DESCRIPTION
   )
   public List<String> dockerRegistries = new ArrayList<>();
+
+  @Parameter(
+      names = "--configure-image-pull-secrets",
+      arity = 1,
+      description = KubernetesCommandProperties.CONFIGURE_IMAGE_PULL_SECRETS_DESCRIPTION
+  )
+  public Boolean configureImagePullSecrets = true;
 
   @Override
   protected Account buildAccount(String accountName) {
@@ -74,6 +80,7 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
     account.setKubeconfigFile(kubeconfigFile);
     account.setNamespaces(namespaces);
     account.setOmitNamespaces(omitNamespaces);
+    account.setConfigureImagePullSecrets(configureImagePullSecrets);
     dockerRegistries.forEach(registryName -> account.getDockerRegistries().add(new DockerRegistryReference().setAccountName(registryName)));
     return account;
   }

@@ -27,9 +27,16 @@ import com.netflix.spinnaker.halyard.config.services.v1.DeploymentService;
 import com.netflix.spinnaker.halyard.core.RemoteAction;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.registry.v1.BillOfMaterials;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.deploy.config.v1.ConfigParser;
-import com.netflix.spinnaker.halyard.deploy.deployment.v1.*;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetails;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.BakeDeployer;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeployOption;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.Deployer;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeploymentDetails;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.DistributedDeployer;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.LocalDeployer;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.LocalGitDeployer;
+import com.netflix.spinnaker.halyard.deploy.deployment.v1.ServiceProviderFactory;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService.ResolvedConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
@@ -59,6 +66,9 @@ public class DeployService {
 
   @Autowired
   LocalDeployer localDeployer;
+
+  @Autowired
+  LocalGitDeployer localGitDeployer;
 
   @Autowired
   BakeDeployer bakeDeployer;
@@ -170,6 +180,33 @@ public class DeployService {
     deployer.rollback(serviceProvider, deploymentDetails, runtimeSettings, serviceTypes);
   }
 
+  public RemoteAction prep(String deploymentName, List<String> serviceNames) {
+    DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
+    DeploymentDetails deploymentDetails = getDeploymentDetails(deploymentConfiguration);
+    Deployer deployer = getDeployer(deploymentConfiguration);
+    SpinnakerServiceProvider<DeploymentDetails> serviceProvider = serviceProviderFactory.create(deploymentConfiguration);
+
+    List<SpinnakerService.Type> serviceTypes = serviceNames.stream()
+        .map(SpinnakerService.Type::fromCanonicalName)
+        .collect(Collectors.toList());
+
+    if (serviceTypes.isEmpty()) {
+      serviceTypes = serviceProvider
+          .getServices()
+          .stream()
+          .map(SpinnakerService::getType)
+          .collect(Collectors.toList());
+    }
+
+    RemoteAction action = deployer.prep(serviceProvider, deploymentDetails, serviceTypes);
+
+    if (!action.getScript().isEmpty()) {
+      action.commitScript(halconfigDirectoryStructure.getPrepScriptPath(deploymentName));
+    }
+
+    return action;
+  }
+
   public RemoteAction deploy(String deploymentName, List<DeployOption> deployOptions, List<String> serviceNames) {
     DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
     SpinnakerServiceProvider<DeploymentDetails> serviceProvider = serviceProviderFactory.create(deploymentConfiguration);
@@ -221,6 +258,8 @@ public class DeployService {
     switch (type) {
       case BakeDebian:
         return bakeDeployer;
+      case LocalGit:
+        return localGitDeployer;
       case LocalDebian:
         return localDeployer;
       case Distributed:
@@ -237,6 +276,7 @@ public class DeployService {
     switch (type) {
       case BakeDebian:
       case LocalDebian:
+      case LocalGit:
         return new DeploymentDetails()
             .setDeploymentConfiguration(deploymentConfiguration)
             .setDeploymentName(deploymentName)

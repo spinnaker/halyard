@@ -20,7 +20,9 @@ import com.netflix.spinnaker.halyard.config.config.v1.ArtifactSourcesConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.ValidForSpinnakerVersion;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.ContainerAccount;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryProvider;
 import io.fabric8.kubernetes.api.model.Config;
@@ -40,13 +42,15 @@ import static com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity.ERR
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class KubernetesAccount extends Account implements Cloneable {
+public class KubernetesAccount extends ContainerAccount implements Cloneable {
   String context;
   String cluster;
   String user;
+  @ValidForSpinnakerVersion(lowerBound = "1.5.0", message = "Spinnaker does not support configuring this behavior before that version.")
+  Boolean configureImagePullSecrets;
   List<String> namespaces = new ArrayList<>();
   List<String> omitNamespaces = new ArrayList<>();
-  List<DockerRegistryReference> dockerRegistries = new ArrayList<>();
+
   @LocalFile String kubeconfigFile;
 
   public String getKubeconfigFile() {

@@ -16,14 +16,6 @@
 
 package com.netflix.spinnaker.halyard.cli.command.v1
 
-import com.netflix.spinnaker.halyard.cli.command.v1.AdminCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.BackupCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.ConfigCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.DeployCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.HalCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.TaskCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.VersionCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.DeploymentEnvironmentCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.EditConfigCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.FeaturesCommand
@@ -36,10 +28,13 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.CiCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ProviderCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.api.ApiSecurityCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.AuthnCommand
+import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.ldap.EditLdapCommand
+import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.ldap.LdapCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.oauth2.EditOAuth2Command
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.oauth2.OAuth2Command
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.saml.EditSamlCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.saml.SamlCommand
+import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.x509.X509Command
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authz.AuthzCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.ui.UiSecurityCommand
 import spock.lang.Specification
@@ -108,7 +103,8 @@ class CommandTreeSpec extends Specification {
 
     AuthnCommand    | "oauth2"        | OAuth2Command
     AuthnCommand    | "saml"          | SamlCommand
-//  AuthnCommand    | "ldap"          | LdapCommand // coming very soon
+    AuthnCommand    | "ldap"          | LdapCommand
+    AuthnCommand    | "x509"          | X509Command
 
     OAuth2Command   | "disable"       | AuthnMethodEnableDisableCommand
     OAuth2Command   | "enable"        | AuthnMethodEnableDisableCommand
@@ -117,6 +113,10 @@ class CommandTreeSpec extends Specification {
     SamlCommand     | "disable"       | AuthnMethodEnableDisableCommand
     SamlCommand     | "enable"        | AuthnMethodEnableDisableCommand
     SamlCommand     | "edit"          | EditSamlCommand
+
+    LdapCommand     | "disable"       | AuthnMethodEnableDisableCommand
+    LdapCommand     | "enable"        | AuthnMethodEnableDisableCommand
+    LdapCommand     | "edit"          | EditLdapCommand
   }
 
 }

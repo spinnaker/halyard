@@ -16,7 +16,16 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
-import com.netflix.spinnaker.halyard.config.model.v1.security.*;
+import com.netflix.spinnaker.halyard.config.model.v1.security.ApacheSsl;
+import com.netflix.spinnaker.halyard.config.model.v1.security.ApiSecurity;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Authn;
+import com.netflix.spinnaker.halyard.config.model.v1.security.AuthnMethod;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Authz;
+import com.netflix.spinnaker.halyard.config.model.v1.security.GroupMembership;
+import com.netflix.spinnaker.halyard.config.model.v1.security.RoleProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
+import com.netflix.spinnaker.halyard.config.model.v1.security.SpringSsl;
+import com.netflix.spinnaker.halyard.config.model.v1.security.UiSecurity;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -60,6 +69,18 @@ public class NodeFilter implements Cloneable {
     return this;
   }
 
+  public NodeFilter withAnyNotification() {
+    matchers.add(Node.thisNodeAcceptor(Notifications.class));
+    matchers.add(Node.thisNodeAcceptor(Notification.class));
+    return this;
+  }
+
+  public NodeFilter setNotification(String name) {
+    matchers.add(Node.thisNodeAcceptor(Notifications.class));
+    matchers.add(Node.namedNodeAcceptor(Notification.class, name));
+    return this;
+  }
+
   public NodeFilter withAnyProvider() {
     matchers.add(Node.thisNodeAcceptor(Providers.class));
     matchers.add(Node.thisNodeAcceptor(Provider.class));
@@ -79,6 +100,50 @@ public class NodeFilter implements Cloneable {
 
   public NodeFilter setAccount(String name) {
     matchers.add(Node.namedNodeAcceptor(Account.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnyPubsub() {
+    matchers.add(Node.thisNodeAcceptor(Pubsubs.class));
+    matchers.add(Node.thisNodeAcceptor(Pubsub.class));
+    return this;
+  }
+
+  public NodeFilter setPubsub(String name) {
+    matchers.add(Node.thisNodeAcceptor(Pubsubs.class));
+    matchers.add(Node.namedNodeAcceptor(Pubsub.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnySubscription() {
+    matchers.add(Node.thisNodeAcceptor(Subscription.class));
+    return this;
+  }
+
+  public NodeFilter setSubscription(String name) {
+    matchers.add(Node.namedNodeAcceptor(Subscription.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnyArtifactProvider() {
+    matchers.add(Node.thisNodeAcceptor(Artifacts.class));
+    matchers.add(Node.thisNodeAcceptor(ArtifactProvider.class));
+    return this;
+  }
+
+  public NodeFilter setArtifactProvider(String name) {
+    matchers.add(Node.thisNodeAcceptor(Artifacts.class));
+    matchers.add(Node.namedNodeAcceptor(ArtifactProvider.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnyArtifactAccount() {
+    matchers.add(Node.thisNodeAcceptor(ArtifactAccount.class));
+    return this;
+  }
+
+  public NodeFilter setArtifactAccount(String name) {
+    matchers.add(Node.namedNodeAcceptor(ArtifactAccount.class, name));
     return this;
   }
 

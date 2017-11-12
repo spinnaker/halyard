@@ -63,7 +63,7 @@ function configure_defaults() {
   fi
 
   set +e
-  getent passwd $HAL_USER &> /dev/null
+  id $HAL_USER &> /dev/null
 
   if [ "$?" != "0" ]; then
     >&2 echo "Supplied user $HAL_USER does not exist"
@@ -77,7 +77,7 @@ function configure_defaults() {
 
   echo "$(tput bold)Halyard version will be $HALYARD_VERSION $(tput sgr0)"
 
-  home=$(getent passwd $HAL_USER | cut -d: -f6)
+  home="/Users/$HAL_USER"
   local halconfig_dir="$home/.hal"
 
   echo "$(tput bold)Halconfig will be stored at $halconfig_dir/config$(tput sgr0)"
@@ -105,25 +105,24 @@ EOL
   cat > $halconfig_dir/uninstall.sh <<EOL
 #!/usr/bin/env bash
 
-if [[ `/usr/bin/id -u` -ne 0 ]]; then
+if [[ \`/usr/bin/id -u\` -ne 0 ]]; then
   echo "$0 must be executed with root permissions; exiting"
   exit 1
 fi
 
-read -p "This script uninstalls Halyard and deletes all of its artifacts, are you sure you want to continue? (Y/n): " yes
+read -p "This script uninstalls Halyard and deletes all of its artifacts, are you sure you want to continue? (y/N): " yes
 
 if [ "\$yes" != "y" ] && [ "\$yes" != "Y" ]; then
   echo "Aborted"
   exit 0
 fi
 
-rm /opt/halyard -rf
-rm /var/log/spinnaker/halyard -rf
+rm -rf /opt/halyard
+rm -rf /var/log/spinnaker/halyard
 
 echo "Deleting halconfig and artifacts"
-rm $staging -rf
-rm /opt/spinnaker/config/halyard* -rf
-rm $halconfig_dir -rf
+rm -rf /opt/spinnaker/config/halyard*
+rm -rf $halconfig_dir 
 EOL
 
   chmod +x $halconfig_dir/uninstall.sh
@@ -150,7 +149,7 @@ function install_java() {
   local java_version=$(java -version 2>&1 head -1)
   set -e
 
-  if [[ "$java_version" == "*1.8*" ]]; then
+  if [[ "$java_version" == *"1.8"* ]]; then
     echo "Java is already installed & at the right version"
     return 0;
   fi
@@ -164,15 +163,20 @@ function install_halyard() {
   TEMPDIR=$(mktemp -d installhalyard.XXXX)
   pushd $TEMPDIR
 
-  curl -O https://storage.googleapis.com/spinnaker-artifacts/halyard/$HALYARD_VERSION/osx/halyard.tar.gz
+  curl -OL https://storage.googleapis.com/spinnaker-artifacts/halyard/$HALYARD_VERSION/osx/halyard.tar.gz
   tar -xvf halyard.tar.gz -C /opt
 
-  groupadd halyard
-  usermod -G halyard $HAL_USER
-  chown $HAL_USER:halyard /opt/halyard
+  chown $HAL_USER /opt/halyard
 
   mv /opt/hal /usr/local/bin
   chmod +x /usr/local/bin/hal
+
+  if [ -f /opt/update-halyard ]; then
+    mv /opt/update-halyard /usr/local/bin
+    chmod +x /usr/local/bin/update-halyard
+  else 
+    echo "No update script supplied with installer..."
+  fi
 
   mkdir -p /var/log/spinnaker/halyard
   chown $HAL_USER /var/log/spinnaker/halyard
@@ -188,4 +192,4 @@ configure_defaults
 install_java
 install_halyard
 
-su -c "hal -v" -s /bin/bash $HAL_USER
+su $HAL_USER -c "hal -v" -s /bin/bash

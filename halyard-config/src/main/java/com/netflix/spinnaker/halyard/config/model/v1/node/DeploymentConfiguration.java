@@ -72,6 +72,11 @@ public class DeploymentConfiguration extends Node {
    */
   MetricStores metricStores = new MetricStores();
 
+  /**
+   * Notification configuration
+   */
+  Notifications notifications = new Notifications();
+
   String timezone = "America/Los_Angeles";
 
   /**
@@ -83,6 +88,13 @@ public class DeploymentConfiguration extends Node {
    * Authn & Authz configuration.
    */
   Security security = new Security();
+
+  /**
+   * Artifact configuration (how to talk to git, gcs, s3, etc...)
+   */
+  Artifacts artifacts = new Artifacts();
+
+  Pubsubs pubsub = new Pubsubs();
 
   @Override
   public String getNodeName() {

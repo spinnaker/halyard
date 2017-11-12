@@ -23,10 +23,10 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import lombok.Data;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -48,12 +48,13 @@ public class ServiceSettings {
   String host;
   String scheme;
   String healthEndpoint;
-  @JsonIgnore String username;
-  @JsonIgnore String password;
+  String username;
+  String password;
   Map<String, String> env;
   String artifactId;
   String overrideBaseUrl;
   String location;
+  KubernetesSettings kubernetes = new KubernetesSettings();
   Boolean enabled;
   Boolean basicAuthEnabled;
   Boolean monitored;

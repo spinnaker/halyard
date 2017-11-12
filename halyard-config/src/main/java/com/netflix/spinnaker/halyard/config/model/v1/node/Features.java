@@ -43,7 +43,12 @@ public class Features extends Node {
   private boolean chaos;
   private boolean entityTags;
   private boolean jobs;
-  @ValidForSpinnakerVersion(lowerBound = "1.2.0") private Boolean pipelineTemplates;
+  @ValidForSpinnakerVersion(lowerBound = "1.2.0", message = "Pipeline templates are not stable prior to this release.")
+  private Boolean pipelineTemplates;
+  @ValidForSpinnakerVersion(lowerBound = "1.5.0", message = "Artifacts are not configurable prior to this release. Will be stable at a later release.")
+  private Boolean artifacts;
+  @ValidForSpinnakerVersion(lowerBound = "1.5.0", message = "Canary is not configurable prior to this release. Will be stable at a later release.")
+  private Boolean mineCanary;
 
   public boolean isAuth(DeploymentConfiguration deploymentConfiguration) {
     return deploymentConfiguration.getSecurity().getAuthn().isEnabled();

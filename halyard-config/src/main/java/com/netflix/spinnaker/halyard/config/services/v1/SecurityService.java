@@ -207,6 +207,12 @@ public class SecurityService {
       case SAML:
         authn.setSaml((Saml) method);
         break;
+      case LDAP:
+        authn.setLdap((Ldap) method);
+        break;
+      case X509:
+        authn.setX509((X509) method);
+        break;
       default:
         throw new RuntimeException("Unknown Authn method " + method.getMethod());
     }

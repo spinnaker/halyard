@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google, Inc.
+ * Copyright 2017 Target, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.ldap;
 
-import lombok.Data;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.AuthnMethodCommand;
+import com.netflix.spinnaker.halyard.config.model.v1.security.AuthnMethod;
 
-import java.util.ArrayList;
-import java.util.List;
+public class LdapCommand extends AuthnMethodCommand {
+  public AuthnMethod.Method getMethod() {
+    return AuthnMethod.Method.LDAP;
+  }
 
-@Data
-public class DockerRegistryReference {
-  String accountName;
-  List<String> namespaces = new ArrayList<>();
+  public LdapCommand(){
+    super();
+    registerSubcommand(new EditLdapCommand());
+  }
+
 }

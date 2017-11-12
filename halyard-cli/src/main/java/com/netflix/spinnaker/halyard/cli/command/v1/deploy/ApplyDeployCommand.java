@@ -81,9 +81,16 @@ public class ApplyDeployCommand extends AbstractRemoteActionCommand {
       deployOptions.add(DeployOption.FLUSH_INFRASTRUCTURE_CACHES);
     }
 
+    runRemoteAction(
+        new OperationHandler<RemoteAction>()
+            .setFailureMesssage("Failed to prep Spinnaker deployment")
+            .setSuccessMessage("Preperation complete... deploying Spinnaker")
+            .setOperation(Daemon.prepDeployment(getCurrentDeployment(), !noValidate, serviceNames))
+    );
+
     return new OperationHandler<RemoteAction>()
         .setFailureMesssage("Failed to deploy Spinnaker.")
         .setSuccessMessage("Run `hal deploy connect` to connect to Spinnaker.")
-        .setOperation(Daemon.deployDeployment(getCurrentDeployment(), !noValidate, deployOptions, serviceNames));
+        .setOperation(Daemon.deployDeployment(getCurrentDeployment(), false, deployOptions, serviceNames));
   }
 }

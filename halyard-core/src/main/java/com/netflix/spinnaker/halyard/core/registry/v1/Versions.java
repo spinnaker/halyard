@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 @Data
 public class Versions {
+  public final static String BRANCH_PREFIX = "branch:";
+
   @Data
   public static class Version {
     String version;
@@ -48,6 +50,14 @@ public class Versions {
     }
   }
 
+  public static boolean isBranch(String version) {
+    return version.startsWith(BRANCH_PREFIX);
+  }
+
+  public static String fromBranch(String version) {
+    return version.substring(BRANCH_PREFIX.length());
+  }
+
   @Data
   // A version explicitly not supported by Halyard
   public static class IllegalVersion {
@@ -55,8 +65,6 @@ public class Versions {
     String reason; // Why is this version illegal
   }
 
-  @Deprecated
-  String latest;
   String latestHalyard;
   String latestSpinnaker;
   List<Version> versions = new ArrayList<>();

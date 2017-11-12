@@ -19,8 +19,10 @@ package com.netflix.spinnaker.halyard.cli.command.v1;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.*;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.artifacts.ArtifactProviderCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.CiCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ProviderCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.pubsubs.PubsubCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
@@ -48,13 +50,16 @@ public class ConfigCommand extends AbstractConfigCommand {
   private String setCurrentDeployment;
 
   ConfigCommand() {
+    registerSubcommand(new ArtifactProviderCommand());
     registerSubcommand(new DeploymentEnvironmentCommand());
     registerSubcommand(new EditConfigCommand());
     registerSubcommand(new FeaturesCommand());
     registerSubcommand(new GenerateCommand());
     registerSubcommand(new MetricStoresCommand());
+    registerSubcommand(new NotificationCommand());
     registerSubcommand(new PersistentStorageCommand());
     registerSubcommand(new ProviderCommand());
+    registerSubcommand(new PubsubCommand());
     registerSubcommand(new SecurityCommand());
     registerSubcommand(new VersionConfigCommand());
     registerSubcommand(new CiCommand());

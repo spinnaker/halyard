@@ -17,18 +17,12 @@
 
 package com.netflix.spinnaker.halyard.core.registry.v1;
 
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.services.storage.Storage;
-import com.netflix.spinnaker.halyard.core.provider.v1.google.GoogleCredentials;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -36,34 +30,39 @@ import java.io.InputStream;
 @Slf4j
 public class ProfileRegistry {
   @Autowired
-  String spinconfigBucket;
+  GoogleProfileReader googleProfileReader;
 
   @Autowired
-  Storage googleStorage;
+  GitProfileReader gitProfileReader;
 
-  @Bean
-  public Storage googleStorage() {
-    HttpTransport httpTransport;
-    JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-    String applicationName = "Spinnaker/Halyard";
+  @Autowired
+  Yaml yamlParser;
 
-    return new Storage.Builder(GoogleCredentials.buildHttpTransport(), jsonFactory, GoogleCredentials.retryRequestInitializer())
-        .setApplicationName(applicationName)
-        .build();
+  @Autowired
+  ObjectMapper relaxedObjectMapper;
+
+  public InputStream readProfile(String artifactName, String version, String profileName) throws IOException {
+    return pickProfileReader(version).readProfile(artifactName, version, profileName);
   }
 
-  public static String profilePath(String artifactName, String version, String profileFileName) {
-    return String.join("/", artifactName, version, profileFileName);
+  public BillOfMaterials readBom(String version) throws IOException {
+    return pickProfileReader(version).readBom(version);
   }
 
-  public static String bomPath(String version) {
-    return String.join("/", "bom", version + ".yml");
+  public Versions readVersions() throws IOException {
+    // git can't store these
+    return googleProfileReader.readVersions();
   }
 
-  public InputStream getObjectContents(String objectName) throws IOException {
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
-    log.info("Getting object contents of " + objectName);
-    googleStorage.objects().get(spinconfigBucket, objectName).executeMediaAndDownloadTo(output);
-    return new ByteArrayInputStream(output.toByteArray());
+  public InputStream readArchiveProfile(String artifactName, String version, String profileName) throws IOException {
+    return pickProfileReader(version).readArchiveProfile(artifactName, version, profileName);
+  }
+
+  private ProfileReader pickProfileReader(String version) {
+    if (Versions.isBranch(version)) {
+      return gitProfileReader;
+    } else {
+      return googleProfileReader;
+    }
   }
 }

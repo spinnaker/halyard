@@ -36,7 +36,12 @@ import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,10 +72,8 @@ public class DeploymentController {
   DaemonTask<Halconfig, DeploymentConfiguration> deploymentConfiguration(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<DeploymentConfiguration> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<DeploymentConfiguration> builder = new StaticRequestBuilder<>(() -> deploymentService.getDeploymentConfiguration(deploymentName));
     builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> deploymentService.getDeploymentConfiguration(deploymentName));
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
@@ -109,10 +112,8 @@ public class DeploymentController {
   DaemonTask<Halconfig, List<DeploymentConfiguration>> deploymentConfigurations(
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<List<DeploymentConfiguration>> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<List<DeploymentConfiguration>> builder = new StaticRequestBuilder<>(() -> deploymentService.getAllDeploymentConfigurations());
     builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> deploymentService.getAllDeploymentConfigurations());
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateAllDeployments());
@@ -127,15 +128,14 @@ public class DeploymentController {
     @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
     @RequestParam(required = false) List<String> serviceNames) {
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>();
-    builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> {
+    Supplier buildResponse =  () -> {
       generateService.generateConfig(deploymentName, finalServiceNames.stream()
-          .map(SpinnakerService.Type::fromCanonicalName)
-          .collect(Collectors.toList()));
+              .map(SpinnakerService.Type::fromCanonicalName)
+              .collect(Collectors.toList()));
       return null;
-    });
+    };
+    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(buildResponse);
+    builder.setSeverity(severity);
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
@@ -148,13 +148,12 @@ public class DeploymentController {
   DaemonTask<Halconfig, Void> clean(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>();
-    builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> {
+    Supplier buildResponse = () -> {
       deployService.clean(deploymentName);
       return null;
-    });
+    };
+    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(buildResponse);
+    builder.setSeverity(severity);
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
@@ -168,12 +167,9 @@ public class DeploymentController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames) {
-    StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>();
-    builder.setSeverity(severity);
-
     List<String> finalServiceNames = serviceNames == null ? new ArrayList<>() : serviceNames;
-
-    builder.setBuildResponse(() -> deployService.connectCommand(deploymentName, finalServiceNames));
+    StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(() -> deployService.connectCommand(deploymentName, finalServiceNames));
+    builder.setSeverity(severity);
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
@@ -188,19 +184,35 @@ public class DeploymentController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames) {
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>();
-    builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> {
+    Supplier buildResponse = () -> {
       deployService.rollback(deploymentName, finalServiceNames);
       return null;
-    });
+    };
+
+    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(buildResponse);
+    builder.setSeverity(severity);
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Rollback Spinnaker", TimeUnit.MINUTES.toMillis(30));
+  }
+
+  @RequestMapping(value = "/{deploymentName:.+}/prep/", method = RequestMethod.POST)
+  DaemonTask<Halconfig, RemoteAction> prep(@PathVariable String deploymentName,
+      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false) List<String> serviceNames) {
+    List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
+    StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(() -> deployService.prep(deploymentName, finalServiceNames));
+    builder.setSeverity(severity);
+
+    if (validate) {
+      builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
+    }
+
+    return DaemonTaskHandler.submitTask(builder::build, "Prep deployment", TimeUnit.MINUTES.toMillis(5));
   }
 
   @RequestMapping(value = "/{deploymentName:.+}/deploy/", method = RequestMethod.POST)
@@ -211,10 +223,8 @@ public class DeploymentController {
     @RequestParam(required = false) List<String> serviceNames) {
     List<DeployOption> finalDeployOptions = deployOptions != null ? deployOptions : Collections.emptyList();
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
-    StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(() -> deployService.deploy(deploymentName, finalDeployOptions, finalServiceNames));
     builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> deployService.deploy(deploymentName, finalDeployOptions, finalServiceNames));
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
@@ -228,15 +238,13 @@ public class DeploymentController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames) {
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>();
-    builder.setSeverity(severity);
-
     List<String> finalServiceNames = serviceNames == null ? new ArrayList<>() : serviceNames;
 
-    builder.setBuildResponse(() -> {
+    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(() -> {
       deployService.collectLogs(deploymentName, finalServiceNames);
       return null;
     });
+    builder.setSeverity(severity);
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
@@ -249,10 +257,8 @@ public class DeploymentController {
   DaemonTask<Halconfig, NodeDiff> configDiff(@PathVariable String deploymentName,
     @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
     @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<NodeDiff> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<NodeDiff> builder = new StaticRequestBuilder<>(() -> deployService.configDiff(deploymentName));
     builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> deployService.configDiff(deploymentName));
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
@@ -287,10 +293,8 @@ public class DeploymentController {
   DaemonTask<Halconfig, String> getVersion(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<String> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<String> builder = new StaticRequestBuilder<>(() -> deploymentService.getVersion(deploymentName));
     builder.setSeverity(severity);
-
-    builder.setBuildResponse(() -> deploymentService.getVersion(deploymentName));
 
     if (validate) {
       builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
@@ -304,7 +308,7 @@ public class DeploymentController {
       @PathVariable String serviceName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<RunningServiceDetails> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<RunningServiceDetails> builder = new StaticRequestBuilder<>(() -> null);
     builder.setSeverity(severity);
 
     // builder.setBuildResponse(() -> deployService.getRunningServiceDetails(deploymentName, serviceName));

@@ -39,8 +39,14 @@ public class BillOfMaterials {
     Artifact consul;
     Artifact vault;
 
+    Artifact defaultArtifact;
+
     String getArtifactVersion(String artifactName) {
-      return getFieldVersion(Dependencies.class, this, artifactName);
+      return getFieldArtifact(Dependencies.class, this, artifactName).getVersion();
+    }
+
+    String getArtifactCommit(String artifactName) {
+      return getFieldArtifact(Dependencies.class, this, artifactName).getCommit();
     }
   }
 
@@ -69,8 +75,14 @@ public class BillOfMaterials {
     Artifact monitoringDaemon;
     Artifact spinnaker;
 
+    Artifact defaultArtifact;
+
     String getArtifactVersion(String artifactName) {
-      return getFieldVersion(Services.class, this, artifactName);
+      return getFieldArtifact(Services.class, this, artifactName).getVersion();
+    }
+
+    String getArtifactCommit(String artifactName) {
+      return getFieldArtifact(Services.class, this, artifactName).getCommit();
     }
   }
 
@@ -80,7 +92,7 @@ public class BillOfMaterials {
     String commit;
   }
 
-  static private <T> String getFieldVersion(Class<T> clazz, T obj, String artifactName) {
+  static private <T> Artifact getFieldArtifact(Class<T> clazz, T obj, String artifactName) {
     Optional<Field> field = Arrays.stream(clazz.getDeclaredFields())
         .filter(f -> {
           boolean nameMatches = f.getName().equals(artifactName);
@@ -94,9 +106,15 @@ public class BillOfMaterials {
         .findFirst();
 
     try {
-      return ((Artifact) field
+      Artifact result = (Artifact) field
           .orElseThrow(() -> new NoKnownArtifact(artifactName))
-          .get(obj)).getVersion();
+          .get(obj);
+
+      if (result == null && !artifactName.equals("defaultArtifact")) {
+        return getFieldArtifact(clazz, obj, "defaultArtifact");
+      } else {
+        return result;
+      }
     } catch (IllegalAccessException e) {
       throw new RuntimeException(e);
     } catch (NullPointerException e) {
@@ -118,6 +136,20 @@ public class BillOfMaterials {
 
     try {
       return dependencies.getArtifactVersion(artifactName);
+    } catch (NoKnownArtifact ignored) {
+    }
+
+    throw new IllegalArgumentException("No artifact with name " + artifactName + " could be found in the BOM");
+  }
+
+  public String getArtifactCommit(String artifactName) {
+    try {
+      return services.getArtifactCommit(artifactName);
+    } catch (NoKnownArtifact ignored) {
+    }
+
+    try {
+      return dependencies.getArtifactCommit(artifactName);
     } catch (NoKnownArtifact ignored) {
     }
 

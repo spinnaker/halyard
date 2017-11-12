@@ -324,7 +324,7 @@ EOL
   cat > $halconfig_dir/uninstall.sh <<EOL
 #!/usr/bin/env bash
 
-if [[ `/usr/bin/id -u` -ne 0 ]]; then
+if [[ \`/usr/bin/id -u\` -ne 0 ]]; then
   echo "$0 must be executed with root permissions; exiting"
   exit 1
 fi
@@ -339,7 +339,6 @@ fi
 apt-get purge spinnaker-halyard
 
 echo "Deleting halconfig and artifacts"
-rm $staging -rf
 rm /opt/spinnaker/config/halyard* -rf
 rm $halconfig_dir -rf
 EOL
@@ -390,6 +389,8 @@ fi
 ## Spinnaker
 echo "$(tput bold)Installing Halyard...$(tput sgr0)"
 install_halyard
+groupadd spinnaker || true
+usermod -G spinnaker -a $HAL_USER || true
 
 configure_bash_completion
 

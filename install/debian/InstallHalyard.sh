@@ -105,7 +105,7 @@ EOL
   cat > $halconfig_dir/uninstall.sh <<EOL
 #!/usr/bin/env bash
 
-if [[ `/usr/bin/id -u` -ne 0 ]]; then
+if [[ \`/usr/bin/id -u\` -ne 0 ]]; then
   echo "$0 must be executed with root permissions; exiting"
   exit 1
 fi
@@ -121,7 +121,6 @@ rm /opt/halyard -rf
 rm /var/log/spinnaker/halyard -rf
 
 echo "Deleting halconfig and artifacts"
-rm $staging -rf
 rm /opt/spinnaker/config/halyard* -rf
 rm $halconfig_dir -rf
 EOL
@@ -198,12 +197,21 @@ function install_halyard() {
   curl -O https://storage.googleapis.com/spinnaker-artifacts/halyard/$HALYARD_VERSION/debian/halyard.tar.gz
   tar -xvf halyard.tar.gz -C /opt
 
-  groupadd halyard
-  usermod -G halyard $HAL_USER
+  groupadd halyard || true
+  groupadd spinnaker || true
+  usermod -G halyard -a $HAL_USER || true
+  usermod -G spinnaker -a $HAL_USER || true
   chown $HAL_USER:halyard /opt/halyard
 
   mv /opt/hal /usr/local/bin
   chmod +x /usr/local/bin/hal
+
+  if [ -f /opt/update-halyard ]; then
+    mv /opt/update-halyard /usr/local/bin
+    chmod +x /usr/local/bin/update-halyard
+  else 
+    echo "No update script supplied with installer..."
+  fi
 
   mkdir -p /var/log/spinnaker/halyard
   chown $HAL_USER /var/log/spinnaker/halyard

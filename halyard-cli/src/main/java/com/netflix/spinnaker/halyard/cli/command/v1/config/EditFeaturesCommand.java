@@ -56,6 +56,21 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   )
   private Boolean pipelineTemplates = null;
 
+  @Parameter(
+      names = "--artifacts",
+      description = "Enable artifact support. Read more at spinnaker.io/reference/artifacts",
+      arity = 1
+  )
+  private Boolean artifacts = null;
+
+  @Parameter(
+      names = "--mine-canary",
+      description = "Enable canary support. For this to work, you'll need a canary judge configured. " 
+           + "Currently, Halyard does not configure canary judge for you.",
+      arity = 1
+  )
+  private Boolean mineCanary = null;
+
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
@@ -69,7 +84,9 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
 
     features.setChaos(chaos != null ? chaos : features.isChaos());
     features.setJobs(jobs != null ? jobs : features.isJobs());
-    features.setPipelineTemplates((pipelineTemplates == null || !pipelineTemplates) ? null : true);
+    features.setPipelineTemplates(pipelineTemplates != null ? pipelineTemplates : features.getPipelineTemplates());
+    features.setArtifacts(artifacts != null ? artifacts : features.getArtifacts());
+    features.setMineCanary(mineCanary != null ? mineCanary : features.getMineCanary());
 
     if (originalHash == features.hashCode()) {
       AnsiUi.failure("No changes supplied.");

@@ -29,7 +29,12 @@ import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -52,9 +57,9 @@ public class ProviderController {
       @PathVariable String providerName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<Provider> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<Provider> builder = new StaticRequestBuilder<>(
+            () -> providerService.getProvider(deploymentName, providerName));
 
-    builder.setBuildResponse(() -> providerService.getProvider(deploymentName, providerName));
     builder.setSeverity(severity);
 
     if (validate) {
@@ -121,9 +126,9 @@ public class ProviderController {
   DaemonTask<Halconfig, List<Provider>> providers(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<List<Provider>> builder = new StaticRequestBuilder<>();
+    StaticRequestBuilder<List<Provider>> builder = new StaticRequestBuilder<>(
+            () -> providerService.getAllProviders(deploymentName));
 
-    builder.setBuildResponse(() -> providerService.getAllProviders(deploymentName));
     builder.setSeverity(severity);
 
     if (validate) {
