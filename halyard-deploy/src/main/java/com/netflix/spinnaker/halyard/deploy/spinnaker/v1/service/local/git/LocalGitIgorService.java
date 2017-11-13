@@ -23,7 +23,7 @@ import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeploymentDetails;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.IgorService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import java.util.List;
 import lombok.Data;
@@ -35,7 +35,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
-public class LocalGitClouddriverService extends ClouddriverService implements LocalGitService<ClouddriverService.Clouddriver> {
+public class LocalGitIgorService extends IgorService implements LocalGitService<IgorService.Igor> {
   String startCommand = "./gradlew";
 
   @Autowired
@@ -52,7 +52,6 @@ public class LocalGitClouddriverService extends ClouddriverService implements Lo
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
-    generateAwsProfile(deploymentConfiguration, endpoints, getHomeDirectory()).ifPresent(p -> profiles.add(p));
     return profiles;
   }
 

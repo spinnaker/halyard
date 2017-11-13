@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
  */
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.local.git;
@@ -23,7 +22,7 @@ import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeploymentDetails;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.Front50Service;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import java.util.List;
 import lombok.Data;
@@ -35,7 +34,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
-public class LocalGitClouddriverService extends ClouddriverService implements LocalGitService<ClouddriverService.Clouddriver> {
+public class LocalGitFront50Service extends Front50Service implements LocalGitService<Front50Service.Front50> {
   String startCommand = "./gradlew";
 
   @Autowired

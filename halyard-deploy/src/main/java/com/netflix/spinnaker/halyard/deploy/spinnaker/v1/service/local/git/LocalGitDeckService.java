@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- *
  */
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.local.git;
@@ -23,8 +22,9 @@ import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeploymentDetails;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.DeckService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -35,8 +35,13 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
-public class LocalGitClouddriverService extends ClouddriverService implements LocalGitService<ClouddriverService.Clouddriver> {
-  String startCommand = "./gradlew";
+public class LocalGitDeckService extends DeckService implements LocalGitService<DeckService.Deck> {
+  String deskSettingsPath = "settings.js";
+  String deckPath = "~/.spinnaker/" + deskSettingsPath;
+
+  String startCommand = "export SETTINGS_PATH=" + deckPath + "\n"
+      + "yarn > /dev/null\n"
+      + "yarn start";
 
   @Autowired
   String gitRoot;
@@ -45,21 +50,11 @@ public class LocalGitClouddriverService extends ClouddriverService implements Lo
   ArtifactService artifactService;
 
   @Override
-  protected String getConfigOutputPath() {
-    return "~/.spinnaker";
-  }
-
-  @Override
-  public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
-    List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
-    generateAwsProfile(deploymentConfiguration, endpoints, getHomeDirectory()).ifPresent(p -> profiles.add(p));
-    return profiles;
-  }
-
-  @Override
   public ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    return new Settings().setArtifactId(getArtifactId(deploymentConfiguration.getName()))
-        .setHost(getDefaultHost())
+    boolean authEnabled = deploymentConfiguration.getSecurity().getAuthn().isEnabled();
+    return new Settings(deploymentConfiguration.getSecurity().getUiSecurity())
+        .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
+        .setHost(authEnabled ? "0.0.0.0" : getDefaultHost())
         .setEnabled(true);
   }
 
@@ -70,5 +65,12 @@ public class LocalGitClouddriverService extends ClouddriverService implements Lo
   @Override
   public void collectLogs(DeploymentDetails details, SpinnakerRuntimeSettings runtimeSettings) {
     throw new NotImplementedException();
+  }
+
+  @Override
+  public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+    List<Profile> result = new ArrayList<>();
+    result.add(deckProfileFactory.getProfile(deskSettingsPath, deckPath, deploymentConfiguration, endpoints));
+    return result;
   }
 }

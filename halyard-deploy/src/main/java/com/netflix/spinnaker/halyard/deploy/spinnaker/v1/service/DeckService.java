@@ -40,7 +40,7 @@ import java.util.*;
 @Component
 abstract public class DeckService extends SpinnakerService<DeckService.Deck> {
   @Autowired
-  DeckProfileFactory deckProfileFactory;
+  protected DeckProfileFactory deckProfileFactory;
 
   @Autowired
   ApachePassphraseProfileFactory apachePassphraseProfileFactory;
