@@ -35,6 +35,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedServiceProvider;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +73,7 @@ public class DistributedDeployer<T extends Account> implements Deployer<Distribu
       ServiceSettings settings = runtimeSettings.getServiceSettings(service);
       boolean safeToUpdate = settings.getSafeToUpdate();
 
-      if (!settings.getEnabled() || distributedService.isRequiredToBootstrap() || !safeToUpdate) {
+      if (!settings.getEnabled() || distributedService.isRequiredToBootstrap() || !safeToUpdate || settings.getSkipLiveCycleManagement()) {
         continue;
       }
 
@@ -86,7 +87,7 @@ public class DistributedDeployer<T extends Account> implements Deployer<Distribu
     for (DistributedService distributedService : serviceProvider.getPrioritizedDistributedServices(serviceTypes)) {
       SpinnakerService service = distributedService.getService();
       ServiceSettings settings = runtimeSettings.getServiceSettings(service);
-      if (!settings.getEnabled()) {
+      if (!settings.getEnabled() || settings.getSkipLiveCycleManagement()) {
         continue;
       }
 
@@ -163,7 +164,7 @@ public class DistributedDeployer<T extends Account> implements Deployer<Distribu
     for (DistributedService distributedService : serviceProvider.getPrioritizedDistributedServices(serviceTypes)) {
       SpinnakerService service = distributedService.getService();
       ServiceSettings settings = resolvedConfiguration.getServiceSettings(service);
-      if (!settings.getEnabled()) {
+      if (!settings.getEnabled() || settings.getSkipLiveCycleManagement()) {
         continue;
       }
 
@@ -258,6 +259,10 @@ public class DistributedDeployer<T extends Account> implements Deployer<Distribu
       SpinnakerRuntimeSettings runtimeSettings,
       DistributedService<Rosco, T> roscoService
   ) {
+    if (runtimeSettings.getServiceSettings(roscoService.getService()).getSkipLiveCycleManagement()) {
+      return;
+    }
+
     ServiceSettings roscoSettings = runtimeSettings.getServiceSettings(roscoService.getService());
     Rosco.AllStatus allStatus;
 
@@ -400,6 +405,10 @@ public class DistributedDeployer<T extends Account> implements Deployer<Distribu
   private <T extends Account> Set<Integer> reapOrcaServerGroups(AccountDeploymentDetails<T> details,
       SpinnakerRuntimeSettings runtimeSettings,
       DistributedService<Orca, T> orcaService) {
+    if (runtimeSettings.getServiceSettings(orcaService.getService()).getSkipLiveCycleManagement()) {
+      return Collections.EMPTY_SET;
+    }
+
     RunningServiceDetails runningOrcaDetails = orcaService.getRunningServiceDetails(details, runtimeSettings);
     Map<Integer, List<RunningServiceDetails.Instance>> instances = runningOrcaDetails.getInstances();
     List<Integer> versions = new ArrayList<>(instances.keySet());

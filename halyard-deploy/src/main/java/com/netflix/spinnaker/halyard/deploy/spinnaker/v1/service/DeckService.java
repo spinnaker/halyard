@@ -119,6 +119,7 @@ abstract public class DeckService extends SpinnakerService<DeckService.Deck> {
     Boolean monitored = false;
     Boolean sidecar = false;
     Integer targetSize = 1;
+    Boolean SkipLiveCycleManagement = false;
     Map<String, String> env = new HashMap<>();
 
     public Settings() {}

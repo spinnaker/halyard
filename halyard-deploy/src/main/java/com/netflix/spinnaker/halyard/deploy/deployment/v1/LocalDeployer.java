@@ -50,7 +50,7 @@ public class LocalDeployer implements Deployer<LocalServiceProvider, DeploymentD
         .collect(Collectors.toList());
 
     Map<String, String> installCommands = enabledServices.stream()
-        .filter(i -> resolvedConfiguration.getServiceSettings(i.getService())
+        .filter(i -> !resolvedConfiguration.getServiceSettings(i.getService())
             .getSkipLiveCycleManagement())
         .reduce(new HashMap<>(), (commands, installable) -> {
           String command = String.join("\n",

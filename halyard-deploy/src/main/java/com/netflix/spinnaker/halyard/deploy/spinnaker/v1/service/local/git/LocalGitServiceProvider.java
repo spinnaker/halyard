@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// TODO(lwander): Add the roscoService and monitoring daemon support.
 @Component
 public class LocalGitServiceProvider extends LocalServiceProvider {
   @Autowired
@@ -68,9 +69,6 @@ public class LocalGitServiceProvider extends LocalServiceProvider {
 
   @Autowired
   LocalGitRedisService redisService;
-
-  @Autowired
-  LocalGitRoscoService roscoService;
 
   @Override
   public String getPrepCommand(DeploymentDetails deploymentDetails, List<String> prepCommands) {
