@@ -25,22 +25,18 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSetting
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
 public class LocalGitClouddriverService extends ClouddriverService implements LocalGitService<ClouddriverService.Clouddriver> {
-  String startCommand = "./gradlew";
-
-  @Autowired
-  String gitRoot;
-
   @Autowired
   ArtifactService artifactService;
 
@@ -48,6 +44,11 @@ public class LocalGitClouddriverService extends ClouddriverService implements Lo
   protected String getConfigOutputPath() {
     return "~/.spinnaker";
   }
+
+  String startCommand = "./gradlew";
+
+  @Autowired
+  String gitRoot;
 
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {

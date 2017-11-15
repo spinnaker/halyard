@@ -18,7 +18,6 @@ function start() {
 
   pushd $ARTIFACT_DIR
 
-  echo "Working Directory:" + $PWD
   {%start-command%} \
     2> ${LOG_DIR}/${ARTIFACT}.err \
     > ${LOG_DIR}/${ARTIFACT}.log &

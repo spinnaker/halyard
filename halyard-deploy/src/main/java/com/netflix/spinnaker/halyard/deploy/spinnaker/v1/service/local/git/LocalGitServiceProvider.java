@@ -27,14 +27,15 @@ import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.local.LocalServiceProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 @Component
 public class LocalGitServiceProvider extends LocalServiceProvider {
@@ -62,17 +63,14 @@ public class LocalGitServiceProvider extends LocalServiceProvider {
   @Autowired
   LocalGitIgorService igorService;
 
-  //@Autowired
-  //LocalGitMonitoringDaemonService monitoringDaemonService;
-
   @Autowired
   LocalGitOrcaService orcaService;
 
   @Autowired
   LocalGitRedisService redisService;
 
-  //@Autowired
-  //LocalGitRoscoService roscoService;
+  @Autowired
+  LocalGitRoscoService roscoService;
 
   @Override
   public String getPrepCommand(DeploymentDetails deploymentDetails, List<String> prepCommands) {

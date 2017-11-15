@@ -26,18 +26,18 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.RedisService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.local.LocalService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.local.LocalServiceProvider;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Component
 @Slf4j
 public class LocalDeployer implements Deployer<LocalServiceProvider, DeploymentDetails> {
-
   @Override
   public RemoteAction deploy(
       LocalServiceProvider serviceProvider,
@@ -77,8 +77,7 @@ public class LocalDeployer implements Deployer<LocalServiceProvider, DeploymentD
       DeploymentDetails deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings,
       List<SpinnakerService.Type> serviceTypes) {
-    throw new HalException(Problem.Severity.FATAL,
-        "No support for rolling back local deployments yet.");
+    throw new HalException(Problem.Severity.FATAL, "No support for rolling back local deployments yet.");
   }
 
   @Override
@@ -104,18 +103,15 @@ public class LocalDeployer implements Deployer<LocalServiceProvider, DeploymentD
   }
 
   @Override
-  public void flushInfrastructureCaches(LocalServiceProvider serviceProvider,
-      DeploymentDetails deploymentDetails, SpinnakerRuntimeSettings runtimeSettings) {
+  public void flushInfrastructureCaches(LocalServiceProvider serviceProvider, DeploymentDetails deploymentDetails, SpinnakerRuntimeSettings runtimeSettings) {
     try {
       Jedis jedis = new Jedis(runtimeSettings
-          .getServiceSettings(
-              (SpinnakerService) serviceProvider.getLocalService(SpinnakerService.Type.REDIS))
+          .getServiceSettings((SpinnakerService) serviceProvider.getLocalService(SpinnakerService.Type.REDIS))
           .getBaseUrl());
 
       RedisService.flushKeySpace(jedis, ClouddriverService.REDIS_KEY_SPACE);
     } catch (Exception e) {
-      throw new HalException(Problem.Severity.FATAL, "Unable to flush key space: " + e.getMessage(),
-          e);
+      throw new HalException(Problem.Severity.FATAL, "Unable to flush key space: " + e.getMessage(), e);
     }
   }
 }
