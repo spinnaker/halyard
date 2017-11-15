@@ -40,9 +40,8 @@ public class LocalGitDeckService extends DeckService implements LocalGitService<
   String deskSettingsPath = "settings.js";
   String deckPath = "~/.spinnaker/" + deskSettingsPath;
 
-  String startCommand = "export SETTINGS_PATH=" + deckPath + "\n"
-      + "yarn > /dev/null\n"
-      + "yarn start";
+  String startCommand = String
+      .join("\n", "export SETTINGS_PATH=" + deckPath, "yarn > /dev/null", "yarn start");
 
   @Autowired
   String gitRoot;
