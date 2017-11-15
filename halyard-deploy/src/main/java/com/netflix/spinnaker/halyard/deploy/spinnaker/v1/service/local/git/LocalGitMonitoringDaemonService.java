@@ -36,7 +36,6 @@ public class LocalGitMonitoringDaemonService extends SpinnakerMonitoringDaemonSe
   final String upstartServiceName = "spinnaker-monitoring";
   final String pipRequirementsFile = "/opt/spinnaker-monitoring/requirements.txt";
 
-  // TODO(brnelson): Set this...
   String startCommand = "";
 
   @Autowired

@@ -17,7 +17,6 @@ function start() {
  ${STOP_SCRIPT}
 
   pushd $ARTIFACT_DIR
-
   {%start-command%} \
     2> ${LOG_DIR}/${ARTIFACT}.err \
     > ${LOG_DIR}/${ARTIFACT}.log &

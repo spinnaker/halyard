@@ -34,7 +34,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 @Data
 @Component
 public class LocalGitRedisService extends RedisService implements LocalGitService<Jedis> {
-  // TODO(brnelson): Set this...
   String startCommand = "";
 
   @Autowired

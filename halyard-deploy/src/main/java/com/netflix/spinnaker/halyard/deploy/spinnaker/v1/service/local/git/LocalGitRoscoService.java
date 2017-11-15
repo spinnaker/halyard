@@ -21,11 +21,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeploymentDetails;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.RoscoService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
-import java.nio.file.Paths;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +33,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 @Data
 @Component
 public class LocalGitRoscoService extends RoscoService implements LocalGitService<RoscoService.Rosco> {
-  // TODO(brnelson): Set this...
   String startCommand = "";
 
   @Autowired
