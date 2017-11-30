@@ -139,5 +139,5 @@ chown spinnaker /opt/spinnaker-monitoring/registry
 set +e
 service spinnaker {%service-action%}
 
-# Ensure apache is started for decks
+# Ensure apache is started for deck
 service apache2 start
