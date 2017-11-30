@@ -109,7 +109,7 @@ public class BakeDebianServiceProvider extends BakeServiceProvider {
         .filter(Objects::nonNull)
         .collect(Collectors.toList());
     List<String> systemdServiceConfigs = upstartNames.stream()
-        .map(n -> n.toString() + ".service")
+        .map(n -> n + ".service")
         .collect(Collectors.toList());
     List<String> serviceInstalls = serviceTypes.stream()
         .map(t -> installCommands.get(t.getCanonicalName()))
