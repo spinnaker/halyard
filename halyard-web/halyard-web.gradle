@@ -1,4 +1,5 @@
 apply plugin: 'org.springframework.boot'
+apply plugin: 'com.google.protobuf'
 apply plugin: 'spinnaker.package'
 
 ext {
@@ -31,7 +32,53 @@ dependencies {
   compile project(':halyard-config')
   compile project(':halyard-core')
   compile project(':halyard-deploy')
+
+  compile('org.lognet:grpc-spring-boot-starter:2.1.4')
+  compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
 }
+
+sourceSets {
+  main {
+    java {
+      srcDir 'src/main/protoGen'
+    }
+  }
+}
+
+protobuf {
+  protoc {
+    artifact = 'com.google.protobuf:protoc:3.0.0'
+  }
+  plugins {
+    grpc {
+      artifact = "io.grpc:protoc-gen-grpc-java:1.8.0"
+    }
+  }
+
+  generateProtoTasks {
+    ofSourceSet('main').each { task ->
+      task.builtins {
+        java{
+          outputSubDir = 'protoGen'
+        }
+      }
+      task.plugins {
+        grpc {
+          outputSubDir = 'protoGen'
+        }
+      }
+    }
+  }
+  generatedFilesBaseDir = "$projectDir/src/"
+}
+
+task cleanProtoGen{
+  doFirst{
+    delete("$projectDir/src/main/protoGen")
+  }
+}
+clean.dependsOn cleanProtoGen
+
 
 tasks.bootRepackage.enabled = project.repackage
 
