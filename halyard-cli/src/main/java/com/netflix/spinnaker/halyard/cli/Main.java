@@ -23,10 +23,8 @@ import com.netflix.spinnaker.halyard.cli.command.v1.HalCommand;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.proto.GreeterGrpc;
 import com.netflix.spinnaker.halyard.proto.GreeterGrpc.GreeterBlockingStub;
-import com.netflix.spinnaker.halyard.proto.GreeterGrpc.GreeterStub;
 import com.netflix.spinnaker.halyard.proto.GreeterOuterClass.HelloReply;
 import com.netflix.spinnaker.halyard.proto.GreeterOuterClass.HelloRequest;
-import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 
 public class Main {
@@ -38,7 +36,7 @@ public class Main {
 
     HelloReply response = client.sayHello(HelloRequest.newBuilder().build());
 
-    System.out.printf("Got response! %s", response.getMessage());
+    System.out.printf("Got response! %s", response.getMessage2());
 
     System.exit(0);
 

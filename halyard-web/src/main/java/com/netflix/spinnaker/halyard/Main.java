@@ -53,7 +53,7 @@ public class Main extends SpringBootServletInitializer {
   public static class GreeterService extends GreeterGrpc.GreeterImplBase{
     @Override
     public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<HelloReply> responseObserver) {
-      final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage("WASSSSUP");
+      final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage2("WASSSSUP");
       responseObserver.onNext(replyBuilder.build());
       responseObserver.onCompleted();
     }

@@ -1,0 +1,41 @@
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+
+dependencies {
+  compile 'io.grpc:grpc-all:1.8.0'
+  compile 'com.google.protobuf:protobuf-java:3.0.0'
+  compile 'com.google.guava:guava:23.5-jre'
+}
+
+protobuf {
+  protoc {
+    artifact = 'com.google.protobuf:protoc:3.0.0'
+  }
+  plugins {
+    grpc {
+      artifact = "io.grpc:protoc-gen-grpc-java:1.8.0"
+    }
+  }
+
+  generateProtoTasks {
+    ofSourceSet('main').each { task ->
+      task.builtins {
+        java{
+          outputSubDir = 'java'
+        }
+      }
+      task.plugins {
+        grpc {
+          outputSubDir = 'java'
+        }
+      }
+    }
+  }
+  generatedFilesBaseDir = "build/proto"
+}
+
+idea {
+  module {
+    sourceDirs += file("${projectDir}/build/proto/main/java")
+  }
+}
