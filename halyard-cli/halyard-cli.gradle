@@ -1,6 +1,3 @@
-apply plugin: 'java'
-apply plugin: 'application'
-
 dependencies {
   compile spinnaker.dependency('lombok')
 
@@ -10,5 +7,7 @@ dependencies {
   compile project(':halyard-proto')
 }
 
+apply plugin: 'java'
+apply plugin: 'application'
 
 mainClassName = 'com.netflix.spinnaker.halyard.cli.Main'

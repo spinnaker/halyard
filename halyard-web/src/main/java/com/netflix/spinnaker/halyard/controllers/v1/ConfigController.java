@@ -79,6 +79,4 @@ public class ConfigController extends ConfigGrpc.ConfigImplBase {
     builder.setValidate(ProblemSet::new);
     return DaemonTaskHandler.submitTask(builder::build, "Set current deployment");
   }
-
-
 }
