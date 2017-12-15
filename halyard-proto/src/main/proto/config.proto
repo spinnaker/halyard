@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_package = "com.netflix.spinnaker.halyard.proto";
+
+service Config {
+  rpc ValidateConfig (ValidateConfigRequest) returns (ValidateConfigResponse) {}
+}
+
+message ValidateConfigRequest {}
+
+message ValidateConfigResponse {
+  string message = 1;
+}

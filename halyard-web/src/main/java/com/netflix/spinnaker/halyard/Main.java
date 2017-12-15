@@ -16,11 +16,6 @@
 
 package com.netflix.spinnaker.halyard;
 
-import com.netflix.spinnaker.halyard.proto.GreeterGrpc;
-import com.netflix.spinnaker.halyard.proto.GreeterOuterClass;
-import com.netflix.spinnaker.halyard.proto.GreeterOuterClass.HelloReply;
-import io.grpc.stub.StreamObserver;
-import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
@@ -48,17 +43,6 @@ public class Main extends SpringBootServletInitializer {
     defaults.put("spring.profiles.active", "${netflix.environment},local");
     return Collections.unmodifiableMap(defaults);
   }
-
-  @GRpcService()
-  public static class GreeterService extends GreeterGrpc.GreeterImplBase{
-    @Override
-    public void sayHello(GreeterOuterClass.HelloRequest request, StreamObserver<HelloReply> responseObserver) {
-      final GreeterOuterClass.HelloReply.Builder replyBuilder = GreeterOuterClass.HelloReply.newBuilder().setMessage2("WASSSSUP");
-      responseObserver.onNext(replyBuilder.build());
-      responseObserver.onCompleted();
-    }
-  }
-
 
   public static void main(String... args) {
     new SpringApplicationBuilder().properties(DEFAULT_PROPS).sources(Main.class).run(args);
