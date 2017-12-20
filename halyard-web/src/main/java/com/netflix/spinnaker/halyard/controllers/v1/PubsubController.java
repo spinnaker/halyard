@@ -31,7 +31,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,12 +39,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/pubsubs")
 public class PubsubController {
+
   @Autowired
   HalconfigParser halconfigParser;
 
@@ -65,7 +66,7 @@ public class PubsubController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<Pubsub> builder = new StaticRequestBuilder<>(
-            () -> pubsubService.getPubsub(deploymentName, pubsubName));
+        () -> pubsubService.getPubsub(deploymentName, pubsubName));
 
     builder.setSeverity(severity);
 
@@ -137,7 +138,7 @@ public class PubsubController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<List<Pubsub>> builder = new StaticRequestBuilder<>(
-            () -> pubsubService.getAllPubsubs(deploymentName));
+        () -> pubsubService.getAllPubsubs(deploymentName));
 
     builder.setSeverity(severity);
 

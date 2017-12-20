@@ -30,16 +30,22 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/ci/{ciName:.+}/masters")
 public class MasterController {
+
   @Autowired
   MasterService masterService;
 
@@ -53,11 +59,12 @@ public class MasterController {
   ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
-  DaemonTask<Halconfig, List<Master>> masters(@PathVariable String deploymentName, @PathVariable String ciName,
+  DaemonTask<Halconfig, List<Master>> masters(@PathVariable String deploymentName,
+      @PathVariable String ciName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<List<Master>> builder = new StaticRequestBuilder<>(
-            () -> masterService.getAllMasters(deploymentName, ciName));
+        () -> masterService.getAllMasters(deploymentName, ciName));
     builder.setSeverity(severity);
 
     if (validate) {
@@ -75,11 +82,12 @@ public class MasterController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<Master> builder = new StaticRequestBuilder<>(
-            () -> masterService.getCiMaster(deploymentName, ciName, masterName));
+        () -> masterService.getCiMaster(deploymentName, ciName, masterName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> masterService.validateMaster(deploymentName, ciName, masterName));
+      builder.setValidateResponse(
+          () -> masterService.validateMaster(deploymentName, ciName, masterName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get the " + masterName + " master");

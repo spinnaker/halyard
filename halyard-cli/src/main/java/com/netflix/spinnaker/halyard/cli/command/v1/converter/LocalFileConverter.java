@@ -18,22 +18,24 @@
 package com.netflix.spinnaker.halyard.cli.command.v1.converter;
 
 import com.beust.jcommander.IStringConverter;
-
 import com.netflix.spinnaker.halyard.cli.command.v1.GlobalOptions;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
-import java.io.File;
-import java.io.IOException;
 import org.aspectj.util.FileUtil;
 
+import java.io.File;
+import java.io.IOException;
+
 public class LocalFileConverter implements IStringConverter<String> {
+
   @Override
   public String convert(String value) {
     if (GlobalOptions.getGlobalOptions().isUseRemoteDaemon()) {
       try {
         return FileUtil.readAsString(new File(value));
       } catch (IOException e) {
-        throw new HalException(Problem.Severity.FATAL, "Config references file that is unreadable: " + value);
+        throw new HalException(Problem.Severity.FATAL,
+            "Config references file that is unreadable: " + value);
       }
     }
     return new File(value).getAbsolutePath();

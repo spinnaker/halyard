@@ -31,7 +31,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,12 +39,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/artifactProviders")
 public class ArtifactProviderController {
+
   @Autowired
   HalconfigParser halconfigParser;
 
@@ -65,12 +66,13 @@ public class ArtifactProviderController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<ArtifactProvider> builder = new StaticRequestBuilder<>(
-            () -> providerService.getArtifactProvider(deploymentName, providerName));
+        () -> providerService.getArtifactProvider(deploymentName, providerName));
 
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> providerService.validateArtifactProvider(deploymentName, providerName));
+      builder.setValidateResponse(
+          () -> providerService.validateArtifactProvider(deploymentName, providerName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get the " + providerName + " provider");
@@ -137,12 +139,13 @@ public class ArtifactProviderController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<List<ArtifactProvider>> builder = new StaticRequestBuilder<>(
-            () -> providerService.getAllArtifactProviders(deploymentName));
+        () -> providerService.getAllArtifactProviders(deploymentName));
 
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> providerService.validateAllArtifactProviders(deploymentName));
+      builder
+          .setValidateResponse(() -> providerService.validateAllArtifactProviders(deploymentName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get all providers");

@@ -36,7 +36,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,9 +44,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
+
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/security")
 public class SecurityController {
+
   @Autowired
   HalconfigParser halconfigParser;
 
@@ -64,7 +66,8 @@ public class SecurityController {
   DaemonTask<Halconfig, Security> getSecurity(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<Security> builder = new DaemonResponse.StaticRequestBuilder<>(() -> securityService.getSecurity(deploymentName));
+    DaemonResponse.StaticRequestBuilder<Security> builder = new DaemonResponse.StaticRequestBuilder<>(
+        () -> securityService.getSecurity(deploymentName));
 
     builder.setSeverity(severity);
 
@@ -79,7 +82,8 @@ public class SecurityController {
   DaemonTask<Halconfig, UiSecurity> getUiSecurity(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<UiSecurity> builder = new DaemonResponse.StaticRequestBuilder<>(() -> securityService.getUiSecurity(deploymentName));
+    DaemonResponse.StaticRequestBuilder<UiSecurity> builder = new DaemonResponse.StaticRequestBuilder<>(
+        () -> securityService.getUiSecurity(deploymentName));
 
     builder.setSeverity(severity);
 
@@ -120,7 +124,8 @@ public class SecurityController {
   DaemonTask<Halconfig, ApacheSsl> getApacheSsl(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<ApacheSsl> builder = new DaemonResponse.StaticRequestBuilder<>(() -> securityService.getApacheSsl(deploymentName));
+    DaemonResponse.StaticRequestBuilder<ApacheSsl> builder = new DaemonResponse.StaticRequestBuilder<>(
+        () -> securityService.getApacheSsl(deploymentName));
 
     builder.setSeverity(severity);
 
@@ -183,7 +188,7 @@ public class SecurityController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<ApiSecurity> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> securityService.getApiSecurity(deploymentName));
+        () -> securityService.getApiSecurity(deploymentName));
 
     builder.setSeverity(severity);
 
@@ -225,7 +230,7 @@ public class SecurityController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<SpringSsl> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> securityService.getSpringSsl(deploymentName));
+        () -> securityService.getSpringSsl(deploymentName));
 
     builder.setSeverity(severity);
 
@@ -314,7 +319,7 @@ public class SecurityController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<GroupMembership> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> securityService.getGroupMembership(deploymentName));
+        () -> securityService.getGroupMembership(deploymentName));
 
     builder.setSeverity(severity);
 
@@ -331,12 +336,13 @@ public class SecurityController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<AuthnMethod> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> securityService.getAuthnMethod(deploymentName, methodName));
+        () -> securityService.getAuthnMethod(deploymentName, methodName));
 
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> securityService.validateAuthnMethod(deploymentName, methodName));
+      builder.setValidateResponse(
+          () -> securityService.validateAuthnMethod(deploymentName, methodName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get authentication settings");
@@ -348,15 +354,17 @@ public class SecurityController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<RoleProvider> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> securityService.getRoleProvider(deploymentName, roleProviderName));
+        () -> securityService.getRoleProvider(deploymentName, roleProviderName));
 
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> securityService.validateRoleProvider(deploymentName, roleProviderName));
+      builder.setValidateResponse(
+          () -> securityService.validateRoleProvider(deploymentName, roleProviderName));
     }
 
-    return DaemonTaskHandler.submitTask(builder::build, "Get " + roleProviderName + " group membership settings");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Get " + roleProviderName + " group membership settings");
   }
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
@@ -412,7 +420,8 @@ public class SecurityController {
     builder.setSave(() -> halconfigParser.saveConfig());
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit " + methodName + " authentication settings");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit " + methodName + " authentication settings");
   }
 
   @RequestMapping(value = "/authz/groupMembership/{roleProviderName:.+}", method = RequestMethod.PUT)
@@ -435,14 +444,16 @@ public class SecurityController {
 
     builder.setValidate(ProblemSet::new);
     if (validate) {
-      builder.setValidate(() -> securityService.validateRoleProvider(deploymentName, roleProviderName));
+      builder.setValidate(
+          () -> securityService.validateRoleProvider(deploymentName, roleProviderName));
     }
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit " + roleProviderName + " group membership settings");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit " + roleProviderName + " group membership settings");
   }
 
   @RequestMapping(value = "/authn/{methodName:.+}/enabled/", method = RequestMethod.PUT)
@@ -453,7 +464,8 @@ public class SecurityController {
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setUpdate(() -> securityService.setAuthnMethodEnabled(deploymentName, methodName, enabled));
+    builder.setUpdate(
+        () -> securityService.setAuthnMethodEnabled(deploymentName, methodName, enabled));
     builder.setSeverity(severity);
 
     builder.setValidate(ProblemSet::new);
@@ -464,7 +476,8 @@ public class SecurityController {
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit " + methodName + " authentication settings");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit " + methodName + " authentication settings");
   }
 
   @RequestMapping(value = "/authz/enabled/", method = RequestMethod.PUT)

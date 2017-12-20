@@ -32,16 +32,22 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/providers/{providerName:.+}/bakery")
 public class BakeryController {
+
   @Autowired
   BakeryService bakeryService;
 
@@ -55,22 +61,25 @@ public class BakeryController {
   ObjectMapper objectMapper;
 
   @RequestMapping(value = "/defaults/", method = RequestMethod.GET)
-  DaemonTask<Halconfig, BakeryDefaults> getBakeryDefaults(@PathVariable String deploymentName, @PathVariable String providerName,
+  DaemonTask<Halconfig, BakeryDefaults> getBakeryDefaults(@PathVariable String deploymentName,
+      @PathVariable String providerName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<BakeryDefaults> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> bakeryService.getBakeryDefaults(deploymentName, providerName));
+        () -> bakeryService.getBakeryDefaults(deploymentName, providerName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> bakeryService.validateBakeryDefaults(deploymentName, providerName));
+      builder.setValidateResponse(
+          () -> bakeryService.validateBakeryDefaults(deploymentName, providerName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get " + providerName + " bakery defaults");
   }
 
   @RequestMapping(value = "/defaults/", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setBakeryDefaults(@PathVariable String deploymentName, @PathVariable String providerName,
+  DaemonTask<Halconfig, Void> setBakeryDefaults(@PathVariable String deploymentName,
+      @PathVariable String providerName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
       @RequestBody Object rawBakeryDefaults) {
@@ -83,7 +92,8 @@ public class BakeryController {
 
     Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> bakeryDefaults.stageLocalFiles(stagingPath));
-    builder.setUpdate(() -> bakeryService.setBakeryDefaults(deploymentName, providerName, bakeryDefaults));
+    builder.setUpdate(
+        () -> bakeryService.setBakeryDefaults(deploymentName, providerName, bakeryDefaults));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
@@ -97,19 +107,22 @@ public class BakeryController {
     builder.setSave(() -> halconfigParser.saveConfig());
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit " + providerName + " bakery defaults");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit " + providerName + " bakery defaults");
   }
 
   @RequestMapping(value = "/defaults/baseImage/", method = RequestMethod.GET)
-  DaemonTask<Halconfig, List<BaseImage>> images(@PathVariable String deploymentName, @PathVariable String providerName,
+  DaemonTask<Halconfig, List<BaseImage>> images(@PathVariable String deploymentName,
+      @PathVariable String providerName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<List<BaseImage>> builder = new StaticRequestBuilder<>(
-            () -> bakeryService.getAllBaseImages(deploymentName, providerName));
+        () -> bakeryService.getAllBaseImages(deploymentName, providerName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> bakeryService.validateAllBaseImages(deploymentName, providerName));
+      builder.setValidateResponse(
+          () -> bakeryService.validateAllBaseImages(deploymentName, providerName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get " + providerName + " base images");
@@ -123,11 +136,12 @@ public class BakeryController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<BaseImage> builder = new StaticRequestBuilder<>(
-            () -> bakeryService.getProviderBaseImage(deploymentName, providerName, baseImageId));
+        () -> bakeryService.getProviderBaseImage(deploymentName, providerName, baseImageId));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> bakeryService.validateBaseImage(deploymentName, providerName, baseImageId));
+      builder.setValidateResponse(
+          () -> bakeryService.validateBaseImage(deploymentName, providerName, baseImageId));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get " + baseImageId + " base image");
@@ -142,7 +156,8 @@ public class BakeryController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setUpdate(() -> bakeryService.deleteBaseImage(deploymentName, providerName, baseImageId));
+    builder
+        .setUpdate(() -> bakeryService.deleteBaseImage(deploymentName, providerName, baseImageId));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
@@ -176,12 +191,14 @@ public class BakeryController {
 
     Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> baseImage.stageLocalFiles(stagingPath));
-    builder.setUpdate(() -> bakeryService.setBaseImage(deploymentName, providerName, baseImageId, baseImage));
+    builder.setUpdate(
+        () -> bakeryService.setBaseImage(deploymentName, providerName, baseImageId, baseImage));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
     if (validate) {
-      doValidate = () -> bakeryService.validateBaseImage(deploymentName, providerName, baseImage.getBaseImage().getId());
+      doValidate = () -> bakeryService
+          .validateBaseImage(deploymentName, providerName, baseImage.getBaseImage().getId());
     }
 
     builder.setValidate(doValidate);
@@ -215,7 +232,8 @@ public class BakeryController {
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
     if (validate) {
-      doValidate = () -> bakeryService.validateBaseImage(deploymentName, providerName, baseImage.getBaseImage().getId());
+      doValidate = () -> bakeryService
+          .validateBaseImage(deploymentName, providerName, baseImage.getBaseImage().getId());
     }
 
     builder.setValidate(doValidate);
@@ -223,6 +241,7 @@ public class BakeryController {
     builder.setSave(() -> halconfigParser.saveConfig());
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Add " + baseImage.getNodeName() + " base image");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Add " + baseImage.getNodeName() + " base image");
   }
 }

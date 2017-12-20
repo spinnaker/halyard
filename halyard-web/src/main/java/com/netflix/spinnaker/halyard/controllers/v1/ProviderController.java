@@ -29,7 +29,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,12 +37,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/providers")
 public class ProviderController {
+
   @Autowired
   HalconfigParser halconfigParser;
 
@@ -63,12 +64,13 @@ public class ProviderController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<Provider> builder = new StaticRequestBuilder<>(
-            () -> providerService.getProvider(deploymentName, providerName));
+        () -> providerService.getProvider(deploymentName, providerName));
 
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> providerService.validateProvider(deploymentName, providerName));
+      builder.setValidateResponse(
+          () -> providerService.validateProvider(deploymentName, providerName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get the " + providerName + " provider");
@@ -135,7 +137,7 @@ public class ProviderController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<List<Provider>> builder = new StaticRequestBuilder<>(
-            () -> providerService.getAllProviders(deploymentName));
+        () -> providerService.getAllProviders(deploymentName));
 
     builder.setSeverity(severity);
 

@@ -31,7 +31,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,12 +39,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/pubsubs/{pubsubName:.+}/subscriptions")
 public class SubscriptionController {
+
   @Autowired
   SubscriptionService subscriptionService;
 
@@ -65,11 +66,12 @@ public class SubscriptionController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<List<Subscription>> builder = new StaticRequestBuilder<>(
-            () -> subscriptionService.getAllSubscriptions(deploymentName, pubsubName));
+        () -> subscriptionService.getAllSubscriptions(deploymentName, pubsubName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> subscriptionService.validateAllSubscriptions(deploymentName, pubsubName));
+      builder.setValidateResponse(
+          () -> subscriptionService.validateAllSubscriptions(deploymentName, pubsubName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get all " + pubsubName + " subscriptions");
@@ -83,14 +85,17 @@ public class SubscriptionController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<Subscription> builder = new StaticRequestBuilder<>(
-            () -> subscriptionService.getPubsubSubscription(deploymentName, pubsubName, subscriptionName));
+        () -> subscriptionService
+            .getPubsubSubscription(deploymentName, pubsubName, subscriptionName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> subscriptionService.validateSubscription(deploymentName, pubsubName, subscriptionName));
+      builder.setValidateResponse(() -> subscriptionService
+          .validateSubscription(deploymentName, pubsubName, subscriptionName));
     }
 
-    return DaemonTaskHandler.submitTask(builder::build, "Get " + subscriptionName + " subscription");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Get " + subscriptionName + " subscription");
   }
 
   @RequestMapping(value = "/subscription/{subscriptionName:.+}", method = RequestMethod.DELETE)
@@ -102,7 +107,8 @@ public class SubscriptionController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setUpdate(() -> subscriptionService.deleteSubscription(deploymentName, pubsubName, subscriptionName));
+    builder.setUpdate(
+        () -> subscriptionService.deleteSubscription(deploymentName, pubsubName, subscriptionName));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
@@ -116,7 +122,8 @@ public class SubscriptionController {
     Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Delete the " + subscriptionName + " subscription");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Delete the " + subscriptionName + " subscription");
   }
 
   @RequestMapping(value = "/subscription/{subscriptionName:.+}", method = RequestMethod.PUT)
@@ -134,19 +141,22 @@ public class SubscriptionController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setUpdate(() -> subscriptionService.setSubscription(deploymentName, pubsubName, subscriptionName, subscription));
+    builder.setUpdate(() -> subscriptionService
+        .setSubscription(deploymentName, pubsubName, subscriptionName, subscription));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
     if (validate) {
-      doValidate = () -> subscriptionService.validateSubscription(deploymentName, pubsubName, subscription.getName());
+      doValidate = () -> subscriptionService
+          .validateSubscription(deploymentName, pubsubName, subscription.getName());
     }
 
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + subscriptionName + " subscription");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit the " + subscriptionName + " subscription");
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
@@ -164,17 +174,20 @@ public class SubscriptionController {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
     builder.setSeverity(severity);
 
-    builder.setUpdate(() -> subscriptionService.addSubscription(deploymentName, pubsubName, subscription));
+    builder.setUpdate(
+        () -> subscriptionService.addSubscription(deploymentName, pubsubName, subscription));
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
     if (validate) {
-      doValidate = () -> subscriptionService.validateSubscription(deploymentName, pubsubName, subscription.getName());
+      doValidate = () -> subscriptionService
+          .validateSubscription(deploymentName, pubsubName, subscription.getName());
     }
 
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
 
-    return DaemonTaskHandler.submitTask(builder::build, "Add the " + subscription.getName() + " subscription");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Add the " + subscription.getName() + " subscription");
   }
 }

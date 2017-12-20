@@ -29,13 +29,20 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/deploymentEnvironment")
 public class DeploymentEnvironmentController {
+
   @Autowired
   HalconfigParser halconfigParser;
 
@@ -49,15 +56,17 @@ public class DeploymentEnvironmentController {
   ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
-  DaemonTask<Halconfig, DeploymentEnvironment> getDeploymentEnvironment(@PathVariable String deploymentName,
+  DaemonTask<Halconfig, DeploymentEnvironment> getDeploymentEnvironment(
+      @PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<DeploymentEnvironment> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> deploymentEnvironmentService.getDeploymentEnvironment(deploymentName));
+        () -> deploymentEnvironmentService.getDeploymentEnvironment(deploymentName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> deploymentEnvironmentService.validateDeploymentEnvironment(deploymentName));
+      builder.setValidateResponse(
+          () -> deploymentEnvironmentService.validateDeploymentEnvironment(deploymentName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get the deployment environment");
@@ -68,17 +77,20 @@ public class DeploymentEnvironmentController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
       @RequestBody Object rawDeploymentEnvironment) {
-    DeploymentEnvironment deploymentEnvironment = objectMapper.convertValue(rawDeploymentEnvironment, DeploymentEnvironment.class);
+    DeploymentEnvironment deploymentEnvironment = objectMapper
+        .convertValue(rawDeploymentEnvironment, DeploymentEnvironment.class);
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> deploymentEnvironment.stageLocalFiles(stagingPath));
-    builder.setUpdate(() -> deploymentEnvironmentService.setDeploymentEnvironment(deploymentName, deploymentEnvironment));
+    builder.setUpdate(() -> deploymentEnvironmentService
+        .setDeploymentEnvironment(deploymentName, deploymentEnvironment));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidate(() -> deploymentEnvironmentService.validateDeploymentEnvironment(deploymentName));
+      builder.setValidate(
+          () -> deploymentEnvironmentService.validateDeploymentEnvironment(deploymentName));
     } else {
       builder.setValidate(ProblemSet::new);
     }

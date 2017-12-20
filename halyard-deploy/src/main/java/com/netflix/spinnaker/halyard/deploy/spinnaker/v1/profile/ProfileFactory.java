@@ -24,12 +24,14 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.yaml.snakeyaml.Yaml;
 
+import java.util.List;
+import java.util.Map;
+
 abstract public class ProfileFactory {
+
   @Autowired
   private ArtifactService artifactService;
 
@@ -50,7 +52,8 @@ abstract public class ProfileFactory {
     return artifactService;
   }
 
-  public Profile getProfile(String name, String outputFile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  public Profile getProfile(String name, String outputFile,
+      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     String deploymentName = deploymentConfiguration.getName();
     String version = getArtifactService().getArtifactVersion(deploymentName, getArtifact());
     Profile result = getBaseProfile(name, version, outputFile);
@@ -62,7 +65,9 @@ abstract public class ProfileFactory {
     return result;
   }
 
-  abstract protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints);
+  abstract protected void setProfile(Profile profile,
+      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints);
+
   abstract protected Profile getBaseProfile(String name, String version, String outputFile);
 
   abstract public SpinnakerArtifact getArtifact();

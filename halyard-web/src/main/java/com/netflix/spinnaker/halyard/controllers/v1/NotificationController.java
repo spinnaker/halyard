@@ -31,7 +31,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,11 +39,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/notifications")
 public class NotificationController {
+
   @Autowired
   HalconfigParser halconfigParser;
 
@@ -64,14 +65,16 @@ public class NotificationController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<Notification> builder = new StaticRequestBuilder<>(
-            () -> notificationService.getNotification(deploymentName, notificationName));
+        () -> notificationService.getNotification(deploymentName, notificationName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> notificationService.validateNotification(deploymentName, notificationName));
+      builder.setValidateResponse(
+          () -> notificationService.validateNotification(deploymentName, notificationName));
     }
 
-    return DaemonTaskHandler.submitTask(builder::build, "Get " + notificationName + " notification");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Get " + notificationName + " notification");
   }
 
   @RequestMapping(value = "/{notificationName:.+}/enabled", method = RequestMethod.PUT)
@@ -83,7 +86,8 @@ public class NotificationController {
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setUpdate(() -> notificationService.setEnabled(deploymentName, notificationName, enabled));
+    builder
+        .setUpdate(() -> notificationService.setEnabled(deploymentName, notificationName, enabled));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
@@ -102,11 +106,13 @@ public class NotificationController {
   DaemonTask<Halconfig, Notifications> notifications(@PathVariable String deploymentName,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<Notifications> builder = new StaticRequestBuilder<>(() -> notificationService.getNotifications(deploymentName));
+    StaticRequestBuilder<Notifications> builder = new StaticRequestBuilder<>(
+        () -> notificationService.getNotifications(deploymentName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> notificationService.validateAllNotifications(deploymentName));
+      builder
+          .setValidateResponse(() -> notificationService.validateAllNotifications(deploymentName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get all notification settings");
@@ -141,6 +147,7 @@ public class NotificationController {
     builder.setSave(() -> halconfigParser.saveConfig());
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + notificationName + " notification");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit the " + notificationName + " notification");
   }
 }

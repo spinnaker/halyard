@@ -30,13 +30,20 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.nio.file.Path;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/metricStores/")
 public class MetricStoresController {
+
   @Autowired
   HalconfigParser halconfigParser;
 
@@ -54,7 +61,7 @@ public class MetricStoresController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<MetricStores> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> metricStoresService.getMetricStores(deploymentName));
+        () -> metricStoresService.getMetricStores(deploymentName));
 
     builder.setSeverity(severity);
 
@@ -71,12 +78,13 @@ public class MetricStoresController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<MetricStore> builder = new DaemonResponse.StaticRequestBuilder<>(
-            () -> metricStoresService.getMetricStore(deploymentName, metricStoreType));
+        () -> metricStoresService.getMetricStore(deploymentName, metricStoreType));
 
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
+      builder.setValidateResponse(
+          () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get " + metricStoreType + " metric store");
@@ -128,14 +136,16 @@ public class MetricStoresController {
 
     builder.setValidate(ProblemSet::new);
     if (validate) {
-      builder.setValidate(() -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
+      builder.setValidate(
+          () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
     }
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit " + metricStoreType + " metric store");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit " + metricStoreType + " metric store");
   }
 
   @RequestMapping(value = "/{metricStoreType:.+}/enabled/", method = RequestMethod.PUT)
@@ -146,17 +156,20 @@ public class MetricStoresController {
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setUpdate(() -> metricStoresService.setMetricStoreEnabled(deploymentName, metricStoreType, enabled));
+    builder.setUpdate(
+        () -> metricStoresService.setMetricStoreEnabled(deploymentName, metricStoreType, enabled));
     builder.setSeverity(severity);
 
     builder.setValidate(ProblemSet::new);
     if (validate) {
-      builder.setValidate(() -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
+      builder.setValidate(
+          () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
     }
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
 
-    return DaemonTaskHandler.submitTask(builder::build, "Edit " + metricStoreType + " metric store");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Edit " + metricStoreType + " metric store");
   }
 }

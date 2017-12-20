@@ -31,16 +31,22 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/providers/{providerName:.+}/accounts")
 public class AccountController {
+
   @Autowired
   AccountService accountService;
 
@@ -60,11 +66,12 @@ public class AccountController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<List<Account>> builder = new StaticRequestBuilder<>(
-            () -> accountService.getAllAccounts(deploymentName, providerName));
+        () -> accountService.getAllAccounts(deploymentName, providerName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> accountService.validateAllAccounts(deploymentName, providerName));
+      builder.setValidateResponse(
+          () -> accountService.validateAllAccounts(deploymentName, providerName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get all " + providerName + " accounts");
@@ -78,11 +85,12 @@ public class AccountController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     StaticRequestBuilder<Account> builder = new StaticRequestBuilder<>(
-            () -> accountService.getProviderAccount(deploymentName, providerName, accountName));
+        () -> accountService.getProviderAccount(deploymentName, providerName, accountName));
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> accountService.validateAccount(deploymentName, providerName, accountName));
+      builder.setValidateResponse(
+          () -> accountService.validateAccount(deploymentName, providerName, accountName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get " + accountName + " account");
@@ -103,7 +111,8 @@ public class AccountController {
     String accountName = account.getName();
 
     builder.setUpdate(() -> accountService.addAccount(deploymentName, providerName, account));
-    builder.setFieldOptionsResponse(() -> accountService.getAccountOptions(deploymentName, providerName, accountName, fieldName));
+    builder.setFieldOptionsResponse(() -> accountService
+        .getAccountOptions(deploymentName, providerName, accountName, fieldName));
     builder.setSeverity(severity);
 
     return DaemonTaskHandler.submitTask(builder::build, "Get " + fieldName + " options");
@@ -119,7 +128,8 @@ public class AccountController {
     String fieldName = rawAccountOptions.getField();
     DaemonResponse.StaticOptionsRequestBuilder builder = new DaemonResponse.StaticOptionsRequestBuilder();
 
-    builder.setFieldOptionsResponse(() -> accountService.getAccountOptions(deploymentName, providerName, accountName, fieldName));
+    builder.setFieldOptionsResponse(() -> accountService
+        .getAccountOptions(deploymentName, providerName, accountName, fieldName));
     builder.setSeverity(severity);
 
     return DaemonTaskHandler.submitTask(builder::build, "Get " + fieldName + " options");
@@ -134,7 +144,8 @@ public class AccountController {
       @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setUpdate(() -> accountService.deleteAccount(deploymentName, providerName, accountName));
+    builder
+        .setUpdate(() -> accountService.deleteAccount(deploymentName, providerName, accountName));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
@@ -168,12 +179,14 @@ public class AccountController {
 
     Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> account.stageLocalFiles(stagingPath));
-    builder.setUpdate(() -> accountService.setAccount(deploymentName, providerName, accountName, account));
+    builder.setUpdate(
+        () -> accountService.setAccount(deploymentName, providerName, accountName, account));
     builder.setSeverity(severity);
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
     if (validate) {
-      doValidate = () -> accountService.validateAccount(deploymentName, providerName, account.getName());
+      doValidate = () -> accountService
+          .validateAccount(deploymentName, providerName, account.getName());
     }
 
     builder.setValidate(doValidate);
@@ -205,7 +218,8 @@ public class AccountController {
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
     if (validate) {
-      doValidate = () -> accountService.validateAccount(deploymentName, providerName, account.getName());
+      doValidate = () -> accountService
+          .validateAccount(deploymentName, providerName, account.getName());
     }
 
     builder.setValidate(doValidate);
@@ -213,6 +227,7 @@ public class AccountController {
     builder.setSave(() -> halconfigParser.saveConfig());
     builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
-    return DaemonTaskHandler.submitTask(builder::build, "Add the " + account.getName() + " account");
+    return DaemonTaskHandler
+        .submitTask(builder::build, "Add the " + account.getName() + " account");
   }
 }

@@ -26,6 +26,15 @@ import com.netflix.spinnaker.halyard.core.AtomicFileWriter;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.parser.ParserException;
+import org.yaml.snakeyaml.scanner.ScannerException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -40,14 +49,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.parser.ParserException;
-import org.yaml.snakeyaml.scanner.ScannerException;
 
 /**
  * A parser for all Config read by Halyard at runtime.
@@ -159,7 +160,7 @@ public class HalconfigParser {
   /**
    * Deletes all files in the staging directory that are not referenced in the hal config.
    */
-  public void cleanLocalFiles(Path stagingDirectoryPath){
+  public void cleanLocalFiles(Path stagingDirectoryPath) {
     Halconfig halconfig = getHalconfig();
     Set<String> referencedFiles = new HashSet<String>();
     Consumer<Node> fileFinder = n -> referencedFiles.addAll(n.localFiles().stream().map(f -> {
@@ -184,7 +185,7 @@ public class HalconfigParser {
       for (String f : existingStagingFiles) {
         FileUtils.forceDelete(new File(f));
       }
-    } catch(IOException e) {
+    } catch (IOException e) {
       throw new HalException(FATAL, "Failed to clean staging directory: " + e.getMessage(), e);
     }
   }
