@@ -18,7 +18,7 @@
 package com.netflix.spinnaker.halyard.cli.command.v1.converter;
 
 import com.beust.jcommander.IStringConverter;
-import com.netflix.spinnaker.halyard.cli.command.v1.GlobalOptions;
+import com.netflix.spinnaker.halyard.core.GlobalApplicationOptions;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import org.aspectj.util.FileUtil;
@@ -30,7 +30,7 @@ public class LocalFileConverter implements IStringConverter<String> {
 
   @Override
   public String convert(String value) {
-    if (GlobalOptions.getGlobalOptions().isUseRemoteDaemon()) {
+    if (GlobalApplicationOptions.getInstance().isUseRemoteDaemon()) {
       try {
         return FileUtil.readAsString(new File(value));
       } catch (IOException e) {

@@ -39,6 +39,7 @@ import java.io.InputStream;
 @Component
 @Slf4j
 public class GoogleProfileReader implements ProfileReader {
+
   @Autowired
   String spinconfigBucket;
 
@@ -69,7 +70,8 @@ public class GoogleProfileReader implements ProfileReader {
         .build();
   }
 
-  public InputStream readProfile(String artifactName, String version, String profileName) throws IOException {
+  public InputStream readProfile(String artifactName, String version, String profileName)
+      throws IOException {
     String path = profilePath(artifactName, version, profileName);
     return getContents(path);
   }
@@ -90,7 +92,8 @@ public class GoogleProfileReader implements ProfileReader {
     );
   }
 
-  public InputStream readArchiveProfile(String artifactName, String version, String profileName) throws IOException {
+  public InputStream readArchiveProfile(String artifactName, String version, String profileName)
+      throws IOException {
     return readProfile(artifactName, version, profileName + ".tar.gz");
   }
 
