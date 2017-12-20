@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 abstract public class ProfileFactory {
-
   @Autowired
   private ArtifactService artifactService;
 
@@ -52,8 +51,7 @@ abstract public class ProfileFactory {
     return artifactService;
   }
 
-  public Profile getProfile(String name, String outputFile,
-      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  public Profile getProfile(String name, String outputFile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     String deploymentName = deploymentConfiguration.getName();
     String version = getArtifactService().getArtifactVersion(deploymentName, getArtifact());
     Profile result = getBaseProfile(name, version, outputFile);
@@ -65,8 +63,7 @@ abstract public class ProfileFactory {
     return result;
   }
 
-  abstract protected void setProfile(Profile profile,
-      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints);
+  abstract protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints);
 
   abstract protected Profile getBaseProfile(String name, String version, String outputFile);
 
@@ -86,8 +83,7 @@ abstract public class ProfileFactory {
    * @return the list of files required by the node to function.
    */
   protected List<String> backupRequiredFiles(Node node, String deploymentName) {
-    return node.backupLocalFiles(
-        halconfigDirectoryStructure.getStagingDependenciesPath(deploymentName).toString());
+    return node.backupLocalFiles(halconfigDirectoryStructure.getStagingDependenciesPath(deploymentName).toString());
   }
 
   protected String yamlToString(Object o) {

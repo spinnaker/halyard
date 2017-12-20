@@ -46,7 +46,6 @@ import java.util.function.Supplier;
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/providers/{providerName:.+}/accounts")
 public class AccountController {
-
   @Autowired
   AccountService accountService;
 
