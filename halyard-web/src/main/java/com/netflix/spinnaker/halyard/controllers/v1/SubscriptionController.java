@@ -70,8 +70,7 @@ public class SubscriptionController {
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(
-          () -> subscriptionService.validateAllSubscriptions(deploymentName, pubsubName));
+      builder.setValidateResponse(() -> subscriptionService.validateAllSubscriptions(deploymentName, pubsubName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Get all " + pubsubName + " subscriptions");
@@ -90,12 +89,11 @@ public class SubscriptionController {
     builder.setSeverity(severity);
 
     if (validate) {
-      builder.setValidateResponse(() -> subscriptionService
-          .validateSubscription(deploymentName, pubsubName, subscriptionName));
+      builder.setValidateResponse(
+          () -> subscriptionService.validateSubscription(deploymentName, pubsubName, subscriptionName));
     }
 
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Get " + subscriptionName + " subscription");
+    return DaemonTaskHandler.submitTask(builder::build, "Get " + subscriptionName + " subscription");
   }
 
   @RequestMapping(value = "/subscription/{subscriptionName:.+}", method = RequestMethod.DELETE)
@@ -122,8 +120,7 @@ public class SubscriptionController {
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Delete the " + subscriptionName + " subscription");
+    return DaemonTaskHandler.submitTask(builder::build, "Delete the " + subscriptionName + " subscription");
   }
 
   @RequestMapping(value = "/subscription/{subscriptionName:.+}", method = RequestMethod.PUT)
@@ -155,8 +152,7 @@ public class SubscriptionController {
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
 
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Edit the " + subscriptionName + " subscription");
+    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + subscriptionName + " subscription");
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
@@ -187,7 +183,6 @@ public class SubscriptionController {
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
 
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Add the " + subscription.getName() + " subscription");
+    return DaemonTaskHandler.submitTask(builder::build, "Add the " + subscription.getName() + " subscription");
   }
 }
