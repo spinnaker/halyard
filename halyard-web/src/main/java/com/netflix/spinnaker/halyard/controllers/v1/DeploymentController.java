@@ -17,6 +17,7 @@
 package com.netflix.spinnaker.halyard.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
@@ -35,6 +36,7 @@ import com.netflix.spinnaker.halyard.deploy.services.v1.DeployService;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -66,6 +68,9 @@ public class DeploymentController {
   ObjectMapper objectMapper;
 
   @Autowired
+  HalconfigDirectoryStructure halconfigDirectoryStructure;
+
+  @Autowired
   HalconfigParser halconfigParser;
 
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.GET)
@@ -93,6 +98,9 @@ public class DeploymentController {
     );
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
+
+    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> deploymentConfiguration.stageLocalFiles(stagingPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> deploymentService.setDeploymentConfiguration(deploymentName, deploymentConfiguration));
 
@@ -104,6 +112,8 @@ public class DeploymentController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit deployment configuration");
   }

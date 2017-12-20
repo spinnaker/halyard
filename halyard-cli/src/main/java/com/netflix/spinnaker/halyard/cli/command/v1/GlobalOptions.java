@@ -39,6 +39,9 @@ public class GlobalOptions {
 
   private String daemonEndpoint = "http://localhost:8064";
 
+  // TODO(brnelson): Change this to false, and set it based off some config that's being read from the filesystem.
+  private boolean useRemoteDaemon = true;
+
   private String options;
 
   private Level log;

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
+import java.util.zip.CRC32;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +35,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import org.apache.commons.io.FileUtils;
 
 import static com.netflix.spinnaker.halyard.config.model.v1.node.NodeDiff.ChangeType.*;
 import static com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity.FATAL;
@@ -167,6 +169,28 @@ abstract public class Node implements Validatable {
     }
 
     return res;
+  }
+
+  public void stageLocalFiles(Path outputPath) {
+    localFiles().forEach(f -> {
+      try{
+        f.setAccessible(true);
+        String fContent = (String) f.get(this);
+        if (fContent != null) {
+          CRC32 crc = new CRC32();
+          crc.update(fContent.getBytes());
+          String fPath = Paths
+              .get(outputPath.toAbsolutePath().toString(), Long.toHexString(crc.getValue()))
+              .toString();
+          FileUtils.writeStringToFile(new File(fPath), fContent);
+          f.set(this, fPath);
+        }
+      } catch (IllegalAccessException | IOException e ) {
+        throw new RuntimeException("Failed to get local files for node " + this.getNodeName(), e);
+      } finally {
+        f.setAccessible(false);
+      }
+    });
   }
 
   public void recursiveConsume(Consumer<Node> consumer) {

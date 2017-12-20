@@ -18,6 +18,7 @@
 package com.netflix.spinnaker.halyard.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Cis;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
@@ -29,6 +30,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,9 @@ public class MasterController {
 
   @Autowired
   HalconfigParser halconfigParser;
+
+  @Autowired
+  HalconfigDirectoryStructure halconfigDirectoryStructure;
 
   @Autowired
   ObjectMapper objectMapper;
@@ -100,6 +105,8 @@ public class MasterController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
+    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Delete the " + masterName + " master");
   }
@@ -119,6 +126,8 @@ public class MasterController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
+    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> master.stageLocalFiles(stagingPath));
     builder.setUpdate(() -> masterService.setMaster(deploymentName, ciName, masterName, master));
     builder.setSeverity(severity);
 
@@ -130,6 +139,7 @@ public class MasterController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit the " + masterName + " master");
   }
@@ -147,8 +157,10 @@ public class MasterController {
     );
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
-    builder.setSeverity(severity);
 
+    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> master.stageLocalFiles(stagingPath));
+    builder.setSeverity(severity);
     builder.setUpdate(() -> masterService.addMaster(deploymentName, ciName, master));
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
@@ -159,6 +171,7 @@ public class MasterController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Add the " + master.getName() + " master");
   }

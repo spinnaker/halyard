@@ -17,6 +17,7 @@
 package com.netflix.spinnaker.halyard.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
@@ -28,6 +29,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +49,9 @@ public class ProviderController {
 
   @Autowired
   ProviderService providerService;
+
+  @Autowired
+  HalconfigDirectoryStructure halconfigDirectoryStructure;
 
   @Autowired
   ObjectMapper objectMapper;
@@ -83,6 +88,8 @@ public class ProviderController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
+    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> provider.stageLocalFiles(stagingPath));
     builder.setUpdate(() -> providerService.setProvider(deploymentName, provider));
     builder.setSeverity(severity);
 
@@ -94,6 +101,7 @@ public class ProviderController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit the " + providerName + " provider");
   }

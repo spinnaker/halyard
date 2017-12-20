@@ -18,6 +18,7 @@
 package com.netflix.spinnaker.halyard.controllers.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
@@ -28,10 +29,9 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.function.Supplier;
 
 @RestController
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/deploymentEnvironment")
@@ -41,6 +41,9 @@ public class DeploymentEnvironmentController {
 
   @Autowired
   DeploymentEnvironmentService deploymentEnvironmentService;
+
+  @Autowired
+  HalconfigDirectoryStructure halconfigDirectoryStructure;
 
   @Autowired
   ObjectMapper objectMapper;
@@ -69,6 +72,8 @@ public class DeploymentEnvironmentController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
+    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> deploymentEnvironment.stageLocalFiles(stagingPath));
     builder.setUpdate(() -> deploymentEnvironmentService.setDeploymentEnvironment(deploymentName, deploymentEnvironment));
     builder.setSeverity(severity);
 
@@ -80,6 +85,7 @@ public class DeploymentEnvironmentController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit the deployment environment");
   }
