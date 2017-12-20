@@ -21,20 +21,27 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
 
 /**
- * This is the collection of general, top-level flags that come from the application configuration
- * for halyard.
+ * This is the collection of general, top-level flags that come from the application configuration for halyard.
+ * This class is both @AutoWired'able and can act as a singleton via the getInstance() function. This is so the same
+ * class may be reused between halyard's CLI and daemon.
  */
 @Data
+@Configuration
+@PropertySource("file:" + GlobalApplicationOptions.CONFIG_PATH)
 public class GlobalApplicationOptions {
 
-  private static final String CONFIG_PATH = "/opt/spinnaker/hal.properties";
+  static final String CONFIG_PATH = "/opt/spinnaker/hal.properties";
 
+  @Value("${useRemoteDaemon}")
   private boolean useRemoteDaemon = false;
 
   public boolean isUseRemoteDaemon() {

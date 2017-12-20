@@ -35,7 +35,7 @@ public class LocalFileConverter implements IStringConverter<String> {
         return FileUtil.readAsString(new File(value));
       } catch (IOException e) {
         throw new HalException(Problem.Severity.FATAL,
-            "Config references file that is unreadable: " + value);
+            "Was passed parameter " + value + " to unreadable file: " + e.getMessage());
       }
     }
     return new File(value).getAbsolutePath();

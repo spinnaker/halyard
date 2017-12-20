@@ -18,6 +18,7 @@ package com.netflix.spinnaker.halyard.config.config.v1;
 
 import static com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity.FATAL;
 
+import com.netflix.discovery.converters.Auto;
 import com.netflix.spinnaker.halyard.config.error.v1.ParseConfigException;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
@@ -77,6 +78,9 @@ public class HalconfigParser {
 
   @Autowired
   Yaml yamlParser;
+
+  @Autowired
+  GlobalApplicationOptions globalApplicationOptions;
 
   private boolean useBackup = false;
   private String backupHalconfigPath;
@@ -162,7 +166,7 @@ public class HalconfigParser {
    * Deletes all files in the staging directory that are not referenced in the hal config.
    */
   public void cleanLocalFiles(Path stagingDirectoryPath) {
-    if (GlobalApplicationOptions.getInstance().isUseRemoteDaemon()) {
+    if (globalApplicationOptions.isUseRemoteDaemon()) {
       Halconfig halconfig = getHalconfig();
       Set<String> referencedFiles = new HashSet<String>();
       Consumer<Node> fileFinder = n -> referencedFiles.addAll(n.localFiles().stream().map(f -> {
@@ -170,7 +174,7 @@ public class HalconfigParser {
           f.setAccessible(true);
           return (String) f.get(n);
         } catch (IllegalAccessException e) {
-          throw new HalException(FATAL, "Failed to clean staging directory: " + e.getMessage(), e);
+          throw new RuntimeException("Failed to clean staging directory: " + e.getMessage(), e);
         } finally {
           f.setAccessible(false);
         }

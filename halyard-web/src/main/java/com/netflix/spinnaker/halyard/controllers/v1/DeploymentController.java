@@ -102,8 +102,8 @@ public class DeploymentController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> deploymentConfiguration.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> deploymentConfiguration.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> deploymentService
         .setDeploymentConfiguration(deploymentName, deploymentConfiguration));
@@ -116,7 +116,7 @@ public class DeploymentController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit deployment configuration");
   }

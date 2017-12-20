@@ -113,8 +113,8 @@ public class MasterController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Delete the " + masterName + " master");
   }
@@ -134,8 +134,8 @@ public class MasterController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> master.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> master.stageLocalFiles(configPath));
     builder.setUpdate(() -> masterService.setMaster(deploymentName, ciName, masterName, master));
     builder.setSeverity(severity);
 
@@ -147,7 +147,7 @@ public class MasterController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit the " + masterName + " master");
   }
@@ -166,8 +166,8 @@ public class MasterController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> master.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> master.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> masterService.addMaster(deploymentName, ciName, master));
 
@@ -179,7 +179,7 @@ public class MasterController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Add the " + master.getName() + " master");
   }

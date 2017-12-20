@@ -132,8 +132,8 @@ public class NotificationController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> notification.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> notification.stageLocalFiles(configPath));
     builder.setUpdate(() -> notificationService.setNotification(deploymentName, notification));
     builder.setSeverity(severity);
 
@@ -145,7 +145,7 @@ public class NotificationController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler
         .submitTask(builder::build, "Edit the " + notificationName + " notification");

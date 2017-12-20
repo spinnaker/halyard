@@ -99,8 +99,8 @@ public class MetricStoresController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> metricStores.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> metricStores.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> metricStoresService.setMetricStores(deploymentName, metricStores));
 
@@ -111,7 +111,7 @@ public class MetricStoresController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit all metric stores");
   }

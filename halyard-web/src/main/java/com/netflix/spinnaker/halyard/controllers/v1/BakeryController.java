@@ -90,8 +90,8 @@ public class BakeryController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> bakeryDefaults.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> bakeryDefaults.stageLocalFiles(configPath));
     builder.setUpdate(
         () -> bakeryService.setBakeryDefaults(deploymentName, providerName, bakeryDefaults));
     builder.setSeverity(severity);
@@ -105,7 +105,7 @@ public class BakeryController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler
         .submitTask(builder::build, "Edit " + providerName + " bakery defaults");
@@ -168,8 +168,8 @@ public class BakeryController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Delete " + baseImageId + " base image");
   }
@@ -189,8 +189,8 @@ public class BakeryController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> baseImage.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> baseImage.stageLocalFiles(configPath));
     builder.setUpdate(
         () -> bakeryService.setBaseImage(deploymentName, providerName, baseImageId, baseImage));
     builder.setSeverity(severity);
@@ -204,7 +204,7 @@ public class BakeryController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit " + baseImageId + " base image");
   }
@@ -223,8 +223,8 @@ public class BakeryController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> baseImage.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> baseImage.stageLocalFiles(configPath));
     builder.setSeverity(severity);
 
     // TODO(lwander): Would be good to indicate when an added base image id conflicts with an existing base image id.
@@ -239,7 +239,7 @@ public class BakeryController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler
         .submitTask(builder::build, "Add " + baseImage.getNodeName() + " base image");

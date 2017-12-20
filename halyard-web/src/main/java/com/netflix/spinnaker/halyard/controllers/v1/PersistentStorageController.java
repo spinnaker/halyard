@@ -83,8 +83,8 @@ public class PersistentStorageController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> persistentStorage.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> persistentStorage.stageLocalFiles(configPath));
     builder.setUpdate(
         () -> persistentStorageService.setPersistentStorage(deploymentName, persistentStorage));
     builder.setSeverity(severity);
@@ -98,7 +98,7 @@ public class PersistentStorageController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit persistent storage settings");
   }
@@ -132,8 +132,8 @@ public class PersistentStorageController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> persistentStore.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> persistentStore.stageLocalFiles(configPath));
     builder.setUpdate(
         () -> persistentStorageService.setPersistentStore(deploymentName, persistentStore));
     builder.setSeverity(severity);
@@ -148,7 +148,7 @@ public class PersistentStorageController {
     builder.setValidate(doValidate);
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit persistent store");
   }

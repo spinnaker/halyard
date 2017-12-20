@@ -103,8 +103,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> uiSecurity.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> uiSecurity.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setUiSecurity(deploymentName, uiSecurity));
 
@@ -115,7 +115,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit UI security settings");
   }
@@ -145,8 +145,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> apacheSsl.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> apacheSsl.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setApacheSsl(deploymentName, apacheSsl));
 
@@ -157,7 +157,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit UI SSL settings");
   }
@@ -208,8 +208,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> apiSecurity.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> apiSecurity.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setApiSecurity(deploymentName, apiSecurity));
 
@@ -220,7 +220,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit API security settings");
   }
@@ -250,8 +250,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> apacheSsl.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> apacheSsl.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setSpringSsl(deploymentName, apacheSsl));
 
@@ -262,7 +262,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit API SSL settings");
   }
@@ -297,8 +297,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> membership.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> membership.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setGroupMembership(deploymentName, membership));
 
@@ -309,7 +309,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit group membership settings");
   }
@@ -376,8 +376,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> security.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> security.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setSecurity(deploymentName, security));
 
@@ -388,7 +388,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit security settings");
   }
@@ -406,8 +406,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> method.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> method.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setAuthnMethod(deploymentName, method));
 
@@ -418,7 +418,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler
         .submitTask(builder::build, "Edit " + methodName + " authentication settings");
@@ -437,8 +437,8 @@ public class SecurityController {
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> roleProvider.stageLocalFiles(stagingPath));
+    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
+    builder.setStage(() -> roleProvider.stageLocalFiles(configPath));
     builder.setSeverity(severity);
     builder.setUpdate(() -> securityService.setRoleProvider(deploymentName, roleProvider));
 
@@ -450,7 +450,7 @@ public class SecurityController {
 
     builder.setRevert(() -> halconfigParser.undoChanges());
     builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
+    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
 
     return DaemonTaskHandler
         .submitTask(builder::build, "Edit " + roleProviderName + " group membership settings");
