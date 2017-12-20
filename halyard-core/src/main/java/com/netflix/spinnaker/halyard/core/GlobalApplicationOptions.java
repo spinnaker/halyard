@@ -33,7 +33,7 @@ import java.io.IOException;
 @Data
 public class GlobalApplicationOptions {
 
-  private static final String CONFIG_PATH = "/tmp/hal.config";
+  private static final String CONFIG_PATH = "/opt/spinnaker/hal.properties";
 
   private boolean useRemoteDaemon = false;
 
