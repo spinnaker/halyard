@@ -56,8 +56,8 @@ import java.util.stream.Collectors;
  *
  * @see Halconfig
  *
- * Since we aren't relying on SpringBoot to configure Halyard's ~/.hal/config, we instead use this
- * class as a utility method to read ~/.hal/config's contents.
+ * Since we aren't relying on SpringBoot to configure Halyard's ~/.hal/config, we instead use this class as a utility
+ * method to read ~/.hal/config's contents.
  */
 @Slf4j
 @Component

@@ -52,8 +52,8 @@ import java.util.zip.CRC32;
 /**
  * The "Node" class represents a YAML node in our config hierarchy that can be validated.
  *
- * The motivation for this is to allow us to navigate YAML paths in our halconfig, and validate each
- * node (if necessary) along the way.
+ * The motivation for this is to allow us to navigate YAML paths in our halconfig, and validate each node (if necessary)
+ * along the way.
  */
 @Slf4j
 abstract public class Node implements Validatable {
@@ -94,8 +94,7 @@ abstract public class Node implements Validatable {
    * Checks if the filter matches this node all the way to the root.
    *
    * @param filter the filter being checked.
-   * @return true iff the filter accepts this node, as a part of its full context (yaml tree ending
-   * at this node).
+   * @return true iff the filter accepts this node, as a part of its full context (yaml tree ending at this node).
    */
   @JsonIgnore
   public boolean matchesToRoot(NodeFilter filter) {
