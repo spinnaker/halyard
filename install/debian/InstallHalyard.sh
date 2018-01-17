@@ -4,12 +4,16 @@ set -e
 
 function check_migration_needed() {
   set -e
-  dpkg -s spinnaker-halyard &> /dev/null
+  hash dpkg &> /dev/null
 
-  if [ "$?" != "1" ]; then
-    >&2 echo "Attempting to install halyard while a debian installation is present."
-    >&2 echo "Please visit: http://spinnaker.io/setup/install/halyard_migration"
-    exit 1
+  if [ "$?" != "0" ]; then
+    dpkg -s spinnaker-halyard &> /dev/null
+
+    if [ "$?" != "1" ]; then
+      >&2 echo "Attempting to install halyard while a debian installation is present."
+      >&2 echo "Please visit: http://spinnaker.io/setup/install/halyard_migration"
+      exit 1
+    fi
   fi
   set -e
 }
