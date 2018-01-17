@@ -6,7 +6,7 @@ function check_migration_needed() {
   set -e
 
   which dpkg &> /dev/null
-  if [ "$?" != "0" ]; then
+  if [ "$?" = "0" ]; then
     dpkg -s spinnaker-halyard &> /dev/null
 
     if [ "$?" != "1" ]; then
