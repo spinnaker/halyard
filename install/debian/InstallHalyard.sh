@@ -2,6 +2,18 @@
 
 set -e
 
+function check_migration_needed() {
+  set -e
+  dpkg -s spinnaker-halyard &> /dev/null
+
+  if [ "$?" != "1" ]; then
+    >&2 echo "Attempting to install halyard while a debian installation is present."
+    >&2 echo "Please visit: http://spinnaker.io/setup/install/halyard_migration"
+    exit 1
+  fi
+  set -e
+}
+
 function process_args() {
   while [ "$#" -gt "0" ]
   do
@@ -220,6 +232,8 @@ function install_halyard() {
   popd
   rm -rf $TEMPDIR
 }
+
+check_migration_needed
 
 process_args $@
 configure_defaults
