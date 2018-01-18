@@ -166,35 +166,36 @@ public class HalconfigParser {
    * Deletes all files in the staging directory that are not referenced in the hal config.
    */
   public void cleanLocalFiles(Path stagingDirectoryPath) {
-    if (globalApplicationOptions.isUseRemoteDaemon()) {
-      Halconfig halconfig = getHalconfig();
-      Set<String> referencedFiles = new HashSet<String>();
-      Consumer<Node> fileFinder = n -> referencedFiles.addAll(n.localFiles().stream().map(f -> {
-        try {
-          f.setAccessible(true);
-          return (String) f.get(n);
-        } catch (IllegalAccessException e) {
-          throw new RuntimeException("Failed to clean staging directory: " + e.getMessage(), e);
-        } finally {
-          f.setAccessible(false);
-        }
-      }).filter(Objects::nonNull).collect(Collectors.toSet()));
-      halconfig.recursiveConsume(fileFinder);
-
-      Set<String> existingStagingFiles = ((List<File>) FileUtils
-          .listFiles(stagingDirectoryPath.toFile(), TrueFileFilter.INSTANCE,
-              TrueFileFilter.INSTANCE))
-          .stream().map(f -> f.getAbsolutePath()).collect(Collectors.toSet());
-
-      existingStagingFiles.removeAll(referencedFiles);
-
+    if (!globalApplicationOptions.isUseRemoteDaemon()) {
+      return;
+    }
+    Halconfig halconfig = getHalconfig();
+    Set<String> referencedFiles = new HashSet<String>();
+    Consumer<Node> fileFinder = n -> referencedFiles.addAll(n.localFiles().stream().map(f -> {
       try {
-        for (String f : existingStagingFiles) {
-          FileUtils.forceDelete(new File(f));
-        }
-      } catch (IOException e) {
-        throw new HalException(FATAL, "Failed to clean staging directory: " + e.getMessage(), e);
+        f.setAccessible(true);
+        return (String) f.get(n);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Failed to clean staging directory: " + e.getMessage(), e);
+      } finally {
+        f.setAccessible(false);
       }
+    }).filter(Objects::nonNull).collect(Collectors.toSet()));
+    halconfig.recursiveConsume(fileFinder);
+
+    Set<String> existingStagingFiles = ((List<File>) FileUtils
+        .listFiles(stagingDirectoryPath.toFile(), TrueFileFilter.INSTANCE,
+            TrueFileFilter.INSTANCE))
+        .stream().map(f -> f.getAbsolutePath()).collect(Collectors.toSet());
+
+    existingStagingFiles.removeAll(referencedFiles);
+
+    try {
+      for (String f : existingStagingFiles) {
+        FileUtils.forceDelete(new File(f));
+      }
+    } catch (IOException e) {
+      throw new HalException(FATAL, "Failed to clean staging directory: " + e.getMessage(), e);
     }
   }
 

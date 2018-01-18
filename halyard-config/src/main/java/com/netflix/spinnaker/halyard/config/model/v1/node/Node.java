@@ -184,27 +184,28 @@ abstract public class Node implements Validatable {
   }
 
   public void stageLocalFiles(Path outputPath) {
-    if (GlobalApplicationOptions.getInstance().isUseRemoteDaemon()) {
-      localFiles().forEach(f -> {
-        try {
-          f.setAccessible(true);
-          String fContent = (String) f.get(this);
-          if (fContent != null) {
-            CRC32 crc = new CRC32();
-            crc.update(fContent.getBytes());
-            String fPath = Paths
-                .get(outputPath.toAbsolutePath().toString(), Long.toHexString(crc.getValue()))
-                .toString();
-            FileUtils.writeStringToFile(new File(fPath), fContent);
-            f.set(this, fPath);
-          }
-        } catch (IllegalAccessException | IOException e) {
-          throw new RuntimeException("Failed to get local files for node " + this.getNodeName(), e);
-        } finally {
-          f.setAccessible(false);
-        }
-      });
+    if (!GlobalApplicationOptions.getInstance().isUseRemoteDaemon()) {
+      return;
     }
+    localFiles().forEach(f -> {
+      try {
+        f.setAccessible(true);
+        String fContent = (String) f.get(this);
+        if (fContent != null) {
+          CRC32 crc = new CRC32();
+          crc.update(fContent.getBytes());
+          String fPath = Paths
+              .get(outputPath.toAbsolutePath().toString(), Long.toHexString(crc.getValue()))
+              .toString();
+          FileUtils.writeStringToFile(new File(fPath), fContent);
+          f.set(this, fPath);
+        }
+      } catch (IllegalAccessException | IOException e) {
+        throw new RuntimeException("Failed to get local files for node " + this.getNodeName(), e);
+      } finally {
+        f.setAccessible(false);
+      }
+    });
   }
 
   public void recursiveConsume(Consumer<Node> consumer) {
