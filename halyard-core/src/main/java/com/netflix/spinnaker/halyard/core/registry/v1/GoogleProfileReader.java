@@ -55,7 +55,6 @@ public class GoogleProfileReader implements ProfileReader {
   public Storage googleStorage() {
     JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
     String applicationName = "Spinnaker/Halyard";
-<<<<<<< HEAD
     HttpRequestInitializer requestInitializer;
     try {
       requestInitializer = GoogleCredentials.setHttpTimeout(GoogleCredential.getApplicationDefault());
@@ -66,10 +65,6 @@ public class GoogleProfileReader implements ProfileReader {
     }
 
     return new Storage.Builder(GoogleCredentials.buildHttpTransport(), jsonFactory, requestInitializer)
-=======
-
-    return new Storage.Builder(GoogleCredentials.buildHttpTransport(), jsonFactory, GoogleCredentials.retryRequestInitializer())
->>>>>>> Clean Up.
         .setApplicationName(applicationName)
         .build();
   }
