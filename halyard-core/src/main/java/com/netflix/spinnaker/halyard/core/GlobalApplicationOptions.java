@@ -33,6 +33,8 @@ import java.io.IOException;
  * This is the collection of general, top-level flags that come from the application configuration for halyard.
  * This class is both @AutoWired'able and can act as a singleton via the getInstance() function. This is so the same
  * class may be reused between halyard's CLI and daemon.
+ *
+ * This probably shouldn't be separate from /opt/spinnaker/config/halyard.yml @brnelson
  */
 @Data
 @Configuration
