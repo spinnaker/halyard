@@ -31,7 +31,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.core.tasks.v1.TaskRepository;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeployOption;
 import com.netflix.spinnaker.halyard.deploy.services.v1.DeployService;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
@@ -50,7 +49,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -271,8 +269,11 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     Halconfig halconfig = halconfigParser.parseHalconfig(new ByteArrayInputStream(request.getConfigBytes().toByteArray
         ()));
 
+    DeploymentConfiguration deploymentConfiguration = halconfig.getDeploymentConfigurations().stream()
+        .filter(c -> c.getName().equals(deploymentName)).findFirst().get();
+
     StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(
-        () -> deployService.deploy(halconfig.getDeployment(deploymentName), Collections.emptyList(),
+        () -> deployService.deploy(deploymentConfiguration, Collections.emptyList(),
             Collections.emptyList()));
     builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
     builder.setSeverity(Severity.WARNING);

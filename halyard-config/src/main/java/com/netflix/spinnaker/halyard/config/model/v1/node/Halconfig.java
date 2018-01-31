@@ -60,10 +60,6 @@ public class Halconfig extends Node {
     deploymentConfigurations.add(defaultConfig);
   }
 
-  public DeploymentConfiguration getDeployment(String name) {
-    return deploymentConfigurations.stream().filter(c -> c.getName().equals(name)).findFirst().get();
-  }
-
   @Override
   public String toString() {
     StringBuilder result = new StringBuilder();
