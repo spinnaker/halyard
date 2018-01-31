@@ -216,8 +216,8 @@ public class DeployService {
     return action;
   }
 
-  public RemoteAction deploy(String deploymentName, List<DeployOption> deployOptions, List<String> serviceNames) {
-    DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
+  public RemoteAction deploy(DeploymentConfiguration deploymentConfiguration, List<DeployOption> deployOptions, List<String>
+      serviceNames) {
     SpinnakerServiceProvider<DeploymentDetails> serviceProvider = serviceProviderFactory.create(deploymentConfiguration);
 
     List<SpinnakerService.Type> serviceTypes = serviceNames.stream()
@@ -232,6 +232,7 @@ public class DeployService {
           .collect(Collectors.toList());
     }
 
+    String deploymentName = deploymentConfiguration.getName();
     ResolvedConfiguration resolvedConfiguration;
     if (deployOptions.contains(DeployOption.OMIT_CONFIG)) {
       resolvedConfiguration = generateService.generateConfig(deploymentName, Collections.emptyList());

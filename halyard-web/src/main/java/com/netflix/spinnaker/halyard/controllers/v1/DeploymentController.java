@@ -31,11 +31,14 @@ import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.core.tasks.v1.TaskRepository;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeployOption;
 import com.netflix.spinnaker.halyard.deploy.services.v1.DeployService;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import com.netflix.spinnaker.halyard.proto.DeploymentsGrpc;
+import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,17 +47,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+@GRpcService
 @RestController
 @RequestMapping("/v1/config/deployments")
-public class DeploymentController {
+public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @Autowired
   DeploymentService deploymentService;
@@ -246,7 +252,8 @@ public class DeploymentController {
         deployOptions != null ? deployOptions : Collections.emptyList();
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
     StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(
-        () -> deployService.deploy(deploymentName, finalDeployOptions, finalServiceNames));
+        () -> deployService.deploy(deploymentService.getDeploymentConfiguration(deploymentName), finalDeployOptions,
+            finalServiceNames));
     builder.setSeverity(severity);
 
     if (validate) {
@@ -255,6 +262,24 @@ public class DeploymentController {
 
     return DaemonTaskHandler
         .submitTask(builder::build, "Apply deployment", TimeUnit.MINUTES.toMillis(30));
+  }
+
+  public void deployConfig(com.netflix.spinnaker.halyard.proto.DeployConfigRequest request,
+      io.grpc.stub.StreamObserver<com.google.longrunning.Operation> responseObserver) {
+    String deploymentName = "default";
+
+    Halconfig halconfig = halconfigParser.parseHalconfig(new ByteArrayInputStream(request.getConfigBytes().toByteArray
+        ()));
+
+    StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(
+        () -> deployService.deploy(halconfig.getDeployment(deploymentName), Collections.emptyList(),
+            Collections.emptyList()));
+    builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
+    builder.setSeverity(Severity.WARNING);
+
+    responseObserver.onNext(DaemonTaskHandler
+        .submitTask(builder::build, "Apply deployment", TimeUnit.MINUTES.toMillis(30)).getLRO());
+    responseObserver.onCompleted();
   }
 
   @RequestMapping(value = "/{deploymentName:.+}/collectLogs/", method = RequestMethod.PUT)

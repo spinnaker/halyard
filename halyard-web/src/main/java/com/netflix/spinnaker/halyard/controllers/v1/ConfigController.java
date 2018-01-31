@@ -25,11 +25,6 @@ import com.netflix.spinnaker.halyard.core.StringBodyRequest;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.proto.ConfigGrpc;
-import com.netflix.spinnaker.halyard.proto.ConfigOuterClass;
-import com.netflix.spinnaker.halyard.proto.ConfigOuterClass.ValidateConfigResponse;
-import io.grpc.stub.StreamObserver;
-import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Reports the entire contents of ~/.hal/config
  */
-@GRpcService
 @RestController
 @RequestMapping("/v1/config")
-public class ConfigController extends ConfigGrpc.ConfigImplBase {
+public class ConfigController {
   @Autowired
   ConfigService configService;
 
@@ -53,15 +47,6 @@ public class ConfigController extends ConfigGrpc.ConfigImplBase {
   DaemonTask<Halconfig, Halconfig> config() {
     StaticRequestBuilder<Halconfig> builder = new StaticRequestBuilder<>(() -> configService.getConfig());
     return DaemonTaskHandler.submitTask(builder::build, "Get halconfig");
-  }
-
-  @Override
-  public void validateConfig(ConfigOuterClass.ValidateConfigRequest request, StreamObserver<ValidateConfigResponse> responseObserver) {
-    DaemonTask<Halconfig, Halconfig> config = config();
-
-    final ValidateConfigResponse.Builder response = ValidateConfigResponse.newBuilder().setMessage(config.getUuid());
-    responseObserver.onNext(response.build());
-    responseObserver.onCompleted();
   }
 
   @RequestMapping(value = "/currentDeployment", method = RequestMethod.GET)

@@ -35,7 +35,10 @@ dependencies {
   compile project(':halyard-proto')
 
   compile('org.lognet:grpc-spring-boot-starter:2.1.4')
-  compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
+  compile 'com.google.guava:guava:23.5-jre'
+
+  // https://mvnrepository.com/artifact/com.google.api.grpc/grpc-google-longrunning-v1
+  //compile group: 'com.google.api.grpc', name: 'grpc-google-longrunning-v1', version: '0.1.24'
 }
 
 tasks.bootRepackage.enabled = project.repackage

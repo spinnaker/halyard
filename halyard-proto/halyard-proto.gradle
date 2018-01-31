@@ -5,6 +5,10 @@ dependencies {
   compile 'io.grpc:grpc-all:1.8.0'
   compile 'com.google.protobuf:protobuf-java:3.0.0'
   compile 'com.google.guava:guava:23.5-jre'
+
+
+  // https://mvnrepository.com/artifact/com.google.api.grpc/proto-google-longrunning-v1
+  compile group: 'com.google.api.grpc', name: 'proto-google-longrunning-v1', version: '0.1.24'
 }
 
 protobuf {
