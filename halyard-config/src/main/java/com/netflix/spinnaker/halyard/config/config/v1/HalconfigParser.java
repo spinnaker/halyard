@@ -34,6 +34,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.parser.ParserException;
 import org.yaml.snakeyaml.scanner.ScannerException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -79,6 +80,7 @@ public class HalconfigParser {
   Yaml yamlParser;
 
   private boolean useBackup = false;
+  private boolean inMemory = false;
   private String backupHalconfigPath;
 
   /**
@@ -88,13 +90,26 @@ public class HalconfigParser {
    * @return the fully parsed halconfig.
    * @see Halconfig
    */
-  public Halconfig parseHalconfig(InputStream is) throws IllegalArgumentException {
+  Halconfig parseHalconfig(InputStream is) throws IllegalArgumentException {
     try {
       Object obj = yamlParser.load(is);
       return objectMapper.convertValue(obj, Halconfig.class);
     } catch (IllegalArgumentException e) {
       throw e;
     }
+  }
+
+  /**
+   * Parse Halyard's config for inmemory usage. HalConfigs parsed with this function will NOT be written to disk for
+   * persistence.
+   *
+   * @param is is the input stream to read from.
+   * @return the fully parsed halconfig.
+   * @see Halconfig
+   */
+  public Halconfig parseHalconfig(ByteArrayInputStream is) throws IllegalArgumentException {
+    this.inMemory = true;
+    return parseHalconfig((InputStream)is);
   }
 
   private InputStream getHalconfigStream() throws FileNotFoundException {
@@ -216,6 +231,9 @@ public class HalconfigParser {
   }
 
   private void saveConfigTo(Path path) {
+    if (this.inMemory) {
+      return;
+    }
     Halconfig local = (Halconfig) DaemonTaskHandler.getContext();
     if (local == null) {
       throw new HalException(
