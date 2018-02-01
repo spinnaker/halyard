@@ -11,5 +11,6 @@ service Deployments {
 }
 
 message DeployConfigRequest {
-  string config = 1;
+  string name = 1;
+  string config = 2;
 }

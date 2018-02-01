@@ -250,7 +250,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
         deployOptions != null ? deployOptions : Collections.emptyList();
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
     StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(
-        () -> deployService.deploy(deploymentService.getDeploymentConfiguration(deploymentName), finalDeployOptions,
+        () -> deployService.deploy(deploymentName, finalDeployOptions,
             finalServiceNames));
     builder.setSeverity(severity);
 
@@ -264,19 +264,15 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   public void deployConfig(com.netflix.spinnaker.halyard.proto.DeployConfigRequest request,
       io.grpc.stub.StreamObserver<com.google.longrunning.Operation> responseObserver) {
-    String deploymentName = "default";
-
-    Halconfig halconfig = halconfigParser.parseHalconfig(new ByteArrayInputStream(request.getConfigBytes().toByteArray
-        ()));
-
-    DeploymentConfiguration deploymentConfiguration = halconfig.getDeploymentConfigurations().stream()
-        .filter(c -> c.getName().equals(deploymentName)).findFirst().get();
-
     StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(
-        () -> deployService.deploy(deploymentConfiguration, Collections.emptyList(),
+        () -> deployService.deploy(request.getName(), Collections.emptyList(),
             Collections.emptyList()));
-    builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
+    builder.setValidateResponse(() -> deploymentService.validateDeployment(request.getName()));
     builder.setSeverity(Severity.WARNING);
+    builder.setSetup(() -> {
+      halconfigParser.setInmemoryHalConfig(new ByteArrayInputStream(request.getConfigBytes().toByteArray
+          ()));
+    });
 
     responseObserver.onNext(DaemonTaskHandler
         .submitTask(builder::build, "Apply deployment", TimeUnit.MINUTES.toMillis(30)).getLRO());
