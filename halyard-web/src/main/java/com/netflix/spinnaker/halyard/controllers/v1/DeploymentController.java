@@ -269,10 +269,9 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
             Collections.emptyList()));
     builder.setValidateResponse(() -> deploymentService.validateDeployment(request.getName()));
     builder.setSeverity(Severity.WARNING);
-    builder.setSetup(() -> {
-      halconfigParser.setInmemoryHalConfig(new ByteArrayInputStream(request.getConfigBytes().toByteArray
-          ()));
-    });
+    builder.setSetup(() ->
+      halconfigParser.setInmemoryHalConfig(new ByteArrayInputStream(request.toByteArray()))
+    );
 
     responseObserver.onNext(DaemonTaskHandler
         .submitTask(builder::build, "Apply deployment", TimeUnit.MINUTES.toMillis(30)).getLRO());
