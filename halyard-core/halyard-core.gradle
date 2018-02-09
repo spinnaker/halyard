@@ -7,7 +7,5 @@ dependencies {
 
   compile 'com.beust:jcommander:1.48'
   compile 'com.hubspot.jinjava:jinjava:2.2.3'
-
-
-  compile group: 'com.google.api.grpc', name: 'proto-google-longrunning-v1', version: '0.1.24'
+  compile 'com.google.api.grpc:grpc-google-common-protos:1.0.5'
 }

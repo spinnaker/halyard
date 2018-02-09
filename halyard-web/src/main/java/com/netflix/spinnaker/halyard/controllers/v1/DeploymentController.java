@@ -270,7 +270,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     builder.setValidateResponse(() -> deploymentService.validateDeployment(request.getName()));
     builder.setSeverity(Severity.WARNING);
     builder.setSetup(() ->
-      halconfigParser.setInmemoryHalConfig(new ByteArrayInputStream(request.toByteArray()))
+      halconfigParser.setInmemoryHalConfig(new ByteArrayInputStream(request.getConfig().toByteArray()))
     );
 
     responseObserver.onNext(DaemonTaskHandler
