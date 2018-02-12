@@ -10,11 +10,11 @@ dependencies {
 
 protobuf {
   protoc {
-    artifact = 'com.google.protobuf:protoc:3.0.0'
+    artifact = 'com.google.protobuf:protoc:3.5.1-1'
   }
   plugins {
     grpc {
-      artifact = "io.grpc:protoc-gen-grpc-java:1.8.0"
+      artifact = "io.grpc:protoc-gen-grpc-java:1.9.0"
     }
   }
 
@@ -30,13 +30,18 @@ protobuf {
           outputSubDir = 'java'
         }
       }
+      task.descriptorSetOptions.includeImports = true
     }
   }
-  generatedFilesBaseDir = "build/proto"
+  generatedFilesBaseDir = "${projectDir}/build-gen/proto"
 }
 
 idea {
   module {
-    sourceDirs += file("${projectDir}/build/proto/main/java")
+    sourceDirs += file("${projectDir}/build-gen/proto/main/java")
   }
+}
+
+clean {
+  delete "${projectDir}/build-gen"
 }
