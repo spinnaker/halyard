@@ -19,7 +19,9 @@
 package com.netflix.spinnaker.halyard.core.registry.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.client.googleapis.GoogleUtils;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -30,11 +32,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 
 @Component
 @Slf4j
@@ -64,7 +67,19 @@ public class GoogleProfileReader implements ProfileReader {
       log.debug("No application default credential could be loaded for reading BOMs & profiles. Continuing unauthenticated: {}", e.getMessage());
     }
 
-    return new Storage.Builder(GoogleCredentials.buildHttpTransport(), jsonFactory, requestInitializer)
+    NetHttpTransport.Builder builder = new NetHttpTransport.Builder();
+    try {
+      builder.trustCertificates(GoogleUtils.getCertificateTrustStore());
+    } catch (Exception e) {
+      log.error("cannot load google trustCertificates", e);
+    }
+    String proxyHost = System.getProperty("http.proxyHost");
+    int proxyPort = Integer.valueOf(System.getProperty("http.proxyPort", "3128"));
+    if (proxyHost != null && proxyHost.length() > 0) {
+      builder.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
+    }
+
+    return new Storage.Builder(builder.build(), jsonFactory, requestInitializer)
         .setApplicationName(applicationName)
         .build();
   }
