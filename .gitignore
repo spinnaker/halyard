@@ -12,5 +12,5 @@ out/
 */.classpath
 */.project
 .settings/
-.classpath/
-.project/
+.classpath
+.project
