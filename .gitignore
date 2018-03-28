@@ -7,9 +7,10 @@ build-gen/
 out/
 /.idea/
 /.shelf/
-halyard-deploy/bin/
-halyard-web/bin/
-halyard-core/bin/
-halyard-config/bin/
-halyard-cli/bin/
-halyard-backup/bin/
+*/bin/
+*/.settings/
+*/.classpath
+*/.project
+.settings/
+.classpath/
+.project/
