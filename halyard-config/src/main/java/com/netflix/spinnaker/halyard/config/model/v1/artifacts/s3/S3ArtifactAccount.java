@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Netflix, Inc.
+ * Copyright 2018 Datadog, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.netflix.spinnaker.halyard.config.model.v1.artifacts.s3;
 import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactAccount;
 
 public class S3ArtifactAccount extends ArtifactAccount {
-    public String name = "s3-account";
+    public String name;
 
     public String getName() {
         return name;
