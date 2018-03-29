@@ -74,7 +74,8 @@ public class LocalDiskProfileReader implements ProfileReader {
         if (!Versions.isLocal(version)) {
             throw new IllegalArgumentException("Versions using a local BOM must be prefixed with \"local:\"");
         }
-        String bomName = bomPath(version);
+        String versionName = Versions.fromLocal(version);
+        String bomName = bomPath(versionName);
         return relaxedObjectMapper.convertValue(
             yamlParser.load(getContents(bomName)),
             BillOfMaterials.class
