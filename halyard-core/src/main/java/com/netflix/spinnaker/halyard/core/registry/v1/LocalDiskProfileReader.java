@@ -53,9 +53,6 @@ public class LocalDiskProfileReader implements ProfileReader {
     String localBomPath;
 
     @Autowired
-    String gitRoot;
-
-    @Autowired
     ObjectMapper relaxedObjectMapper;
   
     @Autowired
@@ -113,7 +110,7 @@ public class LocalDiskProfileReader implements ProfileReader {
     }
 
     private String profilePath(String artifactName, String profileFileName) {
-        return Paths.get(gitRoot, artifactName, HALCONFIG_DIR, profileFileName).toString();
+        return Paths.get(localBomPath, artifactName, HALCONFIG_DIR, profileFileName).toString();
     }
   
     String bomPath(String version) {
