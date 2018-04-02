@@ -59,7 +59,8 @@ public class EditLdapCommand extends AbstractEditAuthnMethodCommand<Ldap> {
 
   @Parameter(
       names = "--user-search-base",
-      description = "The part of the directory tree under which user searches should be performed."
+      description = "The part of the directory tree under which user searches should be performed. "
+        + "If user-search-base isn't supplied, the search will be performed from the root."
   )
   private String userSearchBase;
 
