@@ -50,8 +50,10 @@ public class EditLdapCommand extends AbstractEditAuthnMethodCommand<Ldap> {
   @Parameter(
       names = "--user-dn-pattern",
       description = "The pattern for finding a user's DN using simple pattern matching. For "
-        + "example, the pattern 'uid={0},ou=users' finds the user's DN by substituting the user's "
-        + "login name in the supplied pattern."
+        + "example, if your LDAP server has the URL ldap://mysite.com/dc=spinnaker,dc=org, "
+        + "and you have the pattern 'uid={0},ou=members', 'me' will map to a DN "
+        + "uid=me,ou=members,dc=spinnaker,dc=org. If no match is found, will try to find the user "
+        + "using user-search-filter, if set."
   )
   private String userDnPattern;
 
@@ -66,7 +68,9 @@ public class EditLdapCommand extends AbstractEditAuthnMethodCommand<Ldap> {
       description = "The filter to use when searching for a user's DN. Will search either from "
         + "user-search-base (if specified) or root for entires matching the filter, then attempt "
         + "to bind as that user with the login password. For example, the filter 'uid={0}' would "
-        + " apply to any user whose uid matched the user's login name."
+        + "apply to any user where uid matched the user's login name. If --user-dn-pattern is also "
+        + "specified, will attempt to find a match using the specified pattern first, before "
+        + "searching with the specified search filter if no match is found from the pattern."
   )
   private String userSearchFilter;
 
