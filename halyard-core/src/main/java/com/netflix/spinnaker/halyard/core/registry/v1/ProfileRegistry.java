@@ -61,7 +61,7 @@ public class ProfileRegistry {
     return pickProfileReader(version).readArchiveProfile(artifactName, version, profileName);
   }
 
-  public ProfileReader pickProfileReader(String version) {
+  private ProfileReader pickProfileReader(String version) {
     if (Versions.isBranch(version)) {
       return gitProfileReader;
     } else if (Versions.isLocal(version)) {
