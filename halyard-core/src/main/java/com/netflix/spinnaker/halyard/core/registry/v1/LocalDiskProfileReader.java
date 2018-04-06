@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2018 Praekelt.org
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -45,78 +45,77 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class LocalDiskProfileReader implements ProfileReader {
+  @Autowired
+  String localBomPath;
 
-    @Autowired
-    String localBomPath;
+  @Autowired
+  ObjectMapper relaxedObjectMapper;
 
-    @Autowired
-    ObjectMapper relaxedObjectMapper;
-  
-    @Autowired
-    Yaml yamlParser;
+  @Autowired
+  Yaml yamlParser;
 
-    private final static String HALCONFIG_DIR = "halconfig";
-  
-    @Override
-    public InputStream readProfile(String artifactName, String version, String profileName) throws IOException {
-      String path = profilePath(artifactName, profileName);
-      return getContents(path);
-    }
+  private final static String HALCONFIG_DIR = "halconfig";
 
-    @Override
-    public BillOfMaterials readBom(String version) throws IOException {
-        if (!Versions.isLocal(version)) {
-            throw new IllegalArgumentException("Versions using a local BOM must be prefixed with \"local:\"");
-        }
-        String versionName = Versions.fromLocal(version);
-        String bomName = bomPath(versionName);
-        return relaxedObjectMapper.convertValue(
-            yamlParser.load(getContents(bomName)),
-            BillOfMaterials.class
-        );
-    }
+  @Override
+  public InputStream readProfile(String artifactName, String version, String profileName) throws IOException {
+    String path = profilePath(artifactName, profileName);
+    return getContents(path);
+  }
 
-    @Override
-    public Versions readVersions() throws IOException {
-        throw new UnsupportedOperationException();
-    }
+  @Override
+  public BillOfMaterials readBom(String version) throws IOException {
+      if (!Versions.isLocal(version)) {
+        throw new IllegalArgumentException("Versions using a local BOM must be prefixed with \"local:\"");
+      }
+      String versionName = Versions.fromLocal(version);
+      String bomName = bomPath(versionName);
+      return relaxedObjectMapper.convertValue(
+        yamlParser.load(getContents(bomName)),
+        BillOfMaterials.class
+      );
+  }
 
-    @Override
-    public InputStream readArchiveProfile(String artifactName, String version, String profileName) throws IOException {
-        Path profilePath = Paths.get(profilePath(artifactName, profileName));
+  @Override
+  public Versions readVersions() throws IOException {
+      throw new UnsupportedOperationException();
+  }
 
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        TarArchiveOutputStream tarArchive = new TarArchiveOutputStream(os);
-    
-        ArrayList<Path> filePathsToAdd =
-            java.nio.file.Files.walk(profilePath, Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)
-            .filter(path -> path.toFile().isFile())
-            .collect(Collectors.toCollection(ArrayList::new));
-    
-        for (Path path : filePathsToAdd) {
-          TarArchiveEntry tarEntry = new TarArchiveEntry(path.toFile(), profilePath.relativize(path).toString());
-          tarArchive.putArchiveEntry(tarEntry);
-          IOUtils.copy(Files.newInputStream(path), tarArchive);
-          tarArchive.closeArchiveEntry();
-        }
-    
-        tarArchive.finish();
-        tarArchive.close();
-    
-        return new ByteArrayInputStream(os.toByteArray());
-    }
+  @Override
+  public InputStream readArchiveProfile(String artifactName, String version, String profileName) throws IOException {
+      Path profilePath = Paths.get(profilePath(artifactName, profileName));
 
-    private String profilePath(String artifactName, String profileFileName) {
-        return Paths.get(localBomPath, artifactName, HALCONFIG_DIR, profileFileName).toString();
-    }
-  
-    String bomPath(String version) {
-      return Paths.get(localBomPath, String.join("/", "bom", version + ".yml")).toString();
-    }
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      TarArchiveOutputStream tarArchive = new TarArchiveOutputStream(os);
 
-    private InputStream getContents(String objectName) throws IOException {
-        log.info("Getting file contents of " + objectName);
-        return new FileInputStream(objectName);
+      ArrayList<Path> filePathsToAdd =
+        java.nio.file.Files.walk(profilePath, Integer.MAX_VALUE, FileVisitOption.FOLLOW_LINKS)
+        .filter(path -> path.toFile().isFile())
+        .collect(Collectors.toCollection(ArrayList::new));
+
+      for (Path path : filePathsToAdd) {
+      TarArchiveEntry tarEntry = new TarArchiveEntry(path.toFile(), profilePath.relativize(path).toString());
+      tarArchive.putArchiveEntry(tarEntry);
+      IOUtils.copy(Files.newInputStream(path), tarArchive);
+      tarArchive.closeArchiveEntry();
       }
 
+      tarArchive.finish();
+      tarArchive.close();
+
+      return new ByteArrayInputStream(os.toByteArray());
+  }
+
+  private String profilePath(String artifactName, String profileFileName) {
+      return Paths.get(localBomPath, artifactName, HALCONFIG_DIR, profileFileName).toString();
+  }
+
+  String bomPath(String version) {
+    return Paths.get(localBomPath, String.join("/", "bom", version + ".yml")).toString();
+  }
+
+  private InputStream getContents(String objectName) throws IOException {
+      log.info("Getting file contents of " + objectName);
+      return new FileInputStream(objectName);
     }
+
+  }
