@@ -42,6 +42,11 @@ public class ResourceConfig {
   String halconfigPath(@Value("${halyard.halconfig.directory:~/.hal}") String path) {
     return normalizePath(Paths.get(path, "config").toString());
   }
+
+  @Bean
+  String localBomPath(@Value("${halyard.halconfig.directory:~/.hal/.boms}") String path) {
+    return normalizePath(path);
+  }
   
   /**
    * Version of halyard.
@@ -67,7 +72,7 @@ public class ResourceConfig {
   }
 
   @Bean
-  String spinnakerStagingDependencyPath(@Value("${spinnaker.config.staging.directory:~/.halyard}") String path) {
+  String spinnakerStagingDependencyPath(@Value("${spinnaker.config.staging.directory:~/.hal}") String path) {
     return Paths.get(normalizePath(path), "dependency").toString();
   }
 

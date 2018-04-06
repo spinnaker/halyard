@@ -36,6 +36,9 @@ public class ProfileRegistry {
   GitProfileReader gitProfileReader;
 
   @Autowired
+  LocalDiskProfileReader localDiskProfileReader;
+
+  @Autowired
   Yaml yamlParser;
 
   @Autowired
@@ -58,9 +61,11 @@ public class ProfileRegistry {
     return pickProfileReader(version).readArchiveProfile(artifactName, version, profileName);
   }
 
-  private ProfileReader pickProfileReader(String version) {
+  public ProfileReader pickProfileReader(String version) {
     if (Versions.isBranch(version)) {
       return gitProfileReader;
+    } else if (Versions.isLocal(version)) {
+      return localDiskProfileReader;
     } else {
       return googleProfileReader;
     }
