@@ -134,9 +134,13 @@ public interface GoogleDistributedService<T> extends DistributedService<T, Googl
   default String getArtifactId(String deploymentName) {
     String artifactName = getArtifact().getName();
     String version = getArtifactService().getArtifactVersion(deploymentName, getArtifact());
-    return String.format("projects/%s/global/images/%s",
-        getGoogleImageProject(deploymentName),
-        String.join("-", "spinnaker", artifactName, version.replace(".", "-").replace(":", "-")));
+    if (version == null) {
+      return null;
+    } else {
+      return String.format("projects/%s/global/images/%s",
+          getGoogleImageProject(deploymentName),
+          String.join("-", "spinnaker", artifactName, version.replace(".", "-").replace(":", "-")));
+    }
   }
 
   default VaultConnectionDetails buildConnectionDetails(AccountDeploymentDetails<GoogleAccount> details, SpinnakerRuntimeSettings runtimeSettings, String secretName) {
@@ -409,7 +413,8 @@ public interface GoogleDistributedService<T> extends DistributedService<T, Googl
     boolean ready = false;
     DaemonTaskHandler.message("Waiting for all instances to become healthy.");
     while (!ready) {
-      ready = getRunningServiceDetails(details, runtimeSettings).getLatestEnabledVersion() == version;
+      Integer runningVersion = getRunningServiceDetails(details, runtimeSettings).getLatestEnabledVersion();
+      ready = version.equals(runningVersion);
 
       DaemonTaskHandler.safeSleep(TimeUnit.SECONDS.toMillis(2));
     }
