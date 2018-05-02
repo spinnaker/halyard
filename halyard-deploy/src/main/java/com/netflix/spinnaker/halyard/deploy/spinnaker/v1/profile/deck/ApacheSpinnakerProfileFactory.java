@@ -37,6 +37,7 @@ public class ApacheSpinnakerProfileFactory extends TemplateBackedProfileFactory 
   private static String SSL_TEMPLATE = String.join("\n",
       "    SSLEngine on",
       "    SSLCertificateFile \"{%cert-file%}\"",
+      "    SSLCertificateChainFile \"{%chain-file%}\"",
       "    SSLCertificateKeyFile \"{%key-file%}\"");
 
   private static String SPINNAKER_TEMPLATE = String.join("\n",
@@ -74,6 +75,7 @@ public class ApacheSpinnakerProfileFactory extends TemplateBackedProfileFactory 
     UiSecurity uiSecurity = deploymentConfiguration.getSecurity().getUiSecurity();
     ApacheSsl apacheSsl = uiSecurity.getSsl();
     bindings.put("cert-file", apacheSsl.getSslCertificateFile());
+    bindings.put("chain-file", apacheSsl.getSslCertificateChainFile());
     bindings.put("key-file", apacheSsl.getSslCertificateKeyFile());
     String ssl = resource.setBindings(bindings).toString();
     bindings.clear();
