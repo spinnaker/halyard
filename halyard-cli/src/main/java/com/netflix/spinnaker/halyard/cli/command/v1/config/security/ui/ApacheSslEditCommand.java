@@ -46,6 +46,14 @@ public class ApacheSslEditCommand extends AbstractConfigCommand {
   String sslCertificateFile;
 
   @Parameter(
+      names = "--ssl-certificate-chain-file",
+      converter = LocalFileConverter.class,
+      description = "Path to your .crt file."
+  )
+  String sslCertificateChainFile;
+
+
+  @Parameter(
       names = "--ssl-certificate-key-file",
       converter = LocalFileConverter.class,
       description = "Path to your .key file."
@@ -71,6 +79,7 @@ public class ApacheSslEditCommand extends AbstractConfigCommand {
     int originalHash = apacheSsl.hashCode();
 
     apacheSsl.setSslCertificateFile(isSet(sslCertificateFile) ? sslCertificateFile : apacheSsl.getSslCertificateFile());
+    apacheSsl.setSslCertificateChainFile(isSet(sslCertificateChainFile) ? sslCertificateChainFile : apacheSsl.getSslCertificateChainFile());
     apacheSsl.setSslCertificateKeyFile(isSet(sslCertificateKeyFile) ? sslCertificateKeyFile : apacheSsl.getSslCertificateKeyFile());
     apacheSsl.setSslCertificatePassphrase(isSet(sslCertificatePassphrase) ? sslCertificatePassphrase : apacheSsl.getSslCertificatePassphrase());
 

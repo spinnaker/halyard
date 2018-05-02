@@ -5910,6 +5910,7 @@ hal config security ui ssl edit [parameters]
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--ssl-certificate-file`: Path to your .crt file.
+ * `--ssl-certificate-chain-file`: Path to a certificate chain file
  * `--ssl-certificate-key-file`: Path to your .key file.
  * `--ssl-certificate-passphrase`: (*Sensitive data* - user will be prompted on standard input) The passphrase needed to unlock your SSL certificate. This will be provided to Apache on startup.
 
