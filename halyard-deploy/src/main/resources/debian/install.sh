@@ -8,10 +8,12 @@ set -o pipefail
 # install redis as a local service
 INSTALL_REDIS="{%install-redis%}"
 
-# install first-time spinnaker dependencies (java, setup apt repos)
-PREPARE_ENVIRONMENT="{%prepare-environment%}"
-
-REPOSITORY_URL="{%debian-repository%}"
+# export PREPARE_ENVIRONMENT="false" can disable installing the dependencies.
+# unset PREPARE_ENVIRONMENT will use predefined value below.
+if [ "x$PREPARE_ENVIRONMENT" == "x" ];then
+  # install first-time spinnaker dependencies (java, setup apt repos)
+  PREPARE_ENVIRONMENT="{%prepare-environment%}"
+fi
 
 echo_err() {
   echo "$@" 1>&2
@@ -97,7 +99,7 @@ if [ -n "$INSTALL_REDIS" ]; then
   add_redis_apt_repository
 fi
 
-if [ -n "$PREPARE_ENVIRONMENT" ]; then
+if [ "true" == "$PREPARE_ENVIRONMENT" ]; then
   add_java_apt_repository
   add_spinnaker_apt_repository
   {%upstart-init%}
@@ -107,7 +109,7 @@ apt-get update ||:
 
 echo "Installing desired components..."
 
-if [ -n "$PREPARE_ENVIRONMENT" ]; then
+if [ "true" == "$PREPARE_ENVIRONMENT" ]; then
   install_java
 fi
 
