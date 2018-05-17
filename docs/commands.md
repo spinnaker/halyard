@@ -1922,7 +1922,7 @@ hal config ci jenkins master add MASTER [parameters]
  * `--csrf`: Whether or not to negotiate CSRF tokens when calling Jenkins.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--password`: (*Sensitive data* - user will be prompted on standard input) The password of the jenkins user to authenticate as.
+ * `--password`: (*Sensitive data* - user will be prompted on standard input) The api key of the jenkins user to authenticate as.
  * `--username`: The username of the jenkins user to authenticate as.
 
 
@@ -1958,7 +1958,7 @@ hal config ci jenkins master edit MASTER [parameters]
  * `--csrf`: Whether or not to negotiate CSRF tokens when calling Jenkins.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--password`: (*Sensitive data* - user will be prompted on standard input) The password of the jenkins user to authenticate as.
+ * `--password`: (*Sensitive data* - user will be prompted on standard input) The api key of the jenkins user to authenticate as.
  * `--username`: The username of the jenkins user to authenticate as.
 
 
