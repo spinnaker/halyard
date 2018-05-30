@@ -64,17 +64,25 @@ public class BomVersionCommand extends AbstractConfigCommand {
   }
 
   public String getVersion() {
+    String version;
     switch (versions.size()) {
       case 0:
-        return new OperationHandler<String>()
+        version = new OperationHandler<String>()
             .setOperation(Daemon.getVersion(getCurrentDeployment(), false))
             .setFailureMesssage("Failed to get version of Spinnaker configured in your halconfig.")
             .get();
+        break;
       case 1:
-        return versions.get(0);
+        version = versions.get(0);
+        break;
       default:
         throw new IllegalArgumentException("More than one version supplied");
     }
+
+    if (!BomVersionCommand.isProjectVersionFormat(version)) {
+      throw new RuntimeException(String.format("Failed to get BOM versions because Spinnaker version is not properly formatted in halconfig: version='%s'", version));
+    }
+    return version;
   }
 
   @Override
@@ -96,5 +104,10 @@ public class BomVersionCommand extends AbstractConfigCommand {
     }
 
     AnsiPrinter.out.println(result);
+  }
+
+  private static boolean isProjectVersionFormat(String version) {
+    // Matches #, #.#, #.#.#, ...
+    return version.matches("\\d+(\\.\\d+)*");
   }
 }
