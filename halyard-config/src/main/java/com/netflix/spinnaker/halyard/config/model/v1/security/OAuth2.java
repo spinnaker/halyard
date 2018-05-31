@@ -95,6 +95,19 @@ public class OAuth2 extends AuthnMethod {
         newUserInfoMapping.setLastName("name");
         newUserInfoMapping.setUsername("login");
         break;
+      case EGITHUB:
+        newClient.setAccessTokenUri(client.getAccessTokenUri());
+        newClient.setUserAuthorizationUri(client.getUserAuthorizationUri());
+        newClient.setScope("user:email");
+        newClient.setUserInfoUri(client.getUserInfoUri());
+
+        newResource.setUserInfoUri(client.getUserInfoUri());
+
+        newUserInfoMapping.setEmail("email");
+        newUserInfoMapping.setFirstName("");
+        newUserInfoMapping.setLastName("name");
+        newUserInfoMapping.setUsername("login");
+        break;
       case AZURE:
         newClient.setAccessTokenUri("https://login.microsoftonline.com/${azureTenantId}/oauth2/token");
         newClient.setUserAuthorizationUri("https://login.microsoftonline.com/${azureTenantId}/oauth2/authorize?resource=https://graph.windows.net");
@@ -126,6 +139,7 @@ public class OAuth2 extends AuthnMethod {
     private String scope;
     private String preEstablishedRedirectUri;
     private Boolean useCurrentUri;
+    private String userInfoUri;
   }
 
   @Data
@@ -154,6 +168,7 @@ public class OAuth2 extends AuthnMethod {
   public enum Provider {
     AZURE("azure"),
     GITHUB("github"),
+    EGITHUB("egithub"),
     GOOGLE("google");
 
     private String id;
