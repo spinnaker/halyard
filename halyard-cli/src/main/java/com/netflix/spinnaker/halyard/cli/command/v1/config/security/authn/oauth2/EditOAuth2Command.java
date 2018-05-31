@@ -27,67 +27,110 @@ import lombok.Getter;
 
 @Parameters(separators = "=")
 public class EditOAuth2Command extends AbstractEditAuthnMethodCommand<OAuth2> {
-  @Getter
-  private AuthnMethod.Method method = AuthnMethod.Method.OAuth2;
+    @Getter
+    private AuthnMethod.Method method = AuthnMethod.Method.OAuth2;
 
-  @Parameter(
-      names = "--client-id",
-      description = "The OAuth client ID you have configured with your OAuth provider."
-  )
-  private String clientId;
+    @Parameter(
+            names = "--client-id",
+            description = "The OAuth client ID you have configured with your OAuth provider."
+    )
+    private String clientId;
 
-  @Parameter(
-      names = "--client-secret",
-      description = "The OAuth client secret you have configured with your OAuth provider."
-  )
-  private String clientSecret;
+    @Parameter(
+            names = "--client-secret",
+            description = "The OAuth client secret you have configured with your OAuth provider."
+    )
+    private String clientSecret;
 
-  @Parameter(
-      names = "--provider",
-      description = "The OAuth provider handling authentication. The supported options are Google, GitHub, and Azure",
-      converter = OAuth2ProviderTypeConverter.class
-  )
-  private OAuth2.Provider provider;
+    @Parameter(
+            names = "--access-token-uri",
+            description = "The access token uri e.g https://github.example.com/login/oauth/access_token"
+    )
+    private String accessTokenUri;
 
-  @Parameter(
-      names = "--pre-established-redirect-uri",
-      description = "The externally accessible URL for Gate. For use with load balancers that " +
-          "do any kind of address manipulation for Gate traffic, such as an SSL terminating load " +
-          "balancer."
-  )
-  private String preEstablishedRedirectUri;
+    @Parameter(
+            names = "--user-authorization-uri",
+            description = "The user authorization uri e.g https://github.example.com/login/oauth/authorize"
+    )
+    private String userAuthorizationUri;
 
-  @DynamicParameter(
-      names = "--user-info-requirements",
-      description = "The map of requirements the userInfo request must have. This is used to " +
-          "restrict user login to specific domains or having a specific attribute. Use equal " +
-          "signs between key and value, and additional key/value pairs need to repeat the " +
-          "flag. Example: '--user-info-requirements foo=bar --userInfoRequirements baz=qux'."
-  )
-  private OAuth2.UserInfoRequirements userInfoRequirements = new OAuth2.UserInfoRequirements();
+    @Parameter(
+            names = "--user-info-uri",
+            description = "The user info uri e.g https://github.example.com/api/v3/user"
+    )
+    private String userInfoUri;
 
-  @Override
-  protected AuthnMethod editAuthnMethod(OAuth2 authnMethod) {
-    OAuth2.Client client = authnMethod.getClient();
-    client.setClientId(isSet(clientId) ? clientId : client.getClientId());
-    client.setClientSecret(isSet(clientSecret) ? clientSecret : client.getClientSecret());
 
-    if (isSet(preEstablishedRedirectUri)) {
-      if (preEstablishedRedirectUri.isEmpty()) {
-        client.setPreEstablishedRedirectUri(null);
-        client.setUseCurrentUri(null);
-      } else {
-        client.setPreEstablishedRedirectUri(preEstablishedRedirectUri);
-        client.setUseCurrentUri(false);
-      }
+    @Parameter(
+            names = "--provider",
+            description = "The OAuth provider handling authentication. The supported options are Google, GitHub, and Azure",
+            converter = OAuth2ProviderTypeConverter.class
+    )
+    private OAuth2.Provider provider;
+
+    @Parameter(
+            names = "--pre-established-redirect-uri",
+            description = "The externally accessible URL for Gate. For use with load balancers that " +
+                    "do any kind of address manipulation for Gate traffic, such as an SSL terminating load " +
+                    "balancer."
+    )
+    private String preEstablishedRedirectUri;
+
+    @DynamicParameter(
+            names = "--user-info-requirements",
+            description = "The map of requirements the userInfo request must have. This is used to " +
+                    "restrict user login to specific domains or having a specific attribute. Use equal " +
+                    "signs between key and value, and additional key/value pairs need to repeat the " +
+                    "flag. Example: '--user-info-requirements foo=bar --userInfoRequirements baz=qux'."
+    )
+    private OAuth2.UserInfoRequirements userInfoRequirements = new OAuth2.UserInfoRequirements();
+
+    @Override
+    protected AuthnMethod editAuthnMethod(OAuth2 authnMethod) {
+        OAuth2.Client client = authnMethod.getClient();
+        client.setClientId(isSet(clientId) ? clientId : client.getClientId());
+        client.setClientSecret(isSet(clientSecret) ? clientSecret : client.getClientSecret());
+
+        if (isSet(preEstablishedRedirectUri)) {
+            if (preEstablishedRedirectUri.isEmpty()) {
+                client.setPreEstablishedRedirectUri(null);
+                client.setUseCurrentUri(null);
+            } else {
+                client.setPreEstablishedRedirectUri(preEstablishedRedirectUri);
+                client.setUseCurrentUri(false);
+            }
+        }
+
+        if (isSet(userInfoUri)) {
+            if (userInfoUri.isEmpty()) {
+                client.setUserInfoUri(null);
+            } else {
+                client.setUserInfoUri(userInfoUri);
+            }
+        }
+
+        if (isSet(userAuthorizationUri)) {
+            if (userAuthorizationUri.isEmpty()) {
+                client.setUserAuthorizationUri(null);
+            } else {
+                client.setUserAuthorizationUri(userAuthorizationUri);
+            }
+        }
+        if (isSet(accessTokenUri)) {
+            if (userAuthorizationUri.isEmpty()) {
+                client.setAccessTokenUri(null);
+            } else {
+                client.setAccessTokenUri(accessTokenUri);
+            }
+        }
+
+
+        authnMethod.setProvider(provider != null ? provider : authnMethod.getProvider());
+
+        if (!userInfoRequirements.isEmpty()) {
+            authnMethod.setUserInfoRequirements(userInfoRequirements);
+        }
+
+        return authnMethod;
     }
-
-    authnMethod.setProvider(provider != null ? provider : authnMethod.getProvider());
-
-    if (!userInfoRequirements.isEmpty()) {
-      authnMethod.setUserInfoRequirements(userInfoRequirements);
-    }
-
-    return authnMethod;
-  }
 }
