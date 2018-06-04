@@ -727,6 +727,9 @@ public interface DaemonService {
   @GET("/v1/versions/bom/{version}")
   DaemonTask<Halconfig, Object> getBillOfMaterials(@Path("version") String version);
 
+  @GET("/v1/versions/bom")
+  DaemonTask<Halconfig, Object> getBillOfMaterialsV2(@Query("version") String version);
+
   @PUT("/v1/admin/publishProfile/{artifactName}")
   DaemonTask<Halconfig, Void> publishProfile(
       @Query("bomPath") String bomPath,
