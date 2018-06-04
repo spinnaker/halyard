@@ -22,4 +22,7 @@ import lombok.Data;
 @Data
 public class S3ArtifactAccount extends ArtifactAccount {
     public String name;
+    public String apiEndpoint;
+    public String apiRegion;
+    public String region;
 }
