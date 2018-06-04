@@ -49,11 +49,18 @@ public class PersistentStorage extends Node {
   @Override
   public NodeIterator getChildren() {
     List<Node> nodes = new ArrayList<Node>();
-    nodes.add(azs);
-    nodes.add(gcs);
-    nodes.add(redis);
-    nodes.add(s3);
+
+    NodeIterator children = NodeIteratorFactory.makeReflectiveIterator(this);
+    Node child = children.getNext();
+    while (child != null) {
+      if (!child.getNodeName().equals("oracle") && !child.getNodeName().equals("oraclebmcs")) {
+        nodes.add(child);
+      }
+      child = children.getNext();
+    }
+
     nodes.add(OraclePersistentStore.mergeOracleBMCSPersistentStore(oracle, oraclebmcs));
+
     return NodeIteratorFactory.makeListIterator(nodes);
   }
 

@@ -67,16 +67,18 @@ public class Providers extends Node implements Cloneable {
   @Override
   public NodeIterator getChildren() {
     List<Node> nodes = new ArrayList<Node>();
-    nodes.add(appengine);
-    nodes.add(aws);
-    nodes.add(ecs);
-    nodes.add(azure);
-    nodes.add(dcos);
-    nodes.add(dockerRegistry);
-    nodes.add(google);
-    nodes.add(kubernetes);
-    nodes.add(openstack);
+
+    NodeIterator children = NodeIteratorFactory.makeReflectiveIterator(this);
+    Node child = children.getNext();
+    while (child != null) {
+      if (!child.getNodeName().equals("oracle") && !child.getNodeName().equals("oraclebmcs")) {
+        nodes.add(child);
+      }
+      child = children.getNext();
+    }
+
     nodes.add(OracleProvider.mergeOracleBMCSProvider(oracle, oraclebmcs));
+
     return NodeIteratorFactory.makeListIterator(nodes);
   }
 
