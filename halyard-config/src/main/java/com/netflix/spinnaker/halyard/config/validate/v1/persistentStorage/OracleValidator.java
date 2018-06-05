@@ -15,8 +15,6 @@ import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.regex.Pattern;
 
 @Component
@@ -24,7 +22,6 @@ public class OracleValidator extends Validator<OraclePersistentStore> {
 
   // https://docs.us-phoenix-1.oraclecloud.com/Content/Object/Tasks/managingbuckets.htm
   private static final String BUCKET_REGEX = "[a-zA-Z0-9\\-_\\.]{1,63}+";
-  private static final List<String> REGIONS = Arrays.asList("us-phoenix-1", "us-ashburn-1");
 
   @Override
   public void validate(ConfigProblemSetBuilder psBuilder, OraclePersistentStore oraclePersistentStore) {
@@ -36,10 +33,6 @@ public class OracleValidator extends Validator<OraclePersistentStore> {
     notNullOrEmpty(oraclePersistentStore.getNamespace(), "namespace", psBuilder);
 
     // region and bucketName *can* be null/empty - they then get defaulted in front50 code
-
-    if (oraclePersistentStore.getRegion() != null && !oraclePersistentStore.getRegion().isEmpty() && !REGIONS.contains(oraclePersistentStore.getRegion())) {
-      psBuilder.addProblem(Severity.ERROR, "the region is invalid");
-    }
 
     if (oraclePersistentStore.getBucketName() != null && !oraclePersistentStore.getBucketName().isEmpty()) {
       boolean bucketNameValid = Pattern.matches(BUCKET_REGEX, oraclePersistentStore.getBucketName());
