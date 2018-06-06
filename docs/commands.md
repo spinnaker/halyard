@@ -5530,8 +5530,7 @@ hal config provider oracle account add ACCOUNT [parameters]
  * `--ssh-private-key-file-path`: (*Required*) Path to the private key in PEM format
  * `--tenancyId`: (*Required*) Provide the OCID of the Oracle Tenancy to use.
  * `--user-id`: (*Required*) Provide the OCID of the Oracle User you're authenticating as
- * `--read-permissions`: (*Default*: `[]`) a user must have at least one of these roles in order to view this account's cloud resources.
- * `--write-permissions`: (*Default*: `[]`) a user must have at least one of these roles in order to make changes to this account's cloud resources.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
 
 ---
@@ -5570,7 +5569,7 @@ hal config provider oracle account edit ACCOUNT [parameters]
  * `--fingerprint`: Fingerprint of the public key
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
- * `--read-permissions`: a user must have at least one of these roles in order to view this account's cloud resources.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
  * `--region`: An Oracle region (e.g., us-phoenix-1)
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
@@ -5579,7 +5578,7 @@ hal config provider oracle account edit ACCOUNT [parameters]
  * `--ssh-private-key-file-path`: Path to the private key in PEM format
  * `--tenancyId`: Provide the OCID of the Oracle Tenancy to use.
  * `--user-id`: Provide the OCID of the Oracle User you're authenticating as
- * `--write-permissions`: a user must have at least one of these roles in order to make changes to this account's cloud resources.
+ * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
 
 ---
