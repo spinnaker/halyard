@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2018 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,40 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.annotation.JsonValue;
-import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2;
-import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Collections;
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = false)
 @Data
-class SpringConfig {
-  OAuth2 oauth2;
-  Hateoas hateos;
-
-  SpringConfig() {
-    this.hateos = new Hateoas();
-  }
-
-  SpringConfig(Security security) {
-    OAuth2 oauth2 = security.getAuthn().getOauth2();
-    if (oauth2.isEnabled()) {
-      this.oauth2 = oauth2;
-    }
-  }
+class Management {
+  int port = 8085;
+  Security security = new Security();
 
   @Data
-  static class Hateoas {
-    @JsonProperty("use-hal-as-default-json-media-type")
-    boolean useHal = false;
+  static class Security {
+    boolean enabled = true;
+    List<String> roles = Collections.singletonList("ANONYMOUS");
   }
 }
-

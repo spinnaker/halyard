@@ -72,7 +72,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   }
 
   default List<String> getReadinessExecCommand(ServiceSettings settings) {
-    return Arrays.asList("wget", "--spider", "-q", settings.getScheme() + "://localhost:" + settings.getPort() + settings.getHealthEndpoint());
+    return Arrays.asList("wget", "--spider", "-q", settings.getScheme() + "://localhost:" + settings.getHealthPort() + settings.getHealthEndpoint());
   }
 
   default String getRootHomeDirectory() {

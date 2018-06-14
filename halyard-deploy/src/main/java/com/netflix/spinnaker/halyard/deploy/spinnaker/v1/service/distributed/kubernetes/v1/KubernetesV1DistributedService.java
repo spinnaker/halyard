@@ -384,6 +384,7 @@ public interface KubernetesV1DistributedService<T> extends DistributedService<T,
     KubernetesProbe readinessProbe = new KubernetesProbe();
     KubernetesHandler handler = new KubernetesHandler();
     int port = settings.getPort();
+    int healthPort = settings.getHealthPort();
     String scheme = settings.getScheme();
     if (StringUtils.isNotEmpty(scheme)) {
       scheme = scheme.toUpperCase();
@@ -396,13 +397,13 @@ public interface KubernetesV1DistributedService<T> extends DistributedService<T,
       handler.setType(KubernetesHandlerType.HTTP);
       KubernetesHttpGetAction action = new KubernetesHttpGetAction();
       action.setPath(healthEndpoint);
-      action.setPort(port);
+      action.setPort(healthPort);
       action.setUriScheme(scheme);
       handler.setHttpGetAction(action);
     } else {
       handler.setType(KubernetesHandlerType.TCP);
       KubernetesTcpSocketAction action = new KubernetesTcpSocketAction();
-      action.setPort(port);
+      action.setPort(healthPort);
       handler.setTcpSocketAction(action);
     }
 

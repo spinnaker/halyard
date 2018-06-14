@@ -63,6 +63,9 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
     X509Config x509;
     GoogleConfig google = new GoogleConfig();
 
+    Management management;
+    Endpoints endpoints;
+
     GateConfig(ServiceSettings gate, Security security) {
       super(gate);
       server.ssl = security.getApiSecurity().getSsl();
@@ -83,6 +86,11 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
     @Data
     static class GoogleConfig {
       IAPConfig iap;
+    }
+
+    @Data
+    static class Endpoints {
+      boolean sensitive = false;
     }
   }
 }

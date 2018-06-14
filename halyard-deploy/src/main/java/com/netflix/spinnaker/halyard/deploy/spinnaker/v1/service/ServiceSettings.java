@@ -42,7 +42,7 @@ import java.util.Map;
 public class ServiceSettings {
   Integer port;
   // A port open only to the internal network
-  Integer internalPort;
+  Integer healthPort;
   String address;
   String host;
   String scheme;
@@ -137,5 +137,13 @@ public class ServiceSettings {
     } catch (URISyntaxException e) {
       throw new HalException(Problem.Severity.FATAL, "Could not build metrics endpoint. This is probably a bug.", e);
     }
+  }
+
+  public ServiceSettings setPort(Integer port) {
+    this.port = port;
+    if (this.healthPort == null) {
+      this.healthPort = this.port;
+    }
+    return this;
   }
 }

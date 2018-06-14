@@ -1645,6 +1645,7 @@ hal config canary aws account add ACCOUNT [parameters]
  * `--access-key-id`: The default access key used to communicate with AWS.
  * `--bucket`: The name of a storage bucket that your specified account has access to. If you specify a globally unique bucket name that doesn't exist yet, Kayenta will create that bucket for you.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--endpoint`: The endpoint used to reach the service implementing the AWS api. Typical use is with Minio.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--root-folder`: The root folder in the chosen bucket to place all of the canary service's persistent data in (*Default*: `kayenta`).
  * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with AWS.
@@ -1681,6 +1682,7 @@ hal config canary aws account edit ACCOUNT [parameters]
  * `--access-key-id`: The default access key used to communicate with AWS.
  * `--bucket`: The name of a storage bucket that your specified account has access to. If you specify a globally unique bucket name that doesn't exist yet, Kayenta will create that bucket for you.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--endpoint`: The endpoint used to reach the service implementing the AWS api. Typical use is with Minio.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--root-folder`: The root folder in the chosen bucket to place all of the canary service's persistent data in (*Default*: `kayenta`).
  * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with AWS.

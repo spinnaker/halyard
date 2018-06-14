@@ -41,6 +41,13 @@ public class GateBoot154ProfileFactory extends GateProfileFactory {
       config.x509 = new X509Config(security);
     }
 
+    if (security.getAuthn().isEnabled()) {
+      config.management = new Management();
+      config.spring = new SpringConfig();
+      config.endpoints = new GateConfig.Endpoints();
+      gate.setHealthPort(config.management.port);
+    }
+
     return config;
   }
 }
