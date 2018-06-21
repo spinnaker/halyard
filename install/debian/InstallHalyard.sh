@@ -299,7 +299,8 @@ function install_halyard() {
   groupadd spinnaker || true
   usermod -G halyard -a $HAL_USER || true
   usermod -G spinnaker -a $HAL_USER || true
-  chown $HAL_USER:halyard /opt/halyard
+
+  create_pidfile_directory
 
   mv /opt/hal /usr/local/bin
   chmod a+rx /usr/local/bin/hal
@@ -317,6 +318,26 @@ function install_halyard() {
 
   popd
   rm -rf $TEMPDIR
+}
+
+function create_pidfile_directory() {
+  # Use systemd-tmpfiles to ensure that the /var/run/halyard directory is created with proper
+  # permissions on each boot.
+  # As Ubuntu 14.04 does not support systemd-tmpfiles, fall back to using an upstart script to
+  # create the directory; this fallback can be removed when we no longer support Ubuntu 14.04
+  if systemd-tmpfiles --version &> /dev/null; then
+    echo "d /var/run/halyard 0755 $HAL_USER halyard" > /usr/lib/tmpfiles.d/halyard.conf
+    systemd-tmpfiles --create /usr/lib/tmpfiles.d/halyard.conf
+  else
+    cat > /etc/init/halyard.conf <<EOL
+start on startup
+script
+  mkdir -p /var/run/halyard
+  chown $HAL_USER:halyard /var/run/halyard
+end script
+EOL
+  start halyard
+  fi
 }
 
 check_migration_needed
