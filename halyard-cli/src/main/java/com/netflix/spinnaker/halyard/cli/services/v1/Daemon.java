@@ -63,13 +63,14 @@ import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.ShallowTaskList;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeployOption;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import retrofit.RestAdapter;
 import retrofit.client.OkClient;
 import retrofit.converter.JacksonConverter;
+
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 @Slf4j
 public class Daemon {
