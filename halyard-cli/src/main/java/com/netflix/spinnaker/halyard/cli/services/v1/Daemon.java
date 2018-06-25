@@ -78,6 +78,10 @@ public class Daemon {
     return getService().getHealth().get("status").equalsIgnoreCase("up");
   }
 
+  public static boolean shutdown() {
+    return getService().shutdown("").get("message").equalsIgnoreCase("Shutting down, bye...");
+  }
+
   public static ShallowTaskList getTasks() {
     return getService().getTasks();
   }
