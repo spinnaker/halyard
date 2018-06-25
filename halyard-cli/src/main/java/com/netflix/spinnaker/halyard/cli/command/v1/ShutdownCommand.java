@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google, Inc.
+ * Copyright 2018 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,8 @@
 
 package com.netflix.spinnaker.halyard.cli.command.v1;
 
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.DeploymentEnvironmentCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.EditConfigCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.FeaturesCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.GenerateCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.MetricStoresCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.NotificationCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.PersistentStorageCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.SecurityCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.VersionConfigCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.artifacts.ArtifactProviderCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.CanaryCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.CiCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ProviderCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.pubsubs.PubsubCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
-import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
-import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
-import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -47,7 +26,7 @@ import lombok.Getter;
  *
  * Usage is `$ hal shutdown`
  */
-@Parameters(separators =  "=")
+@Parameters(separators = "=")
 public class ShutdownCommand extends NestableCommand {
 
   @Getter(AccessLevel.PUBLIC)
@@ -56,9 +35,8 @@ public class ShutdownCommand extends NestableCommand {
   @Getter(AccessLevel.PUBLIC)
   private String description = "Shutdown the halyard daemon.";
 
-
   @Override
   protected void executeThis() {
-    Daemon.shutdown();
+    Daemon.shutdown()
   }
 }
