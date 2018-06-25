@@ -18,6 +18,7 @@ package com.netflix.spinnaker.halyard.cli.command.v1;
 
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
+import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -37,6 +38,6 @@ public class ShutdownCommand extends NestableCommand {
 
   @Override
   protected void executeThis() {
-    Daemon.shutdown()
+    Daemon.shutdown();
   }
 }
