@@ -67,7 +67,7 @@ public interface DaemonService {
   Map<String, String> getHealth();
 
   @POST("/shutdown")
-  Map<String, String> shutdown(@Body String _ignore);
+  Map<String, String>  shutdown(@Body String _ignore);
 
   @GET("/v1/tasks/")
   ShallowTaskList getTasks();

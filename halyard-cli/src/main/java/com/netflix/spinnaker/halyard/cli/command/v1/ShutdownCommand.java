@@ -38,6 +38,6 @@ public class ShutdownCommand extends NestableCommand {
 
   @Override
   protected void executeThis() {
-    Daemon.shutdown();
+    AnsiUi.raw("Halyard Daemon Response: " + Daemon.shutdown());
   }
 }
