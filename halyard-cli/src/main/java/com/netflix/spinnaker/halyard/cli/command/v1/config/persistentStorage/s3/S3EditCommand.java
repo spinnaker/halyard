@@ -90,6 +90,7 @@ public class S3EditCommand extends AbstractPersistentStoreEditCommand<S3Persiste
     persistentStore.setEndpoint(isSet(endpoint) ? endpoint : persistentStore.getEndpoint());
     persistentStore.setAccessKeyId(isSet(accessKeyId) ? accessKeyId : persistentStore.getAccessKeyId());
     persistentStore.setSecretAccessKey(isSet(secretAccessKey) ? secretAccessKey : persistentStore.getSecretAccessKey());
+    persistentStore.setAssumeRole(isSet(assumeRole) ? assumeRole : persistentStore.getAssumeRole());
 
     if (persistentStore.getBucket() == null) {
       String bucketName = "spin-" + UUID.randomUUID().toString();

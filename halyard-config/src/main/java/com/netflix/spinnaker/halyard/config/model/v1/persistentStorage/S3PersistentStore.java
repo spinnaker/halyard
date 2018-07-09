@@ -32,6 +32,7 @@ public class S3PersistentStore extends PersistentStore {
   private String endpoint;
   private String accessKeyId;
   private String secretAccessKey;
+  private String assumeRole;
 
   @Override
   public PersistentStoreType persistentStoreType() {
