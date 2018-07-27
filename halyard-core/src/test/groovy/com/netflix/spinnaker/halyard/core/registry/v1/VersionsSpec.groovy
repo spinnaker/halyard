@@ -53,4 +53,52 @@ class VersionsSpec extends Specification {
         where:
         badVersion << ["1.0", "1.0.0.0", "1.a.b", "zzz"]
     }
+
+    def "orderBySemVer sorts versions"() {
+        when:
+        def versions = ["1.1.0", "2.1.1", "1.1.1"]
+        Collections.sort(versions, Versions.orderBySemVer());
+
+        then:
+        versions == ["1.1.0", "1.1.1", "2.1.1"]
+    }
+
+    def "orderBySemVer sorts each part as an integer"() {
+        when:
+        def versions = ["2.2.2", "10.0.0", "0.10.0", "0.0.10"]
+        Collections.sort(versions, Versions.orderBySemVer())
+
+        then:
+        versions == ["0.0.10", "0.10.0", "2.2.2", "10.0.0"]
+    }
+
+    def "orderBySemVer sorts branches to the end"() {
+        when:
+        def versions = ["1.0.0", "branch:upstream/master", "1.1.0"]
+        Collections.sort(versions, Versions.orderBySemVer())
+
+        then:
+        versions == ["1.0.0", "1.1.0", "branch:upstream/master"]
+    }
+
+    def "orderBySemVer breaks ties with string sort"() {
+        when:
+        def versions = ["branch:upstream/master", "branch:abc/def", "branch:zzz/yyy", "1.0.0"]
+        Collections.sort(versions, Versions.orderBySemVer())
+
+        then:
+        versions == ["1.0.0", "branch:abc/def", "branch:upstream/master", "branch:zzz/yyy"]
+    }
+
+    def "orderBySemVer throws an exception for invalid versions"() {
+        when:
+        dev versions = ["1.0.0", badVersion]
+        Collections.sort(versions, Versions.orderBySemVer())
+
+        then:
+        thrown Exception
+
+        where:
+        badVersion << ["1.0", "1.0.0.0", "1.a.b", "zzz"]
+    }
 }
