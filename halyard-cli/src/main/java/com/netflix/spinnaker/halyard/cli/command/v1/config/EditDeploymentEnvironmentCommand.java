@@ -25,6 +25,8 @@ import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment.DeploymentType;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -114,6 +116,13 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
   )
   private String gitOriginUser;
 
+  @Parameter(
+      names = "--ha-services",
+      description = "When supplied, install or update the specified Spinnaker services in HA mode.",
+      variableArity = true
+  )
+  private List<String> haServices = new ArrayList<>();
+
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
@@ -158,6 +167,9 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
     deploymentEnvironment.setVault(vault);
 
     deploymentEnvironment.setLocation(isSet(location) ? location : deploymentEnvironment.getLocation());
+
+    // TODO(joonlim): Make sure each element in haServices is valid here?
+    deploymentEnvironment.setHaServices(haServices);
 
     if (originalHash == deploymentEnvironment.hashCode()) {
       AnsiUi.failure("No changes supplied.");

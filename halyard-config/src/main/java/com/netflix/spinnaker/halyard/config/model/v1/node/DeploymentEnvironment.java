@@ -17,6 +17,8 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -101,6 +103,7 @@ public class DeploymentEnvironment extends Node {
   private String location;
   private CustomSizing customSizing = new CustomSizing();
   private GitConfig gitConfig = new GitConfig();
+  private List<String> haServices = new ArrayList<>();
 
   public Boolean getUpdateVersions() {
     // default is true, even when unset
