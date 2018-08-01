@@ -21,6 +21,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kub
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2RoscoService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2Service;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +32,21 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class HaKubectlServiceProviderFactory {
+  private static final List<Type> ALLOWED_HA_SERVICES = Arrays.asList(
+    Type.CLOUDDRIVER, Type.ECHO, Type.FIAT, Type.FRONT50, Type.GATE, Type.IGOR, Type.KAYENTA, Type.ORCA, Type.ROSCO
+  );
+
   @Autowired
   KubernetesV2ClouddriverService clouddriverService;
+
+  @Autowired
+  KubernetesV2ClouddriverCachingService clouddriverCachingService;
+
+  @Autowired
+  KubernetesV2ClouddriverRoService clouddriverRoService;
+
+  @Autowired
+  KubernetesV2ClouddriverRwService clouddriverRwService;
 
   @Autowired
   KubernetesV2DeckService deckService;
@@ -68,6 +82,15 @@ public class HaKubectlServiceProviderFactory {
   KubernetesV2RedisForGateService redisForGateService;
 
   @Autowired
+  KubernetesV2RedisForClouddriverService redisForClouddriverService;
+
+  @Autowired
+  KubernetesV2RedisSentinelForClouddriverService redisSentinelForClouddriverService;
+
+  @Autowired
+  KubernetesV2RedisSlaveForClouddriverService redisSlaveForClouddriverService;
+
+  @Autowired
   KubernetesV2RoscoService roscoService;
 
   @Autowired
@@ -77,7 +100,7 @@ public class HaKubectlServiceProviderFactory {
     Map<Type, KubernetesV2Service> services = new HashMap<>();
 
     // Clouddriver TODO
-    services.put(Type.CLOUDDRIVER, clouddriverService);
+    addClouddriverServices(services, haServices);
 
     // Deck TODO
     services.put(Type.DECK, deckService);
@@ -107,13 +130,27 @@ public class HaKubectlServiceProviderFactory {
     services.put(Type.ORCA, orcaService);
 
     // Redis
-    // TODO do not add if all services are in HA mode
-    services.put(Type.REDIS, redisService);
+    if (!haServices.containsAll(ALLOWED_HA_SERVICES)) {
+      services.put(Type.REDIS, redisService);
+    }
 
     // Rosco TODO
     services.put(Type.ROSCO, roscoService);
 
     return new MapBackedKubectlServiceProvider(services);
+  }
+
+  private void addClouddriverServices(Map<Type, KubernetesV2Service> services, List<Type> haServices) {
+    if (haServices.contains(Type.CLOUDDRIVER)) {
+      services.put(Type.REDIS_FOR_CLOUDDRIVER, redisForClouddriverService);
+      services.put(Type.REDIS_SENTINEL_FOR_CLOUDDRIVER, redisSentinelForClouddriverService);
+      services.put(Type.REDIS_SLAVE_FOR_CLOUDDRIVER, redisSlaveForClouddriverService);
+      services.put(Type.CLOUDDRIVER_CACHING, clouddriverCachingService);
+      services.put(Type.CLOUDDRIVER_RO, clouddriverRoService);
+      services.put(Type.CLOUDDRIVER_RW, clouddriverRwService);
+    } else {
+      services.put(Type.CLOUDDRIVER, clouddriverService);
+    }
   }
 
   private void addGateServices(Map<Type, KubernetesV2Service> services, List<Type> haServices) {

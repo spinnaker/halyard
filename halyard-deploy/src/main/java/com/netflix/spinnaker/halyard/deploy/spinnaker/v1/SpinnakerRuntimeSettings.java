@@ -41,6 +41,9 @@ public class SpinnakerRuntimeSettings {
   public class Services {
     ServiceSettings clouddriver;
     ServiceSettings clouddriverBootstrap;
+    ServiceSettings clouddriverCaching;
+    ServiceSettings clouddriverRo;
+    ServiceSettings clouddriverRw;
     ServiceSettings consulClient;
     ServiceSettings consulServer;
     ServiceSettings deck;
@@ -55,7 +58,10 @@ public class SpinnakerRuntimeSettings {
     ServiceSettings rosco;
     ServiceSettings redis;
     ServiceSettings redisBootstrap;
+    ServiceSettings redisForClouddriver;
     ServiceSettings redisForGate;
+    ServiceSettings redisSentinelForClouddriver;
+    ServiceSettings redisSlaveForClouddriver;
     ServiceSettings monitoringDaemon;
     ServiceSettings vaultClient;
     ServiceSettings vaultServer;
