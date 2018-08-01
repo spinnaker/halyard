@@ -237,7 +237,7 @@ abstract public class VaultServerService extends SpinnakerService<VaultServerSer
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     return Optional.empty();
   }
 }

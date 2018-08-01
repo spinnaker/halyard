@@ -81,7 +81,7 @@ abstract public class RedisService extends SpinnakerService<Jedis> {
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     return Optional.empty();
   }
 }

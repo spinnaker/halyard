@@ -66,7 +66,7 @@ abstract public class RoscoService extends SpringService<RoscoService.Rosco> {
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     Optional<String> result = super.customProfileOutputPath(profileName);
     if (!result.isPresent()) {
       if (profileName.startsWith("rosco/")) {

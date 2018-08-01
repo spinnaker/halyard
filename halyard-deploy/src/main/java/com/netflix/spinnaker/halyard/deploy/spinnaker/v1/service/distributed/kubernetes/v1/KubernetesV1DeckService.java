@@ -70,7 +70,7 @@ public class KubernetesV1DeckService extends DeckService implements KubernetesV1
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     if (profileName.equals("settings.js") || profileName.equals("settings-local.js")) {
       return Optional.of(Paths.get(settingsPath, profileName).toString());
     } else {

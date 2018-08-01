@@ -123,7 +123,7 @@ abstract public class ConsulClientService extends SpinnakerService<ConsulApi> im
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     return Optional.empty();
   }
 }

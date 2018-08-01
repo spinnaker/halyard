@@ -129,7 +129,7 @@ abstract public class SpinnakerMonitoringDaemonService extends SpinnakerService<
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     return Optional.empty();
   }
 }

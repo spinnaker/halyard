@@ -54,7 +54,7 @@ public class KubernetesV2DeckService extends DeckService implements KubernetesV2
 
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     if (profileName.equals(settingsJs) || profileName.equals(settingsJsLocal)) {
       return Optional.of(Paths.get(settingsPath, profileName).toString());
     } else {

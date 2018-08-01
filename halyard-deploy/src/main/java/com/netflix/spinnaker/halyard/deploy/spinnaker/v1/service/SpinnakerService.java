@@ -59,6 +59,16 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
   @Autowired
   HalconfigDirectoryStructure halconfigDirectoryStructure;
 
+  public SpinnakerService() {}
+
+  // Constructor for subclasses that are meant to be constructed at runtime (not autowired)
+  public SpinnakerService(ObjectMapper objectMapper, ArtifactService artifactService, Yaml yamlParser, HalconfigDirectoryStructure halconfigDirectoryStructure) {
+    this.objectMapper = objectMapper;
+    this.artifactService = artifactService;
+    this.yamlParser = yamlParser;
+    this.halconfigDirectoryStructure = halconfigDirectoryStructure;
+  }
+
   @Override
   public SpinnakerService<T> getService() {
     return this;
@@ -107,7 +117,7 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
   abstract public Class<T> getEndpointClass();
   abstract public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints);
 
-  abstract protected Optional<String> customProfileOutputPath(String profileName);
+  abstract public Optional<String> customProfileOutputPath(String profileName);
 
   public Optional<Profile> customProfile(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings runtimeSettings, Path profilePath, String profileName) {
     return customProfileOutputPath(profileName).flatMap(outputPath -> {
@@ -148,6 +158,7 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
     ORCA_BOOTSTRAP("spin-orca-bootstrap", "orca-bootstrap"),
     REDIS("spin-redis", "redis"),
     REDIS_BOOTSTRAP("spin-redis-bootstrap", "redis-bootstrap"),
+    REDIS_FOR_GATE("spin-redis-for-gate", "redis-for-gate"),
     ROSCO("spin-rosco", "rosco"),
     MONITORING_DAEMON("spin-monitoring-daemon", "monitoring-daemon"),
     VAULT_CLIENT("spin-vault-client", "vault-client"),

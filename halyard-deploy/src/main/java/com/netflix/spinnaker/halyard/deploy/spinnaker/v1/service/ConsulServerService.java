@@ -77,7 +77,7 @@ abstract public class ConsulServerService extends SpinnakerService<ConsulApi> {
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     return Optional.empty();
   }
 }

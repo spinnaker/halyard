@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.openstack4j.api.gbp.ServicechainService;
 
 @Data
 public class SpinnakerRuntimeSettings {
@@ -54,6 +55,7 @@ public class SpinnakerRuntimeSettings {
     ServiceSettings rosco;
     ServiceSettings redis;
     ServiceSettings redisBootstrap;
+    ServiceSettings redisForGate;
     ServiceSettings monitoringDaemon;
     ServiceSettings vaultClient;
     ServiceSettings vaultServer;
