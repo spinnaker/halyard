@@ -15,9 +15,11 @@
  *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.deploy;
 
 import com.beust.jcommander.Parameters;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.ha.HaServiceCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
@@ -35,6 +37,7 @@ public class DeploymentEnvironmentCommand extends AbstractConfigCommand {
 
   public DeploymentEnvironmentCommand() {
     registerSubcommand(new EditDeploymentEnvironmentCommand());
+    registerSubcommand(new HaServiceCommand());
   }
 
   @Override

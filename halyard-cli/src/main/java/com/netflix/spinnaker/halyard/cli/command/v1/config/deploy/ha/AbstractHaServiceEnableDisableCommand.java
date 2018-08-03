@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2018 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,19 @@
  *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.pubsubs;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.ha;
 
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.pubsubs.AbstractPubsubCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Parameters(separators = "=")
-public abstract class AbstractPubsubEnableDisableCommand extends AbstractPubsubCommand {
+public abstract class AbstractHaServiceEnableDisableCommand extends AbstractHaServiceCommand {
   @Override
   public String getCommandName() {
     return isEnable() ? "enable" : "disable";
@@ -51,7 +49,7 @@ public abstract class AbstractPubsubEnableDisableCommand extends AbstractPubsubC
 
   @Override
   public String getDescription() {
-    return "Set the " + getPubsubName() + " pubsub as " + subjunctivePerfectAction();
+    return "Set the " + getServiceName() + " high availability service as " + subjunctivePerfectAction();
   }
 
   private void setEnable() {
@@ -60,12 +58,13 @@ public abstract class AbstractPubsubEnableDisableCommand extends AbstractPubsubC
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
-    String pubsubName = getPubsubName();
+    String serviceName = getServiceName();
     boolean enable = isEnable();
     new OperationHandler<Void>()
-        .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + pubsubName)
-        .setFailureMesssage("Failed to " + getCommandName() + " " + pubsubName)
-        .setOperation(Daemon.setPubsubEnableDisable(currentDeployment, pubsubName, !noValidate, enable))
+        .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + serviceName)
+        .setFailureMesssage("Failed to " + getCommandName() + " " + serviceName)
+        .setOperation(Daemon
+            .setHaServiceEnableDisable(currentDeployment, serviceName, !noValidate, enable))
         .get();
   }
 }

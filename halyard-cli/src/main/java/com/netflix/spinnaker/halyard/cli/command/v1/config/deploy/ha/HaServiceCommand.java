@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2018 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,31 @@
  *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.pubsubs;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.ha;
 
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.pubsubs.google.GooglePubsubCommand;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-/**
- * This is a top-level command for dealing with your halconfig.
- *
- * Usage is `$ hal config pubsub`
- */
 @Parameters(separators = "=")
-public class PubsubCommand extends NestableCommand {
+public class HaServiceCommand extends NestableCommand {
   @Getter(AccessLevel.PUBLIC)
-  private String commandName = "pubsub";
+  private String commandName = "ha";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Configure, validate, and view the specified pubsub.";
+  private String description = "Configure, validate, and view the specified high availability Spinnaker service configuration.";
 
-  public PubsubCommand() {
-    registerSubcommand(new GooglePubsubCommand());
+  public HaServiceCommand() {
+    registerSubcommand(new ClouddriverHaServiceCommand());
+    registerSubcommand(new EchoHaServiceCommand());
+    registerSubcommand(new FiatHaServiceCommand());
+    registerSubcommand(new Front50HaServiceCommand());
+    registerSubcommand(new GateHaServiceCommand());
+    registerSubcommand(new IgorHaServiceCommand());
+    registerSubcommand(new KayentaHaServiceCommand());
+    registerSubcommand(new OrcaHaServiceCommand());
+    registerSubcommand(new RoscoHaServiceCommand());
   }
 
   @Override

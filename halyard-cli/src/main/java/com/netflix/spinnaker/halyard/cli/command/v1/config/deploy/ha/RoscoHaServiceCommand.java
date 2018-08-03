@@ -12,32 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.ha;
 
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
-import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
-import lombok.AccessLevel;
-import lombok.Getter;
 
-/**
- * This is a top-level command for stopping the halyard daemon.
- *
- * Usage is `$ hal shutdown`
- */
 @Parameters(separators = "=")
-public class ShutdownCommand extends NestableCommand {
-
-  @Getter(AccessLevel.PUBLIC)
-  private String commandName = "shutdown";
-
-  @Getter(AccessLevel.PUBLIC)
-  private String description = "Shutdown the halyard daemon.";
-
+public class RoscoHaServiceCommand extends AbstractNamedHaServiceCommand {
   @Override
-  protected void executeThis() {
-    AnsiUi.raw("Halyard Daemon Response: " + Daemon.shutdown());
-  }
+  protected String getServiceName() { return "rosco"; }
 }
