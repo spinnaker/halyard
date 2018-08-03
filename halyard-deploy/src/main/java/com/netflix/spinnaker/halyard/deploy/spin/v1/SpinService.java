@@ -40,4 +40,19 @@ public class SpinService {
     result.commitScript(halconfigDirectoryStructure.getSpinInstallScriptPath());
     return result;
   }
+
+  public RemoteAction install(String version) {
+    RemoteAction result = new RemoteAction();
+    String curlInstall = String.format("curl -LO https://storage.googleapis.com/spinnaker-artifacts/spin/%s/linux/amd64/spin\n",
+            version);
+    String script = "#!/bin/bash\n"
+            + curlInstall
+            + "chmod +x spin\n"
+            + "sudo mv spin /usr/local/bin/spin";
+    result.setScript(script);
+    result.setScriptDescription("The generated script will install the latest version of spin CLI");
+    result.setAutoRun(true);
+    result.commitScript(halconfigDirectoryStructure.getSpinInstallScriptPath());
+    return result;
+  }
 }
