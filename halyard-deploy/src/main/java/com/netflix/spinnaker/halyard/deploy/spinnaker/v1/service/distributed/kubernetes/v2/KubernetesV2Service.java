@@ -102,6 +102,18 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     return service.toString();
   }
 
+  default String getExposedSidecarServiceYaml(GenerateService.ResolvedConfiguration resolvedConfiguration, String cluster) {
+    ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
+    String namespace = getNamespace(settings);
+    TemplatedResource service = new JinjaJarResource("/kubernetes/manifests/exposed-sidecar-service.yml");
+    service.addBinding("name", getService().getCanonicalName());
+    service.addBinding("cluster", cluster);
+    service.addBinding("namespace", namespace);
+    service.addBinding("port", settings.getPort());
+
+    return service.toString();
+  }
+
   default String getResourceYaml(AccountDeploymentDetails<KubernetesAccount> details,
       GenerateService.ResolvedConfiguration resolvedConfiguration) {
     ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
@@ -140,7 +152,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     String primaryContainer = buildContainer(getService().getCanonicalName(), details, settings, configSources, env);
     List<String> sidecarContainers = getSidecars(runtimeSettings).stream()
         .map(SidecarService::getService)
-        .map(s -> buildContainer(s.getCanonicalName(), details, runtimeSettings.getServiceSettings(s), configSources, env))
+        .map(s -> buildContainer(s.getCanonicalName(), details, runtimeSettings.getServiceSettings(s), configSources,
+            resolvedConfiguration.getServiceSettings(s).getEnv()))
         .collect(Collectors.toList());
 
     List<String> containers = new ArrayList<>();

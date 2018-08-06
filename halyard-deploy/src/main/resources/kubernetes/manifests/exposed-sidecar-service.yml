@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: spin-{{ name }}
+  namespace: {{ namespace }}
+  labels:
+    app: spin
+    cluster: spin-{{ cluster }}
+spec:
+  selector:
+    app: spin
+    cluster: spin-{{ cluster }}
+  ports:
+  - protocol: TCP
+    port: {{ port }}
+    targetPort: {{ port }}

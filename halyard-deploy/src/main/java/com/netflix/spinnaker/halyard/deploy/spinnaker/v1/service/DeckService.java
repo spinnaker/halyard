@@ -68,7 +68,7 @@ abstract public class DeckService extends SpinnakerService<DeckService.Deck> {
     return Type.DECK;
   }
 
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     if (profileName.equals("settings.js") || profileName.equals("settings-local.js")) {
       return Optional.of(htmlPath + profileName);
     } else {

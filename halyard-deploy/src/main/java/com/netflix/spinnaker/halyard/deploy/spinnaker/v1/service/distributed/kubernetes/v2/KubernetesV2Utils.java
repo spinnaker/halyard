@@ -147,6 +147,8 @@ public class KubernetesV2Utils {
     command.add("-f");
     command.add("-"); // read from stdin
 
+    log.info("\n\nCOMMAND:\n" + command + "\n" + manifest + "\n\n");
+
     JobRequest request = new JobRequest().setTokenizedCommand(command);
 
     ByteArrayOutputStream stdout = new ByteArrayOutputStream();

@@ -18,6 +18,7 @@
 
 package com.netflix.spinnaker.halyard.deploy.deployment.v1;
 
+import com.google.inject.Exposed;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
 import com.netflix.spinnaker.halyard.core.RemoteAction;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
@@ -25,6 +26,7 @@ import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ExposedSidecarService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubectlServiceProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2Service;
@@ -43,7 +45,7 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
       List<SpinnakerService.Type> serviceTypes) {
     List<KubernetesV2Service> services = serviceProvider.getServicesByPriority(serviceTypes);
     services.stream().forEach((service) -> {
-      if (service instanceof SidecarService) {
+      if (service instanceof SidecarService && !(service instanceof ExposedSidecarService)) {
         return;
       }
 
@@ -64,7 +66,9 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
 
       KubernetesAccount account = deploymentDetails.getAccount();
       String namespaceDefinition = service.getNamespaceYaml(resolvedConfiguration);
-      String serviceDefinition = service.getServiceYaml(resolvedConfiguration);
+      String serviceDefinition = service instanceof ExposedSidecarService ?
+          service.getExposedSidecarServiceYaml(resolvedConfiguration, ((ExposedSidecarService) service).getClusterName()) :
+          service.getServiceYaml(resolvedConfiguration);
 
       if (!KubernetesV2Utils.exists(account, namespaceDefinition)) {
         KubernetesV2Utils.apply(account, namespaceDefinition);
@@ -74,9 +78,11 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
         KubernetesV2Utils.apply(account, serviceDefinition);
       }
 
-      String resourceDefinition = service.getResourceYaml(deploymentDetails, resolvedConfiguration);
-      DaemonTaskHandler.message("Running kubectl apply on the resource definition...");
-      KubernetesV2Utils.apply(account, resourceDefinition);
+      if (!(service instanceof ExposedSidecarService)) {
+        String resourceDefinition = service.getResourceYaml(deploymentDetails, resolvedConfiguration);
+        DaemonTaskHandler.message("Running kubectl apply on the resource definition...");
+        KubernetesV2Utils.apply(account, resourceDefinition);
+      }
     });
 
     return new RemoteAction();

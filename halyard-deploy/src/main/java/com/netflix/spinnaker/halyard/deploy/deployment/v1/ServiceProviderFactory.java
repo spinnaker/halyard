@@ -24,13 +24,18 @@ import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerServiceProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.bake.debian.BakeDebianServiceProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.google.GoogleDistributedServiceProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v1.KubernetesV1DistributedServiceProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubectlServiceProvider;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.ha.HaKubectlServiceProviderFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.local.debian.LocalDebianServiceProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.local.git.LocalGitServiceProvider;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -56,6 +61,9 @@ public class ServiceProviderFactory {
 
   @Autowired
   BakeDebianServiceProvider bakeDebianServiceProvider;
+
+  @Autowired
+  HaKubectlServiceProviderFactory haKubectlServiceProviderFactory;
 
   public SpinnakerServiceProvider create(DeploymentConfiguration deploymentConfiguration) {
     DeploymentEnvironment.DeploymentType type = deploymentConfiguration.getDeploymentEnvironment().getType();
@@ -92,7 +100,11 @@ public class ServiceProviderFactory {
           case V1:
             return kubernetesV1DistributedServiceProvider;
           case V2:
-            return kubectlServiceProvider;
+            // return kubectlServiceProvider;
+            List<SpinnakerService.Type> haServices = deploymentConfiguration.getDeploymentEnvironment().getHaServices().stream()
+                .map(SpinnakerService.Type::fromCanonicalName)
+                .collect(Collectors.toList());
+            return haKubectlServiceProviderFactory.create(haServices);
           default:
             return kubernetesV1DistributedServiceProvider;
         }

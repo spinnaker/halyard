@@ -48,7 +48,7 @@ abstract public class SpringService<T> extends SpinnakerService<T> {
   }
 
   @Override
-  protected Optional<String> customProfileOutputPath(String profileName) {
+  public Optional<String> customProfileOutputPath(String profileName) {
     if (profileName.equals(getCanonicalName() + ".yml") || profileName.startsWith(getCanonicalName() + "-") || profileName.startsWith("spinnaker")) {
       return Optional.of(Paths.get(getConfigOutputPath(), profileName).toString());
     } else {

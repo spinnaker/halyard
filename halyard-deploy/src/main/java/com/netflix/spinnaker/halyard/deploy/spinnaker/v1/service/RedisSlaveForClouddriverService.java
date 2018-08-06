@@ -32,7 +32,7 @@ import java.util.*;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
-abstract public class RedisService extends SpinnakerService<Jedis> {
+abstract public class RedisSlaveForClouddriverService extends SpinnakerService<Jedis> {
   @Override
   public SpinnakerArtifact getArtifact() {
     return SpinnakerArtifact.REDIS;
@@ -40,7 +40,7 @@ abstract public class RedisService extends SpinnakerService<Jedis> {
 
   @Override
   public Type getType() {
-    return Type.REDIS;
+    return Type.REDIS_SLAVE_FOR_CLOUDDRIVER;
   }
 
   @Override
@@ -72,7 +72,9 @@ abstract public class RedisService extends SpinnakerService<Jedis> {
     Map<String, String> env = new HashMap<>();
 
     public Settings() {
-      env.put("MASTER", "true");
+      // env.put("SPKR_REDIS_SENTINEL_SERVICE_HOST", "spin-redis-master-for-clouddriver.spinnaker");
+      env.put("SPKR_REDIS_SENTINEL_SERVICE_HOST", "spin-redis-sentinel-for-clouddriver.spinnaker");
+      env.put("SPKR_REDIS_SENTINEL_SERVICE_PORT", "26379");
     }
   }
 
