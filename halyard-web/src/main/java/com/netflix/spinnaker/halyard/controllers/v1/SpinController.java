@@ -36,8 +36,8 @@ public class SpinController {
   SpinService spinService;
 
   @RequestMapping(value = "/install/{version:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, RemoteAction> install(@PathVariable String version) {
-    StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(() -> spinService.install(version));
+  DaemonTask<Halconfig, String> install(@PathVariable String version) {
+    StaticRequestBuilder<String> builder = new StaticRequestBuilder<>(() -> spinService.install(version));
     return DaemonTaskHandler.submitTask(builder::build,
             String.format("Install version %s of spin CLI", version));
   }

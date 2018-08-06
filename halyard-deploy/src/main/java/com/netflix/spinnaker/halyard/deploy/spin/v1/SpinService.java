@@ -25,23 +25,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpinService {
 
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  public RemoteAction install(String version) {
-    RemoteAction result = new RemoteAction();
+  public String install(String version) {
     String curlInstall = String.format("curl -LO https://storage.googleapis.com/spinnaker-artifacts/spin/%s/linux/amd64/spin\n",
             version);
-    String script = "#!/bin/bash\n"
+    return "#!/bin/bash\n"
             + curlInstall
             + "chmod +x spin\n"
             + "sudo mv spin /usr/local/bin/spin\n";
-    result.setScript(script);
-    result.setScriptDescription("The following script was generated ane executed.\n" +
-            + "Users who do not have access to hal can run it to acquire `spin`: \n"
-            + script;
-    result.setAutoRun(true);
-    result.commitScript(halconfigDirectoryStructure.getSpinInstallScriptPath());
-    return result;
   }
 }
