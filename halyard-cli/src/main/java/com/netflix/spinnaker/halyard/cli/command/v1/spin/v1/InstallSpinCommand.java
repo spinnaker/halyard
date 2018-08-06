@@ -42,18 +42,12 @@ public class InstallSpinCommand extends AbstractRemoteActionCommand {
 
   @Parameter(names = "--version",
              description = "When supplied, install spin CLI at the version specified.")
-  String version;
+  String version = "latest";
 
   @Override
   protected OperationHandler<RemoteAction> getRemoteAction() {
-    if (StringUtils.isEmpty(version)) {
-      return new OperationHandler<RemoteAction>()
-              .setFailureMesssage("Failed to generate spin CLI install script.")
-              .setOperation(Daemon.installSpin());
-    } else {
-      return new OperationHandler<RemoteAction>()
-              .setFailureMesssage("Failed to generate spin CLI install script.")
-              .setOperation(Daemon.installSpin(version));
-    }
+    return new OperationHandler<RemoteAction>()
+            .setFailureMesssage("Failed to generate spin CLI install script.")
+            .setOperation(Daemon.installSpin(version));
   }
 }

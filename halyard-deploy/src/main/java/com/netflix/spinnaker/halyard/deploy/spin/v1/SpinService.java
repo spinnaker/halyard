@@ -28,19 +28,6 @@ public class SpinService {
   @Autowired
   HalconfigDirectoryStructure halconfigDirectoryStructure;
 
-  public RemoteAction install() {
-    RemoteAction result = new RemoteAction();
-    String script = "#!/bin/bash\n"
-        + "curl -LO https://storage.googleapis.com/spinnaker-artifacts/spin/$(curl -s https://storage.googleapis.com/spinnaker-artifacts/spin/latest)/linux/amd64/spin\n"
-        + "chmod +x spin\n"
-        + "sudo mv spin /usr/local/bin/spin";
-    result.setScript(script);
-    result.setScriptDescription("The generated script will install the latest version of spin CLI");
-    result.setAutoRun(true);
-    result.commitScript(halconfigDirectoryStructure.getSpinInstallScriptPath());
-    return result;
-  }
-
   public RemoteAction install(String version) {
     RemoteAction result = new RemoteAction();
     String curlInstall = String.format("curl -LO https://storage.googleapis.com/spinnaker-artifacts/spin/%s/linux/amd64/spin\n",
@@ -48,9 +35,11 @@ public class SpinService {
     String script = "#!/bin/bash\n"
             + curlInstall
             + "chmod +x spin\n"
-            + "sudo mv spin /usr/local/bin/spin";
+            + "sudo mv spin /usr/local/bin/spin\n";
     result.setScript(script);
-    result.setScriptDescription("The generated script will install the latest version of spin CLI");
+    result.setScriptDescription("The following script was generated ane executed.\n" +
+            + "Users who do not have access to hal can run it to acquire `spin`: \n"
+            + script;
     result.setAutoRun(true);
     result.commitScript(halconfigDirectoryStructure.getSpinInstallScriptPath());
     return result;

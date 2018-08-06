@@ -770,9 +770,6 @@ public interface DaemonService {
       @Query("latestSpinnaker") String latestSpinnaker,
       @Body String _ignore);
 
-  @GET("/v1/spin/install/latest")
-  DaemonTask<Halconfig, Object> installSpin();
-
   @GET("/v1/spin/install/{version}")
   DaemonTask<Halconfig, Object> installSpin(@Path("version") String version);
 }
