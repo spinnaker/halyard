@@ -103,10 +103,6 @@ public class HalconfigDirectoryStructure {
     return ensureDirectory(Paths.get(halconfigDirectory, ".cache"));
   }
 
-  public Path getSpinInstallScriptPath() {
-    return ensureDirectory((Paths.get("/opt/spin/install/install-spin.sh")));
-  }
-
   public Path getBackupConfigPath() {
     Path backup = ensureDirectory(Paths.get(halconfigDirectory, ".backup"));
     return new File(backup.toFile(), "config").toPath();

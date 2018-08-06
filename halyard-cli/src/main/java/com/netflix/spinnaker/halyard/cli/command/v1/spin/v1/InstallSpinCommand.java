@@ -18,16 +18,18 @@
 
 package com.netflix.spinnaker.halyard.cli.command.v1.spin.v1;
 
+import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.AbstractRemoteActionCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
-import com.netflix.spinnaker.halyard.core.RemoteAction;
+import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 
 @Parameters(separators = "=")
-public class InstallSpinCommand extends AbstractRemoteActionCommand {
+public class InstallSpinCommand extends NestableCommand {
   @Getter(AccessLevel.PUBLIC)
   private String commandName = "install";
 
@@ -38,10 +40,17 @@ public class InstallSpinCommand extends AbstractRemoteActionCommand {
   private String longDescription = String.join(" ",
       "This command installs the spin CLI.");
 
+  @Parameter(names = "--version",
+             description = "When supplied, install spin CLI at the version specified.")
+  String version = "nightly";
+
   @Override
-  protected OperationHandler<RemoteAction> getRemoteAction() {
-    return new OperationHandler<RemoteAction>()
-        .setFailureMesssage("Failed to generate spin CLI install script.")
-        .setOperation(Daemon.installSpin());
+  protected void executeThis() {
+    new OperationHandler<String>()
+            .setFailureMesssage("Failed to generate spin CLI install script.")
+            .setSuccessMessage("Install spin CLI with this bash script: \n")
+            .setOperation(Daemon.installSpin(version))
+            .setFormat(AnsiFormatUtils.Format.STRING)
+            .get();
   }
 }
