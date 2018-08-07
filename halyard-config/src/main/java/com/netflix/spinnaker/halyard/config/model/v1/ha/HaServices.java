@@ -34,13 +34,6 @@ import lombok.EqualsAndHashCode;
 public class HaServices extends Node implements Cloneable {
   private ClouddriverHaService clouddriver = new ClouddriverHaService();
   private EchoHaService echo = new EchoHaService();
-  private FiatHaService fiat = new FiatHaService();
-  private Front50HaService front50 = new Front50HaService();
-  private GateHaService gate = new GateHaService();
-  private IgorHaService igor = new IgorHaService();
-  private KayentaHaService kayenta = new KayentaHaService();
-  private OrcaHaService orca = new OrcaHaService();
-  private RoscoHaService rosco = new RoscoHaService();
 
   @Override
   public String getNodeName() {
@@ -56,18 +49,4 @@ public class HaServices extends Node implements Cloneable {
   public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
     v.validate(psBuilder, this);
   }
-
-  public static Class<? extends HaService> translateHaServiceType(String serviceName) {
-    Optional<? extends Class<?>> res = Arrays.stream(HaServices.class.getDeclaredFields())
-        .filter(f -> f.getName().equals(serviceName))
-        .map(Field::getType)
-        .findFirst();
-
-    if (res.isPresent()) {
-      return (Class<? extends HaService>)res.get();
-    } else {
-      throw new IllegalArgumentException("No high availability service with name \"" + serviceName + "\" handled by halyard");
-    }
-  }
-
 }

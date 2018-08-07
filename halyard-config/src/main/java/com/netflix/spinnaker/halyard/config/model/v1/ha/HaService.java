@@ -51,14 +51,7 @@ public abstract class HaService extends Node implements Cloneable {
 
   public enum HaServiceType {
     CLOUDDRIVER("clouddriver"),
-    ECHO("echo"),
-    FIAT("fiat"),
-    FRONT50("front50"),
-    GATE("gate"),
-    KAYENTA("kayenta"),
-    IGOR("igor"),
-    ORCA("orca"),
-    ROSCO("rosco");
+    ECHO("echo");
 
     @Getter
     final String name;

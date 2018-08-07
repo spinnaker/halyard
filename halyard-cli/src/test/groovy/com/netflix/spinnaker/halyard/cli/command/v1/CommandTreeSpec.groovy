@@ -16,7 +16,7 @@
 
 package com.netflix.spinnaker.halyard.cli.command.v1
 
-import com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.DeploymentEnvironmentCommand
+import com.netflix.spinnaker.halyard.cli.command.v1.config.DeploymentEnvironmentCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.EditConfigCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.FeaturesCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.GenerateCommand
