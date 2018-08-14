@@ -19,12 +19,9 @@ package com.netflix.spinnaker.halyard.cli.command.v1;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * This is the base command, where we will register all the subcommands.
@@ -63,8 +60,10 @@ public class HalCommand extends NestableCommand {
     registerSubcommand(new BackupCommand());
     registerSubcommand(new ConfigCommand());
     registerSubcommand(new DeployCommand());
+    registerSubcommand(new ShutdownCommand());
     registerSubcommand(new TaskCommand());
     registerSubcommand(new VersionCommand());
+    registerSubcommand(new SpinCommand());
   }
 
   static String getVersion() {

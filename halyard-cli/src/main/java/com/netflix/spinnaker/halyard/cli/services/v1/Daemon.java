@@ -78,6 +78,10 @@ public class Daemon {
     return getService().getHealth().get("status").equalsIgnoreCase("up");
   }
 
+  public static String shutdown() {
+    return getService().shutdown("").getOrDefault("message", "");
+  }
+
   public static ShallowTaskList getTasks() {
     return getService().getTasks();
   }
@@ -500,10 +504,9 @@ public class Daemon {
     };
   }
 
-  public static Supplier<Void> generateDeployment(String deploymentName, boolean validate) {
+  public static Supplier<String> generateDeployment(String deploymentName, boolean validate) {
     return () -> {
-      ResponseUnwrapper.get(getService().generateDeployment(deploymentName, validate, ""));
-      return null;
+      return ResponseUnwrapper.get(getService().generateDeployment(deploymentName, validate, ""));
     };
   }
 
@@ -829,6 +832,13 @@ public class Daemon {
       Versions.Version version = new Versions.Version().setVersion(versionName);
       ResponseUnwrapper.get(getService().setVersion(deploymentName, validate, version));
       return null;
+    };
+  }
+
+  public static Supplier<RemoteAction> installSpin() {
+    return () -> {
+      Object rawRemoteAction = ResponseUnwrapper.get(getService().installSpin());
+      return getObjectMapper().convertValue(rawRemoteAction, RemoteAction.class);
     };
   }
 

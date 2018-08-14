@@ -45,6 +45,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import com.netflix.spinnaker.halyard.config.model.v1.security.SpringSsl;
 import com.netflix.spinnaker.halyard.config.model.v1.security.UiSecurity;
 import com.netflix.spinnaker.halyard.core.DaemonOptions;
+import com.netflix.spinnaker.halyard.core.RemoteAction;
 import com.netflix.spinnaker.halyard.core.StringBodyRequest;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
@@ -65,6 +66,9 @@ import java.util.Map;
 public interface DaemonService {
   @GET("/health")
   Map<String, String> getHealth();
+
+  @POST("/shutdown")
+  Map<String, String>  shutdown(@Body String _ignore);
 
   @GET("/v1/tasks/")
   ShallowTaskList getTasks();
@@ -107,7 +111,7 @@ public interface DaemonService {
       @Body DeploymentConfiguration deploymentConfiguration);
 
   @POST("/v1/config/deployments/{deploymentName}/generate/")
-  DaemonTask<Halconfig, Void> generateDeployment(
+  DaemonTask<Halconfig, String> generateDeployment(
       @Path("deploymentName") String deploymentName,
       @Query("validate") boolean validate,
       @Body String _ignore);
@@ -765,4 +769,7 @@ public interface DaemonService {
   DaemonTask<Halconfig, Void> publishLatestSpinnaker(
       @Query("latestSpinnaker") String latestSpinnaker,
       @Body String _ignore);
+
+  @GET("/v1/spin/install/latest")
+  DaemonTask<Halconfig, Object> installSpin();
 }
