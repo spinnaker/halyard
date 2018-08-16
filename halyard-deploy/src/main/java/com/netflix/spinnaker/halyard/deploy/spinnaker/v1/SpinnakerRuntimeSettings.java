@@ -18,16 +18,15 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
+import java.util.Collections;
 import lombok.Data;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Data
 public class SpinnakerRuntimeSettings {
@@ -36,94 +35,73 @@ public class SpinnakerRuntimeSettings {
   // For serialization
   public SpinnakerRuntimeSettings() {}
 
-  @Data
-  public class Services {
-    ServiceSettings clouddriver;
-    ServiceSettings clouddriverBootstrap;
-    ServiceSettings consulClient;
-    ServiceSettings consulServer;
-    ServiceSettings deck;
-    ServiceSettings echo;
-    ServiceSettings fiat;
-    ServiceSettings front50;
-    ServiceSettings gate;
-    ServiceSettings igor;
-    ServiceSettings kayenta;
-    ServiceSettings orca;
-    ServiceSettings orcaBootstrap;
-    ServiceSettings rosco;
-    ServiceSettings redis;
-    ServiceSettings redisBootstrap;
-    ServiceSettings monitoringDaemon;
-    ServiceSettings vaultClient;
-    ServiceSettings vaultServer;
+  public static class Services extends HashMap<Type,ServiceSettings> {
+    @Override
+    public ServiceSettings get(Object key) {
+      if (!Type.class.isInstance(key)) {
+        throw new HalException(Severity.FATAL, "Key must be of type SpinnakerService.Type");
+      }
+      if (!this.containsKey(key)) {
+        throw new HalException(Severity.FATAL, "Service " + Type.class.cast(key).getCanonicalName() + " does not exist");
+      }
+      return super.get(key);
+    }
+
+    // Getters for backwards compatibility
+    @JsonIgnore
+    public ServiceSettings getClouddriver() { return this.get(Type.CLOUDDRIVER); }
+    @JsonIgnore
+    public ServiceSettings getClouddriverBootstrap() { return this.get(Type.CLOUDDRIVER_BOOTSTRAP); }
+    @JsonIgnore
+    public ServiceSettings getConsulClient() { return this.get(Type.CONSUL_CLIENT); }
+    @JsonIgnore
+    public ServiceSettings getConsulServer() { return this.get(Type.CONSUL_SERVER); }
+    @JsonIgnore
+    public ServiceSettings getDeck() { return this.get(Type.DECK); }
+    @JsonIgnore
+    public ServiceSettings getEcho() { return this.get(Type.ECHO); }
+    @JsonIgnore
+    public ServiceSettings getFiat() { return this.get(Type.FIAT); }
+    @JsonIgnore
+    public ServiceSettings getFront50() { return this.get(Type.FRONT50); }
+    @JsonIgnore
+    public ServiceSettings getGate() { return this.get(Type.GATE); }
+    @JsonIgnore
+    public ServiceSettings getIgor() { return this.get(Type.IGOR); }
+    @JsonIgnore
+    public ServiceSettings getKayenta() { return this.get(Type.KAYENTA); }
+    @JsonIgnore
+    public ServiceSettings getOrca() { return this.get(Type.ORCA); }
+    @JsonIgnore
+    public ServiceSettings getOrcaBootstrap() { return this.get(Type.ORCA_BOOTSTRAP); }
+    @JsonIgnore
+    public ServiceSettings getRosco() { return this.get(Type.ROSCO); }
+    @JsonIgnore
+    public ServiceSettings getRedis() { return this.get(Type.REDIS); }
+    @JsonIgnore
+    public ServiceSettings getRedisBootstrap() { return this.get(Type.REDIS_BOOTSTRAP); }
+    @JsonIgnore
+    public ServiceSettings getMonitoringDaemon() { return this.get(Type.MONITORING_DAEMON); }
+    @JsonIgnore
+    public ServiceSettings getVaultClient() { return this.get(Type.VAULT_CLIENT); }
+    @JsonIgnore
+    public ServiceSettings getVaultServer() { return this.get(Type.VAULT_SERVER); }
   }
 
   @JsonIgnore
-  public Map<SpinnakerService.Type, ServiceSettings> getAllServiceSettings() {
-    return Arrays.stream(Services.class.getDeclaredFields()).reduce(
-        new HashMap<>(),
-        (map, field) -> {
-          if (!ServiceSettings.class.isAssignableFrom(field.getType())) {
-            return map;
-          }
-
-          SpinnakerService.Type type = SpinnakerService.Type.fromCanonicalName(field.getName());
-          ServiceSettings settings;
-          try {
-            settings = (ServiceSettings) field.get(services);
-          } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-          }
-
-          if (settings != null) {
-            map.put(type, settings);
-          }
-
-          return map;
-        },
-        (map1, map2) -> {
-          map1.putAll(map2);
-          return map1;
-        }
-    );
+  public Map<Type, ServiceSettings> getAllServiceSettings() {
+    return Collections.unmodifiableMap(services);
   }
 
-  public void setServiceSettings(SpinnakerService.Type type, ServiceSettings settings) {
-    Field serviceField = getServiceField(type.getCanonicalName());
-    serviceField.setAccessible(true);
-    try {
-      serviceField.set(services, settings);
-    } catch (IllegalAccessException e) {
-      throw new HalException(Problem.Severity.FATAL, "Can't access service field for " + type.toString() + ": " + e.getMessage());
-    } finally {
-      serviceField.setAccessible(false);
-    }
+  public void setServiceSettings(Type type, ServiceSettings settings) {
+    services.put(type, settings);
   }
 
   public ServiceSettings getServiceSettings(SpinnakerService service) {
-    return getServiceSettings(service.getCanonicalName());
+    return getServiceSettings(service.getType());
   }
 
-  private ServiceSettings getServiceSettings(String name) {
-    Field serviceField = getServiceField(name);
-    serviceField.setAccessible(true);
-    try {
-      return (ServiceSettings) serviceField.get(services);
-    } catch (IllegalAccessException e) {
-      throw new HalException(Problem.Severity.FATAL, "Can't access service field for " + name + ": " + e.getMessage());
-    } finally {
-      serviceField.setAccessible(false);
-    }
-  }
-
-  private Field getServiceField(String name) {
-    String reducedName = name.replace("-", "").replace("_", "");
-
-    Optional<Field> matchingField = Arrays.stream(Services.class.getDeclaredFields())
-        .filter(f -> f.getName().equalsIgnoreCase(reducedName))
-        .findFirst();
-
-    return matchingField.orElseThrow(() -> new HalException(Problem.Severity.FATAL, "Unknown service " + reducedName));
+  private ServiceSettings getServiceSettings(Type type) {
+    return services.get(type);
   }
 }

@@ -28,7 +28,9 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSetting
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.CustomProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ProfileFactory;
+import java.util.stream.Collectors;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,11 +67,11 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
   }
 
   @Override
-  public String getServiceName() {
+  public final String getServiceName() {
     return getType().getServiceName();
   }
 
-  public String getCanonicalName() {
+  public final String getCanonicalName() {
     return getType().getCanonicalName();
   }
 
@@ -132,40 +134,42 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
     });
   }
 
-  public enum Type {
-    CLOUDDRIVER("spin-clouddriver", "clouddriver"),
-    CLOUDDRIVER_BOOTSTRAP("spin-clouddriver-bootstrap", "clouddriver-bootstrap"),
-    CONSUL_CLIENT("spin-consul-client", "consul-client"),
-    CONSUL_SERVER("spin-consul-server", "consul-server"),
-    DECK("spin-deck", "deck"),
-    ECHO("spin-echo", "echo"),
-    FIAT("spin-fiat", "fiat"),
-    FRONT50("spin-front50", "front50"),
-    GATE("spin-gate", "gate"),
-    IGOR("spin-igor", "igor"),
-    KAYENTA("spin-kayenta", "kayenta"),
-    ORCA("spin-orca", "orca"),
-    ORCA_BOOTSTRAP("spin-orca-bootstrap", "orca-bootstrap"),
-    REDIS("spin-redis", "redis"),
-    REDIS_BOOTSTRAP("spin-redis-bootstrap", "redis-bootstrap"),
-    ROSCO("spin-rosco", "rosco"),
-    MONITORING_DAEMON("spin-monitoring-daemon", "monitoring-daemon"),
-    VAULT_CLIENT("spin-vault-client", "vault-client"),
-    VAULT_SERVER("spin-vault-server", "vault-server");
+  @EqualsAndHashCode
+  public static class Type {
+    // Constants for backwards compatibility
+    public static final Type CLOUDDRIVER = new Type("clouddriver");
+    public static final Type CLOUDDRIVER_BOOTSTRAP = new Type("clouddriver-bootstrap");
+    public static final Type CONSUL_CLIENT = new Type("consul-client");
+    public static final Type CONSUL_SERVER = new Type("consul-server");
+    public static final Type DECK = new Type("deck");
+    public static final Type ECHO = new Type("echo");
+    public static final Type FIAT = new Type("fiat");
+    public static final Type FRONT50 = new Type("front50");
+    public static final Type GATE = new Type("gate");
+    public static final Type IGOR = new Type("igor");
+    public static final Type KAYENTA = new Type("kayenta");
+    public static final Type ORCA = new Type("orca");
+    public static final Type ORCA_BOOTSTRAP = new Type("orca-bootstrap");
+    public static final Type REDIS = new Type("redis");
+    public static final Type REDIS_BOOTSTRAP = new Type("redis-bootstrap");
+    public static final Type ROSCO = new Type("rosco");
+    public static final Type MONITORING_DAEMON = new Type("monitoring-daemon");
+    public static final Type VAULT_CLIENT = new Type("vault-client");
+    public static final Type VAULT_SERVER = new Type("vault-server");
 
     @Getter
     final String serviceName;
     @Getter
     final String canonicalName;
 
-    Type(String serviceName, String canonicalName) {
-      this.serviceName = serviceName;
+    Type(String canonicalName) {
+      this.serviceName = "spin-" + canonicalName;
       this.canonicalName = canonicalName;
     }
 
     @Override
     public String toString() {
-      return serviceName;
+      return canonicalName;
     }
 
     private static String reduceName(String name) {
@@ -175,10 +179,27 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
     public static Type fromCanonicalName(String canonicalName) {
       String finalName = reduceName(canonicalName);
 
-      return Arrays.stream(values())
+      Optional<Type> type = getStaticFieldsOfType(Type.class).stream()
           .filter(t -> reduceName(t.getCanonicalName()).equalsIgnoreCase(finalName))
-          .findFirst()
-          .orElseThrow(() -> new IllegalArgumentException("No service with canonical name " + canonicalName + " exists."));
+          .findFirst();
+
+      if (type.isPresent()) {
+        return type.get();
+      }
+
+      return new Type(canonicalName.toLowerCase());
+    }
+
+    private static <T> List<T> getStaticFieldsOfType(Class<T> clazz) {
+      return Arrays.stream(Type.class.getDeclaredFields())
+          .filter(f -> clazz.isAssignableFrom(f.getType()))
+          .map(f -> {
+            try {
+              return (T) f.get(null);
+            } catch (IllegalAccessException e) {
+              throw new RuntimeException("Unable to access static field " + f.getName());
+            }
+          }).collect(Collectors.toList());
     }
   }
 }
