@@ -18,14 +18,26 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2;
 
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.EchoService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpringService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority;
+import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Data
 @Component
+@EqualsAndHashCode(callSuper = true)
 public class KubernetesV2EchoService extends EchoService implements KubernetesV2Service<EchoService.Echo> {
+  final DeployPriority deployPriority = new DeployPriority(0);
+
   @Delegate
   @Autowired
   KubernetesV2ServiceDelegate serviceDelegate;
@@ -33,5 +45,41 @@ public class KubernetesV2EchoService extends EchoService implements KubernetesV2
   @Override
   public ServiceSettings defaultServiceSettings() {
     return new Settings();
+  }
+
+  public static class Builder extends SpringService.Builder<KubernetesV2EchoService,Builder> {
+    KubernetesV2EchoService source;
+
+    public Builder(KubernetesV2EchoService source) {
+      super(source.getArtifact(), source.getArtifactService());
+      this.source = source;
+    }
+
+    @Override
+    public KubernetesV2EchoService build() {
+      Type type = Type.ECHO.withTypeNameSuffix(typeNameSuffix);
+      KubernetesV2EchoService service = new KubernetesV2EchoService() {
+        @Override
+        public Type getType() { return type; }
+
+        @Override
+        public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration,
+            SpinnakerRuntimeSettings endpoints) {
+          List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
+          profiles.addAll(generateExtraProfiles(deploymentConfiguration, endpoints));
+          return profiles;
+        }
+
+        @Override
+        public ServiceSettings defaultServiceSettings() {
+          Settings settings = new Settings();
+          activateExtraProfiles(settings);
+          return settings;
+        }
+      };
+
+      service.copyProperties(source);
+      return service;
+    }
   }
 }

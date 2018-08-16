@@ -33,6 +33,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
@@ -111,6 +113,10 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
 
   abstract protected Optional<String> customProfileOutputPath(String profileName);
 
+  public void copyProperties(SpinnakerService<T> source) {
+    BeanUtils.copyProperties(source, this);
+  }
+
   public Optional<Profile> customProfile(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings runtimeSettings, Path profilePath, String profileName) {
     return customProfileOutputPath(profileName).flatMap(outputPath -> {
       SpinnakerArtifact artifact = getArtifact();
@@ -183,11 +189,14 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
           .filter(t -> reduceName(t.getCanonicalName()).equalsIgnoreCase(finalName))
           .findFirst();
 
-      if (type.isPresent()) {
-        return type.get();
-      }
+      return type.isPresent() ? type.get() : new Type(canonicalName.toLowerCase());
+    }
 
-      return new Type(canonicalName.toLowerCase());
+    public Type withTypeNameSuffix(String nameSuffix) {
+      if (StringUtils.isBlank(nameSuffix)) {
+        return this;
+      }
+      return new Type(this.getCanonicalName() + "-" + nameSuffix);
     }
 
     private static <T> List<T> getStaticFieldsOfType(Class<T> clazz) {
@@ -201,5 +210,16 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
             }
           }).collect(Collectors.toList());
     }
+  }
+
+  public static abstract class Builder<S extends SpinnakerService,B extends Builder<S,B>> {
+    protected String typeNameSuffix;
+
+    public B setTypeNameSuffix(String typeNameSuffix) {
+      this.typeNameSuffix = typeNameSuffix;
+      return (B) this;
+    }
+
+    public abstract S build();
   }
 }

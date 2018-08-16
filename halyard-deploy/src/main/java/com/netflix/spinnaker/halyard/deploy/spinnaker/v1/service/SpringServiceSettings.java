@@ -17,25 +17,42 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang.RandomStringUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 abstract public class SpringServiceSettings extends ServiceSettings {
+  private static final String SPRING_PROFILES_ACTIVE_KEY = "SPRING_PROFILES_ACTIVE";
+
   protected void setProfiles(List<String> profiles) {
     if (profiles == null || profiles.isEmpty()) {
       return;
     }
 
-    String key = "SPRING_PROFILES_ACTIVE";
     String val = profiles.stream().collect(Collectors.joining(","));
-    getEnv().put(key, val);
+    getEnv().put(SPRING_PROFILES_ACTIVE_KEY, val);
+  }
+
+  public void addProfiles(List<String> profiles) {
+    if (profiles == null || profiles.isEmpty()) {
+      return;
+    }
+
+    Set<String> allProfiles = new HashSet<>(profiles);
+    if (getEnv().containsKey(SPRING_PROFILES_ACTIVE_KEY)) {
+      List<String> existingProfiles = Arrays.asList(getEnv().get(SPRING_PROFILES_ACTIVE_KEY).split(","));
+      allProfiles.addAll(existingProfiles);
+    }
+
+    getEnv().put(SPRING_PROFILES_ACTIVE_KEY, allProfiles.stream().collect(Collectors.joining(",")));
   }
 
   SpringServiceSettings() {}

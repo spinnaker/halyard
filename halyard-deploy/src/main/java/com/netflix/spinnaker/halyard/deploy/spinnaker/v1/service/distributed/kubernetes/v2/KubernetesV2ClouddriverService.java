@@ -25,6 +25,10 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.KubernetesV2Clo
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpringService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +37,13 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Data
 @Component
+@EqualsAndHashCode(callSuper = true)
 @Slf4j
 public class KubernetesV2ClouddriverService extends ClouddriverService implements KubernetesV2Service<ClouddriverService.Clouddriver> {
+  final DeployPriority deployPriority = new DeployPriority(4);
+
   @Delegate
   @Autowired
   KubernetesV2ServiceDelegate serviceDelegate;
@@ -66,5 +74,41 @@ public class KubernetesV2ClouddriverService extends ClouddriverService implement
   @Override
   public ServiceSettings defaultServiceSettings() {
     return new Settings();
+  }
+
+  public static class Builder extends SpringService.Builder<KubernetesV2ClouddriverService,Builder> {
+    KubernetesV2ClouddriverService source;
+
+    public Builder(KubernetesV2ClouddriverService source) {
+      super(source.getArtifact(), source.getArtifactService());
+      this.source = source;
+    }
+
+    @Override
+    public KubernetesV2ClouddriverService build() {
+      Type type = Type.CLOUDDRIVER.withTypeNameSuffix(typeNameSuffix);
+      KubernetesV2ClouddriverService service = new KubernetesV2ClouddriverService() {
+        @Override
+        public Type getType() { return type; }
+
+        @Override
+        public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration,
+            SpinnakerRuntimeSettings endpoints) {
+          List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
+          profiles.addAll(generateExtraProfiles(deploymentConfiguration, endpoints));
+          return profiles;
+        }
+
+        @Override
+        public ServiceSettings defaultServiceSettings() {
+          Settings settings = new Settings();
+          activateExtraProfiles(settings);
+          return settings;
+        }
+      };
+
+      service.copyProperties(source);
+      return service;
+    }
   }
 }

@@ -18,15 +18,27 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2;
 
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.RedisService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority;
+import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
+@Data
 @Component
+@EqualsAndHashCode(callSuper = true)
 public class KubernetesV2RedisService extends RedisService implements KubernetesV2Service<Jedis> {
+  final DeployPriority deployPriority = new DeployPriority(5);
+
   @Delegate
   @Autowired
   KubernetesV2ServiceDelegate serviceDelegate;
@@ -43,5 +55,25 @@ public class KubernetesV2RedisService extends RedisService implements Kubernetes
   @Override
   public ServiceSettings defaultServiceSettings() {
     return new Settings();
+  }
+
+  public static class Builder extends SpinnakerService.Builder<KubernetesV2RedisService,Builder> {
+    KubernetesV2RedisService source;
+
+    public Builder(KubernetesV2RedisService source) {
+      this.source = source;
+    }
+
+    @Override
+    public KubernetesV2RedisService build() {
+      Type type = Type.REDIS.withTypeNameSuffix(typeNameSuffix);
+      KubernetesV2RedisService service = new KubernetesV2RedisService() {
+        @Override
+        public Type getType() { return type; }
+      };
+
+      service.copyProperties(source);
+      return service;
+    }
   }
 }

@@ -30,7 +30,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceInterfac
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonitoringDaemonService
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v1.KubernetesV1DistributedService
 import io.fabric8.kubernetes.api.model.LocalObjectReference
 import io.fabric8.kubernetes.api.model.extensions.ReplicaSetBuilder
@@ -275,7 +275,7 @@ class KubernetesV1DistributedServiceSpec extends Specification {
             }
 
             @Override
-            DistributedService.DeployPriority getDeployPriority() {
+            DeployPriority getDeployPriority() {
                 return null
             }
 
