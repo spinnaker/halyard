@@ -26,10 +26,14 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Data
 @Component
+@EqualsAndHashCode(callSuper = true)
 public class KubernetesV2EchoSlaveService extends KubernetesV2EchoService {
   @Autowired
   EchoSlaveProfileFactory echoSlaveProfileFactory;
