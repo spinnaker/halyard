@@ -20,25 +20,23 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ClouddriverRwProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.StringBackedProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Data
 @Component
 @EqualsAndHashCode(callSuper = true)
 public class KubernetesV2ClouddriverRwService extends KubernetesV2ClouddriverService{
-  @Autowired
-  ClouddriverRwProfileFactory clouddriverRwProfileFactory;
-
   @Override
   public Type getType() {
     return Type.CLOUDDRIVER_RW;
@@ -52,9 +50,66 @@ public class KubernetesV2ClouddriverRwService extends KubernetesV2ClouddriverSer
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
+
     String filename = "clouddriver-rw.yml";
     String path = Paths.get(getConfigOutputPath(), filename).toString();
-    profiles.add(clouddriverRwProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints));
+
+    // TODO(joonlim): Issue 2934 - Delete once ./halconfig/clouddriver-caching.yml is added to the clouddriver repo
+    ArtifactService artifactService = getArtifactService();
+    profiles.add(new StringBackedProfileFactory() {
+      @Override
+      protected String getRawBaseProfile() {
+        return "";
+      }
+
+      @Override
+      protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration,
+          SpinnakerRuntimeSettings endpoints) {
+        String contents = String.join("\n",
+            "server:",
+            "  port: ${services.clouddriver-rw.port:7002}",
+            "  address: ${services.clouddriver-rw.host:localhost}",
+            "",
+            "redis:",
+            "  connection: ${services.redis-clouddriver-rw.baseUrl:redis://localhost:6379}",
+            "",
+            "caching:",
+            "  redis:",
+            "    hashingEnabled: false",
+            "  writeEnabled: false",
+            "",
+            "services:",
+            "  redis-clouddriver-rw:",
+            "    baseUrl: ${services.redis.baseUrl:redis://localhost:6379}", // TODO(joonlim): Issue 2934 - Update to services.redis-master-clouddriver.baseUrl
+            ""
+        );
+        profile.appendContents(contents);
+      }
+
+      @Override
+      public SpinnakerArtifact getArtifact() {
+        return SpinnakerArtifact.CLOUDDRIVER;
+      }
+
+      @Override
+      protected String commentPrefix() {
+        return "## ";
+      }
+
+      @Override
+      public ArtifactService getArtifactService() {
+        return artifactService;
+      }
+    }.getProfile(filename, path, deploymentConfiguration, endpoints));
+
+    // TODO(joonlim): Issue 2934 - Uncomment once ./halconfig/clouddriver-rw.yml is added to the clouddriver repo
+    /*
+    // Remove clouddriver.yml in favor of clouddriver-rw.yml
+    profiles = profiles.stream().filter(p -> !p.getName().equals("clouddriver.yml")).collect(Collectors.toList());
+
+    profiles.add(getClouddriverProfileFactory().getProfile(filename, path, deploymentConfiguration, endpoints));
+    */
+
     return profiles;
   }
 

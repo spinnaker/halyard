@@ -20,25 +20,23 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ClouddriverCachingProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.StringBackedProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Data
 @Component
 @EqualsAndHashCode(callSuper = true)
 public class KubernetesV2ClouddriverCachingService extends KubernetesV2ClouddriverService {
-  @Autowired
-  ClouddriverCachingProfileFactory clouddriverCachingProfileFactory;
-
   @Override
   public Type getType() {
     return Type.CLOUDDRIVER_CACHING;
@@ -52,9 +50,66 @@ public class KubernetesV2ClouddriverCachingService extends KubernetesV2Clouddriv
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
+
     String filename = "clouddriver-caching.yml";
     String path = Paths.get(getConfigOutputPath(), filename).toString();
-    profiles.add(clouddriverCachingProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints));
+
+    // TODO(joonlim): Issue 2934 - Delete once ./halconfig/clouddriver-caching.yml is added to the clouddriver repo
+    ArtifactService artifactService = getArtifactService();
+    profiles.add(new StringBackedProfileFactory() {
+      @Override
+      protected String getRawBaseProfile() {
+        return "";
+      }
+
+      @Override
+      protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration,
+          SpinnakerRuntimeSettings endpoints) {
+        String contents = String.join("\n",
+            "server:",
+            "  port: ${services.clouddriver-caching.port:7002}",
+            "  address: ${services.clouddriver-caching.host:localhost}",
+            "",
+            "redis:",
+            "  connection: ${services.redis-clouddriver-caching.baseUrl:redis://localhost:6379}",
+            "",
+            "caching:",
+            "  redis:",
+            "    hashingEnabled: true",
+            "  writeEnabled: true",
+            "",
+            "services:",
+            "  redis-clouddriver-caching:",
+            "    baseUrl: ${services.redis.baseUrl:redis://localhost:6379}", // TODO(joonlim): Issue 2934 - Update to services.redis-master-clouddriver.baseUrl
+            ""
+        );
+        profile.appendContents(contents);
+      }
+
+      @Override
+      public SpinnakerArtifact getArtifact() {
+        return SpinnakerArtifact.CLOUDDRIVER;
+      }
+
+      @Override
+      protected String commentPrefix() {
+        return "## ";
+      }
+
+      @Override
+      public ArtifactService getArtifactService() {
+        return artifactService;
+      }
+    }.getProfile(filename, path, deploymentConfiguration, endpoints));
+
+    // TODO(joonlim): Issue 2934 - Uncomment once ./halconfig/clouddriver-caching.yml is added to the clouddriver repo
+    /*
+    // Remove clouddriver.yml in favor of clouddriver-caching.yml
+    profiles = profiles.stream().filter(p -> !p.getName().equals("clouddriver.yml")).collect(Collectors.toList());
+
+    profiles.add(getClouddriverProfileFactory().getProfile(filename, path, deploymentConfiguration, endpoints));
+    */
+
     return profiles;
   }
 
