@@ -26,7 +26,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.StringBackedProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -112,10 +112,6 @@ public class KubernetesV2EchoSchedulerService extends KubernetesV2EchoService {
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    List<String> profiles = new ArrayList<>();
-    profiles.add("scheduler");
-    profiles.add("local");
-    profiles.add("scheduler-local");
-    return new Settings(profiles);
+    return new Settings(Arrays.asList("scheduler", "local", "scheduler-local"));
   }
 }

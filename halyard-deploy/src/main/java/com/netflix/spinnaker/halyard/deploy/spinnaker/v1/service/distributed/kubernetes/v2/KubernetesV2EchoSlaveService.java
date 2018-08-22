@@ -27,6 +27,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.StringBackedPro
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -105,10 +106,6 @@ public class KubernetesV2EchoSlaveService extends KubernetesV2EchoService {
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    List<String> profiles = new ArrayList<>();
-    profiles.add("slave");
-    profiles.add("local");
-    profiles.add("slave-local");
-    return new Settings(profiles);
+    return new Settings(Arrays.asList("slave", "local", "slave-local"));
   }
 }

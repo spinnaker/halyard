@@ -27,7 +27,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.StringBackedProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -115,10 +115,6 @@ public class KubernetesV2ClouddriverCachingService extends KubernetesV2Clouddriv
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    List<String> profiles = new ArrayList<>();
-    profiles.add("caching");
-    profiles.add("local");
-    profiles.add("caching-local");
-    return new Settings(profiles);
+    return new Settings(Arrays.asList("caching", "local", "caching-local"));
   }
 }

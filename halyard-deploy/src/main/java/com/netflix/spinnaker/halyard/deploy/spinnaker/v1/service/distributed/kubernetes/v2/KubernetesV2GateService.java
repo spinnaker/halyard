@@ -28,7 +28,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -66,10 +66,7 @@ public class KubernetesV2GateService extends GateService implements KubernetesV2
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     if (hasHaServiceRedirects(deploymentConfiguration)) {
-      List<String> profiles = new ArrayList<>();
-      profiles.add("ha");
-      profiles.add("local");
-      return new Settings(deploymentConfiguration.getSecurity().getApiSecurity(), profiles);
+      return new Settings(deploymentConfiguration.getSecurity().getApiSecurity(), Arrays.asList("ha", "local"));
     }
     return new Settings(deploymentConfiguration.getSecurity().getApiSecurity());
   }

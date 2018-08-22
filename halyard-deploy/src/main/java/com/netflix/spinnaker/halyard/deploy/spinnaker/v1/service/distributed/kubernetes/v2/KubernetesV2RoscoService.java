@@ -27,7 +27,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.RoscoService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -65,10 +65,7 @@ public class KubernetesV2RoscoService extends RoscoService implements Kubernetes
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     if (hasHaServiceRedirects(deploymentConfiguration)) {
-      List<String> profiles = new ArrayList<>();
-      profiles.add("ha");
-      profiles.add("local");
-      return new Settings(profiles);
+      return new Settings(Arrays.asList("ha", "local"));
     }
     return new Settings();
   }
