@@ -31,11 +31,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public abstract class HaServiceRedirectsProfileFactory extends StringBackedProfileFactory {
-  protected static final ServiceSettings CLOUDDRIVER_TO_CLOUDDRIVER_RO_REDIRECT = ServiceSettings.serviceBaseUrlRedirect("${services.clouddriver-ro.baseUrl:http://localhost:7002}");
-  protected static final ServiceSettings CLOUDDRIVER_TO_CLOUDDRIVER_RW_REDIRECT = ServiceSettings.serviceBaseUrlRedirect("${services.clouddriver-rw.baseUrl:http://localhost:7002}");
-  protected static final ServiceSettings ECHO_TO_ECHO_SLAVE_REDIRECT = ServiceSettings.serviceBaseUrlRedirect("${services.echo-slave.baseUrl:http://localhost:8089}");
-
-  protected abstract ServiceRedirectsConfig generateServiceRedirects(DeploymentConfiguration deploymentConfiguration);
+  protected abstract ServiceRedirectsConfig generateServiceRedirects(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints);
 
   @Override
   protected String getRawBaseProfile() {
@@ -44,7 +40,7 @@ public abstract class HaServiceRedirectsProfileFactory extends StringBackedProfi
 
   @Override
   protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
-    profile.appendContents(yamlToString(generateServiceRedirects(deploymentConfiguration)));
+    profile.appendContents(yamlToString(generateServiceRedirects(deploymentConfiguration, endpoints)));
   }
 
   @Override

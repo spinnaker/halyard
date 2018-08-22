@@ -64,12 +64,12 @@ public class ServiceSettings {
   Integer targetSize;
   Boolean skipLifeCycleManagement;
 
-  public ServiceSettings() { }
+  public ServiceSettings() {}
 
-  public static ServiceSettings serviceBaseUrlRedirect(String baseUrl) {
+  public ServiceSettings withOnlyBaseUrl() {
     ServiceSettings settings = new ServiceSettings();
     settings.setEnabled(true);
-    settings.setBaseUrl(baseUrl);
+    settings.setBaseUrl(getBaseUrl());
     return settings;
   }
 

@@ -20,6 +20,7 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ha;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import org.springframework.stereotype.Component;
 
@@ -31,10 +32,10 @@ public class OrcaHaServiceRedirectsProfileFactory extends HaServiceRedirectsProf
   }
 
   @Override
-  protected ServiceRedirectsConfig generateServiceRedirects(DeploymentConfiguration deploymentConfiguration) {
+  protected ServiceRedirectsConfig generateServiceRedirects(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     ServiceRedirectsConfig serviceRedirects = new ServiceRedirectsConfig();
-    serviceRedirects.services.put(Type.CLOUDDRIVER, CLOUDDRIVER_TO_CLOUDDRIVER_RW_REDIRECT);
-    serviceRedirects.services.put(Type.ECHO, ECHO_TO_ECHO_SLAVE_REDIRECT);
+    serviceRedirects.services.put(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RW).withOnlyBaseUrl());
+    serviceRedirects.services.put(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
     return serviceRedirects;
   }
 }
