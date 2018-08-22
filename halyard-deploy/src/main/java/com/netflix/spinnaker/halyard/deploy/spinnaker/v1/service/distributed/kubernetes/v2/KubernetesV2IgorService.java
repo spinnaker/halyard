@@ -25,7 +25,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ha.IgorHaServiceRedirectsProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.IgorService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;

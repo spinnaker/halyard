@@ -21,7 +21,7 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonitoringDaemonService;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;

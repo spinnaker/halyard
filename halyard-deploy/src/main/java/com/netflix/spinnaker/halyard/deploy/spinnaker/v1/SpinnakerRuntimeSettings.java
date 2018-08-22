@@ -28,7 +28,7 @@ import java.util.Map;
 
 @Data
 public class SpinnakerRuntimeSettings {
-  protected Map<Type,ServiceSettings> services = new HashMap<>();
+  protected Map<Type, ServiceSettings> services = new HashMap<>();
 
   @JsonIgnore
   public Map<Type, ServiceSettings> getAllServiceSettings() {
