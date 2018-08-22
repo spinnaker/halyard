@@ -55,8 +55,8 @@ public class KubernetesV2DeckService extends DeckService implements KubernetesV2
   private final String settingsJsLocal = "settings-local.js";
 
   @Override
-  public ServiceSettings defaultServiceSettings() {
-    return new Settings();
+  public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
+    return new Settings(deploymentConfiguration.getSecurity().getUiSecurity());
   }
 
   @Override
@@ -82,9 +82,9 @@ public class KubernetesV2DeckService extends DeckService implements KubernetesV2
   }
 
   @Override
-  public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
+  public ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
-    Settings settings = new Settings(deploymentConfiguration.getSecurity().getUiSecurity());
+    ServiceSettings settings = defaultServiceSettings(deploymentConfiguration);
     settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
         .setLocation(kubernetesSharedServiceSettings.getDeployLocation())
         .setEnabled(true);

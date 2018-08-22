@@ -120,6 +120,7 @@ abstract public class Front50Service extends SpringService<Front50Service.Front5
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
+    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {}
   }

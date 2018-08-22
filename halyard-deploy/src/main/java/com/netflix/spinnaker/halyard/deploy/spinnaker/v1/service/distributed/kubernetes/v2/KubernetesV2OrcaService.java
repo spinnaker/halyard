@@ -18,14 +18,17 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2;
 
+import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ShutdownScriptProfileFactoryBuilder;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ha.OrcaHaServiceRedirectsProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.OrcaService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpringService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,6 +49,9 @@ public class KubernetesV2OrcaService extends OrcaService implements KubernetesV2
   @Autowired
   ShutdownScriptProfileFactoryBuilder shutdownScriptProfileFactoryBuilder;
 
+  @Autowired
+  OrcaHaServiceRedirectsProfileFactory orcaHaServiceRedirectsProfileFactory;
+
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
@@ -56,6 +62,14 @@ public class KubernetesV2OrcaService extends OrcaService implements KubernetesV2
             + "sleep " + terminationGracePeriodSeconds() / 2 + "\n",
         getArtifact()
     ).getProfile("orca/shutdown.sh", shutdownScriptFile(), deploymentConfiguration, endpoints));
+
+    if (hasHaServiceRedirects(deploymentConfiguration)) {
+      String filename = "orca-ha.yml";
+      String path = Paths.get(getConfigOutputPath(), filename).toString();
+      Profile profile = orcaHaServiceRedirectsProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints);
+      profiles.add(profile);
+    }
+
     return profiles;
   }
 
@@ -65,43 +79,18 @@ public class KubernetesV2OrcaService extends OrcaService implements KubernetesV2
   }
 
   @Override
-  public ServiceSettings defaultServiceSettings() {
+  public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
+    if (hasHaServiceRedirects(deploymentConfiguration)) {
+      List<String> profiles = new ArrayList<>();
+      profiles.add("ha");
+      profiles.add("local");
+      return new Settings(profiles);
+    }
     return new Settings();
   }
 
-  public static class Builder extends SpringService.Builder<KubernetesV2OrcaService,Builder> {
-    KubernetesV2OrcaService source;
-
-    public Builder(KubernetesV2OrcaService source) {
-      super(source.getArtifact(), source.getArtifactService());
-      this.source = source;
-    }
-
-    @Override
-    public KubernetesV2OrcaService build() {
-      Type type = Type.ORCA.withTypeNameSuffix(typeNameSuffix);
-      KubernetesV2OrcaService service = new KubernetesV2OrcaService() {
-        @Override
-        public Type getType() { return type; }
-
-        @Override
-        public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration,
-            SpinnakerRuntimeSettings endpoints) {
-          List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
-          profiles.addAll(generateExtraProfiles(deploymentConfiguration, endpoints));
-          return profiles;
-        }
-
-        @Override
-        public ServiceSettings defaultServiceSettings() {
-          Settings settings = new Settings();
-          activateExtraProfiles(settings);
-          return settings;
-        }
-      };
-
-      service.copyProperties(source);
-      return service;
-    }
+  private boolean hasHaServiceRedirects(DeploymentConfiguration deployment) {
+    HaServices haServices = deployment.getDeploymentEnvironment().getHaServices();
+    return haServices.getClouddriver().isEnabled() || haServices.getEcho().isEnabled();
   }
 }

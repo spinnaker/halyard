@@ -93,7 +93,12 @@ abstract public class FiatService extends SpringService<FiatService.Fiat> {
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
+    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {}
+
+    public Settings(List<String> profiles) {
+      setProfiles(profiles);
+    }
   }
 }

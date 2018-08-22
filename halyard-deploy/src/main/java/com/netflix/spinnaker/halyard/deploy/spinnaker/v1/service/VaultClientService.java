@@ -66,6 +66,7 @@ abstract public class VaultClientService extends SpinnakerService<VaultClientSer
     Boolean sidecar = true;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
+    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() { }
   }

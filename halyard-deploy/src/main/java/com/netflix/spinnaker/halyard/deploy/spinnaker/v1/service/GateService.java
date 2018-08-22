@@ -113,6 +113,7 @@ abstract public class GateService extends SpringService<GateService.Gate> {
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
+    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {}
 
@@ -121,6 +122,11 @@ abstract public class GateService extends SpringService<GateService.Gate> {
       if (apiSecurity.getSsl().isEnabled()) {
         scheme = "https";
       }
+    }
+
+    public Settings(ApiSecurity apiSecurity, List<String> profiles) {
+      this(apiSecurity);
+      setProfiles(profiles);
     }
   }
 }

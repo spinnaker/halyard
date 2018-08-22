@@ -118,6 +118,7 @@ abstract public class ConsulClientService extends SpinnakerService<ConsulApi> im
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
+    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() { }
   }

@@ -65,7 +65,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   String getDockerRegistry(String deploymentName, SpinnakerArtifact artifact);
   String getSpinnakerStagingPath(String deploymentName);
   ArtifactService getArtifactService();
-  ServiceSettings defaultServiceSettings();
+  ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration);
   ObjectMapper getObjectMapper();
   SpinnakerMonitoringDaemonService getMonitoringDaemonService();
   DeployPriority getDeployPriority();
@@ -347,7 +347,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
   default ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
-    ServiceSettings settings = defaultServiceSettings();
+    ServiceSettings settings = defaultServiceSettings(deploymentConfiguration);
     String location = kubernetesSharedServiceSettings.getDeployLocation();
     settings.setAddress(buildAddress(location))
         .setArtifactId(getArtifactId(deploymentConfiguration.getName()))

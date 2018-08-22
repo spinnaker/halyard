@@ -54,7 +54,7 @@ public class KubernetesV2KayentaService extends KayentaService implements Kubern
   }
 
   @Override
-  public ServiceSettings defaultServiceSettings() {
+  public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     return new Settings();
   }
 }

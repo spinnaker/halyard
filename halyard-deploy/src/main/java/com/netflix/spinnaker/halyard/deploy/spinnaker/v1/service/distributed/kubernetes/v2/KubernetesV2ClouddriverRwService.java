@@ -18,40 +18,48 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2;
 
+
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ClouddriverRwProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.Front50Service;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DeployPriority;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Delegate;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
-@Data
 @Component
-@EqualsAndHashCode(callSuper = true)
-public class KubernetesV2Front50Service extends Front50Service implements KubernetesV2Service<Front50Service.Front50> {
-  final DeployPriority deployPriority = new DeployPriority(4);
-
-  @Delegate
+public class KubernetesV2ClouddriverRwService extends KubernetesV2ClouddriverService{
   @Autowired
-  KubernetesV2ServiceDelegate serviceDelegate;
+  ClouddriverRwProfileFactory clouddriverRwProfileFactory;
+
+  @Override
+  public Type getType() {
+    return Type.CLOUDDRIVER_RW;
+  }
+
+  @Override
+  public boolean isEnabled(DeploymentConfiguration deploymentConfiguration) {
+    return deploymentConfiguration.getDeploymentEnvironment().getHaServices().getClouddriver().isEnabled();
+  }
 
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
-    generateAwsProfile(deploymentConfiguration, endpoints, getRootHomeDirectory()).ifPresent(profiles::add);
-    generateAwsProfile(deploymentConfiguration, endpoints, getHomeDirectory()).ifPresent(profiles::add);
+    String filename = "clouddriver-rw.yml";
+    String path = Paths.get(getConfigOutputPath(), filename).toString();
+    profiles.add(clouddriverRwProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints));
     return profiles;
   }
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    return new Settings();
+    List<String> profiles = new ArrayList<>();
+    profiles.add("rw");
+    profiles.add("local");
+    profiles.add("rw-local");
+    return new Settings(profiles);
   }
 }

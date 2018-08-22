@@ -70,6 +70,7 @@ abstract public class RedisService extends SpinnakerService<Jedis> {
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
+    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {
       env.put("MASTER", "true");

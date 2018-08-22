@@ -116,6 +116,7 @@ abstract public class OrcaService extends SpringService<OrcaService.Orca> {
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
+    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {}
 
