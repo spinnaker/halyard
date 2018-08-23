@@ -69,16 +69,12 @@ public class KubernetesV2ClouddriverRwService extends KubernetesV2ClouddriverSer
             "  address: ${services.clouddriver-rw.host:localhost}",
             "",
             "redis:",
-            "  connection: ${services.redis-clouddriver-rw.baseUrl:redis://localhost:6379}",
+            "  connection: ${services.redis.baseUrl:redis://localhost:6379}",
             "",
             "caching:",
             "  redis:",
             "    hashingEnabled: false",
             "  writeEnabled: false",
-            "",
-            "services:",
-            "  redis-clouddriver-rw:",
-            "    baseUrl: ${services.redis.baseUrl:redis://localhost:6379}", // TODO(joonlim): Issue 2934 - Update to services.redis-master-clouddriver.baseUrl
             ""
         );
         profile.appendContents(contents);
@@ -110,4 +106,6 @@ public class KubernetesV2ClouddriverRwService extends KubernetesV2ClouddriverSer
 
     return profiles;
   }
+
+  // TODO(joonlim): Issue 2934 - Create hasServiceOverrides and getServiceOverrides for external Redis endpoint.
 }
