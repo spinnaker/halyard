@@ -55,7 +55,7 @@ public class ServiceSettings {
   String baseUrl;
   String overrideBaseUrl;
   String location;
-  KubernetesSettings kubernetes;
+  KubernetesSettings kubernetes = new KubernetesSettings(); // TODO: remove this line from sub classes
   Boolean enabled;
   Boolean basicAuthEnabled;
   Boolean monitored;
@@ -64,12 +64,11 @@ public class ServiceSettings {
   Integer targetSize;
   Boolean skipLifeCycleManagement;
 
-  public ServiceSettings() {}
-
   public ServiceSettings withOnlyBaseUrl() {
     ServiceSettings settings = new ServiceSettings();
-    settings.setEnabled(true);
+    settings.setEnabled(getEnabled());
     settings.setBaseUrl(getBaseUrl());
+    settings.setKubernetes(null);
     return settings;
   }
 

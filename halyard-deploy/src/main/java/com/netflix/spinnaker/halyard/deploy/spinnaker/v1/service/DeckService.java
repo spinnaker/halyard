@@ -121,7 +121,6 @@ abstract public class DeckService extends SpinnakerService<DeckService.Deck> {
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
-    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {}
 

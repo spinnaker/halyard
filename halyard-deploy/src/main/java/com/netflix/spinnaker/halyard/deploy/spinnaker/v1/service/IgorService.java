@@ -93,7 +93,6 @@ abstract public class IgorService extends SpringService<IgorService.Igor> {
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
-    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {}
 

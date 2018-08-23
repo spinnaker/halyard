@@ -22,7 +22,6 @@ import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ha.FiatHaServiceRedirectsProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.FiatService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
@@ -45,9 +44,6 @@ public class KubernetesV2FiatService extends FiatService implements KubernetesV2
   @Autowired
   KubernetesV2ServiceDelegate serviceDelegate;
 
-  @Autowired
-  FiatHaServiceRedirectsProfileFactory fiatHaServiceRedirectsProfileFactory;
-
   @Override
   public boolean isEnabled(DeploymentConfiguration deploymentConfiguration) {
     return deploymentConfiguration.getSecurity().getAuthz().isEnabled();
@@ -57,10 +53,12 @@ public class KubernetesV2FiatService extends FiatService implements KubernetesV2
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
 
-    if (hasHaServiceRedirects(deploymentConfiguration)) {
-      String filename = "fiat-ha.yml";
+    if (hasServiceOverrides(deploymentConfiguration)) {
+      SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
+      serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RO).withOnlyBaseUrl());
+      String filename = "fiat-overrides.yml";
       String path = Paths.get(getConfigOutputPath(), filename).toString();
-      Profile profile = fiatHaServiceRedirectsProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints);
+      Profile profile = getSpinnakerProfileFactory().getProfile(filename, path, deploymentConfiguration, serviceOverrides);
       profiles.add(profile);
     }
 
@@ -69,13 +67,13 @@ public class KubernetesV2FiatService extends FiatService implements KubernetesV2
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    if (hasHaServiceRedirects(deploymentConfiguration)) {
-      return new Settings(Arrays.asList("ha", "local"));
+    if (hasServiceOverrides(deploymentConfiguration)) {
+      return new Settings(Arrays.asList("overrides", "local"));
     }
     return new Settings();
   }
 
-  private boolean hasHaServiceRedirects(DeploymentConfiguration deployment) {
+  private boolean hasServiceOverrides(DeploymentConfiguration deployment) {
     HaServices haServices = deployment.getDeploymentEnvironment().getHaServices();
     return haServices.getClouddriver().isEnabled();
   }

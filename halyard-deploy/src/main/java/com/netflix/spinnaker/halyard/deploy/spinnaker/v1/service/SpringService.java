@@ -21,6 +21,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.SpinnakerProfileFactory;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Data
 @Component
+@EqualsAndHashCode(callSuper = true)
 abstract public class SpringService<T> extends SpinnakerService<T> {
   protected String getConfigOutputPath() {
     return "/opt/spinnaker/config/";

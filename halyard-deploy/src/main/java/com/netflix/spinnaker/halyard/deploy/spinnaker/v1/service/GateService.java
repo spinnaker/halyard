@@ -20,7 +20,6 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.security.ApiSecurity;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
-import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.GateBoot128ProfileFactory;
@@ -113,7 +112,6 @@ abstract public class GateService extends SpringService<GateService.Gate> {
     Integer targetSize = 1;
     Boolean skipLifeCycleManagement = false;
     Map<String, String> env = new HashMap<>();
-    KubernetesSettings kubernetes = new KubernetesSettings();
 
     public Settings() {}
 

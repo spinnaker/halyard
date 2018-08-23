@@ -22,7 +22,6 @@ import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ha.GateHaServiceRedirectsProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.GateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
@@ -46,17 +45,21 @@ public class KubernetesV2GateService extends GateService implements KubernetesV2
   @Autowired
   KubernetesV2ServiceDelegate serviceDelegate;
 
-  @Autowired
-  GateHaServiceRedirectsProfileFactory gateHaServiceRedirectsProfileFactory;
-
   @Override
   public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
 
-    if (hasHaServiceRedirects(deploymentConfiguration)) {
-      String filename = "gate-ha.yml";
+    if (hasServiceOverrides(deploymentConfiguration)) {
+      SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
+      if (endpoints.getServiceSettings(Type.CLOUDDRIVER_RO).getEnabled()) {
+        serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RO).withOnlyBaseUrl());
+      }
+      if (endpoints.getServiceSettings(Type.ECHO_SLAVE).getEnabled()) {
+        serviceOverrides.setServiceSettings(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
+      }
+      String filename = "gate-overrides.yml";
       String path = Paths.get(getConfigOutputPath(), filename).toString();
-      Profile profile = gateHaServiceRedirectsProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints);
+      Profile profile = getSpinnakerProfileFactory().getProfile(filename, path, deploymentConfiguration, serviceOverrides);
       profiles.add(profile);
     }
 
@@ -65,8 +68,8 @@ public class KubernetesV2GateService extends GateService implements KubernetesV2
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    if (hasHaServiceRedirects(deploymentConfiguration)) {
-      return new Settings(deploymentConfiguration.getSecurity().getApiSecurity(), Arrays.asList("ha", "local"));
+    if (hasServiceOverrides(deploymentConfiguration)) {
+      return new Settings(deploymentConfiguration.getSecurity().getApiSecurity(), Arrays.asList("overrides", "local"));
     }
     return new Settings(deploymentConfiguration.getSecurity().getApiSecurity());
   }
@@ -82,7 +85,7 @@ public class KubernetesV2GateService extends GateService implements KubernetesV2
     return settings;
   }
 
-  private boolean hasHaServiceRedirects(DeploymentConfiguration deployment) {
+  private boolean hasServiceOverrides(DeploymentConfiguration deployment) {
     HaServices haServices = deployment.getDeploymentEnvironment().getHaServices();
     return haServices.getClouddriver().isEnabled() || haServices.getEcho().isEnabled();
   }
