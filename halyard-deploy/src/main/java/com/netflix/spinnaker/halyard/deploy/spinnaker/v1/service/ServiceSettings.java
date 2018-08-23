@@ -55,7 +55,7 @@ public class ServiceSettings {
   String baseUrl;
   String overrideBaseUrl;
   String location;
-  KubernetesSettings kubernetes = new KubernetesSettings(); // TODO: remove this line from sub classes
+  KubernetesSettings kubernetes = new KubernetesSettings();
   Boolean enabled;
   Boolean basicAuthEnabled;
   Boolean monitored;

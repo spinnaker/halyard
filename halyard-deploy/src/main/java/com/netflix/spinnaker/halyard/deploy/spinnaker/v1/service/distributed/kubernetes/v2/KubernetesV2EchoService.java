@@ -45,6 +45,6 @@ public class KubernetesV2EchoService extends EchoService implements KubernetesV2
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    return new Settings();
+    return new Settings(getActiveSpringProfiles(deploymentConfiguration));
   }
 }

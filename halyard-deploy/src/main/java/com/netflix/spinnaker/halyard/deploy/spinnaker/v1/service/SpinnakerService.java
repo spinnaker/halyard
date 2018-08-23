@@ -133,40 +133,61 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
     });
   }
 
-  public enum Type {
-    CLOUDDRIVER("spin-clouddriver", "clouddriver"),
-    CLOUDDRIVER_BOOTSTRAP("spin-clouddriver-bootstrap", "clouddriver-bootstrap"),
-    CLOUDDRIVER_CACHING("spin-clouddriver-caching", "clouddriver-caching"),
-    CLOUDDRIVER_RO("spin-clouddriver-ro", "clouddriver-ro"),
-    CLOUDDRIVER_RW("spin-clouddriver-rw", "clouddriver-rw"),
-    CONSUL_CLIENT("spin-consul-client", "consul-client"),
-    CONSUL_SERVER("spin-consul-server", "consul-server"),
-    DECK("spin-deck", "deck"),
-    ECHO("spin-echo", "echo"),
-    ECHO_SCHEDULER("spin-echo-scheduler", "echo-scheduler"),
-    ECHO_SLAVE("spin-echo-slave", "echo-slave"),
-    FIAT("spin-fiat", "fiat"),
-    FRONT50("spin-front50", "front50"),
-    GATE("spin-gate", "gate"),
-    IGOR("spin-igor", "igor"),
-    KAYENTA("spin-kayenta", "kayenta"),
-    ORCA("spin-orca", "orca"),
-    ORCA_BOOTSTRAP("spin-orca-bootstrap", "orca-bootstrap"),
-    REDIS("spin-redis", "redis"),
-    REDIS_BOOTSTRAP("spin-redis-bootstrap", "redis-bootstrap"),
-    ROSCO("spin-rosco", "rosco"),
-    MONITORING_DAEMON("spin-monitoring-daemon", "monitoring-daemon"),
-    VAULT_CLIENT("spin-vault-client", "vault-client"),
-    VAULT_SERVER("spin-vault-server", "vault-server");
+  public boolean hasTypeModifier() {
+    return getType().getModifier() != null;
+  }
 
+  public String getTypeModifier() {
+    return getType().getModifier();
+  }
+
+  public enum Type {
+    CLOUDDRIVER("clouddriver"),
+    CLOUDDRIVER_BOOTSTRAP(CLOUDDRIVER, "bootstrap"),
+    CLOUDDRIVER_CACHING(CLOUDDRIVER, "caching"),
+    CLOUDDRIVER_RO(CLOUDDRIVER, "ro"),
+    CLOUDDRIVER_RW(CLOUDDRIVER, "rw"),
+    CONSUL_CLIENT("consul-client"),
+    CONSUL_SERVER("consul-server"),
+    DECK("deck"),
+    ECHO("echo"),
+    ECHO_SCHEDULER(ECHO, "scheduler"),
+    ECHO_SLAVE(ECHO, "slave"),
+    FIAT("fiat"),
+    FRONT50("front50"),
+    GATE("gate"),
+    IGOR("igor"),
+    KAYENTA("kayenta"),
+    ORCA("orca"),
+    ORCA_BOOTSTRAP(ORCA, "bootstrap"),
+    REDIS("redis"),
+    REDIS_BOOTSTRAP(REDIS, "bootstrap"),
+    ROSCO("rosco"),
+    MONITORING_DAEMON("monitoring-daemon"),
+    VAULT_CLIENT("vault-client"),
+    VAULT_SERVER("vault-server");
+
+    @Getter
+    final String canonicalName;
     @Getter
     final String serviceName;
     @Getter
-    final String canonicalName;
+    final String modifier;
+    @Getter
+    final Type baseType;
 
-    Type(String serviceName, String canonicalName) {
-      this.serviceName = serviceName;
+    Type(String canonicalName) {
       this.canonicalName = canonicalName;
+      this.serviceName = "spin-" + canonicalName;
+      this.modifier = null;
+      this.baseType = this;
+    }
+
+    Type(Type baseType, String modifier) {
+      this.canonicalName = baseType.getCanonicalName() + "-" + modifier;
+      this.serviceName = "spin-" + this.canonicalName;
+      this.baseType = baseType;
+      this.modifier = modifier;
     }
 
     @Override

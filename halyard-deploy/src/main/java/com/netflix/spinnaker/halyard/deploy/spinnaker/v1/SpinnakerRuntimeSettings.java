@@ -46,4 +46,12 @@ public class SpinnakerRuntimeSettings {
   public ServiceSettings getServiceSettings(Type type) {
     return services.get(type);
   }
+
+  public boolean serviceIsEnabled(Type type) {
+    return services.containsKey(type) && services.get(type).getEnabled();
+  }
+
+  public boolean serviceIsEnabled(SpinnakerService service) {
+    return serviceIsEnabled(service.getType());
+  }
 }

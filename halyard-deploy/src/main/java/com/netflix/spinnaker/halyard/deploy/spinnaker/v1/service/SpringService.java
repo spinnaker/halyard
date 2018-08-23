@@ -21,6 +21,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.SpinnakerProfileFactory;
+import java.util.LinkedList;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,13 @@ abstract public class SpringService<T> extends SpinnakerService<T> {
     String path = Paths.get(getConfigOutputPath(), filename).toString();
     List<Profile> result = new ArrayList<>();
     result.add(spinnakerProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints));
+
+    if (hasServiceOverrides(deploymentConfiguration)) {
+      String overridesFilename = getCanonicalName() + "-overrides.yml";
+      String overridesPath = Paths.get(getConfigOutputPath(), overridesFilename).toString();
+      result.add(spinnakerProfileFactory.getProfile(overridesFilename, overridesPath, deploymentConfiguration, getServiceOverrides(deploymentConfiguration, endpoints)));
+    }
+
     return result;
   }
 
@@ -58,5 +66,28 @@ abstract public class SpringService<T> extends SpinnakerService<T> {
     } else {
       return Optional.empty();
     }
+  }
+
+  protected LinkedList<String> getActiveSpringProfiles(DeploymentConfiguration deploymentConfiguration) {
+    LinkedList<String> profiles = new LinkedList<>();
+    if (hasTypeModifier()) {
+      profiles.addLast(getTypeModifier());
+    }
+    if (hasServiceOverrides(deploymentConfiguration)) {
+      profiles.addLast(hasTypeModifier() ? getTypeModifier() + "-overrides" : "overrides");
+    }
+    profiles.addLast("local");
+    if (hasTypeModifier()) {
+      profiles.addLast(getTypeModifier() + "-local");
+    }
+    return profiles;
+  }
+
+  protected boolean hasServiceOverrides(DeploymentConfiguration deploymentConfiguration) {
+    return false;
+  }
+
+  protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+    return null;
   }
 }

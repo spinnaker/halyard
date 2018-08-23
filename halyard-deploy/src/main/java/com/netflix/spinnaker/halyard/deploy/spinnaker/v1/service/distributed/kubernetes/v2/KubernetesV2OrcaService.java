@@ -26,8 +26,6 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ShutdownScriptP
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.OrcaService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -58,21 +56,6 @@ public class KubernetesV2OrcaService extends OrcaService implements KubernetesV2
             + "sleep " + terminationGracePeriodSeconds() / 2 + "\n",
         getArtifact()
     ).getProfile("orca/shutdown.sh", shutdownScriptFile(), deploymentConfiguration, endpoints));
-
-    if (hasServiceOverrides(deploymentConfiguration)) {
-      SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
-      if (endpoints.getServiceSettings(Type.CLOUDDRIVER_RW).getEnabled()) {
-        serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RW).withOnlyBaseUrl());
-      }
-      if (endpoints.getServiceSettings(Type.ECHO_SLAVE).getEnabled()) {
-        serviceOverrides.setServiceSettings(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
-      }
-      String filename = "orca-overrides.yml";
-      String path = Paths.get(getConfigOutputPath(), filename).toString();
-      Profile profile = getSpinnakerProfileFactory().getProfile(filename, path, deploymentConfiguration, serviceOverrides);
-      profiles.add(profile);
-    }
-
     return profiles;
   }
 
@@ -83,14 +66,24 @@ public class KubernetesV2OrcaService extends OrcaService implements KubernetesV2
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    if (hasServiceOverrides(deploymentConfiguration)) {
-      return new Settings(Arrays.asList("overrides", "local"));
-    }
-    return new Settings();
+    return new Settings(getActiveSpringProfiles(deploymentConfiguration));
   }
 
-  private boolean hasServiceOverrides(DeploymentConfiguration deployment) {
+  @Override
+  protected boolean hasServiceOverrides(DeploymentConfiguration deployment) {
     HaServices haServices = deployment.getDeploymentEnvironment().getHaServices();
     return haServices.getClouddriver().isEnabled() || haServices.getEcho().isEnabled();
+  }
+
+  @Override
+  protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+    SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
+    if (endpoints.serviceIsEnabled(Type.CLOUDDRIVER_RW)) {
+      serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RW).withOnlyBaseUrl());
+    }
+    if (endpoints.serviceIsEnabled(Type.ECHO_SLAVE)) {
+      serviceOverrides.setServiceSettings(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
+    }
+    return serviceOverrides;
   }
 }

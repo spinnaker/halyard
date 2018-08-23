@@ -77,6 +77,6 @@ public class KubernetesV2ClouddriverService extends ClouddriverService implement
 
   @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    return new Settings();
+    return new Settings(getActiveSpringProfiles(deploymentConfiguration));
   }
 }

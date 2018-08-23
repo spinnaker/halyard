@@ -21,14 +21,10 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.GateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
@@ -46,32 +42,8 @@ public class KubernetesV2GateService extends GateService implements KubernetesV2
   KubernetesV2ServiceDelegate serviceDelegate;
 
   @Override
-  public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
-    List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
-
-    if (hasServiceOverrides(deploymentConfiguration)) {
-      SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
-      if (endpoints.getServiceSettings(Type.CLOUDDRIVER_RO).getEnabled()) {
-        serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RO).withOnlyBaseUrl());
-      }
-      if (endpoints.getServiceSettings(Type.ECHO_SLAVE).getEnabled()) {
-        serviceOverrides.setServiceSettings(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
-      }
-      String filename = "gate-overrides.yml";
-      String path = Paths.get(getConfigOutputPath(), filename).toString();
-      Profile profile = getSpinnakerProfileFactory().getProfile(filename, path, deploymentConfiguration, serviceOverrides);
-      profiles.add(profile);
-    }
-
-    return profiles;
-  }
-
-  @Override
   public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    if (hasServiceOverrides(deploymentConfiguration)) {
-      return new Settings(deploymentConfiguration.getSecurity().getApiSecurity(), Arrays.asList("overrides", "local"));
-    }
-    return new Settings(deploymentConfiguration.getSecurity().getApiSecurity());
+    return new Settings(deploymentConfiguration.getSecurity().getApiSecurity(), getActiveSpringProfiles(deploymentConfiguration));
   }
 
   @Override
@@ -85,8 +57,21 @@ public class KubernetesV2GateService extends GateService implements KubernetesV2
     return settings;
   }
 
-  private boolean hasServiceOverrides(DeploymentConfiguration deployment) {
+  @Override
+  protected boolean hasServiceOverrides(DeploymentConfiguration deployment) {
     HaServices haServices = deployment.getDeploymentEnvironment().getHaServices();
     return haServices.getClouddriver().isEnabled() || haServices.getEcho().isEnabled();
+  }
+
+  @Override
+  protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+    SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
+    if (endpoints.serviceIsEnabled(Type.CLOUDDRIVER_RO)) {
+      serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RO).withOnlyBaseUrl());
+    }
+    if (endpoints.serviceIsEnabled(Type.ECHO_SLAVE)) {
+      serviceOverrides.setServiceSettings(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
+    }
+    return serviceOverrides;
   }
 }
