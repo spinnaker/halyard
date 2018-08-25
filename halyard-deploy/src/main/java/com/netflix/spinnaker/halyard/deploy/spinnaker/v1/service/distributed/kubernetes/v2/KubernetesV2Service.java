@@ -92,13 +92,34 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
   default String getServiceYaml(GenerateService.ResolvedConfiguration resolvedConfiguration) {
     ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
+    SpinnakerRuntimeSettings runtimeSettings = resolvedConfiguration.getRuntimeSettings();
     String namespace = getNamespace(settings);
-    TemplatedResource service = new JinjaJarResource("/kubernetes/manifests/service.yml");
-    service.addBinding("name", getService().getCanonicalName());
-    service.addBinding("namespace", namespace);
-    service.addBinding("port", settings.getPort());
 
-    return service.toString();
+    String primaryPort = buildPort(getService().getCanonicalName(), settings);
+    List<String> sidecarPorts = getSidecars(runtimeSettings).stream()
+        .map(SidecarService::getService)
+        .map(s -> buildPort(s.getCanonicalName(), runtimeSettings.getServiceSettings(s)))
+        .collect(Collectors.toList());
+
+    List<String> ports = new ArrayList<>();
+    ports.add(primaryPort);
+    ports.addAll(sidecarPorts);
+
+    TemplatedResource portSpec = new JinjaJarResource("/kubernetes/manifests/servicePortSpec.yml")
+        .addBinding("port", ports);
+
+    return new JinjaJarResource("/kubernetes/manifests/service.yml")
+        .addBinding("name", getService().getCanonicalName())
+        .addBinding("namespace", namespace)
+        .addBinding("portSpec", portSpec.toString())
+        .toString();
+  }
+
+  default String buildPort(String name, ServiceSettings settings) {
+    TemplatedResource port = new JinjaJarResource("/kubernetes/manifests/servicePort.yml");
+    port.addBinding("name", name);
+    port.addBinding("port", settings.getPort());
+    return port.toString();
   }
 
   default String getResourceYaml(AccountDeploymentDetails<KubernetesAccount> details,

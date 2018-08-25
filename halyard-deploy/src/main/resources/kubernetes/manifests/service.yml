@@ -10,7 +10,4 @@ spec:
   selector:
     app: spin
     cluster: spin-{{ name }}
-  ports:
-  - protocol: TCP
-    port: {{ port }}
-    targetPort: {{ port }}
+  {{ portSpec }}

@@ -1,0 +1,7 @@
+{
+  "ports": [
+  {% for port in ports %}
+  {{ port }} {% if not loop.last %} , {% endif %}
+  {% endfor %}
+  ]
+}
