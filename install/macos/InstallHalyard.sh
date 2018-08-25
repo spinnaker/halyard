@@ -147,7 +147,6 @@ EOF
 function install_java() {
   set +e
   local java_version=$(java -version 2>&1 head -1)
-  echo $java_version
   set -e
 
   if [[ "$java_version" == *"1.8"* ]] || \
