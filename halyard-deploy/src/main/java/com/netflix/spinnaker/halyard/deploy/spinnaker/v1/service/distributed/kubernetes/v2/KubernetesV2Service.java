@@ -106,7 +106,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     ports.addAll(sidecarPorts);
 
     TemplatedResource portSpec = new JinjaJarResource("/kubernetes/manifests/portSpec.yml")
-        .addBinding("port", ports);
+        .addBinding("ports", ports);
 
     return new JinjaJarResource("/kubernetes/manifests/service.yml")
         .addBinding("name", getService().getCanonicalName())
