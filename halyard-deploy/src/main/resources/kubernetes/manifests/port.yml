@@ -1,6 +1,5 @@
 {
   "name": "{{ name }}",
-  "protocol": "TCP",
   "port": "{{ port }}",
   "targetPort": "{{ port }}"
 }

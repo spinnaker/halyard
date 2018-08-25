@@ -105,7 +105,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     ports.add(primaryPort);
     ports.addAll(sidecarPorts);
 
-    TemplatedResource portSpec = new JinjaJarResource("/kubernetes/manifests/servicePortSpec.yml")
+    TemplatedResource portSpec = new JinjaJarResource("/kubernetes/manifests/portSpec.yml")
         .addBinding("port", ports);
 
     return new JinjaJarResource("/kubernetes/manifests/service.yml")
@@ -116,7 +116,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   }
 
   default String buildPort(String name, ServiceSettings settings) {
-    TemplatedResource port = new JinjaJarResource("/kubernetes/manifests/servicePort.yml");
+    TemplatedResource port = new JinjaJarResource("/kubernetes/manifests/port.yml");
     port.addBinding("name", name);
     port.addBinding("port", settings.getPort());
     return port.toString();
