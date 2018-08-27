@@ -18,12 +18,16 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.ha;
 
+import java.net.URI;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ClouddriverHaService extends HaService {
+  URI redisRoEndpoint;
+  URI redisRwEndpoint;
+
   @Override
   public HaServiceType haServiceType() { return HaServiceType.CLOUDDRIVER; }
 }
