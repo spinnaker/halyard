@@ -97,7 +97,7 @@ abstract public class IgorService extends SpringService<IgorService.Igor> {
     public Settings() {}
 
     public Settings(List<String> profiles) {
-      setProfiles(profiles);
+      super(profiles);
     }
   }
 }

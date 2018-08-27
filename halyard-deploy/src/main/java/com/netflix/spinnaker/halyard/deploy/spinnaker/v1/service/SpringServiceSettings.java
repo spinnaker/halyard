@@ -27,7 +27,19 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 @Data
 abstract public class SpringServiceSettings extends ServiceSettings {
-  protected void setProfiles(List<String> profiles) {
+  SpringServiceSettings() {}
+
+  SpringServiceSettings(List<String> profiles) {
+    setProfiles(profiles);
+  }
+
+  public void enableAuth() {
+    setBasicAuthEnabled(true);
+    setUsername(RandomStringUtils.random(10));
+    setPassword(RandomStringUtils.random(10));
+  }
+
+  private void setProfiles(List<String> profiles) {
     if (profiles == null || profiles.isEmpty()) {
       return;
     }
@@ -35,13 +47,5 @@ abstract public class SpringServiceSettings extends ServiceSettings {
     String key = "SPRING_PROFILES_ACTIVE";
     String val = profiles.stream().collect(Collectors.joining(","));
     getEnv().put(key, val);
-  }
-
-  SpringServiceSettings() {}
-
-  public void enableAuth() {
-    setBasicAuthEnabled(true);
-    setUsername(RandomStringUtils.random(10));
-    setPassword(RandomStringUtils.random(10));
   }
 }

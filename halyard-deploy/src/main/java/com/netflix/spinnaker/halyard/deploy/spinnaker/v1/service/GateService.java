@@ -26,6 +26,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.GateBoot128Prof
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.GateBoot154ProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.GateProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
+import java.util.Collections;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -116,15 +117,15 @@ abstract public class GateService extends SpringService<GateService.Gate> {
     public Settings() {}
 
     public Settings(ApiSecurity apiSecurity) {
+      this(apiSecurity, Collections.emptyList());
+    }
+
+    public Settings(ApiSecurity apiSecurity, List<String> profiles) {
+      super(profiles);
       setOverrideBaseUrl(apiSecurity.getOverrideBaseUrl());
       if (apiSecurity.getSsl().isEnabled()) {
         scheme = "https";
       }
-    }
-
-    public Settings(ApiSecurity apiSecurity, List<String> profiles) {
-      this(apiSecurity);
-      setProfiles(profiles);
     }
   }
 }
