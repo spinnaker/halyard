@@ -25,8 +25,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ClouddriverHaService extends HaService {
-  URI redisRoEndpoint;
-  URI redisRwEndpoint;
+  String redisRoEndpoint;
+  String redisRwEndpoint;
 
   @Override
   public HaServiceType haServiceType() { return HaServiceType.CLOUDDRIVER; }

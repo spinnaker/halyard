@@ -116,7 +116,7 @@ public class KubernetesV2ClouddriverRoService extends KubernetesV2ClouddriverSer
   protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     SpinnakerRuntimeSettings serviceOverrides = super.getServiceOverrides(deploymentConfiguration, endpoints);
 
-    serviceOverrides.setServiceSettings(Type.REDIS, new ServiceSettings(deploymentConfiguration.getDeploymentEnvironment().getHaServices().getClouddriver().getRedisRoEndpoint().toString()));
+    serviceOverrides.setServiceSettings(Type.REDIS, new ServiceSettings(deploymentConfiguration.getDeploymentEnvironment().getHaServices().getClouddriver().getRedisRoEndpoint()));
 
     return serviceOverrides;
   }

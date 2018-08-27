@@ -30,13 +30,13 @@ public class ClouddriverHaServiceEditCommand extends AbstractHaServiceEditComman
       names = "--redis-ro-endpoint",
       description = "Set external Redis endpoint for clouddriver-ro. If this is not supplied, clouddriver-ro is configured to use the shared Redis."
   )
-  private URI redisRoEndpoint;
+  private String redisRoEndpoint;
 
   @Parameter(
       names = "--redis-rw-endpoint",
       description = "Set external Redis endpoint for clouddriver-rw and clouddriver-caching. If this is not supplied, clouddriver-rw and clouddriver-caching are configured to use the shared Redis."
   )
-  private URI redisRwEndpoint;
+  private String redisRwEndpoint;
 
   @Override
   protected HaService editHaService(ClouddriverHaService haService) {

@@ -118,7 +118,7 @@ public class KubernetesV2ClouddriverCachingService extends KubernetesV2Clouddriv
   protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     SpinnakerRuntimeSettings serviceOverrides = super.getServiceOverrides(deploymentConfiguration, endpoints);
 
-    serviceOverrides.setServiceSettings(Type.REDIS, new ServiceSettings(deploymentConfiguration.getDeploymentEnvironment().getHaServices().getClouddriver().getRedisRwEndpoint().toString()));
+    serviceOverrides.setServiceSettings(Type.REDIS, new ServiceSettings(deploymentConfiguration.getDeploymentEnvironment().getHaServices().getClouddriver().getRedisRwEndpoint()));
 
     return serviceOverrides;
   }
