@@ -24,6 +24,8 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSetting
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.IgorService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
+import java.util.Arrays;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
@@ -58,14 +60,10 @@ public class KubernetesV2IgorService extends IgorService implements KubernetesV2
   }
 
   @Override
-  protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
-    SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
-    if (endpoints.serviceIsEnabled(Type.CLOUDDRIVER_RO)) {
-      serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RO).withOnlyBaseUrl());
-    }
-    if (endpoints.serviceIsEnabled(Type.ECHO_SLAVE)) {
-      serviceOverrides.setServiceSettings(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
-    }
-    return serviceOverrides;
+  protected List<Type> overrideServiceEndpoints() {
+    return Arrays.asList(
+        Type.CLOUDDRIVER_RO,
+        Type.ECHO_SLAVE
+    );
   }
 }

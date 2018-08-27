@@ -21,6 +21,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.SpinnakerProfileFactory;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -53,7 +55,7 @@ abstract public class SpringService<T> extends SpinnakerService<T> {
     if (hasServiceOverrides(deploymentConfiguration)) {
       String overridesFilename = getCanonicalName() + "-overrides.yml";
       String overridesPath = Paths.get(getConfigOutputPath(), overridesFilename).toString();
-      result.add(spinnakerProfileFactory.getProfile(overridesFilename, overridesPath, deploymentConfiguration, getServiceOverrides(deploymentConfiguration, endpoints)));
+      result.add(spinnakerProfileFactory.getProfile(overridesFilename, overridesPath, deploymentConfiguration, getServiceOverrides(endpoints)));
     }
 
     return result;
@@ -68,17 +70,18 @@ abstract public class SpringService<T> extends SpinnakerService<T> {
     }
   }
 
+  // Active profiles are stored in a linked list so that new profiles of subclasses can be appended at the head or tail
   protected LinkedList<String> getActiveSpringProfiles(DeploymentConfiguration deploymentConfiguration) {
     LinkedList<String> profiles = new LinkedList<>();
     if (hasTypeModifier()) {
-      profiles.addLast(getTypeModifier());
+      profiles.add(getTypeModifier());
     }
     if (hasServiceOverrides(deploymentConfiguration)) {
-      profiles.addLast(hasTypeModifier() ? getTypeModifier() + "-overrides" : "overrides");
+      profiles.add(hasTypeModifier() ? getTypeModifier() + "-overrides" : "overrides");
     }
-    profiles.addLast("local");
+    profiles.add("local");
     if (hasTypeModifier()) {
-      profiles.addLast(getTypeModifier() + "-local");
+      profiles.add(getTypeModifier() + "-local");
     }
     return profiles;
   }
@@ -87,7 +90,11 @@ abstract public class SpringService<T> extends SpinnakerService<T> {
     return false;
   }
 
-  protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
-    return null;
+  protected List<Type> overrideServiceEndpoints() {
+    return Collections.emptyList();
+  }
+
+  private SpinnakerRuntimeSettings getServiceOverrides(SpinnakerRuntimeSettings endpoints) {
+    return endpoints.newServiceOverrides(overrideServiceEndpoints());
   }
 }

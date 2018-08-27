@@ -21,6 +21,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import java.util.Collections;
+import java.util.List;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -29,6 +30,16 @@ import java.util.Map;
 @Data
 public class SpinnakerRuntimeSettings {
   protected Map<Type, ServiceSettings> services = new HashMap<>();
+
+  public SpinnakerRuntimeSettings newServiceOverrides(List<Type> overrideServiceEndpoints) {
+    SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
+    for (Type type : overrideServiceEndpoints) {
+      if (this.serviceIsEnabled(type)) {
+        serviceOverrides.setServiceSettings(type.getBaseType(), this.getServiceSettings(type).withOnlyBaseUrl());
+      }
+    }
+    return serviceOverrides;
+  }
 
   @JsonIgnore
   public Map<Type, ServiceSettings> getAllServiceSettings() {
@@ -49,9 +60,5 @@ public class SpinnakerRuntimeSettings {
 
   public boolean serviceIsEnabled(Type type) {
     return services.containsKey(type) && services.get(type).getEnabled();
-  }
-
-  public boolean serviceIsEnabled(SpinnakerService service) {
-    return serviceIsEnabled(service.getType());
   }
 }

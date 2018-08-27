@@ -26,6 +26,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.ShutdownScriptP
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.OrcaService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
+import java.util.Arrays;
 import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -76,14 +77,10 @@ public class KubernetesV2OrcaService extends OrcaService implements KubernetesV2
   }
 
   @Override
-  protected SpinnakerRuntimeSettings getServiceOverrides(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
-    SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
-    if (endpoints.serviceIsEnabled(Type.CLOUDDRIVER_RW)) {
-      serviceOverrides.setServiceSettings(Type.CLOUDDRIVER, endpoints.getServiceSettings(Type.CLOUDDRIVER_RW).withOnlyBaseUrl());
-    }
-    if (endpoints.serviceIsEnabled(Type.ECHO_SLAVE)) {
-      serviceOverrides.setServiceSettings(Type.ECHO, endpoints.getServiceSettings(Type.ECHO_SLAVE).withOnlyBaseUrl());
-    }
-    return serviceOverrides;
+  protected List<Type> overrideServiceEndpoints() {
+    return Arrays.asList(
+        Type.CLOUDDRIVER_RW,
+        Type.ECHO_SLAVE
+    );
   }
 }

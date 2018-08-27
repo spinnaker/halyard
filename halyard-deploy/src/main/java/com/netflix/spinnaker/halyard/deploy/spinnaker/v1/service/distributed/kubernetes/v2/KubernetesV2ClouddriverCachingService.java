@@ -107,5 +107,5 @@ public class KubernetesV2ClouddriverCachingService extends KubernetesV2Clouddriv
     return profiles;
   }
 
-  // TODO(joonlim): Issue 2934 - Create hasServiceOverrides and getServiceOverrides for external Redis endpoint.
+  // TODO(joonlim): Issue 2934 - Override overrideServiceEndpoints for external Redis endpoint.
 }
