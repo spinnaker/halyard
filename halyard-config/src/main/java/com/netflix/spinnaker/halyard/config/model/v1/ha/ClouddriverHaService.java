@@ -18,7 +18,6 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.ha;
 
-import java.net.URI;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
