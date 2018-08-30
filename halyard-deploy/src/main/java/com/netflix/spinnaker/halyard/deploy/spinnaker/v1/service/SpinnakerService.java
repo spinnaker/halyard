@@ -19,6 +19,7 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.CaseFormat;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
@@ -193,7 +194,7 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
     @Override
     @JsonValue
     public String toString() {
-      return canonicalName;
+      return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, canonicalName);
     }
 
     private static String reduceName(String name) {
