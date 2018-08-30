@@ -191,9 +191,9 @@ abstract public class SpinnakerService<T> implements HasServiceSettings<T> {
       this.modifier = modifier;
     }
 
-    @Override
     @JsonValue
-    public String toString() {
+    public String asYamlKey() {
+      // When SpinnakerRuntimeSettings is serialized, we expect its keys to be camel-cased.
       return CaseFormat.LOWER_HYPHEN.to(CaseFormat.LOWER_CAMEL, canonicalName);
     }
 
