@@ -21,7 +21,7 @@ public class ListCommand extends AbstractConfigCommand {
         new OperationHandler<List<DeploymentConfiguration>>()
             .setFailureMesssage("Failed to get all deployments.")
             .setSuccessMessage("Retrieved all deployments.")
-            .setFormat(AnsiFormatUtils.Format.JSON)
+            .setFormat(AnsiFormatUtils.Format.YAML)
             .setUserFormatted(true)
             .setOperation(Daemon.getDeployments())
             .get();
