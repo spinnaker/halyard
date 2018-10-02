@@ -40,4 +40,7 @@ public class DatadogStore extends MetricStore {
 
   @JsonProperty("app_key")
   private String appKey;
+
+  @JsonProperty("tags")
+  private String tags;
 }
