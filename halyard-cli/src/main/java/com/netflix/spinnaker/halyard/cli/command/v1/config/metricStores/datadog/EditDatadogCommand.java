@@ -44,7 +44,7 @@ public class EditDatadogCommand extends AbstractEditMetricStoreCommand<DatadogSt
 
   @Parameter(
       names = "--tags",
-      description = "Your datadog custom tags. Please format the tags the way Datadog consumes them i.e. --tags app:test,env:dev"
+      description = "Your datadog custom tags. Please format the tags the way Datadog consumes them i.e. --tags app:test,env:dev. Make sure there are no spaces in the string of tags"
   )
   private String tags;
 
