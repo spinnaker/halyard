@@ -42,10 +42,17 @@ public class EditDatadogCommand extends AbstractEditMetricStoreCommand<DatadogSt
   )
   private String appKey;
 
+  @Parameter(
+      names = "--tags",
+      description = "Your datadog custom tags. Please format the tags the way Datadog consumes them i.e. --tags app:test,env:dev"
+  )
+  private String tags;
+
   @Override
   protected MetricStore editMetricStore(DatadogStore datadogStore) {
     datadogStore.setApiKey(isSet(apiKey) ? apiKey : datadogStore.getApiKey());
     datadogStore.setAppKey(isSet(appKey) ? appKey : datadogStore.getAppKey());
+    datadogStore.setTags(isSet(tags) ? tags : datadogStore.getTags());
 
     return datadogStore;
   }
