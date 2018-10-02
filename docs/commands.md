@@ -3351,6 +3351,7 @@ hal config metric-stores datadog edit [parameters]
  * `--app-key`: Your datadog app key. This is only required if you want Spinnaker to push pre-configured Spinnaker dashboards to your Datadog account.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--tags`: Your datadog custom tags. Please format the tags the way Datadog consumes them i.e. --tags app:test,env:dev. Make sure there are no spaces in the string of tags
 
 
 ---
