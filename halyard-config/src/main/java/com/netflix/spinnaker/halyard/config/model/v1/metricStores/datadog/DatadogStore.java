@@ -24,6 +24,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.MetricStores;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class DatadogStore extends MetricStore {
@@ -42,5 +45,5 @@ public class DatadogStore extends MetricStore {
   private String appKey;
 
   @JsonProperty("tags")
-  private String tags;
+  private List<String> tags = new ArrayList<>();
 }
