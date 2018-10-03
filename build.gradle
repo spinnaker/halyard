@@ -37,7 +37,10 @@ allprojects {
   apply plugin: 'groovy'
 
   spinnaker {
-    dependenciesVersion = "0.136.0"
+    spinnakerDependenciesVersion = '0.136.0'
+    if (project.hasProperty('spinnakerDependenciesVersion')) {
+      spinnakerDependenciesVersion = project.property('spinnakerDependenciesVersion')
+    }
   }
   test {
     testLogging {
