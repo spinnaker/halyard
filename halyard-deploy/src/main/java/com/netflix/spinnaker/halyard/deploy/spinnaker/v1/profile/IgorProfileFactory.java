@@ -45,5 +45,8 @@ public class IgorProfileFactory extends SpringProfileFactory {
     profile.appendContents(yamlToString(cis))
         .appendContents(profile.getBaseContents())
         .setRequiredFiles(files);
+    if (cis.getTravis().isEnabled()) {
+      profile.appendContents("artifact.decorator.enabled: true");
+    }
   }
 }
