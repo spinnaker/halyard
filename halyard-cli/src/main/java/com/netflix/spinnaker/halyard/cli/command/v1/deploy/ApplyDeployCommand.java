@@ -22,6 +22,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.AbstractRemoteActionCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
+import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.core.RemoteAction;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.DeployOption;
 import lombok.AccessLevel;
@@ -85,10 +86,11 @@ public class ApplyDeployCommand extends AbstractRemoteActionCommand {
   List<String> excludeServiceNames = new ArrayList<>();
 
   @Parameter(
-      names = "--delete-orphan-services",
-      description = "Deletes unused Spinnaker services after the deploy succeeds."
+      names = "--delete-orphaned-services",
+      description = "Deletes unused Spinnaker services after the deploy succeeds. "
+          + "This flag is not allowed when using the --service-names or --exclude-service-names arg."
   )
-  boolean deleteOrphanServices;
+  boolean deleteOrphanedServices;
 
   @Override
   protected OperationHandler<RemoteAction> getRemoteAction() {
@@ -99,8 +101,8 @@ public class ApplyDeployCommand extends AbstractRemoteActionCommand {
     if (flushInfrastructureCaches) {
       deployOptions.add(DeployOption.FLUSH_INFRASTRUCTURE_CACHES);
     }
-    if (deleteOrphanServices) {
-      deployOptions.add(DeployOption.DELETE_ORPHAN_SERVICES);
+    if (deleteOrphanedServices) {
+      deployOptions.add(DeployOption.DELETE_ORPHANED_SERVICES);
     }
 
     OperationHandler<RemoteAction> prepHandler =
