@@ -283,6 +283,9 @@ public class DeployService {
     if (deployOptions.contains(DeployOption.FLUSH_INFRASTRUCTURE_CACHES)) {
       deployer.flushInfrastructureCaches(serviceProvider, deploymentDetails, resolvedConfiguration.getRuntimeSettings());
     }
+    if (deployOptions.contains(DeployOption.DELETE_ORPHAN_SERVICES)) {
+      deployer.deleteDisabledServices(serviceProvider, deploymentDetails, resolvedConfiguration, serviceTypes);
+    }
 
     if (!action.getScript().isEmpty()) {
       action.commitScript(halconfigDirectoryStructure.getInstallScriptPath(deploymentName));

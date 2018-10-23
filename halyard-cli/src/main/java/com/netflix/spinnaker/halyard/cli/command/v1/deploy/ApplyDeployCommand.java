@@ -84,15 +84,23 @@ public class ApplyDeployCommand extends AbstractRemoteActionCommand {
   )
   List<String> excludeServiceNames = new ArrayList<>();
 
+  @Parameter(
+      names = "--delete-orphan-services",
+      description = "Deletes unused Spinnaker services after the deploy succeeds."
+  )
+  boolean deleteOrphanServices;
+
   @Override
   protected OperationHandler<RemoteAction> getRemoteAction() {
     List<DeployOption> deployOptions = new ArrayList<>();
     if (omitConfig) {
       deployOptions.add(DeployOption.OMIT_CONFIG);
     }
-
     if (flushInfrastructureCaches) {
       deployOptions.add(DeployOption.FLUSH_INFRASTRUCTURE_CACHES);
+    }
+    if (deleteOrphanServices) {
+      deployOptions.add(DeployOption.DELETE_ORPHAN_SERVICES);
     }
 
     OperationHandler<RemoteAction> prepHandler =
