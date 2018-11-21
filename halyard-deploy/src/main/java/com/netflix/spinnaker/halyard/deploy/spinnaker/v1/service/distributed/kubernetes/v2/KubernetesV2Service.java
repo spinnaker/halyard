@@ -37,10 +37,7 @@ import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ConfigSource;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.HasServiceSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonitoringDaemonService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.*;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
@@ -185,6 +182,20 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
           return volume.toString();
         }).collect(Collectors.toList());
 
+    List<String> customVolumes = settings.getKubernetes().getVolumes().stream()
+            .map(c -> {
+              TemplatedResource volume;
+              if (c.getEmptyDir() != null && c.getEmptyDir().size() == 0) { // analogous to `emptyDir: {}`
+                volume = new JinjaJarResource("/kubernetes/manifests/emptyDirVolume.yml");
+                volume.addBinding("name", c.getName());
+              } else {
+                throw new HalException(Problem.Severity.FATAL, "Unsupported volume type");
+              }
+              return volume.toString();
+            }).collect(Collectors.toList());
+
+    volumes.addAll(customVolumes);
+
     env.putAll(settings.getEnv());
 
     Integer targetSize = settings.getTargetSize();
@@ -284,6 +295,16 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
           volume.addBinding("mountPath", c.getMountPath());
           return volume.toString();
         }).collect(Collectors.toList());
+
+    List<String> customVolumeMounts = settings.getKubernetes().getVolumeMounts().stream()
+            .map(c -> {
+              TemplatedResource volume = new JinjaJarResource("/kubernetes/manifests/volumeMount.yml");
+              volume.addBinding("name", c.getName());
+              volume.addBinding("mountPath", c.getMountPath());
+              return volume.toString();
+            }).collect(Collectors.toList());
+
+    volumeMounts.addAll(customVolumeMounts);
 
     TemplatedResource probe;
     if (StringUtils.isNotEmpty(settings.getHealthEndpoint())) {

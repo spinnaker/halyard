@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Target, Inc.
+ * Copyright 2017 Armory, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,9 @@
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class KubernetesSettings {
-  List<String> imagePullSecrets = new ArrayList<>();
-  Map<String, String> podAnnotations = new HashMap<>();
-  List<Volumes> volumes = new ArrayList<>();
-  List<VolumeMounts> volumeMounts = new ArrayList<>();
+public class VolumeMounts {
+    String mountPath;
+    String name;
 }
