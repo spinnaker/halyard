@@ -19,7 +19,6 @@ package com.netflix.spinnaker.halyard.config.model.v1.node;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins.JenkinsCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.travis.TravisCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.wercker.WerckerCi;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -46,11 +45,6 @@ public class Cis extends Node implements Cloneable {
     }
 
     return false;
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 
   @Override

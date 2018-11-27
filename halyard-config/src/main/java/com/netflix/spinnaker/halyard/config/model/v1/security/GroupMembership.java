@@ -20,8 +20,6 @@ package com.netflix.spinnaker.halyard.config.model.v1.security;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,11 +39,6 @@ public class GroupMembership extends Node {
   private GithubRoleProvider github = new GithubRoleProvider();
   private FileRoleProvider file = new FileRoleProvider();
   private LdapRoleProvider ldap = new LdapRoleProvider();
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
 
   @Override
   public NodeIterator getChildren() {

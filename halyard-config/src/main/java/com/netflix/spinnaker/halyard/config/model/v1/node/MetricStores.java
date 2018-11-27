@@ -20,7 +20,6 @@ package com.netflix.spinnaker.halyard.config.model.v1.node;
 import com.netflix.spinnaker.halyard.config.model.v1.metricStores.datadog.DatadogStore;
 import com.netflix.spinnaker.halyard.config.model.v1.metricStores.prometheus.PrometheusStore;
 import com.netflix.spinnaker.halyard.config.model.v1.metricStores.stackdriver.StackdriverStore;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,11 +41,6 @@ public class MetricStores extends Node {
   }
 
   public void setEnabled(boolean ignored) {}
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
 
   @Override
   public String getNodeName() {

@@ -20,7 +20,6 @@ package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotification;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -32,11 +31,6 @@ import java.util.Optional;
 @EqualsAndHashCode(callSuper = false)
 public class Notifications extends Node implements Cloneable {
   SlackNotification slack = new SlackNotification();
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
 
   @Override
   public String getNodeName() {

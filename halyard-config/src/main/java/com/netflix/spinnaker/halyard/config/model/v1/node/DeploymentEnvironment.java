@@ -17,7 +17,6 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -33,10 +32,6 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class DeploymentEnvironment extends Node {
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
 
   @Override
   public String getNodeName() {
