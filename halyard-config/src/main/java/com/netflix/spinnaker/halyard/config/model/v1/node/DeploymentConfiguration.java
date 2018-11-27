@@ -101,6 +101,8 @@ public class DeploymentConfiguration extends Node {
 
   Canary canary = new Canary();
 
+  Webhook webhook;
+
   @Override
   public String getNodeName() {
     return name;
