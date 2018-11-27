@@ -50,11 +50,6 @@ public class Artifacts extends Node {
     return "provider";
   }
 
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
   public static Class<? extends ArtifactProvider> translateArtifactProviderType(String providerName) {
     Optional<? extends Class<?>> res = Arrays.stream(Artifacts.class.getDeclaredFields())
         .filter(f -> f.getName().equals(providerName))

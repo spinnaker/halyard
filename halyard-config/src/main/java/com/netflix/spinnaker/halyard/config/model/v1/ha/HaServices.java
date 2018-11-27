@@ -19,8 +19,6 @@
 package com.netflix.spinnaker.halyard.config.model.v1.ha;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -37,11 +35,6 @@ public class HaServices extends Node implements Cloneable {
   @Override
   public String getNodeName() {
     return "haServices";
-  }
-
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
   }
 
   public static Class<? extends HaService> translateHaServiceType(String serviceName) {

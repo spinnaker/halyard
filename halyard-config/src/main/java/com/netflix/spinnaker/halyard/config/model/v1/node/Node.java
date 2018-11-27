@@ -56,9 +56,6 @@ abstract public class Node implements Validatable {
   public abstract String getNodeName();
 
   @JsonIgnore
-  public abstract NodeIterator getChildren();
-
-  @JsonIgnore
   public String getNameToRoot() {
     return getNameToClass(Halconfig.class);
   }
@@ -76,6 +73,11 @@ abstract public class Node implements Validatable {
   @Override
   public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
     v.validate(psBuilder, this);
+  }
+
+  @JsonIgnore
+  public NodeIterator getChildren() {
+    return NodeIteratorFactory.makeReflectiveIterator(this);
   }
 
   /**

@@ -40,11 +40,6 @@ class NodeSpec extends Specification {
     String getNodeName() {
       return "test"
     }
-
-    @Override
-    NodeIterator getChildren() {
-      return NodeIteratorFactory.makeReflectiveIterator(this)
-    }
   }
 
   class ChildTestNode extends Node {

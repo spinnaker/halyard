@@ -106,11 +106,6 @@ public class DeploymentConfiguration extends Node {
     return name;
   }
 
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
   @JsonCreator
   public DeploymentConfiguration() {}
 

@@ -37,11 +37,6 @@ public class Notifications extends Node implements Cloneable {
     return "notification";
   }
 
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
   @JsonIgnore
   public boolean isEnabled() {
     return slack.isEnabled();

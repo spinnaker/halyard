@@ -18,8 +18,6 @@
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,11 +27,6 @@ import lombok.Getter;
 public class Security extends Node {
   @Getter
   private String nodeName = "security";
-
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
 
   private ApiSecurity apiSecurity = new ApiSecurity();
   private UiSecurity uiSecurity = new UiSecurity();

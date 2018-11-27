@@ -52,11 +52,6 @@ public class Cis extends Node implements Cloneable {
     return "ci";
   }
 
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
   public static Class<? extends Ci> translateCiType(String ciName) {
     Optional<? extends Class<?>> res = Arrays.stream(Cis.class.getDeclaredFields())
         .filter(f -> f.getName().equals(ciName))

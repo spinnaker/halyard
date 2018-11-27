@@ -37,11 +37,6 @@ public class Pubsubs extends Node implements Cloneable {
     return "pubsub";
   }
 
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
   public Boolean getEnabled() {
     NodeIterator pubsubNodes = getChildren();
     Pubsub pubsub;

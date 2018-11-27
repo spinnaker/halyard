@@ -47,11 +47,6 @@ public class MetricStores extends Node {
     return "metricStores";
   }
 
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
   public static Class<? extends MetricStore> translateMetricStoreType(String metricStoreType) {
     Optional<? extends Class<?>> res = Arrays.stream(MetricStores.class.getDeclaredFields())
         .filter(f -> f.getName().equals(metricStoreType))

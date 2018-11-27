@@ -38,9 +38,6 @@ public class DeploymentEnvironment extends Node {
     return "deploymentEnvironment";
   }
 
-  @Override
-  public NodeIterator getChildren() { return NodeIteratorFactory.makeReflectiveIterator(this); }
-
   public enum DeploymentType {
     Distributed("Deploy Spinnaker with one server group and load balancer "
         + "per microservice, and a single instance of Redis acting as "
