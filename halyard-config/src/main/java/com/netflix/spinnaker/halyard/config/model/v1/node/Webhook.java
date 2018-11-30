@@ -25,5 +25,5 @@ import lombok.EqualsAndHashCode;
 public class Webhook extends Node {
   private final String nodeName = "webhook";
 
-  WebhookTrust trust;
+  WebhookTrust trust = new WebhookTrust();
 }

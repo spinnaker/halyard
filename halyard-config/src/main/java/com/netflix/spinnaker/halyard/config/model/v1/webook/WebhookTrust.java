@@ -26,6 +26,7 @@ import lombok.EqualsAndHashCode;
 public class WebhookTrust extends Node {
   private final String nodeName = "trust";
 
+  boolean enabled;
   @LocalFile
   String trustStore;
   String trustStorePassword;
