@@ -228,6 +228,12 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         .map(this::getVolumeYaml)
         .collect(Collectors.toList()));
 
+    List<String> customVolumes = settings.getKubernetes().getVolumes().stream()
+            .map(this::getVolumeYaml)
+            .collect(Collectors.toList());
+
+    volumes.addAll(customVolumes);
+
     env.putAll(settings.getEnv());
 
     Integer targetSize = settings.getTargetSize();
@@ -339,6 +345,16 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
           volume.addBinding("mountPath", c.getMountPath());
           return volume.toString();
         }).collect(Collectors.toList());
+
+    List<String> customVolumeMounts = settings.getKubernetes().getVolumes().stream()
+            .map(c -> {
+              TemplatedResource volume = new JinjaJarResource("/kubernetes/manifests/volumeMount.yml");
+              volume.addBinding("name", c.getId());
+              volume.addBinding("mountPath", c.getMountPath());
+              return volume.toString();
+            }).collect(Collectors.toList());
+
+    volumeMounts.addAll(customVolumeMounts);
 
     TemplatedResource probe;
     if (StringUtils.isNotEmpty(settings.getHealthEndpoint())) {
