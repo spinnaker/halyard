@@ -37,15 +37,12 @@ import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.proto.DeploymentsGrpc;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
@@ -80,19 +77,14 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
   HalconfigParser halconfigParser;
 
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, DeploymentConfiguration> deploymentConfiguration(
-      @PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
-    StaticRequestBuilder<DeploymentConfiguration> builder = new StaticRequestBuilder<>(
-        () -> deploymentService.getDeploymentConfiguration(deploymentName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get deployment configuration");
+  DaemonTask<Halconfig, DeploymentConfiguration> deploymentConfiguration(@PathVariable String deploymentName,
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<DeploymentConfiguration>builder()
+        .getter(() -> deploymentService.getDeploymentConfiguration(deploymentName))
+        .validator(() -> deploymentService.validateDeployment(deploymentName))
+        .description("Get deployment configuration")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.PUT)
@@ -128,17 +120,13 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<DeploymentConfiguration>> deploymentConfigurations(
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
-    StaticRequestBuilder<List<DeploymentConfiguration>> builder = new StaticRequestBuilder<>(
-        () -> deploymentService.getAllDeploymentConfigurations());
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> deploymentService.validateAllDeployments());
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all deployment configurations");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<List<DeploymentConfiguration>>builder()
+        .getter(() -> deploymentService.getAllDeploymentConfigurations())
+        .validator(() -> deploymentService.validateAllDeployments())
+        .description("Get all deployment configurations")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{deploymentName:.+}/generate/", method = RequestMethod.POST)
@@ -280,7 +268,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     builder.setValidateResponse(() -> deploymentService.validateDeployment(request.getName()));
     builder.setSeverity(Severity.WARNING);
     builder.setSetup(() ->
-      halconfigParser.setInmemoryHalConfig(new ByteArrayInputStream(request.getConfig().toByteArray()))
+        halconfigParser.setInmemoryHalConfig(new ByteArrayInputStream(request.getConfig().toByteArray()))
     );
 
     responseObserver.onNext(DaemonTaskHandler
@@ -314,17 +302,13 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/configDiff/", method = RequestMethod.GET)
   DaemonTask<Halconfig, NodeDiff> configDiff(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
-    StaticRequestBuilder<NodeDiff> builder = new StaticRequestBuilder<>(
-        () -> deployService.configDiff(deploymentName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Determine config diff");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<NodeDiff>builder()
+        .getter(() -> deployService.configDiff(deploymentName))
+        .validator(() -> deploymentService.validateDeployment(deploymentName))
+        .description("Determine config diff")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{deploymentName:.+}/version/", method = RequestMethod.PUT)
@@ -351,35 +335,24 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/version/", method = RequestMethod.GET)
   DaemonTask<Halconfig, String> getVersion(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
-    StaticRequestBuilder<String> builder = new StaticRequestBuilder<>(
-        () -> deploymentService.getVersion(deploymentName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder
-          .setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get Spinnaker version");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<String>builder()
+        .getter(() -> deploymentService.getVersion(deploymentName))
+        .validator(() -> deploymentService.validateDeploymentShallow(deploymentName))
+        .description("Get Spinnaker version")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{deploymentName:.+}/details/{serviceName:.+}/", method = RequestMethod.GET)
-  DaemonTask<Halconfig, RunningServiceDetails> getServiceDetails(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, RunningServiceDetails> getServiceDetails(@PathVariable String deploymentName,
       @PathVariable String serviceName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
-    StaticRequestBuilder<RunningServiceDetails> builder = new StaticRequestBuilder<>(() -> null);
-    builder.setSeverity(severity);
-
-    // builder.setBuildResponse(() -> deployService.getRunningServiceDetails(deploymentName, serviceName));
-
-    if (validate) {
-      builder.setValidateResponse(() -> deploymentService.validateDeployment(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get running service details");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<RunningServiceDetails>builder()
+        .getter(() -> null)
+        .validator(() -> deploymentService.validateDeployment(deploymentName))
+        .description("Get running service details")
+        .build()
+        .execute(validationSettings);
   }
 }

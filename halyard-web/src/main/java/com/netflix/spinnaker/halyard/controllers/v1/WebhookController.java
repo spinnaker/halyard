@@ -29,6 +29,8 @@ import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,17 +47,13 @@ public class WebhookController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Webhook> getWebhook(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
-    DaemonResponse.StaticRequestBuilder<Webhook> builder = new DaemonResponse.StaticRequestBuilder<>(
-        () -> webhookService.getWebhook(deploymentName));
-
-    builder.setSeverity(severity);
-    if (validate) {
-      builder.setValidateResponse(() -> webhookService.validateWebhook(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get webhook settings");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<Webhook>builder()
+        .getter(() -> webhookService.getWebhook(deploymentName))
+        .validator(() -> webhookService.validateWebhook(deploymentName))
+        .description("Get webhook settings")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
@@ -86,17 +84,13 @@ public class WebhookController {
 
   @RequestMapping(value = "/trust/", method = RequestMethod.GET)
   DaemonTask<Halconfig, WebhookTrust> getWebhookTrust(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
-    DaemonResponse.StaticRequestBuilder<WebhookTrust> builder = new DaemonResponse.StaticRequestBuilder<>(
-        () -> webhookService.getWebhookTrust(deploymentName));
-
-    builder.setSeverity(severity);
-    if (validate) {
-      builder.setValidateResponse(() -> webhookService.validateWebhook(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get webhook trust settings");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<WebhookTrust>builder()
+        .getter(() -> webhookService.getWebhookTrust(deploymentName))
+        .validator(() -> webhookService.validateWebhookTrust(deploymentName))
+        .description("Get webhook trust settings")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/trust/", method = RequestMethod.PUT)

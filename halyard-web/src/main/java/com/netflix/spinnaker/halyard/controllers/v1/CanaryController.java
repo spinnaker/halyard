@@ -24,20 +24,16 @@ import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.services.v1.CanaryAccountService;
 import com.netflix.spinnaker.halyard.config.services.v1.CanaryService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
 import java.util.function.Supplier;
@@ -63,18 +59,13 @@ public class CanaryController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Canary> getCanary(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<Canary> builder = new DaemonResponse.StaticRequestBuilder<>(
-        () -> canaryService.getCanary(deploymentName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> canaryService.validateCanary(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all canary settings");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<Canary>builder()
+        .getter(() -> canaryService.getCanary(deploymentName))
+        .validator(() -> canaryService.validateCanary(deploymentName))
+        .description("Get all canary settings")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
@@ -127,21 +118,16 @@ public class CanaryController {
   }
 
   @RequestMapping(value = "/{serviceIntegrationName:.+}/accounts/account/{accountName:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, AbstractCanaryAccount> getCanaryAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, AbstractCanaryAccount> getCanaryAccount(@PathVariable String deploymentName,
       @PathVariable String serviceIntegrationName,
       @PathVariable String accountName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<AbstractCanaryAccount> builder = new DaemonResponse.StaticRequestBuilder<>(
-        () -> canaryAccountService.getCanaryAccount(deploymentName, serviceIntegrationName, accountName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> canaryService.validateCanary(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get " + accountName + " canary account");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<AbstractCanaryAccount>builder()
+        .getter(() -> canaryAccountService.getCanaryAccount(deploymentName, serviceIntegrationName, accountName))
+        .validator(() -> canaryService.validateCanary(deploymentName))
+        .description("Get " + accountName + " canary account")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{serviceIntegrationName:.+}/accounts/account/{accountName:.+}", method = RequestMethod.PUT)
