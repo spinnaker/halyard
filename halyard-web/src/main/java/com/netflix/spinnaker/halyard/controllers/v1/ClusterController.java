@@ -24,7 +24,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Cluster;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Providers;
 import com.netflix.spinnaker.halyard.config.services.v1.ClusterService;
-import com.netflix.spinnaker.halyard.controllers.v1.DefaultControllerValues;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.core.DaemonResponse;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
@@ -59,8 +59,8 @@ public class ClusterController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<Cluster>> clusters(@PathVariable String deploymentName, @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
     DaemonResponse.StaticRequestBuilder<List<Cluster>> builder = new DaemonResponse.StaticRequestBuilder<>(
             () -> clusterService.getAllClusters(deploymentName, providerName));
     builder.setSeverity(severity);
@@ -77,8 +77,8 @@ public class ClusterController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String clusterName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
     DaemonResponse.StaticRequestBuilder<Cluster> builder = new DaemonResponse.StaticRequestBuilder<>(
             () -> clusterService.getProviderCluster(deploymentName, providerName, clusterName));
     builder.setSeverity(severity);
@@ -95,8 +95,8 @@ public class ClusterController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String clusterName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
     DaemonResponse.UpdateRequestBuilder builder = new DaemonResponse.UpdateRequestBuilder();
 
     builder.setUpdate(() -> clusterService.deleteCluster(deploymentName, providerName, clusterName));
@@ -119,8 +119,8 @@ public class ClusterController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String clusterName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity,
       @RequestBody Object rawCluster) {
     Cluster cluster = objectMapper.convertValue(
         rawCluster,
@@ -148,8 +148,8 @@ public class ClusterController {
   DaemonTask<Halconfig, Void> addCluster(
       @PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity,
       @RequestBody Object rawCluster) {
     Cluster cluster = objectMapper.convertValue(
         rawCluster,

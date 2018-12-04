@@ -27,6 +27,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,8 +52,8 @@ public class CiController {
   DaemonTask<Halconfig, Ci> ci(
       @PathVariable String deploymentName,
       @PathVariable String ciName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<Ci> builder = new StaticRequestBuilder<>(() -> ciService.getCi(deploymentName, ciName));
     builder.setSeverity(severity);
 
@@ -67,8 +68,8 @@ public class CiController {
   DaemonTask<Halconfig, Void> setEnabled(
       @PathVariable String deploymentName,
       @PathVariable String ciName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
@@ -89,8 +90,8 @@ public class CiController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<Ci>> cis(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<List<Ci>> builder = new StaticRequestBuilder<>(() -> ciService.getAllCis(deploymentName));
     builder.setSeverity(severity);
 

@@ -32,6 +32,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,8 +64,8 @@ public class BakeryController {
   @RequestMapping(value = "/defaults/", method = RequestMethod.GET)
   DaemonTask<Halconfig, BakeryDefaults> getBakeryDefaults(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<BakeryDefaults> builder = new DaemonResponse.StaticRequestBuilder<>(
         () -> bakeryService.getBakeryDefaults(deploymentName, providerName));
     builder.setSeverity(severity);
@@ -80,8 +81,8 @@ public class BakeryController {
   @RequestMapping(value = "/defaults/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setBakeryDefaults(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawBakeryDefaults) {
     BakeryDefaults bakeryDefaults = objectMapper.convertValue(
         rawBakeryDefaults,
@@ -114,8 +115,8 @@ public class BakeryController {
   @RequestMapping(value = "/defaults/baseImage/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<BaseImage>> images(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<List<BaseImage>> builder = new StaticRequestBuilder<>(
         () -> bakeryService.getAllBaseImages(deploymentName, providerName));
     builder.setSeverity(severity);
@@ -133,8 +134,8 @@ public class BakeryController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String baseImageId,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<BaseImage> builder = new StaticRequestBuilder<>(
         () -> bakeryService.getProviderBaseImage(deploymentName, providerName, baseImageId));
     builder.setSeverity(severity);
@@ -152,8 +153,8 @@ public class BakeryController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String baseImageId,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder
@@ -179,8 +180,8 @@ public class BakeryController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String baseImageId,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawBaseImage) {
     BaseImage baseImage = objectMapper.convertValue(
         rawBaseImage,
@@ -213,8 +214,8 @@ public class BakeryController {
   DaemonTask<Halconfig, Void> addBaseImage(
       @PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawBaseImage) {
     BaseImage baseImage = objectMapper.convertValue(
         rawBaseImage,

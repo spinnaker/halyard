@@ -30,6 +30,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,8 +59,8 @@ public class MetricStoresController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, MetricStores> getMetricStores(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<MetricStores> builder = new DaemonResponse.StaticRequestBuilder<>(
         () -> metricStoresService.getMetricStores(deploymentName));
 
@@ -75,8 +76,8 @@ public class MetricStoresController {
   @RequestMapping(value = "/{metricStoreType:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, MetricStore> getMetricStore(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<MetricStore> builder = new DaemonResponse.StaticRequestBuilder<>(
         () -> metricStoresService.getMetricStore(deploymentName, metricStoreType));
 
@@ -92,8 +93,8 @@ public class MetricStoresController {
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMetricStores(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawMetricStores) {
     MetricStores metricStores = objectMapper.convertValue(rawMetricStores, MetricStores.class);
 
@@ -119,8 +120,8 @@ public class MetricStoresController {
   @RequestMapping(value = "/{metricStoreType:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMetricStore(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawMetricStore) {
     MetricStore metricStore = objectMapper.convertValue(
         rawMetricStore,
@@ -151,8 +152,8 @@ public class MetricStoresController {
   @RequestMapping(value = "/{metricStoreType:.+}/enabled/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMethodEnabled(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 

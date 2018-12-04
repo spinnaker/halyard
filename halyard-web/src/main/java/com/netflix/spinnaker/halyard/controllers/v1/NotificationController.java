@@ -31,6 +31,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,8 +63,8 @@ public class NotificationController {
   DaemonTask<Halconfig, Notification> notification(
       @PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<Notification> builder = new StaticRequestBuilder<>(
         () -> notificationService.getNotification(deploymentName, notificationName));
     builder.setSeverity(severity);
@@ -81,8 +82,8 @@ public class NotificationController {
   DaemonTask<Halconfig, Void> setEnabled(
       @PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
@@ -104,8 +105,8 @@ public class NotificationController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Notifications> notifications(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<Notifications> builder = new StaticRequestBuilder<>(
         () -> notificationService.getNotifications(deploymentName));
     builder.setSeverity(severity);
@@ -122,8 +123,8 @@ public class NotificationController {
   DaemonTask<Halconfig, Void> setNotification(
       @PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawNotification) {
     Notification notification = objectMapper.convertValue(
         rawNotification,

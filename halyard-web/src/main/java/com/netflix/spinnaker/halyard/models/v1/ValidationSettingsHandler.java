@@ -16,7 +16,6 @@
 
 package com.netflix.spinnaker.halyard.models.v1;
 
-import com.netflix.spinnaker.halyard.controllers.v1.DefaultControllerValues;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,8 +25,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ValidationSettingsHandler {
   @ModelAttribute
   public ValidationSettings controllerValues(
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity
   ) {
     ValidationSettings values = new ValidationSettings();
     values.setValidate(validate);

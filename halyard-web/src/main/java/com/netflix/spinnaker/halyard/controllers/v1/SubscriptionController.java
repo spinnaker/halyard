@@ -31,6 +31,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,8 +64,8 @@ public class SubscriptionController {
   DaemonTask<Halconfig, List<Subscription>> subscriptions(
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<List<Subscription>> builder = new StaticRequestBuilder<>(
         () -> subscriptionService.getAllSubscriptions(deploymentName, pubsubName));
     builder.setSeverity(severity);
@@ -81,8 +82,8 @@ public class SubscriptionController {
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @PathVariable String subscriptionName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<Subscription> builder = new StaticRequestBuilder<>(
         () -> subscriptionService
             .getPubsubSubscription(deploymentName, pubsubName, subscriptionName));
@@ -101,8 +102,8 @@ public class SubscriptionController {
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @PathVariable String subscriptionName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(
@@ -128,8 +129,8 @@ public class SubscriptionController {
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @PathVariable String subscriptionName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawSubscription) {
     Subscription subscription = objectMapper.convertValue(
         rawSubscription,
@@ -159,8 +160,8 @@ public class SubscriptionController {
   DaemonTask<Halconfig, Void> addSubscription(
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawSubscription) {
     Subscription subscription = objectMapper.convertValue(
         rawSubscription,

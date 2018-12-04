@@ -36,6 +36,7 @@ import com.netflix.spinnaker.halyard.deploy.services.v1.DeployService;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.RunningServiceDetails;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.proto.DeploymentsGrpc;
 import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, DeploymentConfiguration> deploymentConfiguration(
       @PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<DeploymentConfiguration> builder = new StaticRequestBuilder<>(
         () -> deploymentService.getDeploymentConfiguration(deploymentName));
     builder.setSeverity(severity);
@@ -96,8 +97,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> deploymentConfiguration(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawDeployment) {
     DeploymentConfiguration deploymentConfiguration = objectMapper.convertValue(
         rawDeployment,
@@ -127,8 +128,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<DeploymentConfiguration>> deploymentConfigurations(
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<List<DeploymentConfiguration>> builder = new StaticRequestBuilder<>(
         () -> deploymentService.getAllDeploymentConfigurations());
     builder.setSeverity(severity);
@@ -142,8 +143,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/generate/", method = RequestMethod.POST)
   DaemonTask<Halconfig, String> generateConfig(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames) {
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
     Supplier buildResponse = () -> {
@@ -164,8 +165,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/clean/", method = RequestMethod.POST)
   DaemonTask<Halconfig, Void> clean(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     Supplier buildResponse = () -> {
       deployService.clean(deploymentName);
       return null;
@@ -183,8 +184,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/connect/", method = RequestMethod.POST)
   DaemonTask<Halconfig, RemoteAction> connect(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames) {
     List<String> finalServiceNames = serviceNames == null ? new ArrayList<>() : serviceNames;
     StaticRequestBuilder<RemoteAction> builder = new StaticRequestBuilder<>(
@@ -201,8 +202,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/rollback/", method = RequestMethod.POST)
   DaemonTask<Halconfig, Void> rollback(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames,
       @RequestParam(required = false) List<String> excludeServiceNames) {
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
@@ -227,8 +228,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/prep/", method = RequestMethod.POST)
   DaemonTask<Halconfig, RemoteAction> prep(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames,
       @RequestParam(required = false) List<String> excludeServiceNames) {
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
@@ -248,8 +249,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/deploy/", method = RequestMethod.POST)
   DaemonTask<Halconfig, RemoteAction> deploy(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestParam(required = false) List<DeployOption> deployOptions,
       @RequestParam(required = false) List<String> serviceNames,
       @RequestParam(required = false) List<String> excludeServiceNames) {
@@ -289,8 +290,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/collectLogs/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> collectLogs(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestParam(required = false) List<String> serviceNames,
       @RequestParam(required = false) List<String> excludeServiceNames) {
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
@@ -313,8 +314,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/configDiff/", method = RequestMethod.GET)
   DaemonTask<Halconfig, NodeDiff> configDiff(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<NodeDiff> builder = new StaticRequestBuilder<>(
         () -> deployService.configDiff(deploymentName));
     builder.setSeverity(severity);
@@ -328,8 +329,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/version/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setVersion(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Versions.Version version) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
@@ -350,8 +351,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
 
   @RequestMapping(value = "/{deploymentName:.+}/version/", method = RequestMethod.GET)
   DaemonTask<Halconfig, String> getVersion(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<String> builder = new StaticRequestBuilder<>(
         () -> deploymentService.getVersion(deploymentName));
     builder.setSeverity(severity);
@@ -368,8 +369,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
   DaemonTask<Halconfig, RunningServiceDetails> getServiceDetails(
       @PathVariable String deploymentName,
       @PathVariable String serviceName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<RunningServiceDetails> builder = new StaticRequestBuilder<>(() -> null);
     builder.setSeverity(severity);
 

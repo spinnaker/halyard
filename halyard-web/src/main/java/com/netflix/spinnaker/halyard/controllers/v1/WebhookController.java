@@ -28,6 +28,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,8 +45,8 @@ public class WebhookController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Webhook> getWebhook(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
     DaemonResponse.StaticRequestBuilder<Webhook> builder = new DaemonResponse.StaticRequestBuilder<>(
         () -> webhookService.getWebhook(deploymentName));
 
@@ -59,8 +60,8 @@ public class WebhookController {
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setWebhook(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity,
       @RequestBody Object rawWebhook) {
     Webhook webhook = objectMapper.convertValue(rawWebhook, Webhook.class);
 
@@ -85,8 +86,8 @@ public class WebhookController {
 
   @RequestMapping(value = "/trust/", method = RequestMethod.GET)
   DaemonTask<Halconfig, WebhookTrust> getWebhookTrust(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
     DaemonResponse.StaticRequestBuilder<WebhookTrust> builder = new DaemonResponse.StaticRequestBuilder<>(
         () -> webhookService.getWebhookTrust(deploymentName));
 
@@ -100,8 +101,8 @@ public class WebhookController {
 
   @RequestMapping(value = "/trust/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setWebhookTrust(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Problem.Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity,
       @RequestBody Object rawWebhookTrust) {
     WebhookTrust webhookTrust = objectMapper.convertValue(rawWebhookTrust, WebhookTrust.class);
 

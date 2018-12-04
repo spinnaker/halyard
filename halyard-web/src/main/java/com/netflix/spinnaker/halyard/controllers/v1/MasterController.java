@@ -30,6 +30,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,8 +62,8 @@ public class MasterController {
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<Master>> masters(@PathVariable String deploymentName,
       @PathVariable String ciName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<List<Master>> builder = new StaticRequestBuilder<>(
         () -> masterService.getAllMasters(deploymentName, ciName));
     builder.setSeverity(severity);
@@ -79,8 +80,8 @@ public class MasterController {
       @PathVariable String deploymentName,
       @PathVariable String ciName,
       @PathVariable String masterName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     StaticRequestBuilder<Master> builder = new StaticRequestBuilder<>(
         () -> masterService.getCiMaster(deploymentName, ciName, masterName));
     builder.setSeverity(severity);
@@ -98,8 +99,8 @@ public class MasterController {
       @PathVariable String deploymentName,
       @PathVariable String ciName,
       @PathVariable String masterName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(() -> masterService.deleteMaster(deploymentName, ciName, masterName));
@@ -124,8 +125,8 @@ public class MasterController {
       @PathVariable String deploymentName,
       @PathVariable String ciName,
       @PathVariable String masterName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawMaster) {
     Master master = objectMapper.convertValue(
         rawMaster,
@@ -156,8 +157,8 @@ public class MasterController {
   DaemonTask<Halconfig, Void> addMaster(
       @PathVariable String deploymentName,
       @PathVariable String ciName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawMaster) {
     Master master = objectMapper.convertValue(
         rawMaster,

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.controllers.v1;
+package com.netflix.spinnaker.halyard.models.v1;
 
-public class DefaultControllerValues {
+public class DefaultValidationSettings {
   public final static String validate = "false";
   public final static String severity = "WARNING";
 }

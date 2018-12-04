@@ -29,6 +29,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
+import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,8 +59,8 @@ public class PersistentStorageController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, PersistentStorage> getPersistentStorage(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<PersistentStorage> builder = new DaemonResponse.StaticRequestBuilder<>(
         () -> persistentStorageService.getPersistentStorage(deploymentName));
 
@@ -75,8 +76,8 @@ public class PersistentStorageController {
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setPersistentStorage(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawPersistentStorage) {
     PersistentStorage persistentStorage = objectMapper
         .convertValue(rawPersistentStorage, PersistentStorage.class);
@@ -106,8 +107,8 @@ public class PersistentStorageController {
   @RequestMapping(value = "/{persistentStoreType:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, PersistentStore> getPersistentStore(@PathVariable String deploymentName,
       @PathVariable String persistentStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
     DaemonResponse.StaticRequestBuilder<PersistentStore> builder = new DaemonResponse.StaticRequestBuilder<>(
         () -> persistentStorageService.getPersistentStore(deploymentName, persistentStoreType));
 
@@ -124,8 +125,8 @@ public class PersistentStorageController {
   @RequestMapping(value = "/{persistentStoreType:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setPersistentStore(@PathVariable String deploymentName,
       @PathVariable String persistentStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
+      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
       @RequestBody Object rawPersistentStore) {
     PersistentStore persistentStore = objectMapper.convertValue(rawPersistentStore,
         PersistentStorage.translatePersistentStoreType(persistentStoreType));
