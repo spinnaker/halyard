@@ -105,7 +105,7 @@ public class SecurityController {
       @ModelAttribute ValidationSettings validationSettings) {
     return GenericGetRequest.<ApacheSsl>builder()
         .getter(() -> securityService.getApacheSsl(deploymentName))
-        .validator(() -> securityService.validateUiSecurity(deploymentName))
+        .validator(() -> securityService.validateApacheSsl(deploymentName))
         .description("Get UI SSL settings")
         .build()
         .execute(validationSettings);
@@ -200,7 +200,7 @@ public class SecurityController {
       @ModelAttribute ValidationSettings validationSettings) {
     return GenericGetRequest.<SpringSsl>builder()
         .getter(() -> securityService.getSpringSsl(deploymentName))
-        .validator(() -> securityService.validateUiSecurity(deploymentName))
+        .validator(() -> securityService.validateSpringSsl(deploymentName))
         .description("Get API SSL settings")
         .build()
         .execute(validationSettings);
@@ -285,7 +285,7 @@ public class SecurityController {
     return GenericGetRequest.<GroupMembership>builder()
         .getter(() -> securityService.getGroupMembership(deploymentName))
         .validator(() -> securityService.validateAuthz(deploymentName))
-        .description("Get API SSL settings")
+        .description("Get group membership settings")
         .build()
         .execute(validationSettings);
   }

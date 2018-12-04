@@ -122,7 +122,7 @@ public class BakeryController {
     return GenericGetRequest.<BaseImage>builder()
         .getter(() -> bakeryService.getProviderBaseImage(deploymentName, providerName, baseImageId))
         .validator(() -> bakeryService.validateBaseImage(deploymentName, providerName, baseImageId))
-        .description("Get \" + baseImageId + \" base image")
+        .description("Get " + baseImageId + " base image")
         .build()
         .execute(validationSettings);
   }
