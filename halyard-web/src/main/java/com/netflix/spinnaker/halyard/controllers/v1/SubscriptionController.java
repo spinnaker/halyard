@@ -26,11 +26,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Pubsubs;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Subscription;
 import com.netflix.spinnaker.halyard.config.services.v1.SubscriptionService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -79,16 +77,15 @@ public class SubscriptionController {
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @PathVariable String subscriptionName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
+      @ModelAttribute ValidationSettings validationSettings) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(
         () -> subscriptionService.deleteSubscription(deploymentName, pubsubName, subscriptionName));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> subscriptionService.validateAllSubscriptions(deploymentName, pubsubName);
     }
 
@@ -106,8 +103,7 @@ public class SubscriptionController {
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @PathVariable String subscriptionName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawSubscription) {
     Subscription subscription = objectMapper.convertValue(
         rawSubscription,
@@ -118,10 +114,10 @@ public class SubscriptionController {
 
     builder.setUpdate(() -> subscriptionService
         .setSubscription(deploymentName, pubsubName, subscriptionName, subscription));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> subscriptionService
           .validateSubscription(deploymentName, pubsubName, subscription.getName());
     }
@@ -137,8 +133,7 @@ public class SubscriptionController {
   DaemonTask<Halconfig, Void> addSubscription(
       @PathVariable String deploymentName,
       @PathVariable String pubsubName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawSubscription) {
     Subscription subscription = objectMapper.convertValue(
         rawSubscription,
@@ -146,13 +141,13 @@ public class SubscriptionController {
     );
 
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     builder.setUpdate(
         () -> subscriptionService.addSubscription(deploymentName, pubsubName, subscription));
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> subscriptionService
           .validateSubscription(deploymentName, pubsubName, subscription.getName());
     }

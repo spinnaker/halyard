@@ -25,11 +25,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.MetricStore;
 import com.netflix.spinnaker.halyard.config.model.v1.node.MetricStores;
 import com.netflix.spinnaker.halyard.config.services.v1.MetricStoresService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -71,8 +69,7 @@ public class MetricStoresController {
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMetricStores(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMetricStores) {
     MetricStores metricStores = objectMapper.convertValue(rawMetricStores, MetricStores.class);
 
@@ -80,11 +77,11 @@ public class MetricStoresController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> metricStores.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> metricStoresService.setMetricStores(deploymentName, metricStores));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> metricStoresService.validateMetricStores(deploymentName));
     }
 
@@ -98,8 +95,7 @@ public class MetricStoresController {
   @RequestMapping(value = "/{metricStoreType:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMetricStore(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMetricStore) {
     MetricStore metricStore = objectMapper.convertValue(
         rawMetricStore,
@@ -110,11 +106,11 @@ public class MetricStoresController {
 
     Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> metricStore.stageLocalFiles(stagingPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> metricStoresService.setMetricStore(deploymentName, metricStore));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(
           () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
     }
@@ -130,17 +126,16 @@ public class MetricStoresController {
   @RequestMapping(value = "/{metricStoreType:.+}/enabled/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMethodEnabled(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(
         () -> metricStoresService.setMetricStoreEnabled(deploymentName, metricStoreType, enabled));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(
           () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
     }

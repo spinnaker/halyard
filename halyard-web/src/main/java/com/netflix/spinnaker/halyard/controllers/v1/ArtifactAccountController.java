@@ -26,11 +26,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Artifacts;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.services.v1.ArtifactAccountService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -79,15 +77,14 @@ public class ArtifactAccountController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
+      @ModelAttribute ValidationSettings validationSettings) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(() -> accountService.deleteArtifactAccount(deploymentName, providerName, accountName));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> accountService.validateAllArtifactAccounts(deploymentName, providerName);
     }
 
@@ -105,8 +102,7 @@ public class ArtifactAccountController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactAccount) {
     ArtifactAccount account = objectMapper.convertValue(
         rawArtifactAccount,
@@ -118,10 +114,10 @@ public class ArtifactAccountController {
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> account.stageLocalFiles(configPath));
     builder.setUpdate(() -> accountService.setArtifactAccount(deploymentName, providerName, accountName, account));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> accountService.validateArtifactAccount(deploymentName, providerName, account.getName());
     }
 
@@ -137,8 +133,7 @@ public class ArtifactAccountController {
   DaemonTask<Halconfig, Void> addArtifactAccount(
       @PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactAccount) {
     ArtifactAccount account = objectMapper.convertValue(
         rawArtifactAccount,
@@ -149,11 +144,11 @@ public class ArtifactAccountController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> account.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> accountService.addArtifactAccount(deploymentName, providerName, account));
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> accountService.validateArtifactAccount(deploymentName, providerName, account.getName());
     }
 

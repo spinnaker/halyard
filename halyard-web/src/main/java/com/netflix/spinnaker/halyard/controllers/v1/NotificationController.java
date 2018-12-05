@@ -26,11 +26,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Notification;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notifications;
 import com.netflix.spinnaker.halyard.config.services.v1.NotificationService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -64,17 +62,16 @@ public class NotificationController {
   DaemonTask<Halconfig, Void> setEnabled(
       @PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder
         .setUpdate(() -> notificationService.setEnabled(deploymentName, notificationName, enabled));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> notificationService.validateNotification(deploymentName, notificationName);
     }
 
@@ -100,8 +97,7 @@ public class NotificationController {
   DaemonTask<Halconfig, Void> setNotification(
       @PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawNotification) {
     Notification notification = objectMapper.convertValue(
         rawNotification,
@@ -113,10 +109,10 @@ public class NotificationController {
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> notification.stageLocalFiles(configPath));
     builder.setUpdate(() -> notificationService.setNotification(deploymentName, notification));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> notificationService.validateNotification(deploymentName, notificationName);
     }
 

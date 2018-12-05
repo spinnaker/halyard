@@ -26,11 +26,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Artifacts;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.services.v1.ArtifactProviderService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +63,7 @@ public class ArtifactProviderController {
   DaemonTask<Halconfig, Void> setArtifactProvider(
       @PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactProvider) {
     ArtifactProvider provider = objectMapper.convertValue(
         rawArtifactProvider,
@@ -78,10 +75,10 @@ public class ArtifactProviderController {
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> provider.stageLocalFiles(configPath));
     builder.setUpdate(() -> providerService.setArtifactProvider(deploymentName, provider));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> providerService.validateArtifactProvider(deploymentName, providerName);
     }
 
@@ -97,16 +94,15 @@ public class ArtifactProviderController {
   DaemonTask<Halconfig, Void> setEnabled(
       @PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(() -> providerService.setEnabled(deploymentName, providerName, enabled));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> providerService.validateArtifactProvider(deploymentName, providerName);
     }
 

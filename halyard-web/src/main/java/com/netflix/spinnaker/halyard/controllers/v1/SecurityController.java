@@ -24,11 +24,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.security.*;
 import com.netflix.spinnaker.halyard.config.services.v1.SecurityService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -69,8 +67,7 @@ public class SecurityController {
 
   @RequestMapping(value = "/ui/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setUiSecurity(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawUiSecurity) {
     UiSecurity uiSecurity = objectMapper.convertValue(rawUiSecurity, UiSecurity.class);
 
@@ -78,11 +75,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> uiSecurity.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setUiSecurity(deploymentName, uiSecurity));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateUiSecurity(deploymentName));
     }
 
@@ -106,8 +103,7 @@ public class SecurityController {
 
   @RequestMapping(value = "/ui/ssl/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setApacheSSl(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawApacheSsl) {
     ApacheSsl apacheSsl = objectMapper.convertValue(rawApacheSsl, ApacheSsl.class);
 
@@ -115,11 +111,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> apacheSsl.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setApacheSsl(deploymentName, apacheSsl));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateApacheSsl(deploymentName));
     }
 
@@ -132,16 +128,15 @@ public class SecurityController {
 
   @RequestMapping(value = "/ui/ssl/enabled/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setApacheSSlEnabled(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setApacheSslEnabled(deploymentName, enabled));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateApacheSsl(deploymentName));
     }
 
@@ -164,8 +159,7 @@ public class SecurityController {
 
   @RequestMapping(value = "/api/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setApiSecurity(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawApiSecurity) {
     ApiSecurity apiSecurity = objectMapper.convertValue(rawApiSecurity, ApiSecurity.class);
 
@@ -173,11 +167,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> apiSecurity.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setApiSecurity(deploymentName, apiSecurity));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateApiSecurity(deploymentName));
     }
 
@@ -201,8 +195,7 @@ public class SecurityController {
 
   @RequestMapping(value = "/api/ssl/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setSpringSSl(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawSpringSsl) {
     SpringSsl apacheSsl = objectMapper.convertValue(rawSpringSsl, SpringSsl.class);
 
@@ -210,11 +203,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> apacheSsl.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setSpringSsl(deploymentName, apacheSsl));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateSpringSsl(deploymentName));
     }
 
@@ -227,16 +220,15 @@ public class SecurityController {
 
   @RequestMapping(value = "/api/ssl/enabled/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setSpringSSlEnabled(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setSpringSslEnabled(deploymentName, enabled));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateSpringSsl(deploymentName));
     }
 
@@ -248,8 +240,7 @@ public class SecurityController {
 
   @RequestMapping(value = "/authz/groupMembership", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setGroupMembership(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMembership) {
     GroupMembership membership = objectMapper.convertValue(rawMembership, GroupMembership.class);
 
@@ -257,11 +248,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> membership.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setGroupMembership(deploymentName, membership));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateAuthz(deploymentName));
     }
 
@@ -309,8 +300,7 @@ public class SecurityController {
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setSecurity(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawSecurity) {
     Security security = objectMapper.convertValue(rawSecurity, Security.class);
 
@@ -318,11 +308,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> security.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setSecurity(deploymentName, security));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateSecurity(deploymentName));
     }
 
@@ -336,8 +326,7 @@ public class SecurityController {
   @RequestMapping(value = "/authn/{methodName:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setAuthnMethod(@PathVariable String deploymentName,
       @PathVariable String methodName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMethod) {
     AuthnMethod method = objectMapper.convertValue(
         rawMethod,
@@ -348,11 +337,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> method.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setAuthnMethod(deploymentName, method));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateAuthnMethod(deploymentName, methodName));
     }
 
@@ -367,8 +356,7 @@ public class SecurityController {
   @RequestMapping(value = "/authz/groupMembership/{roleProviderName:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setRoleProvider(@PathVariable String deploymentName,
       @PathVariable String roleProviderName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawProvider) {
     RoleProvider roleProvider = objectMapper.convertValue(
         rawProvider,
@@ -379,11 +367,11 @@ public class SecurityController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> roleProvider.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> securityService.setRoleProvider(deploymentName, roleProvider));
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(
           () -> securityService.validateRoleProvider(deploymentName, roleProviderName));
     }
@@ -399,17 +387,16 @@ public class SecurityController {
   @RequestMapping(value = "/authn/{methodName:.+}/enabled/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMethodEnabled(@PathVariable String deploymentName,
       @PathVariable String methodName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(
         () -> securityService.setAuthnMethodEnabled(deploymentName, methodName, enabled));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateAuthnMethod(deploymentName, methodName));
     }
 
@@ -422,16 +409,15 @@ public class SecurityController {
 
   @RequestMapping(value = "/authz/enabled/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMethodEnabled(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(() -> securityService.setAuthzEnabled(deploymentName, enabled));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     builder.setValidate(ProblemSet::new);
-    if (validate) {
+    if (validationSettings.isValidate()) {
       builder.setValidate(() -> securityService.validateAuthz(deploymentName));
     }
 

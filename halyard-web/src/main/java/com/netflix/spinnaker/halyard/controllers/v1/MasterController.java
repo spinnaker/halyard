@@ -25,11 +25,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
 import com.netflix.spinnaker.halyard.config.services.v1.MasterService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -78,15 +76,14 @@ public class MasterController {
       @PathVariable String deploymentName,
       @PathVariable String ciName,
       @PathVariable String masterName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
+      @ModelAttribute ValidationSettings validationSettings) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder.setUpdate(() -> masterService.deleteMaster(deploymentName, ciName, masterName));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> masterService.validateAllMasters(deploymentName, ciName);
     }
 
@@ -104,8 +101,7 @@ public class MasterController {
       @PathVariable String deploymentName,
       @PathVariable String ciName,
       @PathVariable String masterName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMaster) {
     Master master = objectMapper.convertValue(
         rawMaster,
@@ -117,10 +113,10 @@ public class MasterController {
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> master.stageLocalFiles(configPath));
     builder.setUpdate(() -> masterService.setMaster(deploymentName, ciName, masterName, master));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> masterService.validateMaster(deploymentName, ciName, master.getName());
     }
 
@@ -136,8 +132,7 @@ public class MasterController {
   DaemonTask<Halconfig, Void> addMaster(
       @PathVariable String deploymentName,
       @PathVariable String ciName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMaster) {
     Master master = objectMapper.convertValue(
         rawMaster,
@@ -148,11 +143,11 @@ public class MasterController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> master.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
     builder.setUpdate(() -> masterService.addMaster(deploymentName, ciName, master));
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> masterService.validateMaster(deploymentName, ciName, master.getName());
     }
 

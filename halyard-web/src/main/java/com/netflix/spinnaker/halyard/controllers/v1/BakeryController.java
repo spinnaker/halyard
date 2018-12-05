@@ -26,11 +26,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Providers;
 import com.netflix.spinnaker.halyard.config.services.v1.BakeryService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -64,8 +62,7 @@ public class BakeryController {
   @RequestMapping(value = "/defaults/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setBakeryDefaults(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawBakeryDefaults) {
     BakeryDefaults bakeryDefaults = objectMapper.convertValue(
         rawBakeryDefaults,
@@ -78,11 +75,11 @@ public class BakeryController {
     builder.setStage(() -> bakeryDefaults.stageLocalFiles(configPath));
     builder.setUpdate(
         () -> bakeryService.setBakeryDefaults(deploymentName, providerName, bakeryDefaults));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
 
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> bakeryService.validateBakeryDefaults(deploymentName, providerName);
     }
 
@@ -125,16 +122,15 @@ public class BakeryController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String baseImageId,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity) {
+      @ModelAttribute ValidationSettings validationSettings) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     builder
         .setUpdate(() -> bakeryService.deleteBaseImage(deploymentName, providerName, baseImageId));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> bakeryService.validateAllBaseImages(deploymentName, providerName);
     }
 
@@ -152,8 +148,7 @@ public class BakeryController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String baseImageId,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawBaseImage) {
     BaseImage baseImage = objectMapper.convertValue(
         rawBaseImage,
@@ -166,10 +161,10 @@ public class BakeryController {
     builder.setStage(() -> baseImage.stageLocalFiles(configPath));
     builder.setUpdate(
         () -> bakeryService.setBaseImage(deploymentName, providerName, baseImageId, baseImage));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> bakeryService
           .validateBaseImage(deploymentName, providerName, baseImage.getBaseImage().getId());
     }
@@ -186,8 +181,7 @@ public class BakeryController {
   DaemonTask<Halconfig, Void> addBaseImage(
       @PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawBaseImage) {
     BaseImage baseImage = objectMapper.convertValue(
         rawBaseImage,
@@ -198,13 +192,13 @@ public class BakeryController {
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
     builder.setStage(() -> baseImage.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     // TODO(lwander): Would be good to indicate when an added base image id conflicts with an existing base image id.
     builder.setUpdate(() -> bakeryService.addBaseImage(deploymentName, providerName, baseImage));
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> bakeryService
           .validateBaseImage(deploymentName, providerName, baseImage.getBaseImage().getId());
     }

@@ -25,11 +25,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Providers;
 import com.netflix.spinnaker.halyard.config.services.v1.ClusterService;
 import com.netflix.spinnaker.halyard.core.DaemonResponse;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import lombok.RequiredArgsConstructor;
@@ -79,15 +77,14 @@ public class ClusterController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String clusterName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity) {
+      @ModelAttribute ValidationSettings validationSettings) {
     DaemonResponse.UpdateRequestBuilder builder = new DaemonResponse.UpdateRequestBuilder();
 
     builder.setUpdate(() -> clusterService.deleteCluster(deploymentName, providerName, clusterName));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> clusterService.validateAllClusters(deploymentName, providerName);
     }
 
@@ -103,8 +100,7 @@ public class ClusterController {
       @PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String clusterName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawCluster) {
     Cluster cluster = objectMapper.convertValue(
         rawCluster,
@@ -114,10 +110,10 @@ public class ClusterController {
     DaemonResponse.UpdateRequestBuilder builder = new DaemonResponse.UpdateRequestBuilder();
 
     builder.setUpdate(() -> clusterService.setCluster(deploymentName, providerName, clusterName, cluster));
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> clusterService.validateCluster(deploymentName, providerName, cluster.getName());
     }
 
@@ -132,8 +128,7 @@ public class ClusterController {
   DaemonTask<Halconfig, Void> addCluster(
       @PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultValidationSettings.severity) Problem.Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawCluster) {
     Cluster cluster = objectMapper.convertValue(
         rawCluster,
@@ -141,12 +136,12 @@ public class ClusterController {
     );
 
     DaemonResponse.UpdateRequestBuilder builder = new DaemonResponse.UpdateRequestBuilder();
-    builder.setSeverity(severity);
+    builder.setSeverity(validationSettings.getSeverity());
 
     builder.setUpdate(() -> clusterService.addCluster(deploymentName, providerName, cluster));
 
     Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
+    if (validationSettings.isValidate()) {
       doValidate = () -> clusterService.validateCluster(deploymentName, providerName, cluster.getName());
     }
 
