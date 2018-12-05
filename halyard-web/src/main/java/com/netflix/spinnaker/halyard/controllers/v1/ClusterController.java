@@ -32,7 +32,7 @@ import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,16 +42,12 @@ import java.util.function.Supplier;
  * Controller for adding clusters to a provider
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/providers/{providerName:.+}/clusters")
 public class ClusterController {
-  @Autowired
-  ClusterService clusterService;
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final ClusterService clusterService;
+  private final HalconfigParser halconfigParser;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<Cluster>> clusters(@PathVariable String deploymentName,

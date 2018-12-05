@@ -40,8 +40,8 @@ import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.proto.DeploymentsGrpc;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import lombok.RequiredArgsConstructor;
 import org.lognet.springboot.grpc.GRpcService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
@@ -55,26 +55,15 @@ import java.util.stream.Collectors;
 
 @GRpcService
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments")
 public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
-
-  @Autowired
-  DeploymentService deploymentService;
-
-  @Autowired
-  GenerateService generateService;
-
-  @Autowired
-  DeployService deployService;
-
-  @Autowired
-  ObjectMapper objectMapper;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  HalconfigParser halconfigParser;
+  private final DeploymentService deploymentService;
+  private final GenerateService generateService;
+  private final DeployService deployService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final HalconfigParser halconfigParser;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, DeploymentConfiguration> deploymentConfiguration(@PathVariable String deploymentName,

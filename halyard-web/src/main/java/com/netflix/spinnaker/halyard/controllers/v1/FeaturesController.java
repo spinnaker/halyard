@@ -30,27 +30,20 @@ import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/features")
 public class FeaturesController {
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  FeaturesService featuresService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final FeaturesService featuresService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Features> getFeatures(@PathVariable String deploymentName,

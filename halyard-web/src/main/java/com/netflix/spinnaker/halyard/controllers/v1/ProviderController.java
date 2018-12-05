@@ -31,7 +31,7 @@ import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
@@ -39,20 +39,13 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/providers")
 public class ProviderController {
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  ProviderService providerService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final ProviderService providerService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/{providerName:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, Provider> get(@PathVariable String deploymentName,

@@ -24,7 +24,7 @@ import com.netflix.spinnaker.halyard.core.DaemonResponse.StaticRequestBuilder;
 import com.netflix.spinnaker.halyard.core.StringBodyRequest;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,10 +35,10 @@ import retrofit.http.Body;
  * Reports the entire contents of ~/.hal/config
  */
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/backup")
 public class BackupController {
-  @Autowired
-  BackupService backupService;
+  private final BackupService backupService;
 
   @RequestMapping(value = "/create", method = RequestMethod.PUT)
   DaemonTask<Halconfig, StringBodyRequest> create() {

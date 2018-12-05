@@ -29,20 +29,18 @@ import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.models.v1.DefaultValidationSettings;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/ci")
 public class CiController {
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  CiService ciService;
+  private final HalconfigParser halconfigParser;
+  private final CiService ciService;
 
   @RequestMapping(value = "/{ciName:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, Ci> ci(@PathVariable String deploymentName,
