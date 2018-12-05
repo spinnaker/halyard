@@ -73,8 +73,7 @@ public class SubscriptionController {
   }
 
   @RequestMapping(value = "/subscription/{subscriptionName:.+}", method = RequestMethod.DELETE)
-  DaemonTask<Halconfig, Void> deleteSubscription(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> deleteSubscription(@PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @PathVariable String subscriptionName,
       @ModelAttribute ValidationSettings validationSettings) {
@@ -99,8 +98,7 @@ public class SubscriptionController {
   }
 
   @RequestMapping(value = "/subscription/{subscriptionName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setSubscription(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setSubscription(@PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @PathVariable String subscriptionName,
       @ModelAttribute ValidationSettings validationSettings,
@@ -130,8 +128,7 @@ public class SubscriptionController {
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
-  DaemonTask<Halconfig, Void> addSubscription(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> addSubscription(@PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawSubscription) {

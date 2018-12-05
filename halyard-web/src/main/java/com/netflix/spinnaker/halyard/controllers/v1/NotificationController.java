@@ -59,8 +59,7 @@ public class NotificationController {
   }
 
   @RequestMapping(value = "/{notificationName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String notificationName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
@@ -94,8 +93,7 @@ public class NotificationController {
   }
 
   @RequestMapping(value = "/{notificationName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setNotification(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setNotification(@PathVariable String deploymentName,
       @PathVariable String notificationName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawNotification) {

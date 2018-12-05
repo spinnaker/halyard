@@ -53,8 +53,7 @@ public class CiController {
   }
 
   @RequestMapping(value = "/{ciName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String ciName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {

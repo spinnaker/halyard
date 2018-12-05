@@ -58,8 +58,7 @@ public class ProviderController {
   }
 
   @RequestMapping(value = "/{providerName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setProvider(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setProvider(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawProvider) {
@@ -89,8 +88,7 @@ public class ProviderController {
   }
 
   @RequestMapping(value = "/{providerName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {

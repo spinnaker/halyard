@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import retrofit.http.Body;
 
 /**
  * Reports the entire contents of ~/.hal/config
@@ -43,7 +42,7 @@ public class BackupController {
   @RequestMapping(value = "/create", method = RequestMethod.PUT)
   DaemonTask<Halconfig, StringBodyRequest> create() {
     StaticRequestBuilder<StringBodyRequest> builder = new StaticRequestBuilder<>(
-            () -> new StringBodyRequest(backupService.create()));
+        () -> new StringBodyRequest(backupService.create()));
     return DaemonTaskHandler.submitTask(builder::build, "Create backup");
   }
 

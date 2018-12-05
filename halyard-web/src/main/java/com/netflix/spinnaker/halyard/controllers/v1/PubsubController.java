@@ -60,8 +60,7 @@ public class PubsubController {
   }
 
   @RequestMapping(value = "/{pubsubName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setPubsub(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setPubsub(@PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawPubsub) {
@@ -91,8 +90,7 @@ public class PubsubController {
   }
 
   @RequestMapping(value = "/{pubsubName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String pubsubName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {

@@ -60,8 +60,7 @@ public class HaServiceController {
   }
 
   @RequestMapping(value = "/{serviceName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setHaService(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setHaService(@PathVariable String deploymentName,
       @PathVariable String serviceName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawHaService) {
@@ -91,8 +90,7 @@ public class HaServiceController {
   }
 
   @RequestMapping(value = "/{serviceName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String serviceName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {

@@ -73,8 +73,7 @@ public class AccountController {
   }
 
   @RequestMapping(value = "/options", method = RequestMethod.POST)
-  DaemonTask<Halconfig, List<String>> newAccountOptions(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, List<String>> newAccountOptions(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody DaemonOptions rawAccountOptions) {
@@ -95,8 +94,7 @@ public class AccountController {
   }
 
   @RequestMapping(value = "/account/{accountName:.+}/options", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, List<String>> existingAccountOptions(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, List<String>> existingAccountOptions(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
       @ModelAttribute ValidationSettings validationSettings,
@@ -112,8 +110,7 @@ public class AccountController {
   }
 
   @RequestMapping(value = "/account/{accountName:.+}", method = RequestMethod.DELETE)
-  DaemonTask<Halconfig, Void> deleteAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> deleteAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
       @ModelAttribute ValidationSettings validationSettings) {
@@ -138,8 +135,7 @@ public class AccountController {
   }
 
   @RequestMapping(value = "/account/{accountName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
       @ModelAttribute ValidationSettings validationSettings,
@@ -172,8 +168,7 @@ public class AccountController {
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
-  DaemonTask<Halconfig, Void> addAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> addAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawAccount) {

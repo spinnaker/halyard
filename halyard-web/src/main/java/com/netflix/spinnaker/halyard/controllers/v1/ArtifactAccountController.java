@@ -73,8 +73,7 @@ public class ArtifactAccountController {
   }
 
   @RequestMapping(value = "/account/{accountName:.+}", method = RequestMethod.DELETE)
-  DaemonTask<Halconfig, Void> deleteArtifactAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> deleteArtifactAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
       @ModelAttribute ValidationSettings validationSettings) {
@@ -98,8 +97,7 @@ public class ArtifactAccountController {
   }
 
   @RequestMapping(value = "/account/{accountName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setArtifactAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setArtifactAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
       @ModelAttribute ValidationSettings validationSettings,
@@ -130,8 +128,7 @@ public class ArtifactAccountController {
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
-  DaemonTask<Halconfig, Void> addArtifactAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> addArtifactAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactAccount) {

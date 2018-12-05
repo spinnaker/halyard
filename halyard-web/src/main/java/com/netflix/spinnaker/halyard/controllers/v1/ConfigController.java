@@ -43,13 +43,13 @@ public class ConfigController {
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Halconfig> config() {
-    StaticRequestBuilder<Halconfig> builder = new StaticRequestBuilder<>(() -> configService.getConfig());
+    StaticRequestBuilder<Halconfig> builder = new StaticRequestBuilder<>(configService::getConfig);
     return DaemonTaskHandler.submitTask(builder::build, "Get halconfig");
   }
 
   @RequestMapping(value = "/currentDeployment", method = RequestMethod.GET)
   DaemonTask<Halconfig, String> currentDeployment() {
-    StaticRequestBuilder<String> builder = new StaticRequestBuilder<>(() -> configService.getCurrentDeployment());
+    StaticRequestBuilder<String> builder = new StaticRequestBuilder<>(configService::getCurrentDeployment);
     return DaemonTaskHandler.submitTask(builder::build, "Get current deployment");
   }
 
@@ -57,8 +57,8 @@ public class ConfigController {
   DaemonTask<Halconfig, Void> setDeployment(@RequestBody StringBodyRequest name) {
     DaemonResponse.UpdateRequestBuilder builder = new DaemonResponse.UpdateRequestBuilder();
     builder.setUpdate(() -> configService.setCurrentDeployment(name.getValue()));
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
+    builder.setRevert(halconfigParser::undoChanges);
+    builder.setSave(halconfigParser::saveConfig);
     builder.setValidate(ProblemSet::new);
     return DaemonTaskHandler.submitTask(builder::build, "Set current deployment");
   }

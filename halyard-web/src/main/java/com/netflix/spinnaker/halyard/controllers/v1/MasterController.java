@@ -72,8 +72,7 @@ public class MasterController {
   }
 
   @RequestMapping(value = "/{masterName:.+}", method = RequestMethod.DELETE)
-  DaemonTask<Halconfig, Void> deleteMaster(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> deleteMaster(@PathVariable String deploymentName,
       @PathVariable String ciName,
       @PathVariable String masterName,
       @ModelAttribute ValidationSettings validationSettings) {
@@ -97,8 +96,7 @@ public class MasterController {
   }
 
   @RequestMapping(value = "/{masterName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setMaster(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setMaster(@PathVariable String deploymentName,
       @PathVariable String ciName,
       @PathVariable String masterName,
       @ModelAttribute ValidationSettings validationSettings,
@@ -129,8 +127,7 @@ public class MasterController {
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
-  DaemonTask<Halconfig, Void> addMaster(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> addMaster(@PathVariable String deploymentName,
       @PathVariable String ciName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMaster) {

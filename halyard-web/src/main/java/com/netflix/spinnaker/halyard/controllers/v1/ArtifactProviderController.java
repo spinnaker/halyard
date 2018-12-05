@@ -60,8 +60,7 @@ public class ArtifactProviderController {
   }
 
   @RequestMapping(value = "/{providerName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setArtifactProvider(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setArtifactProvider(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactProvider) {
@@ -91,8 +90,7 @@ public class ArtifactProviderController {
   }
 
   @RequestMapping(value = "/{providerName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {

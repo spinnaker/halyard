@@ -73,8 +73,7 @@ public class ClusterController {
   }
 
   @RequestMapping(value = "/cluster/{clusterName:.+}", method = RequestMethod.DELETE)
-  DaemonTask<Halconfig, Void> deleteCluster(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> deleteCluster(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String clusterName,
       @ModelAttribute ValidationSettings validationSettings) {
@@ -96,8 +95,7 @@ public class ClusterController {
   }
 
   @RequestMapping(value = "/cluster/{clusterName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setCluster(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setCluster(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String clusterName,
       @ModelAttribute ValidationSettings validationSettings,
@@ -125,8 +123,7 @@ public class ClusterController {
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
-  DaemonTask<Halconfig, Void> addCluster(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> addCluster(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawCluster) {

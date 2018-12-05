@@ -116,8 +116,7 @@ public class CanaryController {
   }
 
   @RequestMapping(value = "/{serviceIntegrationName:.+}/accounts/account/{accountName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setCanaryAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setCanaryAccount(@PathVariable String deploymentName,
       @PathVariable String serviceIntegrationName,
       @PathVariable String accountName,
       @ModelAttribute ValidationSettings validationSettings,
@@ -149,8 +148,7 @@ public class CanaryController {
   }
 
   @RequestMapping(value = "/{serviceIntegrationName:.+}/accounts/", method = RequestMethod.POST)
-  DaemonTask<Halconfig, Void> addCanaryAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> addCanaryAccount(@PathVariable String deploymentName,
       @PathVariable String serviceIntegrationName,
       @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawCanaryAccount) {
@@ -181,8 +179,7 @@ public class CanaryController {
   }
 
   @RequestMapping(value = "/{serviceIntegrationName:.+}/accounts/account/{accountName:.+}", method = RequestMethod.DELETE)
-  DaemonTask<Halconfig, Void> deleteCanaryAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> deleteCanaryAccount(@PathVariable String deploymentName,
       @PathVariable String serviceIntegrationName,
       @PathVariable String accountName,
       @ModelAttribute ValidationSettings validationSettings) {

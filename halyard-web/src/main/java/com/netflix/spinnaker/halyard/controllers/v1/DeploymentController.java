@@ -103,8 +103,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
   DaemonTask<Halconfig, List<DeploymentConfiguration>> deploymentConfigurations(
       @ModelAttribute ValidationSettings validationSettings) {
     return GenericGetRequest.<List<DeploymentConfiguration>>builder()
-        .getter(() -> deploymentService.getAllDeploymentConfigurations())
-        .validator(() -> deploymentService.validateAllDeployments())
+        .getter(deploymentService::getAllDeploymentConfigurations)
+        .validator(deploymentService::validateAllDeployments)
         .description("Get all deployment configurations")
         .build()
         .execute(validationSettings);
@@ -115,7 +115,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
       @ModelAttribute ValidationSettings validationSettings,
       @RequestParam(required = false) List<String> serviceNames) {
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
-    Supplier buildResponse = () -> {
+    Supplier<String> buildResponse = () -> {
       GenerateService.ResolvedConfiguration configuration = generateService.generateConfigWithOptionalServices(deploymentName, finalServiceNames.stream()
           .map(SpinnakerService.Type::fromCanonicalName)
           .collect(Collectors.toList()));
@@ -134,7 +134,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
   @RequestMapping(value = "/{deploymentName:.+}/clean/", method = RequestMethod.POST)
   DaemonTask<Halconfig, Void> clean(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings) {
-    Supplier buildResponse = () -> {
+    Supplier<Void> buildResponse = () -> {
       deployService.clean(deploymentName);
       return null;
     };
@@ -142,8 +142,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     builder.setSeverity(validationSettings.getSeverity());
 
     if (validationSettings.isValidate()) {
-      builder
-          .setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
+      builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Clean Deployment of Spinnaker");
@@ -159,8 +158,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     builder.setSeverity(validationSettings.getSeverity());
 
     if (validationSettings.isValidate()) {
-      builder
-          .setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
+      builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Connect to Spinnaker deployment.");
@@ -174,7 +172,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     List<String> finalServiceNames = serviceNames != null ? serviceNames : Collections.emptyList();
     List<String> finalExcludeServiceNames =
         excludeServiceNames != null ? excludeServiceNames : Collections.emptyList();
-    Supplier buildResponse = () -> {
+    Supplier<Void> buildResponse = () -> {
       deployService.rollback(deploymentName, finalServiceNames, finalExcludeServiceNames);
       return null;
     };
@@ -183,8 +181,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     builder.setSeverity(validationSettings.getSeverity());
 
     if (validationSettings.isValidate()) {
-      builder
-          .setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
+      builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
     }
 
     return DaemonTaskHandler
@@ -267,8 +264,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     builder.setSeverity(validationSettings.getSeverity());
 
     if (validationSettings.isValidate()) {
-      builder
-          .setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
+      builder.setValidateResponse(() -> deploymentService.validateDeploymentShallow(deploymentName));
     }
 
     return DaemonTaskHandler.submitTask(builder::build, "Collecting service logs");
@@ -300,8 +296,8 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
     }
 
     builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
+    builder.setRevert(halconfigParser::undoChanges);
+    builder.setSave(halconfigParser::saveConfig);
 
     return DaemonTaskHandler.submitTask(builder::build, "Edit Spinnaker version");
   }
