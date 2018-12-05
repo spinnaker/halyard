@@ -41,7 +41,6 @@ public class DeploymentEnvironmentController {
   private final HalconfigParser halconfigParser;
   private final DeploymentEnvironmentService deploymentEnvironmentService;
   private final HalconfigDirectoryStructure halconfigDirectoryStructure;
-  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, DeploymentEnvironment> getDeploymentEnvironment(@PathVariable String deploymentName,
@@ -57,10 +56,7 @@ public class DeploymentEnvironmentController {
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setDeploymentEnvironment(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawDeploymentEnvironment) {
-    DeploymentEnvironment deploymentEnvironment = objectMapper
-        .convertValue(rawDeploymentEnvironment, DeploymentEnvironment.class);
-
+      @RequestBody DeploymentEnvironment deploymentEnvironment) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);

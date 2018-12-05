@@ -41,7 +41,6 @@ public class FeaturesController {
   private final HalconfigParser halconfigParser;
   private final FeaturesService featuresService;
   private final HalconfigDirectoryStructure halconfigDirectoryStructure;
-  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Features> getFeatures(@PathVariable String deploymentName,
@@ -57,9 +56,7 @@ public class FeaturesController {
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setFeatures(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawFeatures) {
-    Features features = objectMapper.convertValue(rawFeatures, Features.class);
-
+      @RequestBody Features features) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);

@@ -39,7 +39,6 @@ import java.nio.file.Path;
 @RequiredArgsConstructor
 public class WebhookController {
   private final WebhookService webhookService;
-  private final ObjectMapper objectMapper;
   private final HalconfigDirectoryStructure halconfigDirectoryStructure;
   private final HalconfigParser halconfigParser;
 
@@ -57,9 +56,7 @@ public class WebhookController {
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setWebhook(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawWebhook) {
-    Webhook webhook = objectMapper.convertValue(rawWebhook, Webhook.class);
-
+      @RequestBody Webhook webhook) {
     DaemonResponse.UpdateRequestBuilder builder = new DaemonResponse.UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
@@ -93,9 +90,7 @@ public class WebhookController {
   @RequestMapping(value = "/trust/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setWebhookTrust(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawWebhookTrust) {
-    WebhookTrust webhookTrust = objectMapper.convertValue(rawWebhookTrust, WebhookTrust.class);
-
+      @RequestBody WebhookTrust webhookTrust) {
     DaemonResponse.UpdateRequestBuilder builder = new DaemonResponse.UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);

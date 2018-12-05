@@ -70,9 +70,7 @@ public class MetricStoresController {
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMetricStores(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawMetricStores) {
-    MetricStores metricStores = objectMapper.convertValue(rawMetricStores, MetricStores.class);
-
+      @RequestBody MetricStores metricStores) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);

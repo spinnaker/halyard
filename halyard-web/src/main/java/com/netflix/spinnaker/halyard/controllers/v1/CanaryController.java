@@ -60,9 +60,7 @@ public class CanaryController {
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setCanary(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawCanary) {
-    Canary canary = objectMapper.convertValue(rawCanary, Canary.class);
-
+      @RequestBody Canary canary) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);

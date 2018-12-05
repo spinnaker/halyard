@@ -62,7 +62,6 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
   private final DeployService deployService;
   private final HalconfigDirectoryStructure halconfigDirectoryStructure;
   private final HalconfigParser halconfigParser;
-  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, DeploymentConfiguration> deploymentConfiguration(@PathVariable String deploymentName,
@@ -78,12 +77,7 @@ public class DeploymentController extends DeploymentsGrpc.DeploymentsImplBase{
   @RequestMapping(value = "/{deploymentName:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> deploymentConfiguration(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawDeployment) {
-    DeploymentConfiguration deploymentConfiguration = objectMapper.convertValue(
-        rawDeployment,
-        DeploymentConfiguration.class
-    );
-
+      @RequestBody DeploymentConfiguration deploymentConfiguration) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);

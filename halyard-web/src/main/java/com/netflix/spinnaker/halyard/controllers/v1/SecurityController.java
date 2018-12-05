@@ -68,9 +68,7 @@ public class SecurityController {
   @RequestMapping(value = "/ui/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setUiSecurity(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawUiSecurity) {
-    UiSecurity uiSecurity = objectMapper.convertValue(rawUiSecurity, UiSecurity.class);
-
+      @RequestBody UiSecurity uiSecurity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
@@ -104,9 +102,7 @@ public class SecurityController {
   @RequestMapping(value = "/ui/ssl/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setApacheSSl(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawApacheSsl) {
-    ApacheSsl apacheSsl = objectMapper.convertValue(rawApacheSsl, ApacheSsl.class);
-
+      @RequestBody ApacheSsl apacheSsl) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
@@ -160,9 +156,7 @@ public class SecurityController {
   @RequestMapping(value = "/api/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setApiSecurity(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawApiSecurity) {
-    ApiSecurity apiSecurity = objectMapper.convertValue(rawApiSecurity, ApiSecurity.class);
-
+      @RequestBody ApiSecurity apiSecurity) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
@@ -196,9 +190,7 @@ public class SecurityController {
   @RequestMapping(value = "/api/ssl/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setSpringSSl(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawSpringSsl) {
-    SpringSsl apacheSsl = objectMapper.convertValue(rawSpringSsl, SpringSsl.class);
-
+      @RequestBody SpringSsl apacheSsl) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
@@ -241,9 +233,7 @@ public class SecurityController {
   @RequestMapping(value = "/authz/groupMembership", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setGroupMembership(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawMembership) {
-    GroupMembership membership = objectMapper.convertValue(rawMembership, GroupMembership.class);
-
+      @RequestBody GroupMembership membership) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
@@ -301,9 +291,7 @@ public class SecurityController {
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setSecurity(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawSecurity) {
-    Security security = objectMapper.convertValue(rawSecurity, Security.class);
-
+      @RequestBody Security security) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);

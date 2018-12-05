@@ -58,10 +58,7 @@ public class PersistentStorageController {
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setPersistentStorage(@PathVariable String deploymentName,
       @ModelAttribute ValidationSettings validationSettings,
-      @RequestBody Object rawPersistentStorage) {
-    PersistentStorage persistentStorage = objectMapper
-        .convertValue(rawPersistentStorage, PersistentStorage.class);
-
+      @RequestBody PersistentStorage persistentStorage) {
     UpdateRequestBuilder builder = new UpdateRequestBuilder();
 
     Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
