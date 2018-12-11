@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AnsiFormatUtils {
-  private static Yaml yamlParser = null;
+  private static ThreadLocal<Yaml> yamlParser = ThreadLocal.withInitial(AnsiFormatUtils::getYamlParser);
   private static ObjectMapper objectMapper = null;
 
   public enum Format  {
@@ -54,15 +54,11 @@ public class AnsiFormatUtils {
   }
 
   private static Yaml getYamlParser() {
-    if (yamlParser == null) {
-      DumperOptions options = new DumperOptions();
-      options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-      options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
+    DumperOptions options = new DumperOptions();
+    options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+    options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
 
-      yamlParser = new Yaml(new SafeConstructor(), new Representer(), options);
-    }
-
-    return yamlParser;
+    return new Yaml(new SafeConstructor(), new Representer(), options);
   }
 
   private static ObjectMapper getObjectMapper() {
@@ -75,11 +71,11 @@ public class AnsiFormatUtils {
   }
 
   private static String formatYaml(Object yaml) {
-    if(List.class.isInstance(yaml)) {
-      return getYamlParser().dump(getObjectMapper().convertValue(yaml, List.class));
+    if(yaml instanceof List) {
+      return yamlParser.get().dump(getObjectMapper().convertValue(yaml, List.class));
     }
 
-    return getYamlParser().dump(getObjectMapper().convertValue(yaml, Map.class));
+    return yamlParser.get().dump(getObjectMapper().convertValue(yaml, Map.class));
   }
 
   private static String formatJson(Object json) {

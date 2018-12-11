@@ -49,7 +49,7 @@ import java.util.Map;
 
 @Slf4j
 public class KubernetesV2Utils {
-  static private Yaml yaml = new Yaml(new SafeConstructor());
+  static private ThreadLocal<Yaml> yaml = ThreadLocal.withInitial(() -> new Yaml(new SafeConstructor()));
   static private ObjectMapper mapper = new ObjectMapper();
 
   static public boolean exists(KubernetesAccount account, String manifest) {
@@ -303,11 +303,11 @@ public class KubernetesV2Utils {
   }
 
   static private String prettify(String input) {
-    return yaml.dump(yaml.load(input));
+    return yaml.get().dump(yaml.load(input));
   }
 
   static private Map<String, Object> parseManifest(String input) {
-    return mapper.convertValue(yaml.load(input), new TypeReference<Map<String, Object>>() {});
+    return mapper.convertValue(yaml.get().load(input), new TypeReference<Map<String, Object>>() {});
   }
 
   @Data
