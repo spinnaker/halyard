@@ -303,7 +303,7 @@ public class KubernetesV2Utils {
   }
 
   static private String prettify(String input) {
-    return yaml.get().dump(yaml.load(input));
+    return yaml.get().dump(yaml.get().load(input));
   }
 
   static private Map<String, Object> parseManifest(String input) {
