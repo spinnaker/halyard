@@ -43,7 +43,8 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
   public RemoteAction deploy(KubectlServiceProvider serviceProvider,
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       GenerateService.ResolvedConfiguration resolvedConfiguration,
-      List<SpinnakerService.Type> serviceTypes) {
+      List<SpinnakerService.Type> serviceTypes,
+      boolean waitForCompletion) {
     List<KubernetesV2Service> services = serviceProvider.getServicesByPriority(serviceTypes);
     services.stream().forEach((service) -> {
       if (service instanceof SidecarService) {
@@ -83,9 +84,11 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
             DaemonTaskHandler.message("Running kubectl apply on the resource definition...");
             KubernetesV2Utils.apply(account, resourceDefinition);
 
-            DaemonTaskHandler.message("Waiting for service to be ready...");
-            while (!KubernetesV2Utils.isReady(account, service.getNamespace(settings), service.getServiceName())) {
-              DaemonTaskHandler.safeSleep(TimeUnit.SECONDS.toMillis(5));
+            if (waitForCompletion) {
+              DaemonTaskHandler.message("Waiting for service to be ready...");
+              while (!KubernetesV2Utils.isReady(account, service.getNamespace(settings), service.getServiceName())) {
+                DaemonTaskHandler.safeSleep(TimeUnit.SECONDS.toMillis(5));
+              }
             }
 
             return null;
