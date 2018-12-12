@@ -19,11 +19,7 @@ package com.netflix.spinnaker.halyard.cli.ui.v1;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Cluster;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeDiff;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -105,49 +101,21 @@ public class AnsiFormatUtils {
     }
   }
 
-  public static String format(Account account) {
+  public static String format(Node node) {
     AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
     AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
 
-    paragraph.addSnippet(account.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
+    paragraph.addSnippet(node.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
 
     resultBuilder.addNewline();
 
     paragraph = resultBuilder.addParagraph();
-    paragraph.addSnippet(account.toString());
+    paragraph.addSnippet(node.toString());
 
     return resultBuilder.toString();
   }
 
-  public static String format(AbstractCanaryAccount account) {
-    AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
-    AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
-
-    paragraph.addSnippet(account.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
-
-    resultBuilder.addNewline();
-
-    paragraph = resultBuilder.addParagraph();
-    paragraph.addSnippet(account.toString());
-
-    return resultBuilder.toString();
-  }
-
-  public static String format(Cluster cluster) {
-    AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
-    AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
-
-    paragraph.addSnippet(cluster.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
-
-    resultBuilder.addNewline();
-
-    paragraph = resultBuilder.addParagraph();
-    paragraph.addSnippet(cluster.toString());
-
-    return resultBuilder.toString();
-  }
-
-  public static String format(Provider provider) {
+  public static <A extends Account> String format(Provider<A> provider) {
     AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
     AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
 
@@ -163,7 +131,7 @@ public class AnsiFormatUtils {
     paragraph = resultBuilder.addParagraph();
     paragraph.addSnippet("accounts: ");
 
-    List<Account> accounts = provider.getAccounts();
+    List<A> accounts = provider.getAccounts();
     if (accounts == null || accounts.isEmpty()) {
       paragraph.addSnippet("[]");
     } else {
@@ -183,7 +151,7 @@ public class AnsiFormatUtils {
     return resultBuilder.toString();
   }
 
-  static void format(NodeDiff diff, AnsiStoryBuilder resultBuilder) {
+  private static void format(NodeDiff diff, AnsiStoryBuilder resultBuilder) {
 
     AnsiSnippet snippet = null;
     AnsiParagraphBuilder paragraph = null;
