@@ -47,6 +47,7 @@ public class ServiceSettings {
   // A port open only to the internal network
   Integer internalPort;
   String address;
+  CustomCaSettings customCas = new CustomCaSettings();
   String host;
   String scheme;
   String healthEndpoint;

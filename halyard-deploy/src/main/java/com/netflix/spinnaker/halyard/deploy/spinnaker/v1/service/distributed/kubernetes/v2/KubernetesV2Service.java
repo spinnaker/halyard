@@ -31,6 +31,7 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
 import com.netflix.spinnaker.halyard.core.resource.v1.JinjaJarResource;
 import com.netflix.spinnaker.halyard.core.resource.v1.TemplatedResource;
+import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetails;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
@@ -155,6 +156,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   default String getResourceYaml(KubernetesV2Executor executor, AccountDeploymentDetails<KubernetesAccount> details,
       GenerateService.ResolvedConfiguration resolvedConfiguration) {
     ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
+    SpinnakerRuntimeSettings runtimeSettings = resolvedConfiguration.getRuntimeSettings();
+    String namespace = getNamespace(settings);
 
     Integer targetSize = settings.getTargetSize();
     CustomSizing customSizing = details.getDeploymentConfiguration().getDeploymentEnvironment().getCustomSizing();
@@ -187,6 +190,13 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
       List<ConfigSource> configSources = stageConfig(executor, details, resolvedConfiguration);
       List<SidecarConfig> sidecarConfigs = getSidecarConfigs(details);
 
+      String namespace = settings.getLocation();
+
+      KubernetesV2ServiceCa.SecretConfigSource secretConfigSource = KubernetesV2ServiceCa.secretConfig(runtimeSettings, getService().getCanonicalName(), namespace, settings.getCustomCas(), getServiceName());
+      String caSecretName = secretConfigSource.spec.name;
+      executor.apply(secretConfigSource.spec.resource.toString());
+
+      configSources.add(secretConfigSource.config);
       configSources.addAll(sidecarConfigs.stream()
               .filter(c -> StringUtils.isNotEmpty(c.getMountPath()))
               .map(c -> new ConfigSource().setMountPath(c.getMountPath())
@@ -221,7 +231,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
       return new JinjaJarResource("/kubernetes/manifests/podSpec.yml")
               .addBinding("containers", containers)
-              .addBinding("initContainers", getInitContainers(details))
+              .addBinding("initContainers", getInitContainers(details, settings))
               .addBinding("hostAliases", getHostAliases(details))
               .addBinding("imagePullSecrets", settings.getKubernetes().getImagePullSecrets())
               .addBinding("serviceAccountName", settings.getKubernetes().getServiceAccountName())
@@ -550,7 +560,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     return hostAliases;
   }
 
-  default List<String> getInitContainers(AccountDeploymentDetails<KubernetesAccount> details) {
+  default List<String> getInitContainers(AccountDeploymentDetails<KubernetesAccount> details, ServiceSettings settings) {
     List<Map> initContainersConfig = details.getDeploymentConfiguration()
             .getDeploymentEnvironment()
             .getInitContainers()
@@ -563,7 +573,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               .getOrDefault(getService().getBaseCanonicalName(), new ArrayList<>());
     }
 
-    List<String> initContainers = initContainersConfig
+    List<String> initContainers = KubernetesV2ServiceCa.initContainers(settings, getObjectMapper());
+    initContainers.addAll(initContainersConfig
             .stream()
             .map(o -> {
               try {
@@ -571,7 +582,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               } catch (JsonProcessingException e) {
                 throw new HalException(Problem.Severity.FATAL, "Invalid init container format: " + e.getMessage(), e);
               }
-            }).collect(Collectors.toList());
+            }).collect(Collectors.toList()));
 
     return initContainers;
   }
@@ -610,6 +621,23 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     return Strings.join(".", getServiceName(), namespace);
   }
 
+  default Map<String, String> buildJVMEnv(ServiceSettings settings) {
+    Map<String, String> m = new HashMap<>();
+
+    // Use half the available memory allocated to the container for the JVM heap
+    String baseOpts = "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2";
+    String keyStorePath = KubernetesV2ServiceCa.getJvmKeyStorePath(settings);
+    String javaOpts;
+    if (keyStorePath == null || keyStorePath.isEmpty()) {
+      javaOpts = baseOpts;
+    } else {
+      javaOpts = "%s -Djavax.net.ssl.keyStore=%s".format(baseOpts, keyStorePath);
+    }
+
+    m.put("JAVA_OPTS", javaOpts);
+    return m;
+  }
+
   default ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
     ServiceSettings settings = defaultServiceSettings(deploymentConfiguration);
@@ -619,8 +647,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         .setLocation(location)
         .setEnabled(isEnabled(deploymentConfiguration));
     if (runsOnJvm()) {
-      // Use half the available memory allocated to the container for the JVM heap
-      settings.getEnv().put("JAVA_OPTS", "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2");
+      settings.getEnv().putAll(buildJVMEnv(settings));
     }
     return settings;
   }

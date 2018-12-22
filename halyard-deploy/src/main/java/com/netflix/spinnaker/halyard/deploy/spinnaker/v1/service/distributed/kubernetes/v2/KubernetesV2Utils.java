@@ -115,20 +115,18 @@ public class KubernetesV2Utils {
     return command;
   }
 
+  private static String hashForContent(SecretMountPair pair) {
+    if (pair.getContentString() != null) {
+      return new String(Base64.getEncoder().encode(pair.getContentString().getBytes()));
+    } else {
+      return KubernetesV2Hash.forContent(pair.getContents());
+    }
+  }
+
   public static SecretSpec createSecretSpec(String namespace, String clusterName, String name, List<SecretMountPair> files) {
     Map<String, String> contentMap = new HashMap<>();
     for (SecretMountPair pair: files) {
-      String contents;
-      if (pair.getContentString() != null) {
-        contents = new String(Base64.getEncoder().encode(pair.getContentString().getBytes()));
-      } else {
-        try {
-          contents = new String(Base64.getEncoder().encode(IOUtils.toByteArray(new FileInputStream(pair.getContents()))));
-        } catch (IOException e) {
-          throw new HalException(Problem.Severity.FATAL, "Failed to read required config file: " + pair.getContents().getAbsolutePath() + ": " + e.getMessage(), e);
-        }
-      }
-
+      String contents = hashForContent(pair);
       contentMap.put(pair.getName(), contents);
     }
 
