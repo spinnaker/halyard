@@ -488,9 +488,6 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               }
             }).collect(Collectors.toList());
 
-    if (hostAliases.isEmpty()) {
-      hostAliases = null;
-    }
     return hostAliases;
   }
 
@@ -516,10 +513,6 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
                 throw new HalException(Problem.Severity.FATAL, "Invalid init container format: " + e.getMessage(), e);
               }
             }).collect(Collectors.toList());
-
-    if (initContainers.isEmpty()) {
-      initContainers = null;
-    }
 
     return initContainers;
   }
