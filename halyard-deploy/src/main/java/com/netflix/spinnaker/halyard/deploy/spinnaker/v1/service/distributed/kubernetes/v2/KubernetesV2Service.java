@@ -154,8 +154,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     String namespace = getNamespace(settings);
 
     List<ConfigSource> configSources = stageConfig(details, resolvedConfiguration);
-
-    //attempt to get the service name specific sidecars first
+    
     List<SidecarConfig> sidecarConfigs = getSidecarConfigs(details);
 
     configSources.addAll(sidecarConfigs.stream()
