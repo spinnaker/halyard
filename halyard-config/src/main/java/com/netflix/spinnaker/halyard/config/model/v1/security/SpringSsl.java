@@ -21,6 +21,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,8 +44,10 @@ public class SpringSsl extends Node {
   @LocalFile @SecretFile String keyStore;
   String keyStoreType;
   @Secret String keyStorePassword;
-  @LocalFile @SecretFile String trustStore;
+  @LocalFile @SecretFile
+  String trustStore;
   String trustStoreType;
-  @Secret String trustStorePassword;
+  @Secret
+  String trustStorePassword;
   Ssl.ClientAuth clientAuth;
 }
