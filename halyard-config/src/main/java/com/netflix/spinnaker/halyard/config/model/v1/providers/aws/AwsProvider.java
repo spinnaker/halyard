@@ -19,8 +19,6 @@ package com.netflix.spinnaker.halyard.config.model.v1.providers.aws;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.HasImageProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -52,11 +50,6 @@ public class AwsProvider extends HasImageProvider<AwsAccount, AwsBakeryDefaults>
   @Override
   public ProviderType providerType() {
     return ProviderType.AWS;
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 
   @Override

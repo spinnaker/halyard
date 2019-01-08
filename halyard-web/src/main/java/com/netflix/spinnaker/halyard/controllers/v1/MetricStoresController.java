@@ -24,152 +24,87 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.MetricStore;
 import com.netflix.spinnaker.halyard.config.model.v1.node.MetricStores;
 import com.netflix.spinnaker.halyard.config.services.v1.MetricStoresService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
-import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.file.Path;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericEnableDisableRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/metricStores/")
 public class MetricStoresController {
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  MetricStoresService metricStoresService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final MetricStoresService metricStoresService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, MetricStores> getMetricStores(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<MetricStores> builder = new DaemonResponse.StaticRequestBuilder<>(
-        () -> metricStoresService.getMetricStores(deploymentName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> metricStoresService.validateMetricStores(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all metric stores");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<MetricStores>builder()
+        .getter(() -> metricStoresService.getMetricStores(deploymentName))
+        .validator(() -> metricStoresService.validateMetricStores(deploymentName))
+        .description("Get all metric stores")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{metricStoreType:.+}", method = RequestMethod.GET)
   DaemonTask<Halconfig, MetricStore> getMetricStore(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<MetricStore> builder = new DaemonResponse.StaticRequestBuilder<>(
-        () -> metricStoresService.getMetricStore(deploymentName, metricStoreType));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(
-          () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get " + metricStoreType + " metric store");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<MetricStore>builder()
+        .getter(() -> metricStoresService.getMetricStore(deploymentName, metricStoreType))
+        .validator(() -> metricStoresService.validateMetricStore(deploymentName, metricStoreType))
+        .description("Get " + metricStoreType + " metric store")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMetricStores(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
-      @RequestBody Object rawMetricStores) {
-    MetricStores metricStores = objectMapper.convertValue(rawMetricStores, MetricStores.class);
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> metricStores.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
-    builder.setUpdate(() -> metricStoresService.setMetricStores(deploymentName, metricStores));
-
-    builder.setValidate(ProblemSet::new);
-    if (validate) {
-      builder.setValidate(() -> metricStoresService.validateMetricStores(deploymentName));
-    }
-
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit all metric stores");
+      @ModelAttribute ValidationSettings validationSettings,
+      @RequestBody MetricStores metricStores) {
+    return GenericUpdateRequest.<MetricStores>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(m -> metricStoresService.setMetricStores(deploymentName, m))
+        .validator(() -> metricStoresService.validateMetricStores(deploymentName))
+        .description("Edit all metric stores")
+        .build()
+        .execute(validationSettings, metricStores);
   }
 
   @RequestMapping(value = "/{metricStoreType:.+}", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMetricStore(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawMetricStore) {
     MetricStore metricStore = objectMapper.convertValue(
         rawMetricStore,
         MetricStores.translateMetricStoreType(metricStoreType)
     );
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path stagingPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> metricStore.stageLocalFiles(stagingPath));
-    builder.setSeverity(severity);
-    builder.setUpdate(() -> metricStoresService.setMetricStore(deploymentName, metricStore));
-
-    builder.setValidate(ProblemSet::new);
-    if (validate) {
-      builder.setValidate(
-          () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
-    }
-
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(stagingPath));
-
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Edit " + metricStoreType + " metric store");
+    return GenericUpdateRequest.<MetricStore>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(m -> metricStoresService.setMetricStore(deploymentName, m))
+        .validator(() -> metricStoresService.validateMetricStore(deploymentName, metricStoreType))
+        .description("Edit " + metricStoreType + " metric store")
+        .build()
+        .execute(validationSettings, metricStore);
   }
 
   @RequestMapping(value = "/{metricStoreType:.+}/enabled/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setMethodEnabled(@PathVariable String deploymentName,
       @PathVariable String metricStoreType,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    builder.setUpdate(
-        () -> metricStoresService.setMetricStoreEnabled(deploymentName, metricStoreType, enabled));
-    builder.setSeverity(severity);
-
-    builder.setValidate(ProblemSet::new);
-    if (validate) {
-      builder.setValidate(
-          () -> metricStoresService.validateMetricStore(deploymentName, metricStoreType));
-    }
-
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Edit " + metricStoreType + " metric store");
+    return GenericEnableDisableRequest.builder(halconfigParser)
+        .updater(e -> metricStoresService.setMetricStoreEnabled(deploymentName, metricStoreType, e))
+        .validator(() -> metricStoresService.validateMetricStore(deploymentName, metricStoreType))
+        .description("Edit " + metricStoreType + " metric store")
+        .build()
+        .execute(validationSettings, enabled);
   }
 }

@@ -18,6 +18,7 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.netflix.spinnaker.halyard.config.model.v1.artifacts.ArtifactTemplate;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.bitbucket.BitbucketArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.gcs.GcsArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.github.GitHubArtifactProvider;
@@ -26,13 +27,15 @@ import com.netflix.spinnaker.halyard.config.model.v1.artifacts.helm.HelmArtifact
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.http.HttpArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.oracle.OracleArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.s3.S3ArtifactProvider;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -45,6 +48,7 @@ public class Artifacts extends Node {
   HttpArtifactProvider http = new HttpArtifactProvider();
   HelmArtifactProvider helm = new HelmArtifactProvider();
   S3ArtifactProvider s3 = new S3ArtifactProvider();
+  List<ArtifactTemplate> templates = new ArrayList<>();
 
   @Override
   public String getNodeName() {
@@ -53,12 +57,10 @@ public class Artifacts extends Node {
 
   @Override
   public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
+    return NodeIteratorFactory.makeAppendNodeIterator(
+        NodeIteratorFactory.makeReflectiveIterator(this),
+        NodeIteratorFactory.makeListIterator(templates.stream().map(t -> (Node) t).collect(Collectors.toList()))
+    );
   }
 
   public static Class<? extends ArtifactProvider> translateArtifactProviderType(String providerName) {

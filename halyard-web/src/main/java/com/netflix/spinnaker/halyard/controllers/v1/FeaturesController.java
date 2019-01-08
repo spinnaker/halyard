@@ -16,80 +16,47 @@
 
 package com.netflix.spinnaker.halyard.controllers.v1;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Features;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.services.v1.FeaturesService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
-import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.file.Path;
-import java.util.function.Supplier;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/features")
 public class FeaturesController {
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  FeaturesService featuresService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final FeaturesService featuresService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Features> getFeatures(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    DaemonResponse.StaticRequestBuilder<Features> builder = new DaemonResponse.StaticRequestBuilder<>(
-        () -> featuresService.getFeatures(deploymentName));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get features");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<Features>builder()
+        .getter(() -> featuresService.getFeatures(deploymentName))
+        .validator(() -> featuresService.validateFeatures(deploymentName))
+        .description("Get features")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> setFeatures(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
-      @RequestBody Object rawFeatures) {
-    Features features = objectMapper.convertValue(rawFeatures, Features.class);
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> features.stageLocalFiles(configPath));
-    builder.setUpdate(() -> featuresService.setFeatures(deploymentName, features));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-
-    if (validate) {
-      doValidate = () -> featuresService.validateFeatures(deploymentName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit features");
+      @ModelAttribute ValidationSettings validationSettings,
+      @RequestBody Features features) {
+    return GenericUpdateRequest.<Features>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(f -> featuresService.setFeatures(deploymentName, f))
+        .validator(() -> featuresService.validateFeatures(deploymentName))
+        .description("Edit features")
+        .build()
+        .execute(validationSettings, features);
   }
 }

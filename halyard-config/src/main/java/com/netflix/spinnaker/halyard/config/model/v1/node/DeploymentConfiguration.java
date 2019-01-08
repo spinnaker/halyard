@@ -26,7 +26,6 @@ import com.netflix.spinnaker.halyard.core.registry.v1.Versions.Version;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -102,19 +101,11 @@ public class DeploymentConfiguration extends Node {
 
   Canary canary = new Canary();
 
+  Webhook webhook = new Webhook();
+
   @Override
   public String getNodeName() {
     return name;
-  }
-
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 
   @JsonCreator

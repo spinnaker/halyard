@@ -217,6 +217,13 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         .map(this::getVolumeYaml)
         .collect(Collectors.toList());
 
+    volumes.addAll(settings.getKubernetes().getVolumes().stream()
+        .collect(Collectors.toMap(ConfigSource::getId, (i) -> i, (a, b) -> a))
+        .values()
+        .stream()
+        .map(this::getVolumeYaml)
+        .collect(Collectors.toList()));
+
     volumes.addAll(sidecarConfigs.stream()
         .map(SidecarConfig::getConfigMapVolumeMounts)
         .flatMap(Collection::stream)
@@ -256,6 +263,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         .addBinding("initContainers", initContainers)
         .addBinding("hostAliases", hostAliases)
         .addBinding("imagePullSecrets", settings.getKubernetes().getImagePullSecrets())
+        .addBinding("serviceAccountName", settings.getKubernetes().getServiceAccountName())
         .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
         .addBinding("volumes", volumes);
 
@@ -339,6 +347,14 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
           volume.addBinding("mountPath", c.getMountPath());
           return volume.toString();
         }).collect(Collectors.toList());
+
+    volumeMounts.addAll(settings.getKubernetes().getVolumes().stream()
+      .map(c -> {
+        TemplatedResource volume = new JinjaJarResource("/kubernetes/manifests/volumeMount.yml");
+        volume.addBinding("name", c.getId());
+        volume.addBinding("mountPath", c.getMountPath());
+        return volume.toString();
+      }).collect(Collectors.toList()));
 
     TemplatedResource probe;
     if (StringUtils.isNotEmpty(settings.getHealthEndpoint())) {

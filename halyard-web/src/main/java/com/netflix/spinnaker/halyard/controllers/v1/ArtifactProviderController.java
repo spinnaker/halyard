@@ -25,129 +25,76 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Artifacts;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.services.v1.ArtifactProviderService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.StaticRequestBuilder;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
-import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericEnableDisableRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Supplier;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/artifactProviders")
 public class ArtifactProviderController {
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  ArtifactProviderService providerService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final ArtifactProviderService providerService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/{providerName:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, ArtifactProvider> get(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, ArtifactProvider> get(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<ArtifactProvider> builder = new StaticRequestBuilder<>(
-        () -> providerService.getArtifactProvider(deploymentName, providerName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(
-          () -> providerService.validateArtifactProvider(deploymentName, providerName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get the " + providerName + " provider");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<ArtifactProvider>builder()
+        .getter(() -> providerService.getArtifactProvider(deploymentName, providerName))
+        .validator(() -> providerService.validateArtifactProvider(deploymentName, providerName))
+        .description("Get the " + providerName + " provider")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{providerName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setArtifactProvider(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setArtifactProvider(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactProvider) {
     ArtifactProvider provider = objectMapper.convertValue(
         rawArtifactProvider,
         Artifacts.translateArtifactProviderType(providerName)
     );
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> provider.stageLocalFiles(configPath));
-    builder.setUpdate(() -> providerService.setArtifactProvider(deploymentName, provider));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> providerService.validateArtifactProvider(deploymentName, providerName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + providerName + " provider");
+    return GenericUpdateRequest.<ArtifactProvider>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(p -> providerService.setArtifactProvider(deploymentName, p))
+        .validator(() -> providerService.validateArtifactProvider(deploymentName, providerName))
+        .description("Edit the " + providerName + " provider")
+        .build()
+        .execute(validationSettings, provider);
   }
 
   @RequestMapping(value = "/{providerName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    builder.setUpdate(() -> providerService.setEnabled(deploymentName, providerName, enabled));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> providerService.validateArtifactProvider(deploymentName, providerName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + providerName + " provider");
+    return GenericEnableDisableRequest.builder(halconfigParser)
+        .updater(e -> providerService.setEnabled(deploymentName, providerName, e))
+        .validator(() -> providerService.validateArtifactProvider(deploymentName, providerName))
+        .description("Edit the " + providerName + " provider")
+        .build()
+        .execute(validationSettings, enabled);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<ArtifactProvider>> providers(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<List<ArtifactProvider>> builder = new StaticRequestBuilder<>(
-        () -> providerService.getAllArtifactProviders(deploymentName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder
-          .setValidateResponse(() -> providerService.validateAllArtifactProviders(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all providers");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<List<ArtifactProvider>>builder()
+        .getter(() -> providerService.getAllArtifactProviders(deploymentName))
+        .validator(() -> providerService.validateAllArtifactProviders(deploymentName))
+        .description("Get all providers")
+        .build()
+        .execute(validationSettings);
   }
 }

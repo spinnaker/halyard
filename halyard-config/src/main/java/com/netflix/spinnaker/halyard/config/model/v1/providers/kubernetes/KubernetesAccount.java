@@ -18,7 +18,11 @@ package com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.netflix.spinnaker.halyard.config.config.v1.ArtifactSourcesConfig;
-import com.netflix.spinnaker.halyard.config.model.v1.node.*;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.ValidForSpinnakerVersion;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.ContainerAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryProvider;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
@@ -86,11 +90,6 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
     } else {
       return kubeconfigFile;
     }
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 
   protected List<String> contextOptions(ConfigProblemSetBuilder psBuilder) {

@@ -23,128 +23,76 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Providers;
 import com.netflix.spinnaker.halyard.config.services.v1.ProviderService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.StaticRequestBuilder;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
-import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericEnableDisableRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Supplier;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/providers")
 public class ProviderController {
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  ProviderService providerService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final ProviderService providerService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/{providerName:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, Provider> get(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Provider> get(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<Provider> builder = new StaticRequestBuilder<>(
-        () -> providerService.getProvider(deploymentName, providerName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(
-          () -> providerService.validateProvider(deploymentName, providerName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get the " + providerName + " provider");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<Provider>builder()
+        .getter(() -> providerService.getProvider(deploymentName, providerName))
+        .validator(() -> providerService.validateProvider(deploymentName, providerName))
+        .description("Get the " + providerName + " provider")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{providerName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setProvider(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setProvider(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawProvider) {
     Provider provider = objectMapper.convertValue(
         rawProvider,
         Providers.translateProviderType(providerName)
     );
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> provider.stageLocalFiles(configPath));
-    builder.setUpdate(() -> providerService.setProvider(deploymentName, provider));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> providerService.validateProvider(deploymentName, providerName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + providerName + " provider");
+    return GenericUpdateRequest.<Provider>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(p -> providerService.setProvider(deploymentName, p))
+        .validator(() -> providerService.validateProvider(deploymentName, providerName))
+        .description("Edit the " + providerName + " provider")
+        .build()
+        .execute(validationSettings, provider);
   }
 
   @RequestMapping(value = "/{providerName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    builder.setUpdate(() -> providerService.setEnabled(deploymentName, providerName, enabled));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> providerService.validateProvider(deploymentName, providerName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + providerName + " provider");
+    return GenericEnableDisableRequest.builder(halconfigParser)
+        .updater(e -> providerService.setEnabled(deploymentName, providerName, e))
+        .validator(() -> providerService.validateProvider(deploymentName, providerName))
+        .description("Edit the " + providerName + " provider")
+        .build()
+        .execute(validationSettings, enabled);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<Provider>> providers(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<List<Provider>> builder = new StaticRequestBuilder<>(
-        () -> providerService.getAllProviders(deploymentName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> providerService.validateAllProviders(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all providers");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<List<Provider>>builder()
+        .getter(() -> providerService.getAllProviders(deploymentName))
+        .validator(() -> providerService.validateAllProviders(deploymentName))
+        .description("Get all providers")
+        .build()
+        .execute(validationSettings);
   }
 }

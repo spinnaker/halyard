@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google, Inc.
+ * Copyright 2018 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.controllers.v1;
+package com.netflix.spinnaker.halyard.config.model.v1.node;
 
-public class DefaultControllerValues {
-  public final static String validate = "false";
-  public final static String severity = "WARNING";
+import com.netflix.spinnaker.halyard.config.model.v1.webook.WebhookTrust;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class Webhook extends Node {
+  private final String nodeName = "webhook";
+
+  WebhookTrust trust = new WebhookTrust();
 }

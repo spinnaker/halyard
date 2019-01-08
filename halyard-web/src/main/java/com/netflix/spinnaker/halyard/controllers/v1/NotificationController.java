@@ -25,129 +25,74 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notification;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notifications;
 import com.netflix.spinnaker.halyard.config.services.v1.NotificationService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.StaticRequestBuilder;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
-import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.nio.file.Path;
-import java.util.function.Supplier;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericEnableDisableRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/notifications")
 public class NotificationController {
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  NotificationService notificationService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final NotificationService notificationService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/{notificationName:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, Notification> notification(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Notification> notification(@PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<Notification> builder = new StaticRequestBuilder<>(
-        () -> notificationService.getNotification(deploymentName, notificationName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(
-          () -> notificationService.validateNotification(deploymentName, notificationName));
-    }
-
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Get " + notificationName + " notification");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<Notification>builder()
+        .getter(() -> notificationService.getNotification(deploymentName, notificationName))
+        .validator(() -> notificationService.validateNotification(deploymentName, notificationName))
+        .description("Get " + notificationName + " notification")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{notificationName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    builder
-        .setUpdate(() -> notificationService.setEnabled(deploymentName, notificationName, enabled));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> notificationService.validateNotification(deploymentName, notificationName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit " + notificationName + " settings");
+    return GenericEnableDisableRequest.builder(halconfigParser)
+        .updater(e -> notificationService.setEnabled(deploymentName, notificationName, e))
+        .validator(() -> notificationService.validateNotification(deploymentName, notificationName))
+        .description("Edit " + notificationName + " settings")
+        .build()
+        .execute(validationSettings, enabled);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, Notifications> notifications(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<Notifications> builder = new StaticRequestBuilder<>(
-        () -> notificationService.getNotifications(deploymentName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder
-          .setValidateResponse(() -> notificationService.validateAllNotifications(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all notification settings");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<Notifications>builder()
+        .getter( () -> notificationService.getNotifications(deploymentName))
+        .validator(() -> notificationService.validateAllNotifications(deploymentName))
+        .description("Get all notification settings")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{notificationName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setNotification(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setNotification(@PathVariable String deploymentName,
       @PathVariable String notificationName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawNotification) {
     Notification notification = objectMapper.convertValue(
         rawNotification,
         Notifications.translateNotificationType(notificationName)
     );
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> notification.stageLocalFiles(configPath));
-    builder.setUpdate(() -> notificationService.setNotification(deploymentName, notification));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> notificationService.validateNotification(deploymentName, notificationName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler
-        .submitTask(builder::build, "Edit the " + notificationName + " notification");
+    return GenericUpdateRequest.<Notification>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(n -> notificationService.setNotification(deploymentName, n))
+        .validator(() -> notificationService.validateNotification(deploymentName, notificationName))
+        .description("Edit the " + notificationName + " notification")
+        .build()
+        .execute(validationSettings, notification);
   }
 }

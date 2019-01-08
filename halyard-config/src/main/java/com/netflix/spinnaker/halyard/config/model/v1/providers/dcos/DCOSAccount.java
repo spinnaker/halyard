@@ -4,7 +4,6 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.ContainerAccount;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryProvider;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 
@@ -15,11 +14,6 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 public class DCOSAccount extends ContainerAccount {
   private List<ClusterCredential> clusters;
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
 
   @Override
   public NodeIterator getChildren() {
@@ -52,11 +46,6 @@ public class DCOSAccount extends ContainerAccount {
     private final String uid;
     @Secret private final String password;
     @LocalFile @SecretFile private final String serviceKeyFile;
-
-    @Override
-    public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-      v.validate(psBuilder, this);
-    }
 
     @Override
     public String getNodeName() {

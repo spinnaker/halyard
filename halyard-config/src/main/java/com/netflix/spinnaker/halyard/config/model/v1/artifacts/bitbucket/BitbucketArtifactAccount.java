@@ -23,8 +23,10 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class BitbucketArtifactAccount extends ArtifactAccount {
   String name;
   String username;

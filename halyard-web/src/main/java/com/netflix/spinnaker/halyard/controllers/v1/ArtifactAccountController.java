@@ -25,162 +25,98 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Artifacts;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.services.v1.ArtifactAccountService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.StaticRequestBuilder;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
-import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import java.nio.file.Path;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericDeleteRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/artifactProviders/{providerName:.+}/artifactAccounts")
 public class ArtifactAccountController {
-  @Autowired
-  ArtifactAccountService accountService;
-
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final ArtifactAccountService accountService;
+  private final HalconfigParser halconfigParser;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
-  DaemonTask<Halconfig, List<ArtifactAccount>> accounts(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, List<ArtifactAccount>> accounts(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<List<ArtifactAccount>> builder = new StaticRequestBuilder<>(
-            () -> accountService.getAllArtifactAccounts(deploymentName, providerName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> accountService.validateAllArtifactAccounts(deploymentName, providerName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all " + providerName + " artifact accounts");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<List<ArtifactAccount>>builder()
+        .getter(() -> accountService.getAllArtifactAccounts(deploymentName, providerName))
+        .validator(() -> accountService.validateAllArtifactAccounts(deploymentName, providerName))
+        .description("Get all " + providerName + " artifact accounts")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/account/{accountName:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, ArtifactAccount> account(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, ArtifactAccount> account(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<ArtifactAccount> builder = new StaticRequestBuilder<>(
-            () -> accountService.getArtifactProviderArtifactAccount(deploymentName, providerName, accountName));
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> accountService.validateArtifactAccount(deploymentName, providerName, accountName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get " + accountName + " artifact account");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<ArtifactAccount>builder()
+        .getter(() -> accountService.getArtifactProviderArtifactAccount(deploymentName, providerName, accountName))
+        .validator(() -> accountService.validateArtifactAccount(deploymentName, providerName, accountName))
+        .description("Get " + accountName + " artifact account")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/account/{accountName:.+}", method = RequestMethod.DELETE)
-  DaemonTask<Halconfig, Void> deleteArtifactAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> deleteArtifactAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    builder.setUpdate(() -> accountService.deleteArtifactAccount(deploymentName, providerName, accountName));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> accountService.validateAllArtifactAccounts(deploymentName, providerName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Delete the " + accountName + " artifact account");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericDeleteRequest.builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .deleter(() -> accountService.deleteArtifactAccount(deploymentName, providerName, accountName))
+        .validator(() -> accountService.validateAllArtifactAccounts(deploymentName, providerName))
+        .description("Delete the " + accountName + " artifact account")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/account/{accountName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setArtifactAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setArtifactAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
       @PathVariable String accountName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactAccount) {
     ArtifactAccount account = objectMapper.convertValue(
         rawArtifactAccount,
         Artifacts.translateArtifactAccountType(providerName)
     );
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> account.stageLocalFiles(configPath));
-    builder.setUpdate(() -> accountService.setArtifactAccount(deploymentName, providerName, accountName, account));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> accountService.validateArtifactAccount(deploymentName, providerName, account.getName());
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + accountName + " artifact account");
+    return GenericUpdateRequest.<ArtifactAccount>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(a -> accountService.setArtifactAccount(deploymentName, providerName, accountName, a))
+        .validator(() -> accountService.validateArtifactAccount(deploymentName, providerName, account.getName()))
+        .description("Edit the " + accountName + " artifact account")
+        .build()
+        .execute(validationSettings, account);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.POST)
-  DaemonTask<Halconfig, Void> addArtifactAccount(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> addArtifactAccount(@PathVariable String deploymentName,
       @PathVariable String providerName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawArtifactAccount) {
     ArtifactAccount account = objectMapper.convertValue(
         rawArtifactAccount,
         Artifacts.translateArtifactAccountType(providerName)
     );
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> account.stageLocalFiles(configPath));
-    builder.setSeverity(severity);
-    builder.setUpdate(() -> accountService.addArtifactAccount(deploymentName, providerName, account));
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> accountService.validateArtifactAccount(deploymentName, providerName, account.getName());
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Add the " + account.getName() + " artifact account");
+    return GenericUpdateRequest.<ArtifactAccount>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(a -> accountService.addArtifactAccount(deploymentName, providerName, a))
+        .validator(() -> accountService.validateArtifactAccount(deploymentName, providerName, account.getName()))
+        .description("Add the " + account.getName() + " artifact account")
+        .build()
+        .execute(validationSettings, account);
   }
 }

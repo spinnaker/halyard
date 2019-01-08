@@ -25,126 +25,76 @@ import com.netflix.spinnaker.halyard.config.model.v1.ha.HaService;
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.config.services.v1.HaServiceService;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.StaticRequestBuilder;
-import com.netflix.spinnaker.halyard.core.DaemonResponse.UpdateRequestBuilder;
-import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
-import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
-import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
+import com.netflix.spinnaker.halyard.util.v1.GenericEnableDisableRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
+import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.Path;
 import java.util.List;
-import java.util.function.Supplier;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/config/deployments/{deploymentName:.+}/deploymentEnvironment/haServices")
 public class HaServiceController {
-  @Autowired
-  HalconfigParser halconfigParser;
-
-  @Autowired
-  HaServiceService haServiceService;
-
-  @Autowired
-  HalconfigDirectoryStructure halconfigDirectoryStructure;
-
-  @Autowired
-  ObjectMapper objectMapper;
+  private final HalconfigParser halconfigParser;
+  private final HaServiceService haServiceService;
+  private final HalconfigDirectoryStructure halconfigDirectoryStructure;
+  private final ObjectMapper objectMapper;
 
   @RequestMapping(value = "/{serviceName:.+}", method = RequestMethod.GET)
-  DaemonTask<Halconfig, HaService> get(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, HaService> get(@PathVariable String deploymentName,
       @PathVariable String serviceName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<HaService> builder = new StaticRequestBuilder<>(
-        () -> haServiceService.getHaService(deploymentName, serviceName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> haServiceService.validateHaService(deploymentName, serviceName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get the " + serviceName + " high availability service configuration");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<HaService>builder()
+        .getter(() -> haServiceService.getHaService(deploymentName, serviceName))
+        .validator(() -> haServiceService.validateHaService(deploymentName, serviceName))
+        .description("Get the " + serviceName + " high availability service configuration")
+        .build()
+        .execute(validationSettings);
   }
 
   @RequestMapping(value = "/{serviceName:.+}", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setHaService(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setHaService(@PathVariable String deploymentName,
       @PathVariable String serviceName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody Object rawHaService) {
     HaService haService = objectMapper.convertValue(
         rawHaService,
         HaServices.translateHaServiceType(serviceName)
     );
-
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    Path configPath = halconfigDirectoryStructure.getConfigPath(deploymentName);
-    builder.setStage(() -> haService.stageLocalFiles(configPath));
-    builder.setUpdate(() -> haServiceService.setHaService(deploymentName, haService));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> haServiceService.validateHaService(deploymentName, serviceName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-    builder.setClean(() -> halconfigParser.cleanLocalFiles(configPath));
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + serviceName + " high availability service configuration");
+    return GenericUpdateRequest.<HaService>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(h -> haServiceService.setHaService(deploymentName, h))
+        .validator(() -> haServiceService.validateHaService(deploymentName, serviceName))
+        .description("Edit the " + serviceName + " high availability service configuration")
+        .build()
+        .execute(validationSettings, haService);
   }
 
   @RequestMapping(value = "/{serviceName:.+}/enabled", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> setEnabled(
-      @PathVariable String deploymentName,
+  DaemonTask<Halconfig, Void> setEnabled(@PathVariable String deploymentName,
       @PathVariable String serviceName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity,
+      @ModelAttribute ValidationSettings validationSettings,
       @RequestBody boolean enabled) {
-    UpdateRequestBuilder builder = new UpdateRequestBuilder();
-
-    builder.setUpdate(() -> haServiceService.setEnabled(deploymentName, serviceName, enabled));
-    builder.setSeverity(severity);
-
-    Supplier<ProblemSet> doValidate = ProblemSet::new;
-    if (validate) {
-      doValidate = () -> haServiceService.validateHaService(deploymentName, serviceName);
-    }
-
-    builder.setValidate(doValidate);
-    builder.setRevert(() -> halconfigParser.undoChanges());
-    builder.setSave(() -> halconfigParser.saveConfig());
-
-    return DaemonTaskHandler.submitTask(builder::build, "Edit the " + serviceName + " high availability service configuration");
+    return GenericEnableDisableRequest.builder(halconfigParser)
+        .updater(e -> haServiceService.setEnabled(deploymentName, serviceName, e))
+        .validator(() -> haServiceService.validateHaService(deploymentName, serviceName))
+        .description("Edit the " + serviceName + " high availability service configuration")
+        .build()
+        .execute(validationSettings, enabled);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
   DaemonTask<Halconfig, List<HaService>> haServices(@PathVariable String deploymentName,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.validate) boolean validate,
-      @RequestParam(required = false, defaultValue = DefaultControllerValues.severity) Severity severity) {
-    StaticRequestBuilder<List<HaService>> builder = new StaticRequestBuilder<>(
-        () -> haServiceService.getAllHaServices(deploymentName));
-
-    builder.setSeverity(severity);
-
-    if (validate) {
-      builder.setValidateResponse(() -> haServiceService.validateAllHaServices(deploymentName));
-    }
-
-    return DaemonTaskHandler.submitTask(builder::build, "Get all high availability service configurations");
+      @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<List<HaService>>builder()
+        .getter( () -> haServiceService.getAllHaServices(deploymentName))
+        .validator(() -> haServiceService.validateAllHaServices(deploymentName))
+        .description("Get all high availability service configurations")
+        .build()
+        .execute(validationSettings);
   }
 }

@@ -16,8 +16,10 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.ci.travis;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.*;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
+import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
+import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -30,13 +32,9 @@ public class TravisMaster extends Master {
     return NodeIteratorFactory.makeEmptyIterator();
   }
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
   private String address;
   private String baseUrl;
-  @Secret private String githubToken;
+  @Secret
+  private String githubToken;
   private Integer numberOfRepositories;
 }
