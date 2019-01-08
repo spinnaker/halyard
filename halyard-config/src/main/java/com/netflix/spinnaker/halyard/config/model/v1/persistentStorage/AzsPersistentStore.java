@@ -17,6 +17,7 @@
 package com.netflix.spinnaker.halyard.config.model.v1.persistentStorage;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.PersistentStore;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
@@ -26,7 +27,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class AzsPersistentStore extends PersistentStore {
   private String storageAccountName;
-  private String storageAccountKey;
+  //TODO - cli out of date?
+  @Secret private String storageAccountKey;
   private String storageContainerName;
 
   @Override

@@ -17,10 +17,7 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,6 +37,6 @@ public class JenkinsMaster extends Master {
 
   private String address;
   private String username;
-  private String password;
+  @Secret private String password;
   private Boolean csrf;
 }

@@ -20,16 +20,16 @@ package com.netflix.spinnaker.halyard.config.model.v1.artifacts.github;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 
 @Data
 public class GitHubArtifactAccount extends ArtifactAccount {
   String name;
   String username;
-  String password;
-  @LocalFile
-  String usernamePasswordFile;
-  String token;
-  @LocalFile
-  String tokenFile;
+  @Secret String password;
+  @LocalFile @SecretFile String usernamePasswordFile;
+  @Secret String token;
+  @LocalFile @SecretFile  String tokenFile;
 }

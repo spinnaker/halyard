@@ -40,8 +40,8 @@ public class ApacheSsl extends Node {
   }
 
   boolean enabled = false;
-  @LocalFile String sslCertificateFile;
-  @LocalFile String sslCertificateKeyFile;
-  @LocalFile String sslCACertificateFile;
-  String sslCertificatePassphrase;
+  @LocalFile @SecretFile String sslCertificateFile;
+  @LocalFile @SecretFile String sslCertificateKeyFile;
+  @LocalFile @SecretFile String sslCACertificateFile;
+  @Secret String sslCertificatePassphrase;
 }

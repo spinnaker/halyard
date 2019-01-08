@@ -17,6 +17,8 @@
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
@@ -37,7 +39,9 @@ public class Saml extends AuthnMethod {
   private String issuerId;
 
   @LocalFile
+  @SecretFile
   private String keyStore;
+  @Secret
   private String keyStorePassword;
   private String keyStoreAliasName;
 

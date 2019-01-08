@@ -18,11 +18,7 @@ package com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.netflix.spinnaker.halyard.config.config.v1.ArtifactSourcesConfig;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
-import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
-import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
-import com.netflix.spinnaker.halyard.config.model.v1.node.ValidForSpinnakerVersion;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.ContainerAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryProvider;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
@@ -62,14 +58,14 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
   @ValidForSpinnakerVersion(lowerBound = "1.8.0", tooLowMessage = "Caching policies are not supported yet.")
   List<KubernetesCachingPolicy> cachingPolicies = new ArrayList<>();
 
-  @LocalFile String kubeconfigFile;
+  @LocalFile @SecretFile String kubeconfigFile;
   String kubeconfigContents;
   String kubectlPath;
   Integer kubectlRequestTimeoutSeconds;
   Boolean checkPermissionsOnStartup;
 
   // Without the annotations, these are written as `oauthServiceAccount` and `oauthScopes`, respectively.
-  @JsonProperty("oAuthServiceAccount") @LocalFile String oAuthServiceAccount;
+  @JsonProperty("oAuthServiceAccount") @LocalFile @SecretFile String oAuthServiceAccount;
   @JsonProperty("oAuthScopes") List<String> oAuthScopes;
   String namingStrategy;
   String skin;

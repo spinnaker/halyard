@@ -42,11 +42,11 @@ public class SpringSsl extends Node {
 
   boolean enabled = false;
   String keyAlias;
-  @LocalFile String keyStore;
+  @LocalFile @SecretFile String keyStore;
   String keyStoreType;
-  String keyStorePassword;
-  @LocalFile String trustStore;
+  @Secret String keyStorePassword;
+  @LocalFile @SecretFile String trustStore;
   String trustStoreType;
-  String trustStorePassword;
+  @Secret String trustStorePassword;
   Ssl.ClientAuth clientAuth;
 }

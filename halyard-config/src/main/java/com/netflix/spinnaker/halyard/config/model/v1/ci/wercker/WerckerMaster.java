@@ -17,10 +17,7 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.ci.wercker;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 
 import lombok.Data;
@@ -41,5 +38,5 @@ public class WerckerMaster extends Master {
 
   private String address;
   private String user;
-  private String token;
+  @Secret private String token;
 }

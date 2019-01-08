@@ -17,6 +17,7 @@
 package com.netflix.spinnaker.halyard.config.model.v1.persistentStorage;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.PersistentStore;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
@@ -31,7 +32,7 @@ public class S3PersistentStore extends PersistentStore {
   private String region;
   private String endpoint;
   private String accessKeyId;
-  private String secretAccessKey;
+  @Secret private String secretAccessKey;
 
   @Override
   public PersistentStoreType persistentStoreType() {
