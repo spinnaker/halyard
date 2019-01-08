@@ -453,7 +453,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
             .getSidecars()
             .getOrDefault(getService().getServiceName(), new ArrayList<>());
 
-    if(sidecarConfigs.isEmpty()) {
+    if (sidecarConfigs.isEmpty()) {
       sidecarConfigs = details.getDeploymentConfiguration()
               .getDeploymentEnvironment()
               .getSidecars()
@@ -470,7 +470,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
             .getHostAliases()
             .getOrDefault(getService().getServiceName(), new ArrayList<>());
 
-    if(hostAliasesConfig.isEmpty()) {
+    if (hostAliasesConfig.isEmpty()) {
       hostAliasesConfig = details.getDeploymentConfiguration()
               .getDeploymentEnvironment()
               .getHostAliases()
@@ -496,7 +496,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
             .getInitContainers()
             .getOrDefault(getService().getServiceName(), new ArrayList<>());
 
-    if(initContainersConfig.isEmpty()) {
+    if (initContainersConfig.isEmpty()) {
       initContainersConfig = details.getDeploymentConfiguration()
               .getDeploymentEnvironment()
               .getInitContainers()
