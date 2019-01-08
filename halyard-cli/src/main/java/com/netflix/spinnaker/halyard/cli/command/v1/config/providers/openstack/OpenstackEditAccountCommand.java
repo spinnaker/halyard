@@ -36,6 +36,7 @@ public class OpenstackEditAccountCommand extends AbstractEditAccountCommand<Open
 
   @Parameter(
       names = "--password",
+      password = true,
       description = OpenstackCommandProperties.PASSWORD_DESCRIPTION
   )
   private String password;

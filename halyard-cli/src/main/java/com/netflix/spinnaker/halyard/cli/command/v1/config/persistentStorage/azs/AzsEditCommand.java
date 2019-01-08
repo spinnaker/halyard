@@ -36,6 +36,7 @@ public class AzsEditCommand extends AbstractPersistentStoreEditCommand<AzsPersis
 
   @Parameter(
       names = "--storage-account-key",
+      password = true,
       description = "The key to access the Azure Storage Account used for Spinnaker's persistent data."
   )
   private String storageAccountKey;

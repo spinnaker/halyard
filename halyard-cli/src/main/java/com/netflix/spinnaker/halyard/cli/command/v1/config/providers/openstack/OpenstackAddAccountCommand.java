@@ -40,6 +40,7 @@ public class OpenstackAddAccountCommand extends AbstractAddAccountCommand {
   @Parameter(
       names = "--password",
       required = true,
+      password = true,
       description = OpenstackCommandProperties.PASSWORD_DESCRIPTION
   )
   private String password;
