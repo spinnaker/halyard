@@ -16,7 +16,6 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Saml;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import lombok.Data;

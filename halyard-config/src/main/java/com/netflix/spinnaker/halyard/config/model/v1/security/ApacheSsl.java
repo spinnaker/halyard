@@ -21,6 +21,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -39,6 +41,8 @@ public class ApacheSsl extends Node {
   boolean enabled = false;
   @LocalFile @SecretFile String sslCertificateFile;
   @LocalFile @SecretFile String sslCertificateKeyFile;
-  @LocalFile @SecretFile String sslCACertificateFile;
-  @Secret String sslCertificatePassphrase;
+  @LocalFile @SecretFile
+  String sslCACertificateFile;
+  @Secret
+  String sslCertificatePassphrase;
 }

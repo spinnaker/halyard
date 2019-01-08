@@ -31,7 +31,6 @@ public class OpenstackBakeryDefaults extends BakeryDefaults<OpenstackBaseImage> 
     private String securityGroups;
     private String projectName;
     private String username;
-    // TODO: probably not? this is "Set the default password your images will be baked with"
     private String password;
     private Boolean insecure;
 
