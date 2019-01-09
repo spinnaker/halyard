@@ -21,7 +21,7 @@ function start() {
     2> ${LOG_DIR}/${ARTIFACT}.err \
     > ${LOG_DIR}/${ARTIFACT}.log &
 
-  while ! nc -z localhost 9000; do sleep 1; done;
+  while ! curl localhost:9000 > /dev/null 2>&1; do sleep 1; done;
   ps -aef | grep [n]ode.*/deck/.*/webpack-dev-server | awk '{print $2}' > $PID_FILE
   popd
 }
