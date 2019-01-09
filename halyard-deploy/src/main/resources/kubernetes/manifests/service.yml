@@ -15,6 +15,6 @@ spec:
   - protocol: TCP
     port: {{ port }}
     targetPort: {{ port }}
-  {% if nodePort != null %}
+  {% if nodePort and type == "NodePort" %}
     nodePort: {{ nodePort }}
   {% endif %}
