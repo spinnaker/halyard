@@ -64,7 +64,6 @@ public class ServiceSettings {
   Integer targetSize;
   Boolean skipLifeCycleManagement;
   String baseUrl;
-  String readinessCommandExtras;
 
   public ServiceSettings() {}
 

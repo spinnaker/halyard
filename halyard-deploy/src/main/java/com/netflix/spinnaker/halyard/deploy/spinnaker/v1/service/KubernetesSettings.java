@@ -32,4 +32,5 @@ public class KubernetesSettings {
   Map<String, String> podAnnotations = new HashMap<>();
   List<ConfigSource> volumes = new ArrayList<>();
   String serviceAccountName = null;
+  String readinessCommandExtras = null;
 }
