@@ -16,6 +16,7 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.netflix.spinnaker.halyard.config.model.v1.ci.gitlab.GitlabCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins.JenkinsCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.travis.TravisCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.wercker.WerckerCi;
@@ -29,6 +30,7 @@ import java.util.Optional;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class Cis extends Node implements Cloneable {
+  GitlabCi gitlab = new GitlabCi();
   JenkinsCi jenkins = new JenkinsCi();
   TravisCi travis = new TravisCi();
   WerckerCi wercker = new WerckerCi();
