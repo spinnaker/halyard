@@ -154,45 +154,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     String namespace = getNamespace(settings);
 
     List<ConfigSource> configSources = stageConfig(details, resolvedConfiguration);
-
-    List<SidecarConfig> sidecarConfigs = details.getDeploymentConfiguration()
-        .getDeploymentEnvironment()
-        .getSidecars()
-        .getOrDefault(getService().getServiceName(), new ArrayList<>());
-
-    List<String> initContainers = details.getDeploymentConfiguration()
-        .getDeploymentEnvironment()
-        .getInitContainers()
-        .getOrDefault(getService().getServiceName(), new ArrayList<>())
-        .stream()
-        .map(o -> {
-          try {
-            return getObjectMapper().writeValueAsString(o);
-          } catch (JsonProcessingException e) {
-            throw new HalException(Problem.Severity.FATAL, "Invalid init container format: " + e.getMessage(), e);
-          }
-        }).collect(Collectors.toList());
-
-    if (initContainers.isEmpty()) {
-      initContainers = null;
-    }
-
-    List<String> hostAliases = details.getDeploymentConfiguration()
-        .getDeploymentEnvironment()
-        .getHostAliases()
-        .getOrDefault(getService().getServiceName(), new ArrayList<>())
-        .stream()
-        .map(o -> {
-          try {
-            return getObjectMapper().writeValueAsString(o);
-          } catch (JsonProcessingException e) {
-            throw new HalException(Problem.Severity.FATAL, "Invalid host alias format: " + e.getMessage(), e);
-          }
-        }).collect(Collectors.toList());
-
-    if (hostAliases.isEmpty()) {
-      hostAliases = null;
-    }
+    
+    List<SidecarConfig> sidecarConfigs = getSidecarConfigs(details);
 
     configSources.addAll(sidecarConfigs.stream()
         .filter(c -> StringUtils.isNotEmpty(c.getMountPath()))
@@ -235,6 +198,17 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         .map(this::getVolumeYaml)
         .collect(Collectors.toList()));
 
+    volumes.addAll(sidecarConfigs.stream()
+        .map(SidecarConfig::getSecretVolumeMounts)
+        .flatMap(Collection::stream)
+        .map(c -> new ConfigSource()
+                .setMountPath(c.getMountPath())
+                .setId(c.getSecretName())
+                .setType(ConfigSource.Type.secret)
+        )
+        .map(this::getVolumeYaml)
+        .collect(Collectors.toList()));
+
     env.putAll(settings.getEnv());
 
     Integer targetSize = settings.getTargetSize();
@@ -260,8 +234,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     TemplatedResource podSpec = new JinjaJarResource("/kubernetes/manifests/podSpec.yml")
         .addBinding("containers", containers)
-        .addBinding("initContainers", initContainers)
-        .addBinding("hostAliases", hostAliases)
+        .addBinding("initContainers", getInitContainers(details))
+        .addBinding("hostAliases", getHostAliases(details))
         .addBinding("imagePullSecrets", settings.getKubernetes().getImagePullSecrets())
         .addBinding("serviceAccountName", settings.getKubernetes().getServiceAccountName())
         .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
@@ -318,6 +292,16 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         })
         .collect(Collectors.toList()));
 
+    volumeMounts.addAll(config.getSecretVolumeMounts()
+        .stream()
+        .map( c -> {
+          TemplatedResource volume = new JinjaJarResource("/kubernetes/manifests/volumeMount.yml");
+          volume.addBinding("name", c.getSecretName());
+          volume.addBinding("mountPath", c.getMountPath());
+          return volume.toString();
+        })
+        .collect(Collectors.toList()));
+
     TemplatedResource container = new JinjaJarResource("/kubernetes/manifests/container.yml");
     if (config.getSecurityContext() != null) {
       TemplatedResource securityContext = new JinjaJarResource("/kubernetes/manifests/securityContext.yml");
@@ -325,9 +309,16 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
       container.addBinding("securityContext", securityContext.toString());
     }
 
+    if (config.getPort() != null) {
+      TemplatedResource containerPort = new JinjaJarResource("/kubernetes/manifests/port.yml");
+      containerPort.addBinding("port", config.getPort());
+      container.addBinding("port", containerPort.toString());
+    } else {
+      container.addBinding("port", null);
+    }
+
     container.addBinding("name", config.getName());
     container.addBinding("imageId", config.getDockerImage());
-    container.addBinding("port", null);
     container.addBinding("command", config.getCommand());
     container.addBinding("args", config.getArgs());
     container.addBinding("volumeMounts", volumeMounts);
@@ -481,6 +472,76 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     }
 
     return configSources;
+  }
+
+  default List<SidecarConfig> getSidecarConfigs(AccountDeploymentDetails<KubernetesAccount> details) {
+    //attempt to get the service name specific sidecars first
+    List<SidecarConfig> sidecarConfigs = details.getDeploymentConfiguration()
+            .getDeploymentEnvironment()
+            .getSidecars()
+            .getOrDefault(getService().getServiceName(), new ArrayList<>());
+
+    if (sidecarConfigs.isEmpty()) {
+      sidecarConfigs = details.getDeploymentConfiguration()
+              .getDeploymentEnvironment()
+              .getSidecars()
+              .getOrDefault(getService().getBaseCanonicalName(), new ArrayList<>());
+    }
+
+    return sidecarConfigs;
+  }
+
+  default List<String> getHostAliases(AccountDeploymentDetails<KubernetesAccount> details) {
+    //attempt to get the service name specific sidecars first
+    List<Map> hostAliasesConfig = details.getDeploymentConfiguration()
+            .getDeploymentEnvironment()
+            .getHostAliases()
+            .getOrDefault(getService().getServiceName(), new ArrayList<>());
+
+    if (hostAliasesConfig.isEmpty()) {
+      hostAliasesConfig = details.getDeploymentConfiguration()
+              .getDeploymentEnvironment()
+              .getHostAliases()
+              .getOrDefault(getService().getBaseCanonicalName(), new ArrayList<>());
+    }
+
+    List<String> hostAliases = hostAliasesConfig
+            .stream()
+            .map(o -> {
+              try {
+                return getObjectMapper().writeValueAsString(o);
+              } catch (JsonProcessingException e) {
+                throw new HalException(Problem.Severity.FATAL, "Invalid host alias format: " + e.getMessage(), e);
+              }
+            }).collect(Collectors.toList());
+
+    return hostAliases;
+  }
+
+  default List<String> getInitContainers(AccountDeploymentDetails<KubernetesAccount> details) {
+    List<Map> initContainersConfig = details.getDeploymentConfiguration()
+            .getDeploymentEnvironment()
+            .getInitContainers()
+            .getOrDefault(getService().getServiceName(), new ArrayList<>());
+
+    if (initContainersConfig.isEmpty()) {
+      initContainersConfig = details.getDeploymentConfiguration()
+              .getDeploymentEnvironment()
+              .getInitContainers()
+              .getOrDefault(getService().getBaseCanonicalName(), new ArrayList<>());
+    }
+
+    List<String> initContainers = initContainersConfig
+            .stream()
+            .map(o -> {
+              try {
+                return getObjectMapper().writeValueAsString(o);
+              } catch (JsonProcessingException e) {
+                throw new HalException(Problem.Severity.FATAL, "Invalid init container format: " + e.getMessage(), e);
+              }
+            }).collect(Collectors.toList());
+
+    return initContainers;
   }
 
   default List<SidecarService> getSidecars(SpinnakerRuntimeSettings runtimeSettings) {
