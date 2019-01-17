@@ -66,6 +66,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   String getServiceName();
   String getDockerRegistry(String deploymentName, SpinnakerArtifact artifact);
   String getSpinnakerStagingPath(String deploymentName);
+  String getSpinnakerStagingDependenciesPath(String deploymentName);
   ArtifactService getArtifactService();
   ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration);
   ObjectMapper getObjectMapper();
@@ -401,6 +402,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     Map<String, Set<Profile>> profilesByDirectory = new HashMap<>();
     List<String> requiredFiles = new ArrayList<>();
+    Map<String, String> requiredEncryptedFiles = new HashMap<>();
     List<ConfigSource> configSources = new ArrayList<>();
     String secretNamePrefix = getServiceName() + "-files";
     String namespace = getNamespace(resolvedConfiguration.getServiceSettings(getService()));
@@ -414,6 +416,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
         profiles.put(profile.getName(), profile);
         requiredFiles.addAll(profile.getRequiredFiles());
+        requiredEncryptedFiles.putAll(profile.getDecryptedFiles());
       }
     }
 
@@ -426,6 +429,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
       profilesInDirectory.add(profile);
 
       requiredFiles.addAll(profile.getRequiredFiles());
+      requiredEncryptedFiles.putAll(profile.getDecryptedFiles());
       profilesByDirectory.put(mountPoint, profilesInDirectory);
     }
 
@@ -458,16 +462,21 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
       );
     }
 
-    if (!requiredFiles.isEmpty()) {
+    if (!requiredFiles.isEmpty() || !requiredEncryptedFiles.isEmpty()) {
       List<SecretMountPair> files = requiredFiles.stream()
           .map(File::new)
           .map(SecretMountPair::new)
           .collect(Collectors.toList());
 
+      // Add in memory decrypted files
+      requiredEncryptedFiles.keySet().stream()
+              .map(k -> new SecretMountPair(k, requiredEncryptedFiles.get(k)))
+              .forEach(s -> files.add(s));
+
       String name = KubernetesV2Utils.createSecret(account, namespace, getService().getCanonicalName(), secretNamePrefix, files);
       configSources.add(new ConfigSource()
           .setId(name)
-          .setMountPath(files.get(0).getContents().getParent())
+          .setMountPath(getSpinnakerStagingDependenciesPath(details.getDeploymentName()))
       );
     }
 
