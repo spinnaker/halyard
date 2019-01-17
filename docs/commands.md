@@ -4652,6 +4652,7 @@ hal config provider azure account add ACCOUNT [parameters]
  * `--subscription-id`: (*Required*) The subscriptionId that your service principal is assigned to.
  * `--tenant-id`: (*Required*) The tenantId that your service principal is assigned to.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
+ * `--regions`: (*Default*: `['westus', 'eastus']`) The Azure regions this Spinnaker account will manage.
 
 
 ---
@@ -4704,6 +4705,7 @@ hal config provider azure account edit ACCOUNT [parameters]
  * `--subscription-id`: The subscriptionId that your service principal is assigned to.
  * `--tenant-id`: The tenantId that your service principal is assigned to.
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
+ * `--regions`: The Azure regions this Spinnaker account will manage.
 
 
 ---

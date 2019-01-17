@@ -21,6 +21,11 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.AbstractAddAccountCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.azure.AzureAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.azure.AzureProvider;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Parameters(separators = "=")
 class AzureAddAccountCommand extends AbstractAddAccountCommand {
@@ -89,8 +94,22 @@ class AzureAddAccountCommand extends AbstractAddAccountCommand {
   )
   private String packerStorageAccount;
 
+  @Parameter(
+      names = "--regions",
+      variableArity = true,
+      description = AzureCommandProperties.REGIONS_DESCRIPTION
+  )
+  private List<String> regions = new ArrayList<>();
+
+
   @Override
   protected Account buildAccount(String accountName) {
+    // Add default regions if user not specified
+    if(regions.size() == 0) {
+      regions.add("westus");
+      regions.add("eastus");
+    }
+
     return ((AzureAccount) new AzureAccount().setName(accountName))
         .setClientId(clientId)
         .setAppKey(appKey)
@@ -100,7 +119,8 @@ class AzureAddAccountCommand extends AbstractAddAccountCommand {
         .setDefaultResourceGroup(defaultResourceGroup)
         .setDefaultKeyVault(defaultKeyVault)
         .setPackerResourceGroup(packerResourceGroup)
-        .setPackerStorageAccount(packerStorageAccount);
+        .setPackerStorageAccount(packerStorageAccount)
+        .setRegions(regions);
   }
 
   @Override
