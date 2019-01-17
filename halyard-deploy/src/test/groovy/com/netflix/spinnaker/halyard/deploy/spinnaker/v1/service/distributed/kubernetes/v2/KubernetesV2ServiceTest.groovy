@@ -18,6 +18,7 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration
 import com.netflix.spinnaker.halyard.config.model.v1.node.SidecarConfig
+import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetails
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings
@@ -25,12 +26,14 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ConfigSource
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.KubernetesSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService
 import spock.lang.Specification
 
 class KubernetesV2ServiceTest extends Specification {
 
     private KubernetesV2Service testService
     private AccountDeploymentDetails details
+    private GenerateService.ResolvedConfiguration config
 
     def setup() {
         testService = new KubernetesV2OrcaService() {
@@ -41,7 +44,7 @@ class KubernetesV2ServiceTest extends Specification {
 
             @Override
             ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-                return Mock(ServiceSettings)
+                return new ServiceSettings(env: new HashMap<String, String>())
             }
 
             @Override
@@ -50,9 +53,14 @@ class KubernetesV2ServiceTest extends Specification {
             }
         }
         testService.serviceDelegate = Mock(KubernetesV2ServiceDelegate)
-        GenerateService.ResolvedConfiguration config = Mock(GenerateService.ResolvedConfiguration)
-        config.runtimeSettings = Mock(SpinnakerRuntimeSettings)
-        details = new AccountDeploymentDetails()
+        config = new GenerateService.ResolvedConfiguration()
+        SpinnakerRuntimeSettings runtimeSettings = new SpinnakerRuntimeSettings()
+        DeploymentConfiguration deploymentConfiguration = new DeploymentConfiguration()
+        runtimeSettings.setServiceSettings(testService.getType(), testService.buildServiceSettings(deploymentConfiguration))
+        config.runtimeSettings = runtimeSettings
+        KubernetesAccount account = new KubernetesAccount()
+        details = new AccountDeploymentDetails(account: account)
+        details.deploymentConfiguration = deploymentConfiguration
     }
     def "Does getSidecars work with default RuntimeSettings"() {
         setup:
@@ -112,7 +120,6 @@ class KubernetesV2ServiceTest extends Specification {
         secret2.secretName = "default-token-8pndx"
 
         car.setSecretVolumeMounts([secret1, secret2])
-        details.deploymentConfiguration = new DeploymentConfiguration()
         details.deploymentConfiguration.deploymentEnvironment.sidecars.put("spin-orca", [car])
 
         when:
@@ -167,5 +174,15 @@ class KubernetesV2ServiceTest extends Specification {
     "secretName": "sMap"
   }
 }''')
+    }
+
+    def "Does getResourceYaml return yaml"() {
+        setup:
+
+        when:
+        String yaml = testService.getResourceYaml(details, config)
+
+        then:
+        yaml
     }
 }
