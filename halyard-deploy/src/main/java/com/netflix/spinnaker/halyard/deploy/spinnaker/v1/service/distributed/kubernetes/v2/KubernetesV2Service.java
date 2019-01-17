@@ -150,6 +150,9 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   default String getResourceYaml(AccountDeploymentDetails<KubernetesAccount> details,
       GenerateService.ResolvedConfiguration resolvedConfiguration) {
     ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
+    if (settings == null) {
+      throw new NullPointerException("Could not resolve ServiceSettings for " + getService());
+    }
     SpinnakerRuntimeSettings runtimeSettings = resolvedConfiguration.getRuntimeSettings();
     String namespace = getNamespace(settings);
 
