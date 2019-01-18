@@ -18,9 +18,11 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration
 import com.netflix.spinnaker.halyard.config.model.v1.node.SidecarConfig
+import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetails
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.KubernetesSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
 import spock.lang.Specification
@@ -29,6 +31,8 @@ class KubernetesV2ServiceTest extends Specification {
 
     private KubernetesV2Service testService
     private AccountDeploymentDetails details
+    private GenerateService.ResolvedConfiguration config
+    private ServiceSettings serviceSettings
 
     def setup() {
         testService = new KubernetesV2OrcaService() {
@@ -48,9 +52,20 @@ class KubernetesV2ServiceTest extends Specification {
             }
         }
         testService.serviceDelegate = Mock(KubernetesV2ServiceDelegate)
-        GenerateService.ResolvedConfiguration config = Mock(GenerateService.ResolvedConfiguration)
-        config.runtimeSettings = Mock(SpinnakerRuntimeSettings)
-        details = new AccountDeploymentDetails()
+
+        serviceSettings = Stub(ServiceSettings) {
+            getKubernetes() >> new KubernetesSettings()
+        }
+        SpinnakerRuntimeSettings runtimeSettings = Stub(SpinnakerRuntimeSettings) {
+            getServiceSettings(_) >> serviceSettings
+        }
+        config = Mock(GenerateService.ResolvedConfiguration) {
+            getServiceSettings(_) >> serviceSettings
+            getRuntimeSettings() >> runtimeSettings
+        }
+        details = Stub(AccountDeploymentDetails) {
+            getAccount() >> Mock(KubernetesAccount)
+        }
     }
     def "Does getSidecars work with default RuntimeSettings"() {
         setup:
@@ -86,6 +101,27 @@ class KubernetesV2ServiceTest extends Specification {
 
         then:
         customSidecar.contains('"ports": [{ "containerPort": 8080 }]')
+    }
+
+    def "Defaults Service.type to ClusterIP?"() {
+        when:
+        String yaml = testService.getServiceYaml(config)
+
+        then:
+        yaml.contains('type: ClusterIP')
+    }
+
+    def "Can we set Service.nodePort?"() {
+        setup:
+        serviceSettings.getKubernetes().serviceType = "NodePort"
+        serviceSettings.getKubernetes().nodePort = "1234"
+
+        when:
+        String yaml = testService.getServiceYaml(config)
+
+        then:
+        yaml.contains('type: NodePort')
+        yaml.contains('nodePort: 1234')
     }
 
     def "Do SecretVolumeMounts end up being valid mountPaths?"() {
