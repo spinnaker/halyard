@@ -2,7 +2,7 @@ FROM openjdk:8 as build
 
 LABEL maintainer="delivery-engineering@netflix.com"
 
-ENV KUBECTL_RELEASE=1.10.3
+ENV KUBECTL_RELEASE=1.12.5
 ENV AWS_BINARY_RELEASE_DATE=2018-07-26
 
 COPY . workdir/
