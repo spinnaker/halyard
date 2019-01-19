@@ -152,66 +152,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   default String getResourceYaml(AccountDeploymentDetails<KubernetesAccount> details,
       GenerateService.ResolvedConfiguration resolvedConfiguration) {
     ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
-    SpinnakerRuntimeSettings runtimeSettings = resolvedConfiguration.getRuntimeSettings();
     String namespace = getNamespace(settings);
-
-    List<ConfigSource> configSources = stageConfig(details, resolvedConfiguration);
-    
-    List<SidecarConfig> sidecarConfigs = getSidecarConfigs(details);
-
-    configSources.addAll(sidecarConfigs.stream()
-        .filter(c -> StringUtils.isNotEmpty(c.getMountPath()))
-        .map(c -> new ConfigSource().setMountPath(c.getMountPath())
-          .setId(c.getName())
-          .setType(ConfigSource.Type.emptyDir)
-        ).collect(Collectors.toList()));
-
-    Map<String, String> env = configSources.stream()
-        .map(ConfigSource::getEnv)
-        .map(Map::entrySet)
-        .flatMap(Collection::stream)
-        .collect(Collectors.toMap(
-            Entry::getKey,
-            Entry::getValue
-        ));
-
-    List<String> volumes = configSources.stream()
-        .collect(Collectors.toMap(ConfigSource::getId, (i) -> i, (a, b) -> a))
-        .values()
-        .stream()
-        .map(this::getVolumeYaml)
-        .collect(Collectors.toList());
-
-    volumes.addAll(settings.getKubernetes().getVolumes().stream()
-        .collect(Collectors.toMap(ConfigSource::getId, (i) -> i, (a, b) -> a))
-        .values()
-        .stream()
-        .map(this::getVolumeYaml)
-        .collect(Collectors.toList()));
-
-    volumes.addAll(sidecarConfigs.stream()
-        .map(SidecarConfig::getConfigMapVolumeMounts)
-        .flatMap(Collection::stream)
-        .map(c -> new ConfigSource()
-            .setMountPath(c.getMountPath())
-            .setId(c.getConfigMapName())
-            .setType(ConfigSource.Type.configMap)
-        )
-        .map(this::getVolumeYaml)
-        .collect(Collectors.toList()));
-
-    volumes.addAll(sidecarConfigs.stream()
-        .map(SidecarConfig::getSecretVolumeMounts)
-        .flatMap(Collection::stream)
-        .map(c -> new ConfigSource()
-                .setMountPath(c.getMountPath())
-                .setId(c.getSecretName())
-                .setType(ConfigSource.Type.secret)
-        )
-        .map(this::getVolumeYaml)
-        .collect(Collectors.toList()));
-
-    env.putAll(settings.getEnv());
 
     Integer targetSize = settings.getTargetSize();
     CustomSizing customSizing = details.getDeploymentConfiguration().getDeploymentEnvironment().getCustomSizing();
@@ -219,30 +160,6 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
       Map componentSizing = customSizing.getOrDefault(getService().getServiceName(), new HashMap());
       targetSize = (Integer) componentSizing.getOrDefault("replicas", targetSize);
     }
-
-    String primaryContainer = buildContainer(getService().getCanonicalName(), details, settings, configSources, env);
-    List<String> sidecarContainers = getSidecars(runtimeSettings).stream()
-        .map(SidecarService::getService)
-        .map(s -> buildContainer(s.getCanonicalName(), details, runtimeSettings.getServiceSettings(s), configSources, env))
-        .collect(Collectors.toList());
-
-    sidecarContainers.addAll(sidecarConfigs.stream()
-        .map(this::buildCustomSidecar)
-        .collect(Collectors.toList()));
-
-    List<String> containers = new ArrayList<>();
-    containers.add(primaryContainer);
-    containers.addAll(sidecarContainers);
-
-    TemplatedResource podSpec = new JinjaJarResource("/kubernetes/manifests/podSpec.yml")
-        .addBinding("containers", containers)
-        .addBinding("initContainers", getInitContainers(details))
-        .addBinding("hostAliases", getHostAliases(details))
-        .addBinding("imagePullSecrets", settings.getKubernetes().getImagePullSecrets())
-        .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
-        .addBinding("serviceAccountName", settings.getKubernetes().getServiceAccountName())
-        .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
-        .addBinding("volumes", volumes);
 
     String version = makeValidLabel(details.getDeploymentConfiguration().getVersion());
     if (version.isEmpty()) {
@@ -255,8 +172,102 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         .addBinding("replicas", targetSize)
         .addBinding("version", version)
         .addBinding("podAnnotations", settings.getKubernetes().getPodAnnotations())
-        .addBinding("podSpec", podSpec.toString())
+        .addBinding("podSpec", getPodSpecYaml(details, resolvedConfiguration))
         .toString();
+  }
+
+  default List<String> getVolumes(List<ConfigSource> configSources, ServiceSettings settings, List<SidecarConfig> sidecarConfigs) {
+    List<String> volumes = configSources.stream()
+            .collect(Collectors.toMap(ConfigSource::getId, (i) -> i, (a, b) -> a))
+            .values()
+            .stream()
+            .map(this::getVolumeYaml)
+            .collect(Collectors.toList());
+
+    volumes.addAll(settings.getKubernetes().getVolumes().stream()
+            .collect(Collectors.toMap(ConfigSource::getId, (i) -> i, (a, b) -> a))
+            .values()
+            .stream()
+            .map(this::getVolumeYaml)
+            .collect(Collectors.toList()));
+
+    volumes.addAll(sidecarConfigs.stream()
+            .map(SidecarConfig::getConfigMapVolumeMounts)
+            .flatMap(Collection::stream)
+            .map(c -> new ConfigSource()
+                    .setMountPath(c.getMountPath())
+                    .setId(c.getConfigMapName())
+                    .setType(ConfigSource.Type.configMap)
+            )
+            .map(this::getVolumeYaml)
+            .collect(Collectors.toList()));
+
+    volumes.addAll(sidecarConfigs.stream()
+            .map(SidecarConfig::getSecretVolumeMounts)
+            .flatMap(Collection::stream)
+            .map(c -> new ConfigSource()
+                    .setMountPath(c.getMountPath())
+                    .setId(c.getSecretName())
+                    .setType(ConfigSource.Type.secret)
+            )
+            .map(this::getVolumeYaml)
+            .collect(Collectors.toList()));
+
+    return volumes;
+  }
+
+  default Map<String, String> getEnv(List<ConfigSource> configSources) {
+    return configSources.stream()
+            .map(ConfigSource::getEnv)
+            .map(Map::entrySet)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toMap(
+                    Entry::getKey,
+                    Entry::getValue
+            ));
+  }
+
+  default String getPodSpecYaml(AccountDeploymentDetails<KubernetesAccount> details,
+                                GenerateService.ResolvedConfiguration resolvedConfiguration) {
+    SpinnakerRuntimeSettings runtimeSettings = resolvedConfiguration.getRuntimeSettings();
+    List<ConfigSource> configSources = stageConfig(details, resolvedConfiguration);
+    List<SidecarConfig> sidecarConfigs = getSidecarConfigs(details);
+
+    configSources.addAll(sidecarConfigs.stream()
+            .filter(c -> StringUtils.isNotEmpty(c.getMountPath()))
+            .map(c -> new ConfigSource().setMountPath(c.getMountPath())
+                    .setId(c.getName())
+                    .setType(ConfigSource.Type.emptyDir)
+            ).collect(Collectors.toList()));
+
+    ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
+    Map<String, String> env = getEnv(configSources);
+    env.putAll(settings.getEnv());
+    List<String> volumes = getVolumes(configSources, settings, sidecarConfigs);
+
+    String primaryContainer = buildContainer(getService().getCanonicalName(), details, settings, configSources, env);
+    List<String> sidecarContainers = getSidecars(runtimeSettings).stream()
+            .map(SidecarService::getService)
+            .map(s -> buildContainer(s.getCanonicalName(), details, runtimeSettings.getServiceSettings(s), configSources, env))
+            .collect(Collectors.toList());
+
+    sidecarContainers.addAll(sidecarConfigs.stream()
+            .map(this::buildCustomSidecar)
+            .collect(Collectors.toList()));
+
+    List<String> containers = new ArrayList<>();
+    containers.add(primaryContainer);
+    containers.addAll(sidecarContainers);
+
+    return new JinjaJarResource("/kubernetes/manifests/podSpec.yml")
+            .addBinding("containers", containers)
+            .addBinding("initContainers", getInitContainers(details))
+            .addBinding("hostAliases", getHostAliases(details))
+            .addBinding("imagePullSecrets", settings.getKubernetes().getImagePullSecrets())
+            .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
+            .addBinding("serviceAccountName", settings.getKubernetes().getServiceAccountName())
+            .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
+            .addBinding("volumes", volumes).toString();
   }
 
   default boolean characterAlphanumeric(String value, int index) {

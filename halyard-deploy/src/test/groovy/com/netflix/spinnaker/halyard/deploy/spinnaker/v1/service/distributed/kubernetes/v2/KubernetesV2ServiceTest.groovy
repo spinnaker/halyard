@@ -22,6 +22,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.Kubern
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetails
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.KubernetesSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
@@ -51,21 +52,19 @@ class KubernetesV2ServiceTest extends Specification {
                 return 42
             }
         }
-        testService.serviceDelegate = Mock(KubernetesV2ServiceDelegate)
+        testService.serviceDelegate = new KubernetesV2ServiceDelegate()
 
-        serviceSettings = Stub(ServiceSettings) {
-            getKubernetes() >> new KubernetesSettings()
-        }
-        SpinnakerRuntimeSettings runtimeSettings = Stub(SpinnakerRuntimeSettings) {
+        serviceSettings = new ServiceSettings()
+        serviceSettings.env = new HashMap<String, String>();
+
+        config = new GenerateService.ResolvedConfiguration()
+        config.runtimeSettings = Stub(SpinnakerRuntimeSettings) {
             getServiceSettings(_) >> serviceSettings
         }
-        config = Mock(GenerateService.ResolvedConfiguration) {
-            getServiceSettings(_) >> serviceSettings
-            getRuntimeSettings() >> runtimeSettings
-        }
-        details = Stub(AccountDeploymentDetails) {
-            getAccount() >> Mock(KubernetesAccount)
-        }
+
+        details = new AccountDeploymentDetails()
+        details.account = new KubernetesAccount()
+        details.deploymentConfiguration = new DeploymentConfiguration()
     }
     def "Does getSidecars work with default RuntimeSettings"() {
         setup:
@@ -122,6 +121,18 @@ class KubernetesV2ServiceTest extends Specification {
         then:
         yaml.contains('type: NodePort')
         yaml.contains('nodePort: 1234')
+    }
+
+    def "Can we set PodSpec.nodeSelector?"() {
+        setup:
+        serviceSettings.getKubernetes().nodeSelector = new HashMap<String, String>()
+        serviceSettings.getKubernetes().nodeSelector["kops.k8s.io/instancegroup"] = "clouddriver"
+
+        when:
+        String yaml = testService.getPodSpecYaml(details, config)
+
+        then:
+        yaml.contains('"kops.k8s.io/instancegroup": "clouddriver"')
     }
 
     def "Do SecretVolumeMounts end up being valid mountPaths?"() {
