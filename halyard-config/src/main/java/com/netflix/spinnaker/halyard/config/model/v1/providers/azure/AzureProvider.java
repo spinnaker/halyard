@@ -20,11 +20,6 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.HasImageProvider;
 import lombok.Data;
 
 public class AzureProvider extends HasImageProvider<AzureAccount, AzureBakeryDefaults> {
-//  @Data
-//  public static class AzureRegion {
-//    String name;
-//  }
-
   @Override
   public ProviderType providerType() {
     return ProviderType.AZURE;
