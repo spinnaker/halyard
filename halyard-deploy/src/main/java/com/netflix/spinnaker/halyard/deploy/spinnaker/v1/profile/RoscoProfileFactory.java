@@ -122,7 +122,8 @@ public class RoscoProfileFactory extends SpringProfileFactory {
     }
 
     List<String> files = backupRequiredFiles(providers, deploymentConfiguration.getName());
-    profile.appendContents(profile.getBaseContents())
+    profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, providers))
+        .appendContents(profile.getBaseContents())
         .setRequiredFiles(files);
   }
 
