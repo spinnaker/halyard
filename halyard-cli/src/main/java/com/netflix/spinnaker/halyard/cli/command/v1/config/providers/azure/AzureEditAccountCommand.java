@@ -109,7 +109,7 @@ public class AzureEditAccountCommand extends AbstractEditAccountCommand<AzureAcc
     try {
       account.setRegions(regions);
     } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Set either --regions or --[add/remove]-region");
+      throw new IllegalArgumentException("Set --regions");
     }
     
     return account;

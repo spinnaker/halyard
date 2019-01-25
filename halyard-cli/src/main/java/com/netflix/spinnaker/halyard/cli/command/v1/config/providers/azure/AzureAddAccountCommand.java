@@ -105,7 +105,7 @@ class AzureAddAccountCommand extends AbstractAddAccountCommand {
   @Override
   protected Account buildAccount(String accountName) {
     // Add default regions if user not specified
-    if(regions.size() == 0) {
+    if (regions.size() == 0) {
       regions.add("westus");
       regions.add("eastus");
     }
