@@ -43,5 +43,5 @@ class AzureCommandProperties {
 
   static final String IMAGE_VERSION_DESCRIPTION = "The version of your base image. This defaults to 'latest' if not specified.";
 
-  static final String REGIONS_DESCRIPTION = "The Azure regions this Spinnaker account will manage. If not specified, the default value is 'eastus,westus'";
+  static final String REGIONS_DESCRIPTION = "The Azure regions this Spinnaker account will manage.";
 }

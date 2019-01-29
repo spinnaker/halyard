@@ -24,6 +24,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.providers.azure.AzureAccoun
 import com.netflix.spinnaker.halyard.config.model.v1.providers.azure.AzureProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,16 +100,11 @@ class AzureAddAccountCommand extends AbstractAddAccountCommand {
       variableArity = true,
       description = AzureCommandProperties.REGIONS_DESCRIPTION
   )
-  private List<String> regions = new ArrayList<>();
+  private List<String> regions = Arrays.asList("westus", "eastus");
 
 
   @Override
   protected Account buildAccount(String accountName) {
-    // Add default regions if user not specified
-    if (regions.size() == 0) {
-      regions.add("westus");
-      regions.add("eastus");
-    }
 
     return ((AzureAccount) new AzureAccount().setName(accountName))
         .setClientId(clientId)

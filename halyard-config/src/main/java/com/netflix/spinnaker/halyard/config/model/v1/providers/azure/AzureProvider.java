@@ -17,7 +17,6 @@
 package com.netflix.spinnaker.halyard.config.model.v1.providers.azure;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.HasImageProvider;
-import lombok.Data;
 
 public class AzureProvider extends HasImageProvider<AzureAccount, AzureBakeryDefaults> {
   @Override
