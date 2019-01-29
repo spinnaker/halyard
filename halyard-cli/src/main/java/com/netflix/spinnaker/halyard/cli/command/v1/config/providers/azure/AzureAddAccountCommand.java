@@ -100,7 +100,7 @@ class AzureAddAccountCommand extends AbstractAddAccountCommand {
       variableArity = true,
       description = AzureCommandProperties.REGIONS_DESCRIPTION
   )
-  private List<String> regions = Arrays.asList("westus", "eastus");
+  private List<String> regions = new ArrayList<String>(Arrays.asList("westus", "eastus"));
 
 
   @Override
