@@ -129,6 +129,5 @@ abstract public class ProfileFactory {
               halconfigDirectoryStructure.getStagingDependenciesPath(deploymentName));
     }
     return mapper.convertValue(o, Map.class);
-
   }
 }
