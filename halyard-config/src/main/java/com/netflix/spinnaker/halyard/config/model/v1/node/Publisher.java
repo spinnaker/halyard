@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Target, Inc.
+ * Copyright 2019 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,27 +12,27 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ *
  */
 
-package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
+package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class KubernetesSettings {
-  List<String> imagePullSecrets = new ArrayList<>();
-  Map<String, String> nodeSelector = new HashMap<>();
-  Map<String, String> podAnnotations = new HashMap<>();
-  List<ConfigSource> volumes = new ArrayList<>();
-  String serviceAccountName = null;
-  String serviceType = "ClusterIP";
-  String nodePort = null;
+public abstract class Publisher extends Node implements Cloneable {
+  String name;
+
+  @Override
+  public String getNodeName() {
+    return name;
+  }
+
+  @Override
+  public NodeIterator getChildren() {
+    return NodeIteratorFactory.makeEmptyIterator();
+  }
 }
