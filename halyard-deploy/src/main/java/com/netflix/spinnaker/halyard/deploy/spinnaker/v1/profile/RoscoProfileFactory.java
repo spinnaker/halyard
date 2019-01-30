@@ -29,16 +29,17 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.registry.v1.ProfileRegistry;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 
 @Component
 @Slf4j
@@ -102,8 +103,23 @@ public class RoscoProfileFactory extends SpringProfileFactory {
     augmentProvidersBaseImages(providers, otherProviders);
 
     List<String> files = backupRequiredFiles(providers, deploymentConfiguration.getName());
-    profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, providers))
-        .appendContents(profile.getBaseContents())
+    Map imageProviders = new TreeMap();
+
+    NodeIterator iterator = providers.getChildren();
+    Provider child = (Provider) iterator.getNext();
+    while (child != null) {
+      if (child instanceof HasImageProvider && child.isEnabled()) {
+        imageProviders.put(child.getNodeName(), convertToMap(deploymentConfiguration.getName(), profile, child));
+      }
+
+      child = (Provider) iterator.getNext();
+    }
+
+    if (!imageProviders.isEmpty()) {
+      profile.appendContents(yamlParser.dump(imageProviders));
+    }
+
+    profile.appendContents(profile.getBaseContents())
         .setRequiredFiles(files);
   }
 

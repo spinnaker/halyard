@@ -53,12 +53,14 @@ public class DecryptingObjectMapper extends ObjectMapper {
 
     protected Profile profile;
     protected Path decryptedOutputDirectory;
+    protected SecretSessionManager secretSessionManager;
 
     public DecryptingObjectMapper(SecretSessionManager secretSessionManager, Profile profile, Path decryptedOutputDirectory) {
         super();
         this.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
         this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
+        this.secretSessionManager = secretSessionManager;
         this.profile = profile;
         this.decryptedOutputDirectory = decryptedOutputDirectory;
 
@@ -69,51 +71,57 @@ public class DecryptingObjectMapper extends ObjectMapper {
             public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
                 Class _class = beanDesc.getBeanClass();
 
-                for (Iterator<BeanPropertyWriter> it = beanProperties.iterator(); it.hasNext(); ) {
-                    BeanPropertyWriter bpw = it.next();
-
+                for (BeanPropertyWriter bpw : beanProperties) {
                     switch (getFieldSecretType(_class, bpw.getName())) {
                         case SECRET:
                             // Decrypt the field secret before sending
-                            bpw.assignSerializer(new StdScalarSerializer<Object>(String.class, false) {
-                                @Override
-                                public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-                                    if (value != null) {
-                                        String sValue = value.toString();
-                                        if (!EncryptedSecret.isEncryptedSecret(sValue)) {
-                                            gen.writeString(sValue);
-                                        } else {
-                                            gen.writeString(secretSessionManager.decrypt(sValue));
-                                        }
-                                    }
-                                }
-                            });
+                            bpw.assignSerializer(getSecretSerializer());
                             break;
                         case SECRET_FILE:
-                            bpw.assignSerializer(new StdScalarSerializer<Object>(String.class, false) {
-                                @Override
-                                public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-                                    if (value != null) {
-                                        String sValue = value.toString();
-                                        if (EncryptedSecret.isEncryptedSecret(sValue)) {
-                                            // Decrypt the content of the file and store on the profile under a random
-                                            // generated file name
-                                            String decrypted = secretSessionManager.decrypt(sValue);
-                                            String name = newRandomFilePath(bpw.getName());
-                                            profile.getDecryptedFiles().put(name, decrypted);
-                                            gen.writeString(getCompleteFilePath(name));
-                                        } else {
-                                            gen.writeString(sValue);
-                                        }
-                                    }
-                                }
-                            });
+                            bpw.assignSerializer(getSecretFileSerializer(bpw));
                     }
                 }
                 return beanProperties;
             }
         });
         this.registerModule(module);
+    }
+
+    protected StdScalarSerializer<Object> getSecretSerializer() {
+        return new StdScalarSerializer<Object>(String.class, false) {
+            @Override
+            public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+                if (value != null) {
+                    String sValue = value.toString();
+                    if (!EncryptedSecret.isEncryptedSecret(sValue)) {
+                        gen.writeString(sValue);
+                    } else {
+                        gen.writeString(secretSessionManager.decrypt(sValue));
+                    }
+                }
+            }
+        };
+    }
+
+    protected StdScalarSerializer<Object> getSecretFileSerializer(BeanPropertyWriter beanPropertyWriter) {
+        return new StdScalarSerializer<Object>(String.class, false) {
+            @Override
+            public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+                if (value != null) {
+                    String sValue = value.toString();
+                    if (EncryptedSecret.isEncryptedSecret(sValue)) {
+                        // Decrypt the content of the file and store on the profile under a random
+                        // generated file name
+                        String decrypted = secretSessionManager.decrypt(sValue);
+                        String name = newRandomFilePath(beanPropertyWriter.getName());
+                        profile.getDecryptedFiles().put(name, decrypted);
+                        gen.writeString(getCompleteFilePath(name));
+                    } else {
+                        gen.writeString(sValue);
+                    }
+                }
+            }
+        };
     }
 
     public DecryptingObjectMapper relax() {
@@ -139,7 +147,6 @@ public class DecryptingObjectMapper extends ObjectMapper {
         }
         return SecretType.NO_SECRET;
     }
-
 
     protected String newRandomFilePath(String fieldName) {
         return fieldName + "-" + RandomStringUtils.randomAlphanumeric(5);
