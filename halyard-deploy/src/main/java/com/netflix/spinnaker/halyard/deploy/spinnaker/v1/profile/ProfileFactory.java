@@ -116,6 +116,10 @@ abstract public class ProfileFactory {
   }
 
   protected String yamlToString(String deploymentName, Profile profile, Object o) {
+    return yamlParser.dump(convertToMap(deploymentName, profile, o));
+  }
+
+  protected Map convertToMap(String deploymentName, Profile profile, Object o) {
     ObjectMapper mapper;
     if (supportsSecretDecryption(deploymentName)) {
       mapper = strictObjectMapper;
@@ -124,6 +128,6 @@ abstract public class ProfileFactory {
               profile,
               halconfigDirectoryStructure.getStagingDependenciesPath(deploymentName));
     }
-    return yamlParser.dump(mapper.convertValue(o, Map.class));
+    return mapper.convertValue(o, Map.class);
   }
 }

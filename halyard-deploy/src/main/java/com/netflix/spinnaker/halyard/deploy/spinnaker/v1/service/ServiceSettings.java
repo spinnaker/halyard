@@ -57,6 +57,7 @@ public class ServiceSettings {
   String overrideBaseUrl;
   String location;
   KubernetesSettings kubernetes = new KubernetesSettings();
+  Boolean useExecHealthCheck;
   Boolean enabled;
   Boolean basicAuthEnabled;
   Boolean monitored;
@@ -169,12 +170,14 @@ public class ServiceSettings {
   }
 
   public SlimServiceSettings slim() {
-    return new SlimServiceSettings(getBaseUrl(), getEnabled());
+    return new SlimServiceSettings(getHost(), getPort(), getBaseUrl(), getEnabled());
   }
 
   @Data
   @AllArgsConstructor
   public static class SlimServiceSettings {
+    private String host;
+    private Integer port;
     private String baseUrl;
     private Boolean enabled;
   }
