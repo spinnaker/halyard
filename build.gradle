@@ -33,7 +33,7 @@ allprojects {
   apply plugin: 'groovy'
 
   ext {
-    spinnakerDependenciesVersion = '1.13.0'
+    spinnakerDependenciesVersion = '1.20.0'
     if (project.hasProperty('spinnakerDependenciesVersion')) {
       spinnakerDependenciesVersion = project.property('spinnakerDependenciesVersion')
     }
@@ -57,7 +57,7 @@ subprojects { project ->
   dependencies {
     spinnaker.group('test')
     testCompile spinnaker.dependency('groovy')
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile spinnaker.dependency('bootTest')
     testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
   }
 

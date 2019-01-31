@@ -16,10 +16,11 @@
 
 package com.netflix.spinnaker.halyard.config.config.v1.secrets;
 
-import com.netflix.spinnaker.config.secrets.EncryptedSecret;
 import com.netflix.spinnaker.config.secrets.SecretManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.nio.file.Path;
 
 /**
  *  SecretSessionManager handles the decryption and encryption of secrets and secret files in the current session
@@ -34,7 +35,7 @@ public class SecretSessionManager {
   public void clearSession() {
     SecretSession session = secretSessions.get();
     if (session != null) {
-      session.clearAllFiles();
+      session.clearTempFiles();
       secretSessions.remove();
     }
   }
@@ -48,46 +49,56 @@ public class SecretSessionManager {
     return session;
   }
 
-  public String decrypt(String encryptedString) {
-    if (!EncryptedSecret.isEncryptedSecret(encryptedString)) {
-      return encryptedString;
-    }
-
-    SecretSession session = getSession();
-    String clearText = session.getCached(encryptedString);
-    if (clearText != null) {
-      return clearText;
-    }
-
-    clearText = secretManager.decrypt(encryptedString);
-    session.cacheResult(encryptedString, clearText);
-
-    return clearText;
+  /**
+   *  Takes an encrypted string or path to an encrypted file and returns the decrypted value.
+   *
+   *  Format for Encrypted Secrets:
+   *
+   *  encrypted:&lt;engine-identifier&gt;!&lt;param-name_1&gt;:&lt;param-value_1&gt;!..!&lt;param-name_n&gt;:&lt;param-value_n&gt;
+   *
+   *  Note: Valid param-names match the regex: `[a-zA-Z0-9]+`
+   *  Note: secret-params may contain ':'
+   *  Note: `encrypted` cannot be a param-name
+   *  Note: There must be at least one &lt;param-name&gt;:&lt;param-value&gt; pair
+   *  Named parameters are used to allow for adding additional options in the future.
+   *
+   * @param filePathOrEncryptedString the encrypted string in the format above defined by EncryptedSecret
+   * @return decrypted value of the secret field or file
+   */
+  public String decrypt(String filePathOrEncryptedString) {
+    return secretManager.decrypt(filePathOrEncryptedString);
   }
 
-  public String decryptFile(String filePathOrEncrypted) {
-    if (!EncryptedSecret.isEncryptedSecret(filePathOrEncrypted)) {
-      return filePathOrEncrypted;
+  /**
+   *  Takes an encrypted string or path to an encrypted file, calls SecretManager to decrypt the contents
+   *  and return the path to the decrypted temporary file.
+   *
+   *  Format for Encrypted Secrets:
+   *
+   *  encrypted:&lt;engine-identifier&gt;!&lt;param-name_1&gt;:&lt;param-value_1&gt;!..!&lt;param-name_n&gt;:&lt;param-value_n&gt;
+   *
+   *  Note: Valid param-names match the regex: `[a-zA-Z0-9]+`
+   *  Note: secret-params may contain ':'
+   *  Note: `encrypted` cannot be a param-name
+   *  Note: There must be at least one &lt;param-name&gt;:&lt;param-value&gt; pair
+   *  Named parameters are used to allow for adding additional options in the future.
+   *
+   * @param filePath the encrypted string in the format above defined by EncryptedSecret
+   * @return path to the decrypted temporary file
+   */
+  public String decryptAsFile(String filePath) {
+    Path decryptedFilePath = secretManager.decryptAsFile(filePath);
+
+    if (decryptedFilePath != null) {
+      SecretSession session = getSession();
+      session.addFile(filePath, decryptedFilePath);
+      return decryptedFilePath.toString();
+    } else {
+      return null;
     }
-
-    SecretSession session = getSession();
-    String tempFilePath = session.getCached(filePathOrEncrypted);
-    if (tempFilePath != null) {
-      return tempFilePath;
-    }
-
-    tempFilePath = secretManager.decryptFile(filePathOrEncrypted).toString();
-    session.addFile(tempFilePath);
-    session.cacheResult(filePathOrEncrypted, tempFilePath);
-
-    return tempFilePath;
   }
 
   public String encrypt(String unencryptedString) {
-    if (EncryptedSecret.isEncryptedSecret(unencryptedString)) {
-      return unencryptedString;
-    }
-    // Encryption not currently supported
-    return unencryptedString;
+    throw new UnsupportedOperationException();
   }
 }
