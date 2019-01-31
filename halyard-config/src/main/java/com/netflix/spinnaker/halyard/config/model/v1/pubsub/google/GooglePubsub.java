@@ -19,14 +19,17 @@
 package com.netflix.spinnaker.halyard.config.model.v1.pubsub.google;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Pubsub;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class GooglePubsub extends Pubsub<GoogleSubscription> {
-  @Override
-  public PubsubType pubsubType() {
-    return PubsubType.GOOGLE;
-  }
+public class GooglePubsub extends Pubsub<GoogleSubscription, GooglePublisher> {
+
+  private PubsubType pubsubType = PubsubType.GOOGLE;
+
+  private List<GoogleSubscription> subscriptions = new ArrayList<>();
+  private List<GooglePublisher> publishers = new ArrayList<>();
 }
