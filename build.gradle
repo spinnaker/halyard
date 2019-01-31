@@ -57,7 +57,7 @@ subprojects { project ->
   dependencies {
     spinnaker.group('test')
     testCompile spinnaker.dependency('groovy')
-	testCompile spinnaker.dependency('bootTest')
+    testCompile spinnaker.dependency('bootTest')
     testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
   }
 
