@@ -16,34 +16,32 @@
 
 package com.netflix.spinnaker.halyard.config.config.v1.secrets;
 
+import com.netflix.spinnaker.config.secrets.SecretManager;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.File;
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  *  SecretSession contains the cached decrypted secrets and secret files
  */
 class SecretSession {
-  private Map<String, String> cache = new HashMap<>();
-  private List<String> filePaths = new ArrayList<>();
 
-  void cacheResult(String encryptedString, String clearText) {
-    cache.put(encryptedString, clearText);
+  @Autowired
+  private SecretManager secretManager;
+
+  private Map<String, Path> tempFiles = new HashMap<>();
+
+  void addFile(String encrypted, Path decryptedFilePath) {
+    tempFiles.put(encrypted, decryptedFilePath);
   }
 
-  void addFile(String filePath) {
-    filePaths.add(filePath);
-  }
-
-  String getCached(String encryptedString) {
-    return cache.get(encryptedString);
-  }
-
-  void clearAllFiles() {
-    for (String filePath : filePaths) {
-      File f = new File(filePath);
+  void clearTempFiles() {
+    for (String encryptedFilePath : tempFiles.keySet()) {
+      secretManager.clearCachedFile(encryptedFilePath);
+      File f = new File(tempFiles.get(encryptedFilePath).toString());
       f.delete();
     }
   }
