@@ -20,6 +20,8 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.spinnaker.config.secrets.EncryptedSecret;
+import com.netflix.spinnaker.halyard.config.config.v1.secrets.SecretSessionManager;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.job.v1.JobRequest;
@@ -33,6 +35,7 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
@@ -51,6 +54,9 @@ import java.util.Map;
 public class KubernetesV2Utils {
   static private ObjectMapper mapper = new ObjectMapper();
 
+  @Autowired
+  private static SecretSessionManager secretSessionManager;
+
   public static List<String> kubectlPrefix(KubernetesAccount account) {
     List<String> command = new ArrayList<>();
     command.add("kubectl");
@@ -65,7 +71,12 @@ public class KubernetesV2Utils {
       command.add(context);
     }
 
-    String kubeconfig = account.getKubeconfigFile();
+    String kubeconfig;
+    if (EncryptedSecret.isEncryptedSecret(account.getKubeconfigFile())) {
+      kubeconfig = secretSessionManager.decryptAsFile(account.getKubeconfigFile());
+    } else {
+      kubeconfig = account.getKubeconfigFile();
+    }
     if (kubeconfig != null && !kubeconfig.isEmpty()) {
       command.add("--kubeconfig");
       command.add(kubeconfig);
@@ -104,14 +115,18 @@ public class KubernetesV2Utils {
     return command;
   }
 
-    public static SecretSpec createSecretSpec(String namespace, String clusterName, String name, List<SecretMountPair> files) {
+  public static SecretSpec createSecretSpec(String namespace, String clusterName, String name, List<SecretMountPair> files) {
     Map<String, String> contentMap = new HashMap<>();
     for (SecretMountPair pair: files) {
       String contents;
-      try {
-        contents = new String(Base64.getEncoder().encode(IOUtils.toByteArray(new FileInputStream(pair.getContents()))));
-      } catch (IOException e) {
-        throw new HalException(Problem.Severity.FATAL, "Failed to read required config file: " + pair.getContents().getAbsolutePath() + ": " + e.getMessage(), e);
+      if (pair.getContentString() != null) {
+        contents = new String(Base64.getEncoder().encode(pair.getContentString().getBytes()));
+      } else {
+        try {
+          contents = new String(Base64.getEncoder().encode(IOUtils.toByteArray(new FileInputStream(pair.getContents()))));
+        } catch (IOException e) {
+          throw new HalException(Problem.Severity.FATAL, "Failed to read required config file: " + pair.getContents().getAbsolutePath() + ": " + e.getMessage(), e);
+        }
       }
 
       contentMap.put(pair.getName(), contents);
@@ -151,6 +166,7 @@ public class KubernetesV2Utils {
   @Data
   static public class SecretMountPair {
     File contents;
+    String contentString;
     String name;
 
     public SecretMountPair(File inputFile) {
@@ -160,6 +176,11 @@ public class KubernetesV2Utils {
     public SecretMountPair(File inputFile, File outputFile) {
       this.contents = inputFile;
       this.name = outputFile.getName();
+    }
+
+    public SecretMountPair(String name, String contentString) {
+      this.contentString = contentString;
+      this.name = name;
     }
   }
 }

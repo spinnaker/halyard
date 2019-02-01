@@ -164,7 +164,13 @@ public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
 
     // TODO(lwander) find a good resource / list of resources for generating kubeconfig files to link to here.
     try {
-      String kubeconfigContents = secretSessionManager.validatingFileDecrypt(psBuilder, account.getKubeconfigFile());
+      String kubeconfigContents;
+      if (EncryptedSecret.isEncryptedSecret(account.getKubeconfigFile())) {
+        kubeconfigContents = secretSessionManager.decrypt(account.getKubeconfigFile());
+      } else {
+        kubeconfigContents = ValidatingFileReader.contents(psBuilder, account.getKubeconfigFile());
+      }
+
       if (kubeconfigContents == null) {
         return;
       }
