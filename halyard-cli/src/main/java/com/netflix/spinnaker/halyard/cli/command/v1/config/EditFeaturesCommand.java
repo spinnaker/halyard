@@ -101,7 +101,7 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
 
   @Parameter(
           names = "--managed-pipeline-templates-v2-ui",
-          description = "Enable managed pipeline templates v2 UI support. Read more at https://blog.spinnaker.io/spinnaker-managed-pipeline-templates-v2-taking-shape-c7503d0a608d",
+          description = "Enable managed pipeline templates v2 UI support.",
           arity = 1
   )
   private Boolean managedPipelineTemplatesV2UI = null;
