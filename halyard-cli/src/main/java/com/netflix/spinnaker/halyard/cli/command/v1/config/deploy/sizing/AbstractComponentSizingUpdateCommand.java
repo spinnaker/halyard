@@ -70,7 +70,7 @@ public abstract class AbstractComponentSizingUpdateCommand extends AbstractConfi
 
         new OperationHandler<Void>()
                 .setFailureMesssage("Failed to " + commandName + " custom component sizings for " + serviceName + ".")
-                .setSuccessMessage("Successfully managed to " + commandName + " component sizings for service " + serviceName + ".")
+                .setSuccessMessage("Successfully managed to " + commandName + " the custom component sizings for service " + serviceName + ".")
                 .setOperation(Daemon.setDeploymentEnvironment(currentDeployment, !noValidate, deploymentEnvironment))
                 .get();
     }
