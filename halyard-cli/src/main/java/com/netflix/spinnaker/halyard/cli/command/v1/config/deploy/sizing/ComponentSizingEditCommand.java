@@ -25,8 +25,10 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
+import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
 import com.netflix.spinnaker.halyard.config.model.v1.node.CustomSizing;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -34,83 +36,59 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Parameters(separators = "=")
-public class ComponentSizingEditCommand extends AbstractConfigCommand {
-    @Getter(AccessLevel.PROTECTED)
-    private Map<String, NestableCommand> subcommands = new HashMap<>();
-
-    @Getter(AccessLevel.PUBLIC)
-    private String commandName = "edit";
-
-    @Getter(AccessLevel.PUBLIC)
-    private String serviceName;
+public class ComponentSizingEditCommand extends AbstractComponentSizingUpdateCommand {
 
     @Parameter(
             names = "--replicas",
             description = "Set the number of replicas (pods) to be created for this service."
     )
-    private Integer replicas;
+    private Integer replicas = 1;
 
     @Parameter(
             names = "--pod-requests-cpu",
-            description = "Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m."
+            description = "Sets the cpu request for the container running the spinnaker service, as well as any " +
+                    "sidecar containers (e.g. the monitoring daemon). Example: 250m."
     )
     private String requestsCpu;
 
     @Parameter(
             names = "--pod-requests-memory",
-            description = "Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi."
+            description = "Sets the memory request for the container running the spinnaker service, as well as any " +
+                    "sidecar containers (e.g. the monitoring daemon). Example: 512Mi."
     )
     private String requestsMemory;
 
     @Parameter(
             names = "--pod-limits-cpu",
-            description = "Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1."
+            description = "Sets the cpu limit for the container running the spinnaker service, as well as any " +
+                    "sidecar containers (e.g. the monitoring daemon). Example: 1."
     )
     private String limitsCpu;
 
     @Parameter(
             names = "--pod-limits-memory",
-            description = "Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi."
+            description = "Sets the memory limit for the container running the spinnaker service, as well as any " +
+                    "sidecar containers (e.g. the monitoring daemon). Example: 1Gi."
     )
     private String limitsMemory;
 
-    public ComponentSizingEditCommand(String serviceName) {
-        this.serviceName = serviceName;
+    public ComponentSizingEditCommand(SpinnakerService.Type spinnakerService) {
+        super(spinnakerService, "edit");
     }
 
     @Override
     protected String getShortDescription() {
-        return "Edit the component sizing for service " + getServiceName();
+        return "Edit the component sizing for service " + spinnakerService.getCanonicalName() +
+                ", such as the number of replicas and the resources limits.";
     }
 
     @Override
-    protected void executeThis() {
-        String currentDeployment = getCurrentDeployment();
-        String serviceName = getServiceName();
-        DeploymentEnvironment deploymentEnvironment = new OperationHandler<DeploymentEnvironment>()
-                .setFailureMesssage("Failed to get component sizing for service " + serviceName + ".")
-                .setOperation(Daemon.getDeploymentEnvironment(currentDeployment, false))
-                .get();
-
-        CustomSizing customSizing = deploymentEnvironment.getCustomSizing();
-        int originalHash = customSizing.hashCode();
-
-        customSizing = edit(customSizing);
-
-        if (originalHash == customSizing.hashCode()) {
-            AnsiUi.failure("No changes supplied.");
-            return;
-        }
-
-        new OperationHandler<Void>()
-                .setFailureMesssage("Failed to edit component sizing for " + serviceName + ".")
-                .setSuccessMessage("Successfully edited component sizing for service " + serviceName + ".")
-                .setOperation(Daemon.setDeploymentEnvironment(currentDeployment, !noValidate, deploymentEnvironment))
-                .get();
+    protected CustomSizing update(CustomSizing customSizing) {
+        return edit(customSizing);
     }
 
     private CustomSizing edit(CustomSizing customSizing) {
-        Map serviceSizing = customSizing.computeIfAbsent(spinService(), (k) -> new HashMap<>());
+        Map serviceSizing = customSizing.computeIfAbsent(spinnakerService.getServiceName(), (k) -> new HashMap<>());
         edit(serviceSizing);
         return customSizing;
     }
@@ -131,9 +109,5 @@ public class ComponentSizingEditCommand extends AbstractConfigCommand {
         if (value != null) {
             map.put(key, value);
         }
-    }
-
-    private String spinService() {
-        return "spin-" + serviceName;
     }
 }

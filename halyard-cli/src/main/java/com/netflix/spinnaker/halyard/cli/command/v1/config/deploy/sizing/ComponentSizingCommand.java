@@ -18,12 +18,16 @@
 
 package com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.sizing;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.ha.ClouddriverHaServiceCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.deploy.ha.EchoHaServiceCommand;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import lombok.AccessLevel;
 import lombok.Getter;
+
+import static com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type.*;
 
 @Parameters(separators = "=")
 public class ComponentSizingCommand extends NestableCommand {
@@ -34,14 +38,9 @@ public class ComponentSizingCommand extends NestableCommand {
   private String description = "Configure, validate, and view the component sizings for the Spinnaker services.";
 
   public ComponentSizingCommand() {
-    registerSubcommand(new NamedComponentSizingCommand("clouddriver"));
-    registerSubcommand(new NamedComponentSizingCommand("deck"));
-    registerSubcommand(new NamedComponentSizingCommand("echo"));
-    registerSubcommand(new NamedComponentSizingCommand("front50"));
-    registerSubcommand(new NamedComponentSizingCommand("gate"));
-    registerSubcommand(new NamedComponentSizingCommand("igor"));
-    registerSubcommand(new NamedComponentSizingCommand("orca"));
-    registerSubcommand(new NamedComponentSizingCommand("rosco"));
+    for (SpinnakerService.Type spinnakerService : SpinnakerService.Type.values()) {
+      registerSubcommand(new NamedComponentSizingCommand(spinnakerService));
+    }
   }
 
   @Override

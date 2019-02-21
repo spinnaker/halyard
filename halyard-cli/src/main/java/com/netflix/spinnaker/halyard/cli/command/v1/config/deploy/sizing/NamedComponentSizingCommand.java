@@ -27,6 +27,7 @@ import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaService;
 import com.netflix.spinnaker.halyard.config.model.v1.node.CustomSizing;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -39,33 +40,33 @@ import static com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils.Format.STR
 public class NamedComponentSizingCommand extends AbstractConfigCommand {
 
   @Getter(AccessLevel.PUBLIC)
-  private String serviceName;
+  private SpinnakerService.Type spinnakerService;
 
-  public NamedComponentSizingCommand(String serviceName) {
-    this.serviceName = serviceName;
-    registerSubcommand(new ComponentSizingEditCommand(serviceName));
+  public NamedComponentSizingCommand(SpinnakerService.Type spinnakerService) {
+    this.spinnakerService = spinnakerService;
+    registerSubcommand(new ComponentSizingEditCommand(spinnakerService));
+    registerSubcommand(new ComponentSizingDeleteCommand(spinnakerService));
   }
 
   @Override
   public String getCommandName() {
-    return serviceName;
+    return spinnakerService.getCanonicalName();
   }
 
   @Override
   protected String getShortDescription() {
-    return "Manage and view Spinnaker component sizing configuration for " + getServiceName();
+    return "Manage and view Spinnaker component sizing configuration for " + spinnakerService.getCanonicalName();
   }
 
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
-    String serviceName = getServiceName();
     new OperationHandler<Map>()
-        .setFailureMesssage("Failed to get component sizing for service " + serviceName + ".")
-        .setSuccessMessage("Successfully got component sizing for service " + serviceName + ".")
+        .setFailureMesssage("Failed to get component sizing for service " + spinnakerService + ".")
+        .setSuccessMessage("Successfully got component sizing for service " + spinnakerService + ".")
         .setFormat(STRING)
         .setUserFormatted(true)
-        .setOperation(() -> Daemon.getDeploymentEnvironment(currentDeployment, !noValidate).get().getCustomSizing().get("spin-" + serviceName))
+        .setOperation(() -> Daemon.getDeploymentEnvironment(currentDeployment, !noValidate).get().getCustomSizing().get(spinnakerService.getServiceName()))
         .get();
   }
 }
