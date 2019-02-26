@@ -35,6 +35,13 @@ RUN wget -O /tmp/get-pip.py https://bootstrap.pypa.io/get-pip.py && \
     python /tmp/get-pip.py && \
     pip install awscli --upgrade
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    cron \
+    vim \
+  && apt-get clean
+
+RUN /etc/init.d/cron start
+
 RUN useradd -m spinnaker
 
 USER spinnaker
