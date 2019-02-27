@@ -3377,7 +3377,7 @@ hal config ci jenkins master edit MASTER [parameters]
  * `--password`: (*Sensitive data* - user will be prompted on standard input) The password of the jenkins user to authenticate as.
  * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
- * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--username`: The username of the jenkins user to authenticate as.
  * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build master.
 
@@ -3544,7 +3544,7 @@ hal config ci travis master edit MASTER [parameters]
  * `--number-of-repositories`: How many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
  * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
- * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build master.
 
 
@@ -3706,7 +3706,7 @@ hal config ci wercker master edit MASTER [parameters]
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
- * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--token`: (*Sensitive data* - user will be prompted on standard input) The personal token of the Wercker user to authenticate as.
  * `--user`: The username of the Wercker user to authenticate as.
  * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build master.

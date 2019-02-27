@@ -66,7 +66,7 @@ public abstract class AbstractEditMasterCommand<T extends Master> extends Abstra
 
   @Parameter(
       names = "--remove-write-permission",
-      description = "Remove this permission to from list of write permissions."
+      description = "Remove this permission from the list of write permissions."
   )
   private String removeWritePermission;
 
