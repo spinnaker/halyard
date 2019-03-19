@@ -233,6 +233,7 @@ function install_java() {
 
   source /etc/os-release
 
+  # This should match most of the Arch based distros out there.
   if [ "$ID" = "arch" ] || [ "$ID_LIKE" = "arch" ]; then
     echo "Running Arch Linux based distro ($PRETTY_NAME)"
     # Java 8
