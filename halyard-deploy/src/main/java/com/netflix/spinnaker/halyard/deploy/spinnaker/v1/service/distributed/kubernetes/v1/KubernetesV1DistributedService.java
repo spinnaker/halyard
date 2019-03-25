@@ -420,6 +420,7 @@ public interface KubernetesV1DistributedService<T> extends DistributedService<T,
     livenessHandlerAction.setPort(port);
     livenessHandler.setTcpSocketAction(livenessHandlerAction);
     livenessProbe.setHandler(livenessHandler);
+    livenessProbe.setInitialDelaySeconds(180);
     container.setLivenessProbe(livenessProbe);
 
     applyCustomSize(container, deploymentEnvironment, name, description);

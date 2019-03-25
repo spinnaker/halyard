@@ -341,6 +341,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     TemplatedResource livenessProbe = new JinjaJarResource("/kubernetes/manifests/tcpSocketLivenessProbe.yml");
     livenessProbe.addBinding("port", settings.getPort());
+    livenessProbe.addBinding("initialDelaySeconds", 180);
 
     String lifecycle = "{}";
     List<String> preStopCommand = getPreStopCommand(settings);
