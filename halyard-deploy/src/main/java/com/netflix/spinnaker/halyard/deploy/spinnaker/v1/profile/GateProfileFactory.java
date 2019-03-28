@@ -41,6 +41,11 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
   }
 
   @Override
+  public String getMinimumSecretDecryptionVersion(String deploymentName) {
+    return "1.5.3";
+  }
+
+  @Override
   public void setProfile(Profile profile,
       DeploymentConfiguration deploymentConfiguration,
       SpinnakerRuntimeSettings endpoints) {
