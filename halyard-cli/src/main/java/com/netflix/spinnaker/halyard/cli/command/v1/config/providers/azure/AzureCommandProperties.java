@@ -29,7 +29,7 @@ class AzureCommandProperties {
 
   static final String DEFAULT_RESOURCE_GROUP_DESCRIPTION = "The default resource group to contain any non-application specific resources.";
 
-  static final String DEFAULT_KEY_VAULT_DESCRIPTION = "The name of a KeyVault that contains the default user name and password used to create VMs";
+  static final String DEFAULT_KEY_VAULT_DESCRIPTION = "The name of a KeyVault that contains the user name, password, and ssh public key used to create VMs";
 
   static final String PACKER_RESOURCE_GROUP_DESCRIPTION = "The resource group to use if baking images with Packer.";
 

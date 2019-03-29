@@ -6413,7 +6413,7 @@ hal config provider azure account add ACCOUNT [parameters]
 `ACCOUNT`: The name of the account to operate on.
  * `--app-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The appKey (password) of your service principal.
  * `--client-id`: (*Required*) The clientId (also called appId) of your service principal.
- * `--default-key-vault`: (*Required*) The name of a KeyVault that contains the default user name and password used to create VMs
+ * `--default-key-vault`: (*Required*) The name of a KeyVault that contains the user name, password, and ssh public key used to create VMs
  * `--default-resource-group`: (*Required*) The default resource group to contain any non-application specific resources.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
@@ -6464,7 +6464,7 @@ hal config provider azure account edit ACCOUNT [parameters]
  * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--app-key`: (*Sensitive data* - user will be prompted on standard input) The appKey (password) of your service principal.
  * `--client-id`: The clientId (also called appId) of your service principal.
- * `--default-key-vault`: The name of a KeyVault that contains the default user name and password used to create VMs
+ * `--default-key-vault`: The name of a KeyVault that contains the user name, password, and ssh public key used to create VMs
  * `--default-resource-group`: The default resource group to contain any non-application specific resources.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
