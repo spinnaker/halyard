@@ -228,6 +228,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
               .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
               .addBinding("volumes", combineVolumes(configSources, settings.getKubernetes(), sidecarConfigs))
+              .addBinding("securityContext", settings.getKubernetes().getSecurityContext())
               .toString();
   }
 
@@ -424,7 +425,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     Map<String, Set<Profile>> profilesByDirectory = new HashMap<>();
     List<String> requiredFiles = new ArrayList<>();
-    Map<String, String> requiredEncryptedFiles = new HashMap<>();
+    Map<String, byte[]> requiredEncryptedFiles = new HashMap<>();
     List<ConfigSource> configSources = new ArrayList<>();
     String secretNamePrefix = getServiceName() + "-files";
     String namespace = getNamespace(resolvedConfiguration.getServiceSettings(getService()));
