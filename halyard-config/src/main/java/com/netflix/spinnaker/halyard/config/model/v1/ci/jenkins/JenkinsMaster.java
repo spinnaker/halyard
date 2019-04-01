@@ -36,4 +36,7 @@ public class JenkinsMaster extends Master {
   private String username;
   @Secret private String password;
   private Boolean csrf;
+  private String trustStore;
+  private String trustStoreType;
+  private String trustStorePassword;
 }
