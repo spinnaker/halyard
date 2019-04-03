@@ -15,8 +15,19 @@ A tool for configuring, installing, and updating Spinnaker.
 > tracker](https://github.com/spinnaker/spinnaker/issues) or in
 > [slack](http://join.spinnaker.io).
 
+For Debian:
+
 ```
 $ curl -O https://raw.githubusercontent.com/spinnaker/halyard/master/install/debian/InstallHalyard.sh
+```
+
+For Mac:
+```
+$ curl -O https://raw.githubusercontent.com/spinnaker/halyard/master/install/macos/InstallHalyard.sh
+```
+
+Run the installer:
+```
 $ sudo bash InstallHalyard.sh
 ```
 
