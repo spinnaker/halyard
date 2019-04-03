@@ -5306,6 +5306,7 @@ hal config features edit [parameters]
  * `--artifacts`: Enable artifact support. Read more at spinnaker.io/reference/artifacts
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here https://github.com/Netflix/chaosmonkey/wiki.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--gremlin`: Enable Gremlin fault-injection support.
  * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
  * `--jobs`: Allow Spinnaker to run containers in Kubernetes and Titus as Job stages in pipelines.
  * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
@@ -5962,6 +5963,7 @@ hal config provider appengine account add ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
+ * `--caching-interval-seconds`: The interval in seconds at which Spinnaker will poll for updates in your AppEngine clusters.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--gcloud-release-track`: The gcloud release track (ALPHA, BETA, or STABLE) that Spinnaker will use when deploying to App Engine.
@@ -6017,6 +6019,7 @@ hal config provider appengine account edit ACCOUNT [parameters]
  * `--add-read-permission`: Add this permission to the list of read permissions.
  * `--add-required-group-membership`: Add this group to the list of required group memberships.
  * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--caching-interval-seconds`: The interval in seconds at which Spinnaker will poll for updates in your AppEngine clusters.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--gcloud-release-track`: The gcloud release track (ALPHA, BETA, or STABLE) that Spinnaker will use when deploying to App Engine.
@@ -6411,7 +6414,7 @@ hal config provider azure account add ACCOUNT [parameters]
 `ACCOUNT`: The name of the account to operate on.
  * `--app-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The appKey (password) of your service principal.
  * `--client-id`: (*Required*) The clientId (also called appId) of your service principal.
- * `--default-key-vault`: (*Required*) The name of a KeyVault that contains the default user name and password used to create VMs
+ * `--default-key-vault`: (*Required*) The name of a KeyVault that contains the user name, password, and ssh public key used to create VMs
  * `--default-resource-group`: (*Required*) The default resource group to contain any non-application specific resources.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
@@ -6425,6 +6428,7 @@ hal config provider azure account add ACCOUNT [parameters]
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--subscription-id`: (*Required*) The subscriptionId that your service principal is assigned to.
  * `--tenant-id`: (*Required*) The tenantId that your service principal is assigned to.
+ * `--useSshPublicKey`: (*Default*: `true`) Whether to use SSH public key to provision the linux vm. The default value is true which means using the ssh public key. Setting it to false means using the password instead.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
 
@@ -6461,7 +6465,7 @@ hal config provider azure account edit ACCOUNT [parameters]
  * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--app-key`: (*Sensitive data* - user will be prompted on standard input) The appKey (password) of your service principal.
  * `--client-id`: The clientId (also called appId) of your service principal.
- * `--default-key-vault`: The name of a KeyVault that contains the default user name and password used to create VMs
+ * `--default-key-vault`: The name of a KeyVault that contains the user name, password, and ssh public key used to create VMs
  * `--default-resource-group`: The default resource group to contain any non-application specific resources.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
@@ -6478,6 +6482,7 @@ hal config provider azure account edit ACCOUNT [parameters]
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--subscription-id`: The subscriptionId that your service principal is assigned to.
  * `--tenant-id`: The tenantId that your service principal is assigned to.
+ * `--useSshPublicKey`: Whether to use SSH public key to provision the linux vm. The default value is true which means using the ssh public key. Setting it to false means using the password instead.
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
 
@@ -6746,10 +6751,10 @@ hal config provider cloudfoundry account add ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
  * `--api`: (*Required*) Host name of the CloudFoundry Foundation API endpoint without protocol indicator ie. `api.sys.somesystem.com`
- * `--appsManagerURI`: Full URI for the Apps Manager application for the CloudFoundry Foundation ie. `https://apps.sys.somesystem.com`
+ * `--appsManagerUri`: Full URI for the Apps Manager application for the CloudFoundry Foundation ie. `https://apps.sys.somesystem.com`
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
- * `--metricsURI`: Full URI for the metrics application for the CloudFoundry Foundation ie. `https://metrics.sys.somesystem.com`
+ * `--metricsUri`: Full URI for the metrics application for the CloudFoundry Foundation ie. `https://metrics.sys.somesystem.com`
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: (*Required*) Password for the account to use on for this CloudFoundry Foundation
  * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
@@ -6791,10 +6796,10 @@ hal config provider cloudfoundry account edit ACCOUNT [parameters]
  * `--add-required-group-membership`: Add this group to the list of required group memberships.
  * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--api`: (*Required*) Host name of the CloudFoundry Foundation API endpoint without protocol indicator ie. `api.sys.somesystem.com`
- * `--appsManagerURI`: Full URI for the Apps Manager application for the CloudFoundry Foundation ie. `https://apps.sys.somesystem.com`
+ * `--appsManagerUri`: Full URI for the Apps Manager application for the CloudFoundry Foundation ie. `https://apps.sys.somesystem.com`
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
- * `--metricsURI`: Full URI for the metrics application for the CloudFoundry Foundation ie. `https://metrics.sys.somesystem.com`
+ * `--metricsUri`: Full URI for the metrics application for the CloudFoundry Foundation ie. `https://metrics.sys.somesystem.com`
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: (*Required*) Password for the account to use on for this CloudFoundry Foundation
  * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
@@ -7960,6 +7965,8 @@ When no context is configured for an account the 'current-context' in your kubec
  * `--kinds`: (*Default*: `[]`) (V2 Only) A list of resource kinds this Spinnaker account can deploy to and will cache.
 When no kinds are configured, this defaults to 'all kinds described here https://spinnaker.io/reference/providers/kubernetes-v2'.
  * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
+ * `--live-manifest-calls`: When true, clouddriver will query manifest status during pipeline executions using live data rather than the cache.
+This eliminates all time spent in the "force cache refresh" task in pipelines, greatly reducing execution time.
  * `--namespaces`: (*Default*: `[]`) A list of namespaces this Spinnaker account can deploy to and will cache.
 When no namespaces are configured, this defaults to 'all namespaces'.
  * `--no-validate`: (*Default*: `false`) Skip validation.
@@ -8026,6 +8033,8 @@ When no context is configured for an account the 'current-context' in your kubec
  * `--kinds`: (*Default*: `[]`) (V2 Only) A list of resource kinds this Spinnaker account can deploy to and will cache.
 When no kinds are configured, this defaults to 'all kinds described here https://spinnaker.io/reference/providers/kubernetes-v2'.
  * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
+ * `--live-manifest-calls`: When true, clouddriver will query manifest status during pipeline executions using live data rather than the cache.
+This eliminates all time spent in the "force cache refresh" task in pipelines, greatly reducing execution time.
  * `--namespaces`: (*Default*: `[]`) A list of namespaces this Spinnaker account can deploy to and will cache.
 When no namespaces are configured, this defaults to 'all namespaces'.
  * `--no-validate`: (*Default*: `false`) Skip validation.

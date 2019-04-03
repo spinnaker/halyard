@@ -18,23 +18,27 @@ package com.netflix.spinnaker.halyard.deploy.config.v1.secrets;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationConfig;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import com.netflix.spinnaker.config.secrets.EncryptedSecret;
-import com.netflix.spinnaker.halyard.config.config.v1.secrets.SecretSessionManager;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -47,9 +51,6 @@ import java.util.List;
  * decryptedOutputDirectory is the path to the decrypted secret files on the service's host.
  */
 public class DecryptingObjectMapper extends ObjectMapper {
-    private enum SecretType {
-        SECRET_FILE, SECRET, NO_SECRET
-    }
 
     protected Profile profile;
     protected Path decryptedOutputDirectory;
@@ -72,13 +73,14 @@ public class DecryptingObjectMapper extends ObjectMapper {
                 Class _class = beanDesc.getBeanClass();
 
                 for (BeanPropertyWriter bpw : beanProperties) {
-                    switch (getFieldSecretType(_class, bpw.getName())) {
-                        case SECRET:
+                    Annotation annotation = getSecretFieldAnnotationType(_class, bpw.getName());
+                    if (annotation != null) {
+                        if (annotation.annotationType() == Secret.class) {
                             // Decrypt the field secret before sending
                             bpw.assignSerializer(getSecretSerializer());
-                            break;
-                        case SECRET_FILE:
-                            bpw.assignSerializer(getSecretFileSerializer(bpw));
+                        } else if (annotation.annotationType() == SecretFile.class) {
+                            bpw.assignSerializer(getSecretFileSerializer(bpw, (SecretFile) annotation));
+                        }
                     }
                 }
                 return beanProperties;
@@ -93,17 +95,17 @@ public class DecryptingObjectMapper extends ObjectMapper {
             public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
                 if (value != null) {
                     String sValue = value.toString();
-                    if (!EncryptedSecret.isEncryptedSecret(sValue)) {
-                        gen.writeString(sValue);
-                    } else {
+                    if (EncryptedSecret.isEncryptedSecret(sValue)) {
                         gen.writeString(secretSessionManager.decrypt(sValue));
+                    } else {
+                        gen.writeString(sValue);
                     }
                 }
             }
         };
     }
 
-    protected StdScalarSerializer<Object> getSecretFileSerializer(BeanPropertyWriter beanPropertyWriter) {
+    protected StdScalarSerializer<Object> getSecretFileSerializer(BeanPropertyWriter beanPropertyWriter, SecretFile annotation) {
         return new StdScalarSerializer<Object>(String.class, false) {
             @Override
             public void serialize(Object value, JsonGenerator gen, SerializerProvider provider) throws IOException {
@@ -112,13 +114,15 @@ public class DecryptingObjectMapper extends ObjectMapper {
                     if (EncryptedSecret.isEncryptedSecret(sValue)) {
                         // Decrypt the content of the file and store on the profile under a random
                         // generated file name
-                        String decrypted = secretSessionManager.decrypt(sValue);
                         String name = newRandomFilePath(beanPropertyWriter.getName());
-                        profile.getDecryptedFiles().put(name, decrypted);
-                        gen.writeString(getCompleteFilePath(name));
-                    } else {
-                        gen.writeString(sValue);
+                        byte[] bytes = secretSessionManager.decryptAsBytes(sValue);
+                        profile.getDecryptedFiles().put(name, bytes);
+                        sValue = getCompleteFilePath(name);
                     }
+                    if (annotation != null) {
+                        sValue = annotation.prefix() + sValue;
+                    }
+                    gen.writeString(sValue);
                 }
             }
         };
@@ -130,22 +134,22 @@ public class DecryptingObjectMapper extends ObjectMapper {
         return this;
     }
 
-    protected SecretType getFieldSecretType(Class _class, String fieldName) {
+    protected Annotation getSecretFieldAnnotationType(Class _class, String fieldName) {
         for (Field f : _class.getDeclaredFields()) {
             if (f.getName().equals(fieldName)) {
                 if (f.isAnnotationPresent(Secret.class)) {
-                    return SecretType.SECRET;
+                    return f.getAnnotation(Secret.class);
                 }
                 if (f.isAnnotationPresent(SecretFile.class)) {
-                    return SecretType.SECRET_FILE;
+                    return f.getAnnotation(SecretFile.class);
                 }
-                return SecretType.NO_SECRET;
+                return null;
             }
         }
         if (_class.getSuperclass() != null) {
-            return getFieldSecretType(_class.getSuperclass(), fieldName);
+            return getSecretFieldAnnotationType(_class.getSuperclass(), fieldName);
         }
-        return SecretType.NO_SECRET;
+        return null;
     }
 
     protected String newRandomFilePath(String fieldName) {
