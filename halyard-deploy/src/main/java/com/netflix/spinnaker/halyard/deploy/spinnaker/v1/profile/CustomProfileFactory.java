@@ -17,14 +17,15 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
+import com.google.common.io.Files;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import org.apache.commons.io.IOUtils;
+import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import org.springframework.stereotype.Component;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -41,9 +42,17 @@ abstract public class CustomProfileFactory extends ProfileFactory {
   @Override
   protected Profile getBaseProfile(String name, String version, String outputFile) {
     try {
-      return new Profile(name, version, outputFile, IOUtils.toString(new FileInputStream(getUserProfilePath().toFile())));
+      return new Profile(name, version, outputFile, readUserProfile());
     } catch (IOException e) {
       throw new HalException(Problem.Severity.FATAL, "Unable to read user profile contents: " + e.getMessage(), e);
+    }
+  }
+
+  private String readUserProfile() throws IOException {
+    try {
+      return Files.asCharSource(getUserProfilePath().toFile(), Charset.defaultCharset()).read();
+    } catch (FileNotFoundException e) {
+      return "";
     }
   }
 
