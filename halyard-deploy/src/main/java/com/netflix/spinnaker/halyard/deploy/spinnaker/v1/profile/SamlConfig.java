@@ -16,6 +16,9 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
+import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Saml;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import lombok.Data;
@@ -33,13 +36,18 @@ public class SamlConfig {
   String issuerId;
   String metadataUrl;
 
+  @LocalFile
+  @SecretFile(prefix="file:")
   String keyStore;
+  @Secret
   String keyStorePassword;
   String keyStoreAliasName;
 
   String redirectProtocol;
   String redirectHostname;
   String redirectBasePath;
+
+  Saml.UserAttributeMapping userAttributeMapping;
 
   public SamlConfig(Security security) {
     if (!security.getAuthn().getSaml().isEnabled()) {
@@ -54,8 +62,7 @@ public class SamlConfig {
     if (StringUtils.isNotEmpty(saml.getMetadataRemote())) {
       this.metadataUrl = saml.getMetadataRemote();
     }
-
-    this.keyStore = "file:" + saml.getKeyStore();
+    this.keyStore = saml.getKeyStore();
     this.keyStoreAliasName = saml.getKeyStoreAliasName();
     this.keyStorePassword = saml.getKeyStorePassword();
 
@@ -68,5 +75,7 @@ public class SamlConfig {
     if (StringUtils.isNotEmpty(u.getPath())) {
       this.redirectBasePath = u.getPath();
     }
+
+    this.userAttributeMapping = saml.getUserAttributeMapping();
   }
 }

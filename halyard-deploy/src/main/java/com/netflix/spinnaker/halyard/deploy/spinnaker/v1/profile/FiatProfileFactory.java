@@ -33,12 +33,17 @@ public class FiatProfileFactory extends SpringProfileFactory {
   }
 
   @Override
+  public String getMinimumSecretDecryptionVersion(String deploymentName) {
+    return "1.3.3";
+  }
+
+  @Override
   protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
     Authz authz = deploymentConfiguration.getSecurity().getAuthz();
     List<String> files = backupRequiredFiles(authz, deploymentConfiguration.getName());
     AuthConfig authConfig = new AuthConfig().setAuth(authz);
-    profile.appendContents(yamlToString(authConfig))
+    profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, authConfig))
         .appendContents(profile.getBaseContents())
         .setRequiredFiles(files);
   }

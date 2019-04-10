@@ -18,12 +18,14 @@ package com.netflix.spinnaker.halyard.config.model.v1.canary.google;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
+import com.netflix.spinnaker.config.secrets.EncryptedSecret;
+import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,10 +49,14 @@ public class GoogleCanaryAccount extends AbstractCanaryAccount implements Clonea
   private SortedSet<AbstractCanaryServiceIntegration.SupportedTypes> supportedTypes = new TreeSet<>();
 
   @JsonIgnore
-  public GoogleNamedAccountCredentials getNamedAccountCredentials(String version, ConfigProblemSetBuilder p) {
+  public GoogleNamedAccountCredentials getNamedAccountCredentials(String version, SecretSessionManager secretSessionManager, ConfigProblemSetBuilder p) {
     String jsonKey = null;
     if (!StringUtils.isEmpty(getJsonPath())) {
-      jsonKey = ValidatingFileReader.contents(p, getJsonPath());
+      if (EncryptedSecret.isEncryptedSecret(getJsonPath())) {
+        jsonKey = secretSessionManager.decrypt(getJsonPath());
+      } else {
+        jsonKey = ValidatingFileReader.contents(p, getJsonPath());
+      }
 
       if (jsonKey == null) {
         return null;

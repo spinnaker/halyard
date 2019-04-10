@@ -25,6 +25,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotifica
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.TwilioNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.appengine.AppengineProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.azure.AzureProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.cloudfoundry.CloudFoundryProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dcos.DCOSProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
@@ -114,6 +115,9 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     bindings.put("features.appengineContainerImageUrlDeployments", Boolean.toString(features.getAppengineContainerImageUrlDeployments() != null ? features.getAppengineContainerImageUrlDeployments() : false));
     bindings.put("features.travis", Boolean.toString(features.getTravis() != null ? features.getTravis() : false));
     bindings.put("features.wercker", Boolean.toString(features.getWercker() != null ? features.getWercker() : false));
+    bindings.put("features.managedPipelineTemplatesV2UI", Boolean.toString(features.getManagedPipelineTemplatesV2UI() != null ? features.getManagedPipelineTemplatesV2UI() : false));
+    bindings.put("features.gremlin", Boolean.toString(features.getGremlin() != null ? features.getGremlin() : false));
+    bindings.put("features.infrastructureStages", Boolean.toString(features.getInfrastructureStages() != null ? features.getInfrastructureStages() : false));
 
     // Configure Kubernetes
     KubernetesProvider kubernetesProvider = deploymentConfiguration.getProviders().getKubernetes();
@@ -165,6 +169,10 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     // Configure ECS
     EcsProvider ecsProvider = deploymentConfiguration.getProviders().getEcs();
     bindings.put("ecs.default.account", ecsProvider.getPrimaryAccount());
+
+    // Configure CloudFoundry
+    CloudFoundryProvider cloudFoundryProvider = deploymentConfiguration.getProviders().getCloudfoundry();
+    bindings.put("cloudfoundry.default.account", cloudFoundryProvider.getPrimaryAccount());
 
     // Configure notifications
     bindings.put("notifications.enabled", notifications.isEnabled() + "");

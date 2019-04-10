@@ -68,6 +68,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   String getServiceName();
   String getDockerRegistry(String deploymentName, SpinnakerArtifact artifact);
   String getSpinnakerStagingPath(String deploymentName);
+  String getSpinnakerStagingDependenciesPath(String deploymentName);
   ArtifactService getArtifactService();
   ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration);
   ObjectMapper getObjectMapper();
@@ -227,6 +228,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
               .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
               .addBinding("volumes", combineVolumes(configSources, settings.getKubernetes(), sidecarConfigs))
+              .addBinding("securityContext", settings.getKubernetes().getSecurityContext())
               .toString();
   }
 
@@ -323,8 +325,14 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     TemplatedResource probe;
     if (StringUtils.isNotEmpty(settings.getHealthEndpoint())) {
-      probe = new JinjaJarResource("/kubernetes/manifests/execReadinessProbe.yml");
-      probe.addBinding("command", getReadinessExecCommand(settings));
+      if (settings.getKubernetes().getUseExecHealthCheck()) {
+        probe = new JinjaJarResource("/kubernetes/manifests/execReadinessProbe.yml");
+        probe.addBinding("command", getReadinessExecCommand(settings));
+      } else {
+        probe = new JinjaJarResource("/kubernetes/manifests/httpReadinessProbe.yml");
+        probe.addBinding("port", settings.getPort());
+        probe.addBinding("path", settings.getHealthEndpoint());
+      }
     } else {
       probe = new JinjaJarResource("/kubernetes/manifests/tcpSocketReadinessProbe.yml");
       probe.addBinding("port", settings.getPort());
@@ -417,6 +425,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     Map<String, Set<Profile>> profilesByDirectory = new HashMap<>();
     List<String> requiredFiles = new ArrayList<>();
+    Map<String, byte[]> requiredEncryptedFiles = new HashMap<>();
     List<ConfigSource> configSources = new ArrayList<>();
     String secretNamePrefix = getServiceName() + "-files";
     String namespace = getNamespace(resolvedConfiguration.getServiceSettings(getService()));
@@ -430,6 +439,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
         profiles.put(profile.getName(), profile);
         requiredFiles.addAll(profile.getRequiredFiles());
+        requiredEncryptedFiles.putAll(profile.getDecryptedFiles());
       }
     }
 
@@ -442,6 +452,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
       profilesInDirectory.add(profile);
 
       requiredFiles.addAll(profile.getRequiredFiles());
+      requiredEncryptedFiles.putAll(profile.getDecryptedFiles());
       profilesByDirectory.put(mountPoint, profilesInDirectory);
     }
 
@@ -466,7 +477,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               Entry::getValue
           ));
 
-      KubernetesV2Utils.SecretSpec spec = KubernetesV2Utils.createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
+      KubernetesV2Utils.SecretSpec spec = executor.getKubernetesV2Utils().createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
       executor.apply(spec.resource.toString());
       configSources.add(new ConfigSource()
           .setId(spec.name)
@@ -475,18 +486,22 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
       );
     }
 
-    if (!requiredFiles.isEmpty()) {
+    if (!requiredFiles.isEmpty() || !requiredEncryptedFiles.isEmpty()) {
       List<SecretMountPair> files = requiredFiles.stream()
           .map(File::new)
           .map(SecretMountPair::new)
           .collect(Collectors.toList());
 
-      KubernetesV2Utils.SecretSpec spec = KubernetesV2Utils.createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
+      // Add in memory decrypted files
+      requiredEncryptedFiles.keySet().stream()
+              .map(k -> new SecretMountPair(k, requiredEncryptedFiles.get(k)))
+              .forEach(s -> files.add(s));
+
+      KubernetesV2Utils.SecretSpec spec = executor.getKubernetesV2Utils().createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
       executor.apply(spec.resource.toString());
       configSources.add(new ConfigSource()
           .setId(spec.name)
-          .setMountPath(files.get(0).getContents().getParent())
-      );
+          .setMountPath(getSpinnakerStagingDependenciesPath(details.getDeploymentName())));
     }
 
     return configSources;
@@ -612,18 +627,18 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   }
 
   default String connectCommand(AccountDeploymentDetails<KubernetesAccount> details,
-      SpinnakerRuntimeSettings runtimeSettings) {
+      SpinnakerRuntimeSettings runtimeSettings, KubernetesV2Utils kubernetesV2Utils) {
     ServiceSettings settings = runtimeSettings.getServiceSettings(getService());
     KubernetesAccount account = details.getAccount();
     String namespace = settings.getLocation();
     String name = getServiceName();
     int port = settings.getPort();
 
-    String podNameCommand = String.join(" ", KubernetesV2Utils.kubectlPodServiceCommand(account,
+    String podNameCommand = String.join(" ", kubernetesV2Utils.kubectlPodServiceCommand(account,
         namespace,
         name));
 
-    return String.join(" ", KubernetesV2Utils.kubectlConnectPodCommand(account,
+    return String.join(" ", kubernetesV2Utils.kubectlConnectPodCommand(account,
         namespace,
         "$(" + podNameCommand + ")",
         port));

@@ -49,6 +49,11 @@ public class KayentaProfileFactory extends SpringProfileFactory {
   }
 
   @Override
+  public String getMinimumSecretDecryptionVersion(String deploymentName) {
+    return "0.6.2";
+  }
+
+  @Override
   protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
     profile.appendContents(profile.getBaseContents());
@@ -58,7 +63,7 @@ public class KayentaProfileFactory extends SpringProfileFactory {
     if (canary.isEnabled()) {
       List<String> files = new ArrayList<>(backupRequiredFiles(canary, deploymentConfiguration.getName()));
       KayentaConfigWrapper kayentaConfig = new KayentaConfigWrapper(endpoints.getServiceSettings(Type.KAYENTA), canary);
-      profile.appendContents(yamlToString(kayentaConfig)).setRequiredFiles(files);
+      profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, kayentaConfig)).setRequiredFiles(files);
     }
   }
 

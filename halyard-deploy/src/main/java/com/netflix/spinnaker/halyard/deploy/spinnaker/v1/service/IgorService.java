@@ -101,4 +101,3 @@ abstract public class IgorService extends SpringService<IgorService.Igor> {
     }
   }
 }
-

@@ -17,7 +17,7 @@
 buildscript {
   repositories {
     jcenter()
-    maven { url "http://spinnaker.bintray.com/gradle" }
+    maven { url "https://spinnaker.bintray.com/gradle" }
     maven { url "https://plugins.gradle.org/m2/" }
   }
   dependencies {
@@ -33,7 +33,7 @@ allprojects {
   apply plugin: 'groovy'
 
   ext {
-    spinnakerDependenciesVersion = '1.18.0'
+    spinnakerDependenciesVersion = '1.37.0'
     if (project.hasProperty('spinnakerDependenciesVersion')) {
       spinnakerDependenciesVersion = project.property('spinnakerDependenciesVersion')
     }
@@ -57,7 +57,7 @@ subprojects { project ->
   dependencies {
     spinnaker.group('test')
     testCompile spinnaker.dependency('groovy')
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile spinnaker.dependency('bootTest')
     testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
   }
 
