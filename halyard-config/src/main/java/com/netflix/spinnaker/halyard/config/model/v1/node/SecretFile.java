@@ -12,4 +12,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface SecretFile {
   String prefix() default "";
+  boolean alwaysDecrypt() default false;
 }
