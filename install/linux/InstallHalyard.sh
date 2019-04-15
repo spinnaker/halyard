@@ -271,7 +271,7 @@ function install_java() {
   elif [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
     echo "Running debian 9 (stretch)"
     apt install -yt stretch-backports openjdk-8-jre-headless ca-certificates-java
-  elif [ "$ID" = "arch" ]|| [ "$ID_LIKE" = "arch" ]; then
+  elif [ "$ID" = "arch" ] || [ "$ID_LIKE" = "arch" ]; then
     echo "Running Arch Linux based distro ($PRETTY_NAME)"
     pacman -Sy --noconfirm java-runtime=8 ca-certificates-utils
   else
