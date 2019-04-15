@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Target, Inc.
+ * Copyright 2019 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,27 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.security;
+package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.net.URI;
-
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class Ldap extends AuthnMethod {
-
-  private final Method method = Method.LDAP;
-  private final String nodeName = "ldap";
-
-  private URI url;
-  private String userDnPattern;
-  private String userSearchBase;
-  private String userSearchFilter;
-  private String managerDn;
-  private String managerPassword;
-  private String groupSearchBase;
+public class KubernetesSecurityContext {
+  Integer runAsUser;
+  Integer fsGroup;
 }
+
