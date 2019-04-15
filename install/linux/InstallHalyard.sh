@@ -2,6 +2,22 @@
 
 set -e
 
+function check_migration_needed() {
+  set +e
+
+  which dpkg &> /dev/null
+  if [ "$?" = "0" ]; then
+    dpkg -s spinnaker-halyard &> /dev/null
+
+    if [ "$?" != "1" ]; then
+      >&2 echo "Attempting to install halyard while a debian installation is present."
+      >&2 echo "Please visit: http://spinnaker.io/setup/install/halyard_migration"
+      exit 1
+    fi
+  fi
+  set -e
+}
+
 function process_args() {
   while [ "$#" -gt "0" ]
   do
@@ -65,7 +81,7 @@ function process_args() {
 function get_user() {
   local user
 
-  user=$(who | awk '{print $1;}')
+  user=$(whoami)
   if [ -z "$YES" ]; then
     if [ "$user" = "root" ] || [ -z "$user" ]; then
       read -p "Please supply a non-root user to run Halyard as: " user
@@ -233,12 +249,31 @@ function install_java() {
 
   source /etc/os-release
 
-  # This should match most of the Arch based distros out there.
-  if [ "$ID" = "arch" ] || [ "$ID_LIKE" = "arch" ]; then
-    echo "Running Arch Linux based distro ($PRETTY_NAME)"
+  if [ "$ID" = "ubuntu" ]; then
+    echo "Running ubuntu $VERSION_ID"
     # Java 8
-    pacman -Sy --noconfirm java-runtime=8 ca-certificates-utils
+    # https://launchpad.net/~openjdk-r/+archive/ubuntu/ppa
+    add-apt-repository -y ppa:openjdk-r/ppa
+    apt-get update ||:
 
+    apt-get install -y --force-yes openjdk-8-jre
+
+    # https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
+    # It seems a circular dependency was introduced on 2016-04-22 with an openjdk-8 release, where
+    # the JRE relies on the ca-certificates-java package, which itself relies on the JRE. D'oh!
+    # This causes the /etc/ssl/certs/java/cacerts file to never be generated, causing a startup
+    # failure in Clouddriver.
+    dpkg --purge --force-depends ca-certificates-java
+    apt-get install -y ca-certificates-java
+  elif [ "$ID" = "debian" ] && [ "$VERSION_ID" = "8" ]; then
+    echo "Running debian 8 (jessie)"
+    apt install -yt jessie-backports openjdk-8-jre-headless ca-certificates-java
+  elif [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
+    echo "Running debian 9 (stretch)"
+    apt install -yt stretch-backports openjdk-8-jre-headless ca-certificates-java
+  elif [ "$ID" = "arch" ]|| [ "$ID_LIKE" = "arch" ]; then
+    echo "Running Arch Linux based distro ($PRETTY_NAME)"
+    pacman -Sy --noconfirm java-runtime=8 ca-certificates-utils
   else
     >&2 echo "Distribution $PRETTY_NAME is not supported yet - please file an issue"
     >&2 echo "  https://github.com/spinnaker/halyard/issues"
@@ -304,12 +339,22 @@ function install_halyard() {
 
   tar --no-same-owner -xvf halyard.tar.gz -C /opt
 
-cat > /usr/lib/sysusers.d/halyard.conf <<EOF
+
+  which systemd-sysusers &>/dev/null
+  if [ "$?" = "0" ]; then
+
+    cat > /usr/lib/sysusers.d/halyard.conf <<EOL
 g halyard - -
 g spinnaker - -
-EOF
+EOL
 
-  systemd-sysusers 2>&1 > /dev/null || true
+    systemd-sysusers &> /dev/null || true
+
+  else
+    groupadd halyard || true
+    groupadd spinnaker || true
+  fi
+
   usermod -G halyard -a $HAL_USER || true
   usermod -G spinnaker -a $HAL_USER || true
   chown $HAL_USER:halyard /opt/halyard
@@ -331,6 +376,8 @@ EOF
   popd
   rm -rf $TEMPDIR
 }
+
+check_migration_needed
 
 process_args $@
 configure_defaults
