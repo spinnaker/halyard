@@ -428,7 +428,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     Map<String, Set<Profile>> profilesByDirectory = new HashMap<>();
     List<String> requiredFiles = new ArrayList<>();
-    Map<String, String> requiredEncryptedFiles = new HashMap<>();
+    Map<String, byte[]> requiredEncryptedFiles = new HashMap<>();
     List<ConfigSource> configSources = new ArrayList<>();
     String secretNamePrefix = getServiceName() + "-files";
     String namespace = getNamespace(resolvedConfiguration.getServiceSettings(getService()));
@@ -481,7 +481,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
           ));
 
       KubernetesV2Utils.SecretSpec spec = executor.getKubernetesV2Utils().createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
-      executor.apply(spec.resource.toString());
+      executor.replace(spec.resource.toString());
       configSources.add(new ConfigSource()
           .setId(spec.name)
           .setMountPath(mountPath)
@@ -501,7 +501,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               .forEach(s -> files.add(s));
 
       KubernetesV2Utils.SecretSpec spec = executor.getKubernetesV2Utils().createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
-      executor.apply(spec.resource.toString());
+      executor.replace(spec.resource.toString());
       configSources.add(new ConfigSource()
           .setId(spec.name)
           .setMountPath(getSpinnakerStagingDependenciesPath(details.getDeploymentName())));
