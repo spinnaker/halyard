@@ -68,7 +68,7 @@ public class LocalDebianDeckService extends DeckService implements LocalDebianSe
   @Override
   public String installArtifactCommand(DeploymentDetails deploymentDetails) {
     String install = LocalDebianService.super.installArtifactCommand(deploymentDetails);
-    String ssl = deploymentDetails.getDeploymentConfiguration().getSecurity().getUiSecurity().getSsl().isEnabled() ? "a2enmod ssl" : "";
+    String ssl = deploymentDetails.getDeploymentConfiguration().getSecurity().getUiSecurity().getSsl().isEnabled() ? "a2enmod ssl" : "a2dismod ssl";
     return Strings.join("\n", install, ssl);
   }
 
