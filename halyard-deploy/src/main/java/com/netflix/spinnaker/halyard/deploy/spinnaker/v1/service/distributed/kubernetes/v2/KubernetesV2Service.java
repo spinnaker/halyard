@@ -18,10 +18,12 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.KubernetesUtil;
 import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.description.servergroup.KubernetesImageDescription;
+import com.netflix.spinnaker.halyard.config.model.v1.node.AffinityConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.CustomSizing;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.SidecarConfig;
@@ -227,7 +229,9 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               .addBinding("serviceAccountName", settings.getKubernetes().getServiceAccountName())
               .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
               .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
+              .addBinding("affinity", getAffinity(details))
               .addBinding("volumes", combineVolumes(configSources, settings.getKubernetes(), sidecarConfigs))
+              .addBinding("securityContext", settings.getKubernetes().getSecurityContext())
               .toString();
   }
 
@@ -424,7 +428,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
     Map<String, Set<Profile>> profilesByDirectory = new HashMap<>();
     List<String> requiredFiles = new ArrayList<>();
-    Map<String, String> requiredEncryptedFiles = new HashMap<>();
+    Map<String, byte[]> requiredEncryptedFiles = new HashMap<>();
     List<ConfigSource> configSources = new ArrayList<>();
     String secretNamePrefix = getServiceName() + "-files";
     String namespace = getNamespace(resolvedConfiguration.getServiceSettings(getService()));
@@ -476,8 +480,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               Entry::getValue
           ));
 
-      KubernetesV2Utils.SecretSpec spec = KubernetesV2Utils.createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
-      executor.apply(spec.resource.toString());
+      KubernetesV2Utils.SecretSpec spec = executor.getKubernetesV2Utils().createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
+      executor.replace(spec.resource.toString());
       configSources.add(new ConfigSource()
           .setId(spec.name)
           .setMountPath(mountPath)
@@ -496,8 +500,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
               .map(k -> new SecretMountPair(k, requiredEncryptedFiles.get(k)))
               .forEach(s -> files.add(s));
 
-      KubernetesV2Utils.SecretSpec spec = KubernetesV2Utils.createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
-      executor.apply(spec.resource.toString());
+      KubernetesV2Utils.SecretSpec spec = executor.getKubernetesV2Utils().createSecretSpec(namespace, getService().getCanonicalName(), secretNamePrefix, files);
+      executor.replace(spec.resource.toString());
       configSources.add(new ConfigSource()
           .setId(spec.name)
           .setMountPath(getSpinnakerStagingDependenciesPath(details.getDeploymentName())));
@@ -548,6 +552,26 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
             }).collect(Collectors.toList());
 
     return hostAliases;
+  }
+
+  default String getAffinity(AccountDeploymentDetails<KubernetesAccount> details) {
+    AffinityConfig affinityConfig = details.getDeploymentConfiguration()
+            .getDeploymentEnvironment()
+            .getAffinity()
+            .getOrDefault(getService().getServiceName(), new AffinityConfig());
+
+    if (affinityConfig.equals(new AffinityConfig())) {
+      affinityConfig = details.getDeploymentConfiguration()
+              .getDeploymentEnvironment()
+              .getAffinity()
+              .getOrDefault(getService().getBaseCanonicalName(), new AffinityConfig());
+    }
+
+    try {
+      return getObjectMapper().writeValueAsString(affinityConfig);
+    } catch (JsonProcessingException e) {
+      throw new HalException(Problem.Severity.FATAL, "Invalid affinity format: " + e.getMessage(), e);
+    }
   }
 
   default List<String> getInitContainers(AccountDeploymentDetails<KubernetesAccount> details) {
@@ -626,18 +650,18 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   }
 
   default String connectCommand(AccountDeploymentDetails<KubernetesAccount> details,
-      SpinnakerRuntimeSettings runtimeSettings) {
+      SpinnakerRuntimeSettings runtimeSettings, KubernetesV2Utils kubernetesV2Utils) {
     ServiceSettings settings = runtimeSettings.getServiceSettings(getService());
     KubernetesAccount account = details.getAccount();
     String namespace = settings.getLocation();
     String name = getServiceName();
     int port = settings.getPort();
 
-    String podNameCommand = String.join(" ", KubernetesV2Utils.kubectlPodServiceCommand(account,
+    String podNameCommand = String.join(" ", kubernetesV2Utils.kubectlPodServiceCommand(account,
         namespace,
         name));
 
-    return String.join(" ", KubernetesV2Utils.kubectlConnectPodCommand(account,
+    return String.join(" ", kubernetesV2Utils.kubectlConnectPodCommand(account,
         namespace,
         "$(" + podNameCommand + ")",
         port));

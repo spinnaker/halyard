@@ -44,14 +44,10 @@ public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount>
 
         String environment = cloudFoundryAccount.getEnvironment();
         String api = cloudFoundryAccount.getApi();
-        String appsManagerURI = cloudFoundryAccount.getAppsManagerURI();
-        String metricsURI = cloudFoundryAccount.getMetricsURI();
+        String appsManagerUri = cloudFoundryAccount.getAppsManagerUri();
+        String metricsUri = cloudFoundryAccount.getMetricsUri();
         String password = cloudFoundryAccount.getPassword();
         String user = cloudFoundryAccount.getUser();
-
-        if (StringUtils.isEmpty(environment)) {
-            problemSetBuilder.addProblem(Problem.Severity.ERROR, "You must provide an environment name");
-        }
 
         if (StringUtils.isEmpty(user) || StringUtils.isEmpty(password)) {
             problemSetBuilder.addProblem(Problem.Severity.ERROR, "You must provide a user and a password");
@@ -61,12 +57,12 @@ public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount>
             problemSetBuilder.addProblem(Problem.Severity.ERROR, "You must provide a CF api endpoint");
         }
 
-        if (StringUtils.isEmpty(appsManagerURI)) {
+        if (StringUtils.isEmpty(appsManagerUri)) {
             problemSetBuilder.addProblem(Problem.Severity.WARNING,
                     "To be able to link server groups to CF Appsmanager a URI is required: " + accountName);
         }
 
-        if (StringUtils.isEmpty(metricsURI)) {
+        if (StringUtils.isEmpty(metricsUri)) {
             problemSetBuilder.addProblem(Problem.Severity.WARNING,
                     "To be able to link server groups to CF Metrics a URI is required: " + accountName);
         }
@@ -74,8 +70,8 @@ public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount>
         try {
             CloudFoundryCredentials cloudFoundryCredentials = new CloudFoundryCredentials(
                     cloudFoundryAccount.getName(),
-                    appsManagerURI,
-                    metricsURI,
+                    appsManagerUri,
+                    metricsUri,
                     api,
                     user,
                     password,

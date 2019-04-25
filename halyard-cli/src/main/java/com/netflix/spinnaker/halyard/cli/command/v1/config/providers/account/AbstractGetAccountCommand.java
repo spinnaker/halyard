@@ -27,7 +27,7 @@ import lombok.Getter;
 
 @Parameters(separators = "=")
 abstract class AbstractGetAccountCommand extends AbstractHasAccountCommand {
-  public String getDescription() {
+  public String getShortDescription() {
     return "Get the specified account details for the " + getProviderName() + " provider.";
   }
 
@@ -47,7 +47,7 @@ abstract class AbstractGetAccountCommand extends AbstractHasAccountCommand {
         .setSuccessMessage("Account " + accountName + ": ")
         .setFormat(AnsiFormatUtils.Format.STRING)
         .setUserFormatted(true)
-        .setOperation(Daemon.getAccount(currentDeployment, providerName, accountName, false))
+        .setOperation(Daemon.getAccount(currentDeployment, providerName, accountName, !noValidate))
         .get();
   }
 }
