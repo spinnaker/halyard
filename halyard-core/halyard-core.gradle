@@ -1,9 +1,12 @@
 dependencies {
   compile spinnaker.dependency('bootActuator')
   compile spinnaker.dependency('bootWeb')
-  compile spinnaker.dependency('lombok')
+  compileOnly spinnaker.dependency('lombok')
+  annotationProcessor spinnaker.dependency('lombok')
   compile spinnaker.dependency('clouddriverAws')
   compile spinnaker.dependency('googleStorage')
+  compile spinnaker.dependency('korkSecrets')
+  compile spinnaker.dependency('korkSecretsAws')
 
   compile 'com.beust:jcommander:1.48'
   compile 'com.hubspot.jinjava:jinjava:2.2.3'
@@ -11,4 +14,5 @@ dependencies {
   compile 'org.apache.commons:commons-compress:1.14'
   compile 'org.spockframework:spock-spring:1.1-groovy-2.4'
   compile 'org.springframework.boot:spring-boot-gradle-plugin:1.4.7.RELEASE'
+  compile group: 'org.yaml', name: 'snakeyaml', version: '1.24'
 }

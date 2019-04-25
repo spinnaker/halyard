@@ -73,6 +73,15 @@
  * [**hal config artifact http account list**](#hal-config-artifact-http-account-list)
  * [**hal config artifact http disable**](#hal-config-artifact-http-disable)
  * [**hal config artifact http enable**](#hal-config-artifact-http-enable)
+ * [**hal config artifact maven**](#hal-config-artifact-maven)
+ * [**hal config artifact maven account**](#hal-config-artifact-maven-account)
+ * [**hal config artifact maven account add**](#hal-config-artifact-maven-account-add)
+ * [**hal config artifact maven account delete**](#hal-config-artifact-maven-account-delete)
+ * [**hal config artifact maven account edit**](#hal-config-artifact-maven-account-edit)
+ * [**hal config artifact maven account get**](#hal-config-artifact-maven-account-get)
+ * [**hal config artifact maven account list**](#hal-config-artifact-maven-account-list)
+ * [**hal config artifact maven disable**](#hal-config-artifact-maven-disable)
+ * [**hal config artifact maven enable**](#hal-config-artifact-maven-enable)
  * [**hal config artifact oracle**](#hal-config-artifact-oracle)
  * [**hal config artifact oracle account**](#hal-config-artifact-oracle-account)
  * [**hal config artifact oracle account add**](#hal-config-artifact-oracle-account-add)
@@ -149,6 +158,15 @@
  * [**hal config canary signalfx disable**](#hal-config-canary-signalfx-disable)
  * [**hal config canary signalfx enable**](#hal-config-canary-signalfx-enable)
  * [**hal config ci**](#hal-config-ci)
+ * [**hal config ci concourse**](#hal-config-ci-concourse)
+ * [**hal config ci concourse disable**](#hal-config-ci-concourse-disable)
+ * [**hal config ci concourse enable**](#hal-config-ci-concourse-enable)
+ * [**hal config ci concourse master**](#hal-config-ci-concourse-master)
+ * [**hal config ci concourse master add**](#hal-config-ci-concourse-master-add)
+ * [**hal config ci concourse master delete**](#hal-config-ci-concourse-master-delete)
+ * [**hal config ci concourse master edit**](#hal-config-ci-concourse-master-edit)
+ * [**hal config ci concourse master get**](#hal-config-ci-concourse-master-get)
+ * [**hal config ci concourse master list**](#hal-config-ci-concourse-master-list)
  * [**hal config ci jenkins**](#hal-config-ci-jenkins)
  * [**hal config ci jenkins disable**](#hal-config-ci-jenkins-disable)
  * [**hal config ci jenkins enable**](#hal-config-ci-jenkins-enable)
@@ -177,6 +195,82 @@
  * [**hal config ci wercker master get**](#hal-config-ci-wercker-master-get)
  * [**hal config ci wercker master list**](#hal-config-ci-wercker-master-list)
  * [**hal config deploy**](#hal-config-deploy)
+ * [**hal config deploy component-sizing**](#hal-config-deploy-component-sizing)
+ * [**hal config deploy component-sizing clouddriver**](#hal-config-deploy-component-sizing-clouddriver)
+ * [**hal config deploy component-sizing clouddriver delete**](#hal-config-deploy-component-sizing-clouddriver-delete)
+ * [**hal config deploy component-sizing clouddriver edit**](#hal-config-deploy-component-sizing-clouddriver-edit)
+ * [**hal config deploy component-sizing clouddriver-bootstrap**](#hal-config-deploy-component-sizing-clouddriver-bootstrap)
+ * [**hal config deploy component-sizing clouddriver-bootstrap delete**](#hal-config-deploy-component-sizing-clouddriver-bootstrap-delete)
+ * [**hal config deploy component-sizing clouddriver-bootstrap edit**](#hal-config-deploy-component-sizing-clouddriver-bootstrap-edit)
+ * [**hal config deploy component-sizing clouddriver-caching**](#hal-config-deploy-component-sizing-clouddriver-caching)
+ * [**hal config deploy component-sizing clouddriver-caching delete**](#hal-config-deploy-component-sizing-clouddriver-caching-delete)
+ * [**hal config deploy component-sizing clouddriver-caching edit**](#hal-config-deploy-component-sizing-clouddriver-caching-edit)
+ * [**hal config deploy component-sizing clouddriver-ro**](#hal-config-deploy-component-sizing-clouddriver-ro)
+ * [**hal config deploy component-sizing clouddriver-ro delete**](#hal-config-deploy-component-sizing-clouddriver-ro-delete)
+ * [**hal config deploy component-sizing clouddriver-ro edit**](#hal-config-deploy-component-sizing-clouddriver-ro-edit)
+ * [**hal config deploy component-sizing clouddriver-ro-deck**](#hal-config-deploy-component-sizing-clouddriver-ro-deck)
+ * [**hal config deploy component-sizing clouddriver-ro-deck delete**](#hal-config-deploy-component-sizing-clouddriver-ro-deck-delete)
+ * [**hal config deploy component-sizing clouddriver-ro-deck edit**](#hal-config-deploy-component-sizing-clouddriver-ro-deck-edit)
+ * [**hal config deploy component-sizing clouddriver-rw**](#hal-config-deploy-component-sizing-clouddriver-rw)
+ * [**hal config deploy component-sizing clouddriver-rw delete**](#hal-config-deploy-component-sizing-clouddriver-rw-delete)
+ * [**hal config deploy component-sizing clouddriver-rw edit**](#hal-config-deploy-component-sizing-clouddriver-rw-edit)
+ * [**hal config deploy component-sizing consul-client**](#hal-config-deploy-component-sizing-consul-client)
+ * [**hal config deploy component-sizing consul-client delete**](#hal-config-deploy-component-sizing-consul-client-delete)
+ * [**hal config deploy component-sizing consul-client edit**](#hal-config-deploy-component-sizing-consul-client-edit)
+ * [**hal config deploy component-sizing consul-server**](#hal-config-deploy-component-sizing-consul-server)
+ * [**hal config deploy component-sizing consul-server delete**](#hal-config-deploy-component-sizing-consul-server-delete)
+ * [**hal config deploy component-sizing consul-server edit**](#hal-config-deploy-component-sizing-consul-server-edit)
+ * [**hal config deploy component-sizing deck**](#hal-config-deploy-component-sizing-deck)
+ * [**hal config deploy component-sizing deck delete**](#hal-config-deploy-component-sizing-deck-delete)
+ * [**hal config deploy component-sizing deck edit**](#hal-config-deploy-component-sizing-deck-edit)
+ * [**hal config deploy component-sizing echo**](#hal-config-deploy-component-sizing-echo)
+ * [**hal config deploy component-sizing echo delete**](#hal-config-deploy-component-sizing-echo-delete)
+ * [**hal config deploy component-sizing echo edit**](#hal-config-deploy-component-sizing-echo-edit)
+ * [**hal config deploy component-sizing echo-scheduler**](#hal-config-deploy-component-sizing-echo-scheduler)
+ * [**hal config deploy component-sizing echo-scheduler delete**](#hal-config-deploy-component-sizing-echo-scheduler-delete)
+ * [**hal config deploy component-sizing echo-scheduler edit**](#hal-config-deploy-component-sizing-echo-scheduler-edit)
+ * [**hal config deploy component-sizing echo-worker**](#hal-config-deploy-component-sizing-echo-worker)
+ * [**hal config deploy component-sizing echo-worker delete**](#hal-config-deploy-component-sizing-echo-worker-delete)
+ * [**hal config deploy component-sizing echo-worker edit**](#hal-config-deploy-component-sizing-echo-worker-edit)
+ * [**hal config deploy component-sizing fiat**](#hal-config-deploy-component-sizing-fiat)
+ * [**hal config deploy component-sizing fiat delete**](#hal-config-deploy-component-sizing-fiat-delete)
+ * [**hal config deploy component-sizing fiat edit**](#hal-config-deploy-component-sizing-fiat-edit)
+ * [**hal config deploy component-sizing front50**](#hal-config-deploy-component-sizing-front50)
+ * [**hal config deploy component-sizing front50 delete**](#hal-config-deploy-component-sizing-front50-delete)
+ * [**hal config deploy component-sizing front50 edit**](#hal-config-deploy-component-sizing-front50-edit)
+ * [**hal config deploy component-sizing gate**](#hal-config-deploy-component-sizing-gate)
+ * [**hal config deploy component-sizing gate delete**](#hal-config-deploy-component-sizing-gate-delete)
+ * [**hal config deploy component-sizing gate edit**](#hal-config-deploy-component-sizing-gate-edit)
+ * [**hal config deploy component-sizing igor**](#hal-config-deploy-component-sizing-igor)
+ * [**hal config deploy component-sizing igor delete**](#hal-config-deploy-component-sizing-igor-delete)
+ * [**hal config deploy component-sizing igor edit**](#hal-config-deploy-component-sizing-igor-edit)
+ * [**hal config deploy component-sizing kayenta**](#hal-config-deploy-component-sizing-kayenta)
+ * [**hal config deploy component-sizing kayenta delete**](#hal-config-deploy-component-sizing-kayenta-delete)
+ * [**hal config deploy component-sizing kayenta edit**](#hal-config-deploy-component-sizing-kayenta-edit)
+ * [**hal config deploy component-sizing monitoring-daemon**](#hal-config-deploy-component-sizing-monitoring-daemon)
+ * [**hal config deploy component-sizing monitoring-daemon delete**](#hal-config-deploy-component-sizing-monitoring-daemon-delete)
+ * [**hal config deploy component-sizing monitoring-daemon edit**](#hal-config-deploy-component-sizing-monitoring-daemon-edit)
+ * [**hal config deploy component-sizing orca**](#hal-config-deploy-component-sizing-orca)
+ * [**hal config deploy component-sizing orca delete**](#hal-config-deploy-component-sizing-orca-delete)
+ * [**hal config deploy component-sizing orca edit**](#hal-config-deploy-component-sizing-orca-edit)
+ * [**hal config deploy component-sizing orca-bootstrap**](#hal-config-deploy-component-sizing-orca-bootstrap)
+ * [**hal config deploy component-sizing orca-bootstrap delete**](#hal-config-deploy-component-sizing-orca-bootstrap-delete)
+ * [**hal config deploy component-sizing orca-bootstrap edit**](#hal-config-deploy-component-sizing-orca-bootstrap-edit)
+ * [**hal config deploy component-sizing redis**](#hal-config-deploy-component-sizing-redis)
+ * [**hal config deploy component-sizing redis delete**](#hal-config-deploy-component-sizing-redis-delete)
+ * [**hal config deploy component-sizing redis edit**](#hal-config-deploy-component-sizing-redis-edit)
+ * [**hal config deploy component-sizing redis-bootstrap**](#hal-config-deploy-component-sizing-redis-bootstrap)
+ * [**hal config deploy component-sizing redis-bootstrap delete**](#hal-config-deploy-component-sizing-redis-bootstrap-delete)
+ * [**hal config deploy component-sizing redis-bootstrap edit**](#hal-config-deploy-component-sizing-redis-bootstrap-edit)
+ * [**hal config deploy component-sizing rosco**](#hal-config-deploy-component-sizing-rosco)
+ * [**hal config deploy component-sizing rosco delete**](#hal-config-deploy-component-sizing-rosco-delete)
+ * [**hal config deploy component-sizing rosco edit**](#hal-config-deploy-component-sizing-rosco-edit)
+ * [**hal config deploy component-sizing vault-client**](#hal-config-deploy-component-sizing-vault-client)
+ * [**hal config deploy component-sizing vault-client delete**](#hal-config-deploy-component-sizing-vault-client-delete)
+ * [**hal config deploy component-sizing vault-client edit**](#hal-config-deploy-component-sizing-vault-client-edit)
+ * [**hal config deploy component-sizing vault-server**](#hal-config-deploy-component-sizing-vault-server)
+ * [**hal config deploy component-sizing vault-server delete**](#hal-config-deploy-component-sizing-vault-server-delete)
+ * [**hal config deploy component-sizing vault-server edit**](#hal-config-deploy-component-sizing-vault-server-edit)
  * [**hal config deploy edit**](#hal-config-deploy-edit)
  * [**hal config deploy ha**](#hal-config-deploy-ha)
  * [**hal config deploy ha clouddriver**](#hal-config-deploy-ha-clouddriver)
@@ -262,6 +356,15 @@
  * [**hal config provider azure bakery edit**](#hal-config-provider-azure-bakery-edit)
  * [**hal config provider azure disable**](#hal-config-provider-azure-disable)
  * [**hal config provider azure enable**](#hal-config-provider-azure-enable)
+ * [**hal config provider cloudfoundry**](#hal-config-provider-cloudfoundry)
+ * [**hal config provider cloudfoundry account**](#hal-config-provider-cloudfoundry-account)
+ * [**hal config provider cloudfoundry account add**](#hal-config-provider-cloudfoundry-account-add)
+ * [**hal config provider cloudfoundry account delete**](#hal-config-provider-cloudfoundry-account-delete)
+ * [**hal config provider cloudfoundry account edit**](#hal-config-provider-cloudfoundry-account-edit)
+ * [**hal config provider cloudfoundry account get**](#hal-config-provider-cloudfoundry-account-get)
+ * [**hal config provider cloudfoundry account list**](#hal-config-provider-cloudfoundry-account-list)
+ * [**hal config provider cloudfoundry disable**](#hal-config-provider-cloudfoundry-disable)
+ * [**hal config provider cloudfoundry enable**](#hal-config-provider-cloudfoundry-enable)
  * [**hal config provider dcos**](#hal-config-provider-dcos)
  * [**hal config provider dcos account**](#hal-config-provider-dcos-account)
  * [**hal config provider dcos account add**](#hal-config-provider-dcos-account-add)
@@ -350,6 +453,16 @@
  * [**hal config pubsub google subscription edit**](#hal-config-pubsub-google-subscription-edit)
  * [**hal config pubsub google subscription get**](#hal-config-pubsub-google-subscription-get)
  * [**hal config pubsub google subscription list**](#hal-config-pubsub-google-subscription-list)
+ * [**hal config repository**](#hal-config-repository)
+ * [**hal config repository artifactory**](#hal-config-repository-artifactory)
+ * [**hal config repository artifactory disable**](#hal-config-repository-artifactory-disable)
+ * [**hal config repository artifactory enable**](#hal-config-repository-artifactory-enable)
+ * [**hal config repository artifactory search**](#hal-config-repository-artifactory-search)
+ * [**hal config repository artifactory search add**](#hal-config-repository-artifactory-search-add)
+ * [**hal config repository artifactory search delete**](#hal-config-repository-artifactory-search-delete)
+ * [**hal config repository artifactory search edit**](#hal-config-repository-artifactory-search-edit)
+ * [**hal config repository artifactory search get**](#hal-config-repository-artifactory-search-get)
+ * [**hal config repository artifactory search list**](#hal-config-repository-artifactory-search-list)
  * [**hal config security**](#hal-config-security)
  * [**hal config security api**](#hal-config-security-api)
  * [**hal config security api edit**](#hal-config-security-api-edit)
@@ -676,6 +789,7 @@ hal config [parameters] [subcommands]
  * `notification`: Display the state of Spinnaker's notification settings.
  * `provider`: Configure, validate, and view the specified provider.
  * `pubsub`: Configure, validate, and view the specified pubsub.
+ * `repository`: Configure, validate, and view the specified repository.
  * `security`: Configure Spinnaker's security. This includes external SSL, authentication mechanisms, and authorization policies.
  * `storage`: Show Spinnaker's persistent storage configuration.
  * `version`: Configure & view the current deployment of Spinnaker's version.
@@ -698,6 +812,7 @@ hal config artifact [subcommands]
  * `gitlab`: Manage and view Spinnaker configuration for the gitlab provider
  * `helm`: Manage and view Spinnaker configuration for the helm provider
  * `http`: Manage and view Spinnaker configuration for the http provider
+ * `maven`: Manage and view Spinnaker configuration for the maven provider
  * `oracle`: Manage and view Spinnaker configuration for the oracle provider
  * `s3`: Manage and view Spinnaker configuration for the s3 provider
  * `templates`: Show Spinnaker's configured artifact templates.
@@ -1631,6 +1746,158 @@ Set the http artifact provider as enabled
 #### Usage
 ```
 hal config artifact http enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config artifact maven
+
+Manage and view Spinnaker configuration for the maven provider
+
+#### Usage
+```
+hal config artifact maven [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the maven artifact provider's account
+ * `disable`: Set the maven artifact provider as disabled
+ * `enable`: Set the maven artifact provider as enabled
+
+---
+## hal config artifact maven account
+
+Manage and view Spinnaker configuration for the maven artifact provider's account
+
+#### Usage
+```
+hal config artifact maven account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add an artifact account to the maven artifact provider.
+ * `delete`: Delete a specific maven artifact account by name.
+ * `edit`: Edit an artifact account in the maven artifact provider.
+ * `get`: Get the specified account details for the maven provider.
+ * `list`: List the artifact account names for the maven artifact provider.
+
+---
+## hal config artifact maven account add
+
+Add an artifact account to the maven artifact provider.
+
+#### Usage
+```
+hal config artifact maven account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--repository-url`: (*Required*) Full URI for the Maven repository ie. `http://some.host.com/repository/path`
+
+
+---
+## hal config artifact maven account delete
+
+Delete a specific maven artifact account by name.
+
+#### Usage
+```
+hal config artifact maven account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config artifact maven account edit
+
+Edit an artifact account in the maven artifact provider.
+
+#### Usage
+```
+hal config artifact maven account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--repository-url`: Full URI for the Maven repository ie. `http://some.host.com/repository/path`
+
+
+---
+## hal config artifact maven account get
+
+Get the specified account details for the maven provider.
+
+#### Usage
+```
+hal config artifact maven account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config artifact maven account list
+
+List the artifact account names for the maven artifact provider.
+
+#### Usage
+```
+hal config artifact maven account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config artifact maven disable
+
+Set the maven artifact provider as disabled
+
+#### Usage
+```
+hal config artifact maven disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config artifact maven enable
+
+Set the maven artifact provider as enabled
+
+#### Usage
+```
+hal config artifact maven enable [parameters]
 ```
 
 #### Parameters
@@ -2979,9 +3246,174 @@ hal config ci [subcommands]
 ```
 
 #### Subcommands
+ * `concourse`: Manage and view Spinnaker configuration for the concourse ci
  * `jenkins`: Manage and view Spinnaker configuration for the jenkins ci
  * `travis`: Manage and view Spinnaker configuration for the travis ci
  * `wercker`: Manage and view Spinnaker configuration for the wercker ci
+
+---
+## hal config ci concourse
+
+Manage and view Spinnaker configuration for the concourse ci
+
+#### Usage
+```
+hal config ci concourse [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set the concourse ci as disabled
+ * `enable`: Set the concourse ci as enabled
+ * `master`: Manage and view Spinnaker configuration for the concourse Continuous Integration services's master
+
+---
+## hal config ci concourse disable
+
+Set the concourse ci as disabled
+
+#### Usage
+```
+hal config ci concourse disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci concourse enable
+
+Set the concourse ci as enabled
+
+#### Usage
+```
+hal config ci concourse enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci concourse master
+
+Manage and view Spinnaker configuration for the concourse Continuous Integration services's master
+
+#### Usage
+```
+hal config ci concourse master MASTER [parameters] [subcommands]
+```
+
+#### Parameters
+`MASTER`: The name of the master to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a master for the concourse Continuous Integration service.
+ * `delete`: Delete a specific concourse master by name.
+ * `edit`: Edit a master for the concourse Continuous Integration service.
+ * `get`: Get the specified master details for concourse.
+ * `list`: List the master names for concourse.
+
+---
+## hal config ci concourse master add
+
+Add a master for the concourse Continuous Integration service.
+
+#### Usage
+```
+hal config ci concourse master add MASTER [parameters]
+```
+
+#### Parameters
+`MASTER`: The name of the master to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The password of the concourse user to authenticate as.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build master or use it as a trigger source.
+ * `--url`: (*Required*) The url your concourse search is reachable at.
+ * `--username`: (*Required*) The username of the concourse user to authenticate as.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build master.
+
+
+---
+## hal config ci concourse master delete
+
+Delete a specific concourse master by name.
+
+#### Usage
+```
+hal config ci concourse master delete MASTER [parameters]
+```
+
+#### Parameters
+`MASTER`: The name of the master to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci concourse master edit
+
+Edit a master for the concourse Continuous Integration service.
+
+#### Usage
+```
+hal config ci concourse master edit MASTER [parameters]
+```
+
+#### Parameters
+`MASTER`: The name of the master to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Sensitive data* - user will be prompted on standard input) The password of the concourse user to authenticate as.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
+ * `--url`: The url your concourse search is reachable at.
+ * `--username`: The username of the concourse user to authenticate as.
+ * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build master.
+
+
+---
+## hal config ci concourse master get
+
+Get the specified master details for concourse.
+
+#### Usage
+```
+hal config ci concourse master get MASTER [parameters]
+```
+
+#### Parameters
+`MASTER`: The name of the master to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci concourse master list
+
+List the master names for concourse.
+
+#### Usage
+```
+hal config ci concourse master list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
 
 ---
 ## hal config ci jenkins
@@ -3071,7 +3503,9 @@ hal config ci jenkins master add MASTER [parameters]
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: (*Sensitive data* - user will be prompted on standard input) The password of the jenkins user to authenticate as.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--username`: The username of the jenkins user to authenticate as.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build master.
 
 
 ---
@@ -3102,12 +3536,18 @@ hal config ci jenkins master edit MASTER [parameters]
 
 #### Parameters
 `MASTER`: The name of the master to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--address`: The address your jenkins master is reachable at.
  * `--csrf`: Whether or not to negotiate CSRF tokens when calling Jenkins.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: (*Sensitive data* - user will be prompted on standard input) The password of the jenkins user to authenticate as.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--username`: The username of the jenkins user to authenticate as.
+ * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build master.
 
 
 ---
@@ -3230,6 +3670,8 @@ hal config ci travis master add MASTER [parameters]
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--number-of-repositories`: How many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build master or use it as a trigger source.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build master.
 
 
 ---
@@ -3260,12 +3702,18 @@ hal config ci travis master edit MASTER [parameters]
 
 #### Parameters
 `MASTER`: The name of the master to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--address`: The address of the travis API (https://api.travis-ci.org).
  * `--base-url`: The base URL to the travis UI (https://travis-ci.org).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--number-of-repositories`: How many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
+ * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build master.
 
 
 ---
@@ -3385,8 +3833,10 @@ hal config ci wercker master add MASTER [parameters]
  * `--address`: (*Required*) The address your Wercker master is reachable at.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--token`: (*Sensitive data* - user will be prompted on standard input) The personal token of the Wercker user to authenticate as.
  * `--user`: The username of the Wercker user to authenticate as.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build master.
 
 
 ---
@@ -3417,11 +3867,17 @@ hal config ci wercker master edit MASTER [parameters]
 
 #### Parameters
 `MASTER`: The name of the master to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--address`: The address your Wercker master is reachable at.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--token`: (*Sensitive data* - user will be prompted on standard input) The personal token of the Wercker user to authenticate as.
  * `--user`: The username of the Wercker user to authenticate as.
+ * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build master.
 
 
 ---
@@ -3470,8 +3926,1371 @@ hal config deploy [parameters] [subcommands]
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 #### Subcommands
+ * `component-sizing`: Configure, validate, and view the component sizings for the Spinnaker services.
  * `edit`: Edit Spinnaker's deployment footprint and configuration.
  * `ha`: Configure, validate, and view the specified high availability Spinnaker service configuration.
+
+---
+## hal config deploy component-sizing
+
+Configure, validate, and view the component sizings for the Spinnaker services.
+
+#### Usage
+```
+hal config deploy component-sizing [subcommands]
+```
+
+#### Subcommands
+ * `clouddriver`: Manage and view Spinnaker component sizing configuration for clouddriver
+ * `clouddriver-bootstrap`: Manage and view Spinnaker component sizing configuration for clouddriver-bootstrap
+ * `clouddriver-caching`: Manage and view Spinnaker component sizing configuration for clouddriver-caching
+ * `clouddriver-ro`: Manage and view Spinnaker component sizing configuration for clouddriver-ro
+ * `clouddriver-ro-deck`: Manage and view Spinnaker component sizing configuration for clouddriver-ro-deck
+ * `clouddriver-rw`: Manage and view Spinnaker component sizing configuration for clouddriver-rw
+ * `consul-client`: Manage and view Spinnaker component sizing configuration for consul-client
+ * `consul-server`: Manage and view Spinnaker component sizing configuration for consul-server
+ * `deck`: Manage and view Spinnaker component sizing configuration for deck
+ * `echo`: Manage and view Spinnaker component sizing configuration for echo
+ * `echo-scheduler`: Manage and view Spinnaker component sizing configuration for echo-scheduler
+ * `echo-worker`: Manage and view Spinnaker component sizing configuration for echo-worker
+ * `fiat`: Manage and view Spinnaker component sizing configuration for fiat
+ * `front50`: Manage and view Spinnaker component sizing configuration for front50
+ * `gate`: Manage and view Spinnaker component sizing configuration for gate
+ * `igor`: Manage and view Spinnaker component sizing configuration for igor
+ * `kayenta`: Manage and view Spinnaker component sizing configuration for kayenta
+ * `monitoring-daemon`: Manage and view Spinnaker component sizing configuration for monitoring-daemon
+ * `orca`: Manage and view Spinnaker component sizing configuration for orca
+ * `orca-bootstrap`: Manage and view Spinnaker component sizing configuration for orca-bootstrap
+ * `redis`: Manage and view Spinnaker component sizing configuration for redis
+ * `redis-bootstrap`: Manage and view Spinnaker component sizing configuration for redis-bootstrap
+ * `rosco`: Manage and view Spinnaker component sizing configuration for rosco
+ * `vault-client`: Manage and view Spinnaker component sizing configuration for vault-client
+ * `vault-server`: Manage and view Spinnaker component sizing configuration for vault-server
+
+---
+## hal config deploy component-sizing clouddriver
+
+Manage and view Spinnaker component sizing configuration for clouddriver
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service clouddriver
+ * `edit`: Edit the component sizing for service clouddriver, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing clouddriver delete
+
+Delete the custom component sizings for service clouddriver
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing clouddriver edit
+
+Edit the component sizing for service clouddriver, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing clouddriver-bootstrap
+
+Manage and view Spinnaker component sizing configuration for clouddriver-bootstrap
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-bootstrap [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service clouddriver-bootstrap
+ * `edit`: Edit the component sizing for service clouddriver-bootstrap, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing clouddriver-bootstrap delete
+
+Delete the custom component sizings for service clouddriver-bootstrap
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-bootstrap delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing clouddriver-bootstrap edit
+
+Edit the component sizing for service clouddriver-bootstrap, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-bootstrap edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing clouddriver-caching
+
+Manage and view Spinnaker component sizing configuration for clouddriver-caching
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-caching [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service clouddriver-caching
+ * `edit`: Edit the component sizing for service clouddriver-caching, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing clouddriver-caching delete
+
+Delete the custom component sizings for service clouddriver-caching
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-caching delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing clouddriver-caching edit
+
+Edit the component sizing for service clouddriver-caching, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-caching edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing clouddriver-ro
+
+Manage and view Spinnaker component sizing configuration for clouddriver-ro
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-ro [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service clouddriver-ro
+ * `edit`: Edit the component sizing for service clouddriver-ro, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing clouddriver-ro delete
+
+Delete the custom component sizings for service clouddriver-ro
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-ro delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing clouddriver-ro edit
+
+Edit the component sizing for service clouddriver-ro, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-ro edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing clouddriver-ro-deck
+
+Manage and view Spinnaker component sizing configuration for clouddriver-ro-deck
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-ro-deck [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service clouddriver-ro-deck
+ * `edit`: Edit the component sizing for service clouddriver-ro-deck, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing clouddriver-ro-deck delete
+
+Delete the custom component sizings for service clouddriver-ro-deck
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-ro-deck delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing clouddriver-ro-deck edit
+
+Edit the component sizing for service clouddriver-ro-deck, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-ro-deck edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing clouddriver-rw
+
+Manage and view Spinnaker component sizing configuration for clouddriver-rw
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-rw [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service clouddriver-rw
+ * `edit`: Edit the component sizing for service clouddriver-rw, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing clouddriver-rw delete
+
+Delete the custom component sizings for service clouddriver-rw
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-rw delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing clouddriver-rw edit
+
+Edit the component sizing for service clouddriver-rw, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing clouddriver-rw edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing consul-client
+
+Manage and view Spinnaker component sizing configuration for consul-client
+
+#### Usage
+```
+hal config deploy component-sizing consul-client [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service consul-client
+ * `edit`: Edit the component sizing for service consul-client, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing consul-client delete
+
+Delete the custom component sizings for service consul-client
+
+#### Usage
+```
+hal config deploy component-sizing consul-client delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing consul-client edit
+
+Edit the component sizing for service consul-client, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing consul-client edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing consul-server
+
+Manage and view Spinnaker component sizing configuration for consul-server
+
+#### Usage
+```
+hal config deploy component-sizing consul-server [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service consul-server
+ * `edit`: Edit the component sizing for service consul-server, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing consul-server delete
+
+Delete the custom component sizings for service consul-server
+
+#### Usage
+```
+hal config deploy component-sizing consul-server delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing consul-server edit
+
+Edit the component sizing for service consul-server, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing consul-server edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing deck
+
+Manage and view Spinnaker component sizing configuration for deck
+
+#### Usage
+```
+hal config deploy component-sizing deck [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service deck
+ * `edit`: Edit the component sizing for service deck, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing deck delete
+
+Delete the custom component sizings for service deck
+
+#### Usage
+```
+hal config deploy component-sizing deck delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing deck edit
+
+Edit the component sizing for service deck, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing deck edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing echo
+
+Manage and view Spinnaker component sizing configuration for echo
+
+#### Usage
+```
+hal config deploy component-sizing echo [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service echo
+ * `edit`: Edit the component sizing for service echo, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing echo delete
+
+Delete the custom component sizings for service echo
+
+#### Usage
+```
+hal config deploy component-sizing echo delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing echo edit
+
+Edit the component sizing for service echo, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing echo edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing echo-scheduler
+
+Manage and view Spinnaker component sizing configuration for echo-scheduler
+
+#### Usage
+```
+hal config deploy component-sizing echo-scheduler [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service echo-scheduler
+ * `edit`: Edit the component sizing for service echo-scheduler, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing echo-scheduler delete
+
+Delete the custom component sizings for service echo-scheduler
+
+#### Usage
+```
+hal config deploy component-sizing echo-scheduler delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing echo-scheduler edit
+
+Edit the component sizing for service echo-scheduler, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing echo-scheduler edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing echo-worker
+
+Manage and view Spinnaker component sizing configuration for echo-worker
+
+#### Usage
+```
+hal config deploy component-sizing echo-worker [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service echo-worker
+ * `edit`: Edit the component sizing for service echo-worker, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing echo-worker delete
+
+Delete the custom component sizings for service echo-worker
+
+#### Usage
+```
+hal config deploy component-sizing echo-worker delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing echo-worker edit
+
+Edit the component sizing for service echo-worker, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing echo-worker edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing fiat
+
+Manage and view Spinnaker component sizing configuration for fiat
+
+#### Usage
+```
+hal config deploy component-sizing fiat [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service fiat
+ * `edit`: Edit the component sizing for service fiat, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing fiat delete
+
+Delete the custom component sizings for service fiat
+
+#### Usage
+```
+hal config deploy component-sizing fiat delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing fiat edit
+
+Edit the component sizing for service fiat, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing fiat edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing front50
+
+Manage and view Spinnaker component sizing configuration for front50
+
+#### Usage
+```
+hal config deploy component-sizing front50 [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service front50
+ * `edit`: Edit the component sizing for service front50, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing front50 delete
+
+Delete the custom component sizings for service front50
+
+#### Usage
+```
+hal config deploy component-sizing front50 delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing front50 edit
+
+Edit the component sizing for service front50, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing front50 edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing gate
+
+Manage and view Spinnaker component sizing configuration for gate
+
+#### Usage
+```
+hal config deploy component-sizing gate [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service gate
+ * `edit`: Edit the component sizing for service gate, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing gate delete
+
+Delete the custom component sizings for service gate
+
+#### Usage
+```
+hal config deploy component-sizing gate delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing gate edit
+
+Edit the component sizing for service gate, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing gate edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing igor
+
+Manage and view Spinnaker component sizing configuration for igor
+
+#### Usage
+```
+hal config deploy component-sizing igor [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service igor
+ * `edit`: Edit the component sizing for service igor, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing igor delete
+
+Delete the custom component sizings for service igor
+
+#### Usage
+```
+hal config deploy component-sizing igor delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing igor edit
+
+Edit the component sizing for service igor, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing igor edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing kayenta
+
+Manage and view Spinnaker component sizing configuration for kayenta
+
+#### Usage
+```
+hal config deploy component-sizing kayenta [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service kayenta
+ * `edit`: Edit the component sizing for service kayenta, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing kayenta delete
+
+Delete the custom component sizings for service kayenta
+
+#### Usage
+```
+hal config deploy component-sizing kayenta delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing kayenta edit
+
+Edit the component sizing for service kayenta, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing kayenta edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing monitoring-daemon
+
+Manage and view Spinnaker component sizing configuration for monitoring-daemon
+
+#### Usage
+```
+hal config deploy component-sizing monitoring-daemon [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service monitoring-daemon
+ * `edit`: Edit the component sizing for service monitoring-daemon, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing monitoring-daemon delete
+
+Delete the custom component sizings for service monitoring-daemon
+
+#### Usage
+```
+hal config deploy component-sizing monitoring-daemon delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing monitoring-daemon edit
+
+Edit the component sizing for service monitoring-daemon, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing monitoring-daemon edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing orca
+
+Manage and view Spinnaker component sizing configuration for orca
+
+#### Usage
+```
+hal config deploy component-sizing orca [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service orca
+ * `edit`: Edit the component sizing for service orca, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing orca delete
+
+Delete the custom component sizings for service orca
+
+#### Usage
+```
+hal config deploy component-sizing orca delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing orca edit
+
+Edit the component sizing for service orca, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing orca edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing orca-bootstrap
+
+Manage and view Spinnaker component sizing configuration for orca-bootstrap
+
+#### Usage
+```
+hal config deploy component-sizing orca-bootstrap [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service orca-bootstrap
+ * `edit`: Edit the component sizing for service orca-bootstrap, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing orca-bootstrap delete
+
+Delete the custom component sizings for service orca-bootstrap
+
+#### Usage
+```
+hal config deploy component-sizing orca-bootstrap delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing orca-bootstrap edit
+
+Edit the component sizing for service orca-bootstrap, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing orca-bootstrap edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing redis
+
+Manage and view Spinnaker component sizing configuration for redis
+
+#### Usage
+```
+hal config deploy component-sizing redis [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service redis
+ * `edit`: Edit the component sizing for service redis, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing redis delete
+
+Delete the custom component sizings for service redis
+
+#### Usage
+```
+hal config deploy component-sizing redis delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing redis edit
+
+Edit the component sizing for service redis, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing redis edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing redis-bootstrap
+
+Manage and view Spinnaker component sizing configuration for redis-bootstrap
+
+#### Usage
+```
+hal config deploy component-sizing redis-bootstrap [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service redis-bootstrap
+ * `edit`: Edit the component sizing for service redis-bootstrap, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing redis-bootstrap delete
+
+Delete the custom component sizings for service redis-bootstrap
+
+#### Usage
+```
+hal config deploy component-sizing redis-bootstrap delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing redis-bootstrap edit
+
+Edit the component sizing for service redis-bootstrap, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing redis-bootstrap edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing rosco
+
+Manage and view Spinnaker component sizing configuration for rosco
+
+#### Usage
+```
+hal config deploy component-sizing rosco [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service rosco
+ * `edit`: Edit the component sizing for service rosco, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing rosco delete
+
+Delete the custom component sizings for service rosco
+
+#### Usage
+```
+hal config deploy component-sizing rosco delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing rosco edit
+
+Edit the component sizing for service rosco, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing rosco edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing vault-client
+
+Manage and view Spinnaker component sizing configuration for vault-client
+
+#### Usage
+```
+hal config deploy component-sizing vault-client [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service vault-client
+ * `edit`: Edit the component sizing for service vault-client, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing vault-client delete
+
+Delete the custom component sizings for service vault-client
+
+#### Usage
+```
+hal config deploy component-sizing vault-client delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing vault-client edit
+
+Edit the component sizing for service vault-client, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing vault-client edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
+
+---
+## hal config deploy component-sizing vault-server
+
+Manage and view Spinnaker component sizing configuration for vault-server
+
+#### Usage
+```
+hal config deploy component-sizing vault-server [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `delete`: Delete the custom component sizings for service vault-server
+ * `edit`: Edit the component sizing for service vault-server, such as the number of replicas and the resources limits.
+
+---
+## hal config deploy component-sizing vault-server delete
+
+Delete the custom component sizings for service vault-server
+
+#### Usage
+```
+hal config deploy component-sizing vault-server delete [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config deploy component-sizing vault-server edit
+
+Edit the component sizing for service vault-server, such as the number of replicas and the resources limits.
+
+#### Usage
+```
+hal config deploy component-sizing vault-server edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pod-limits-cpu`: Sets the cpu limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1.
+ * `--pod-limits-memory`: Sets the memory limit for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 1Gi.
+ * `--pod-requests-cpu`: Sets the cpu request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 250m.
+ * `--pod-requests-memory`: Sets the memory request for the container running the spinnaker service, as well as any sidecar containers (e.g. the monitoring daemon). Example: 512Mi.
+ * `--replicas`: (*Default*: `1`) Set the number of replicas (pods) to be created for this service.
+
 
 ---
 ## hal config deploy edit
@@ -3679,8 +5498,10 @@ hal config features edit [parameters]
  * `--artifacts`: Enable artifact support. Read more at spinnaker.io/reference/artifacts
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here https://github.com/Netflix/chaosmonkey/wiki.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--gremlin`: Enable Gremlin fault-injection support.
  * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
  * `--jobs`: Allow Spinnaker to run containers in Kubernetes and Titus as Job stages in pipelines.
+ * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--pipeline-templates`: Enable pipeline template support. Read more at https://github.com/spinnaker/dcd-spec.
@@ -4272,6 +6093,7 @@ hal config provider [subcommands]
  * `appengine`: Manage and view Spinnaker configuration for the appengine provider
  * `aws`: Manage and view Spinnaker configuration for the aws provider
  * `azure`: Manage and view Spinnaker configuration for the azure provider
+ * `cloudfoundry`: Manage and view Spinnaker configuration for the cloudfoundry provider
  * `dcos`: Manage and view Spinnaker configuration for the dcos provider
  * `docker-registry`: Manage and view Spinnaker configuration for the dockerRegistry provider
  * `ecs`: Manage and view Spinnaker configuration for the ecs provider
@@ -4332,6 +6154,7 @@ hal config provider appengine account add ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
+ * `--caching-interval-seconds`: The interval in seconds at which Spinnaker will poll for updates in your AppEngine clusters.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--gcloud-release-track`: The gcloud release track (ALPHA, BETA, or STABLE) that Spinnaker will use when deploying to App Engine.
@@ -4387,6 +6210,7 @@ hal config provider appengine account edit ACCOUNT [parameters]
  * `--add-read-permission`: Add this permission to the list of read permissions.
  * `--add-required-group-membership`: Add this group to the list of required group memberships.
  * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--caching-interval-seconds`: The interval in seconds at which Spinnaker will poll for updates in your AppEngine clusters.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--gcloud-release-track`: The gcloud release track (ALPHA, BETA, or STABLE) that Spinnaker will use when deploying to App Engine.
@@ -4781,7 +6605,7 @@ hal config provider azure account add ACCOUNT [parameters]
 `ACCOUNT`: The name of the account to operate on.
  * `--app-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The appKey (password) of your service principal.
  * `--client-id`: (*Required*) The clientId (also called appId) of your service principal.
- * `--default-key-vault`: (*Required*) The name of a KeyVault that contains the default user name and password used to create VMs
+ * `--default-key-vault`: (*Required*) The name of a KeyVault that contains the user name, password, and ssh public key used to create VMs
  * `--default-resource-group`: (*Required*) The default resource group to contain any non-application specific resources.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
@@ -4795,6 +6619,7 @@ hal config provider azure account add ACCOUNT [parameters]
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--subscription-id`: (*Required*) The subscriptionId that your service principal is assigned to.
  * `--tenant-id`: (*Required*) The tenantId that your service principal is assigned to.
+ * `--useSshPublicKey`: (*Default*: `true`) Whether to use SSH public key to provision the linux vm. The default value is true which means using the ssh public key. Setting it to false means using the password instead.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
 
@@ -4831,7 +6656,7 @@ hal config provider azure account edit ACCOUNT [parameters]
  * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--app-key`: (*Sensitive data* - user will be prompted on standard input) The appKey (password) of your service principal.
  * `--client-id`: The clientId (also called appId) of your service principal.
- * `--default-key-vault`: The name of a KeyVault that contains the default user name and password used to create VMs
+ * `--default-key-vault`: The name of a KeyVault that contains the user name, password, and ssh public key used to create VMs
  * `--default-resource-group`: The default resource group to contain any non-application specific resources.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
@@ -4848,6 +6673,7 @@ hal config provider azure account edit ACCOUNT [parameters]
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--subscription-id`: The subscriptionId that your service principal is assigned to.
  * `--tenant-id`: The tenantId that your service principal is assigned to.
+ * `--useSshPublicKey`: Whether to use SSH public key to provision the linux vm. The default value is true which means using the ssh public key. Setting it to false means using the password instead.
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
 
@@ -5055,6 +6881,182 @@ Set the azure provider as enabled
 #### Usage
 ```
 hal config provider azure enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider cloudfoundry
+
+Manage and view Spinnaker configuration for the cloudfoundry provider
+
+#### Usage
+```
+hal config provider cloudfoundry [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the cloudfoundry provider's account
+ * `disable`: Set the cloudfoundry provider as disabled
+ * `enable`: Set the cloudfoundry provider as enabled
+
+---
+## hal config provider cloudfoundry account
+
+Manage and view Spinnaker configuration for the cloudfoundry provider's account
+
+#### Usage
+```
+hal config provider cloudfoundry account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add an account to the cloudfoundry provider.
+ * `delete`: Delete a specific cloudfoundry account by name.
+ * `edit`: Edit an account in the cloudfoundry provider.
+ * `get`: Get the specified account details for the cloudfoundry provider.
+ * `list`: List the account names for the cloudfoundry provider.
+
+---
+## hal config provider cloudfoundry account add
+
+Add an account to the cloudfoundry provider.
+
+#### Usage
+```
+hal config provider cloudfoundry account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--api`: (*Required*) Host name of the CloudFoundry Foundation API endpoint without protocol indicator ie. `api.sys.somesystem.com`
+ * `--appsManagerUri`: Full URI for the Apps Manager application for the CloudFoundry Foundation ie. `https://apps.sys.somesystem.com`
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--metricsUri`: Full URI for the metrics application for the CloudFoundry Foundation ie. `https://metrics.sys.somesystem.com`
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) Password for the account to use on for this CloudFoundry Foundation
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--user`: (*Required*) User name for the account to use on for this CloudFoundry Foundation
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider cloudfoundry account delete
+
+Delete a specific cloudfoundry account by name.
+
+#### Usage
+```
+hal config provider cloudfoundry account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider cloudfoundry account edit
+
+Edit an account in the cloudfoundry provider.
+
+#### Usage
+```
+hal config provider cloudfoundry account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-required-group-membership`: Add this group to the list of required group memberships.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--api`: (*Required*) Host name of the CloudFoundry Foundation API endpoint without protocol indicator ie. `api.sys.somesystem.com`
+ * `--appsManagerUri`: Full URI for the Apps Manager application for the CloudFoundry Foundation ie. `https://apps.sys.somesystem.com`
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--metricsUri`: Full URI for the metrics application for the CloudFoundry Foundation ie. `https://metrics.sys.somesystem.com`
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) Password for the account to use on for this CloudFoundry Foundation
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
+ * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--user`: (*Required*) User name for the account to use on for this CloudFoundry Foundation
+ * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider cloudfoundry account get
+
+Get the specified account details for the cloudfoundry provider.
+
+#### Usage
+```
+hal config provider cloudfoundry account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider cloudfoundry account list
+
+List the account names for the cloudfoundry provider.
+
+#### Usage
+```
+hal config provider cloudfoundry account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider cloudfoundry disable
+
+Set the cloudfoundry provider as disabled
+
+#### Usage
+```
+hal config provider cloudfoundry disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider cloudfoundry enable
+
+Set the cloudfoundry provider as enabled
+
+#### Usage
+```
+hal config provider cloudfoundry enable [parameters]
 ```
 
 #### Parameters
@@ -6154,6 +8156,8 @@ When no context is configured for an account the 'current-context' in your kubec
  * `--kinds`: (*Default*: `[]`) (V2 Only) A list of resource kinds this Spinnaker account can deploy to and will cache.
 When no kinds are configured, this defaults to 'all kinds described here https://spinnaker.io/reference/providers/kubernetes-v2'.
  * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
+ * `--live-manifest-calls`: When true, clouddriver will query manifest status during pipeline executions using live data rather than the cache.
+This eliminates all time spent in the "force cache refresh" task in pipelines, greatly reducing execution time.
  * `--namespaces`: (*Default*: `[]`) A list of namespaces this Spinnaker account can deploy to and will cache.
 When no namespaces are configured, this defaults to 'all namespaces'.
  * `--no-validate`: (*Default*: `false`) Skip validation.
@@ -6220,6 +8224,8 @@ When no context is configured for an account the 'current-context' in your kubec
  * `--kinds`: (*Default*: `[]`) (V2 Only) A list of resource kinds this Spinnaker account can deploy to and will cache.
 When no kinds are configured, this defaults to 'all kinds described here https://spinnaker.io/reference/providers/kubernetes-v2'.
  * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
+ * `--live-manifest-calls`: When true, clouddriver will query manifest status during pipeline executions using live data rather than the cache.
+This eliminates all time spent in the "force cache refresh" task in pipelines, greatly reducing execution time.
  * `--namespaces`: (*Default*: `[]`) A list of namespaces this Spinnaker account can deploy to and will cache.
 When no namespaces are configured, this defaults to 'all namespaces'.
  * `--no-validate`: (*Default*: `false`) Skip validation.
@@ -6831,6 +8837,187 @@ hal config pubsub google subscription list [parameters]
 
 
 ---
+## hal config repository
+
+Configure, validate, and view the specified repository.
+
+#### Usage
+```
+hal config repository [subcommands]
+```
+
+#### Subcommands
+ * `artifactory`: Manage and view Spinnaker configuration for the artifactory repository
+
+---
+## hal config repository artifactory
+
+Manage and view Spinnaker configuration for the artifactory repository
+
+#### Usage
+```
+hal config repository artifactory [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set the artifactory repository as disabled
+ * `enable`: Set the artifactory repository as enabled
+ * `search`: Manage and view Spinnaker configuration for the artifactory repository services's search
+
+---
+## hal config repository artifactory disable
+
+Set the artifactory repository as disabled
+
+#### Usage
+```
+hal config repository artifactory disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository artifactory enable
+
+Set the artifactory repository as enabled
+
+#### Usage
+```
+hal config repository artifactory enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository artifactory search
+
+Manage and view Spinnaker configuration for the artifactory repository services's search
+
+#### Usage
+```
+hal config repository artifactory search SEARCH [parameters] [subcommands]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a search for the artifactory repository service.
+ * `delete`: Delete a specific artifactory search by name.
+ * `edit`: Edit a search for the artifactory repository service.
+ * `get`: Get the specified search details for artifactory.
+ * `list`: List the search names for artifactory.
+
+---
+## hal config repository artifactory search add
+
+Add a search for the artifactory repository service.
+
+#### Usage
+```
+hal config repository artifactory search add SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--base-url`: (*Required*) The base url your artifactory search is reachable at.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--groupId`: (*Required*) The group id in your artifactory to be searched.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The password of the artifactory user to authenticate as.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build search or use it as a trigger source.
+ * `--repo`: (*Required*) The repo in your artifactory to be searched.
+ * `--username`: (*Required*) The username of the artifactory user to authenticate as.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build search.
+
+
+---
+## hal config repository artifactory search delete
+
+Delete a specific artifactory search by name.
+
+#### Usage
+```
+hal config repository artifactory search delete SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository artifactory search edit
+
+Edit a search for the artifactory repository service.
+
+#### Usage
+```
+hal config repository artifactory search edit SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--base-url`: The base url your artifactory search is reachable at.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--groupId`: The group id in your artifactory to be searched.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: The password of the artifactory user to authenticate as.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this build search or use it as a trigger source.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
+ * `--repo`: The repo in your artifactory to be searched.
+ * `--username`: The username of the artifactory user to authenticate as.
+ * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build search.
+
+
+---
+## hal config repository artifactory search get
+
+Get the specified search details for artifactory.
+
+#### Usage
+```
+hal config repository artifactory search get SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository artifactory search list
+
+List the search names for artifactory.
+
+#### Usage
+```
+hal config repository artifactory search list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config security
 
 Configure Spinnaker's security. This includes external SSL, authentication mechanisms, and authorization policies.
@@ -7092,6 +9279,9 @@ hal config security authn ldap edit [parameters]
 
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--group-search-base`: The part of the directory tree under which group searches should be performed. 
+ * `--manager-dn`: An LDAP manager user is required for binding to the LDAP server for the user authentication process. This property refers to the DN of that entry. I.e. this is not the user which will be authenticated when logging into DHIS2, rather the user which binds to the LDAP server in order to do the authentication.
+ * `--manager-password`: (*Sensitive data* - user will be prompted on standard input) The password for the LDAP manager user.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--url`: ldap:// or ldaps:// url of the LDAP server
  * `--user-dn-pattern`: The pattern for finding a user's DN using simple pattern matching. For example, if your LDAP server has the URL ldap://mysite.com/dc=spinnaker,dc=org, and you have the pattern 'uid={0},ou=members', 'me' will map to a DN uid=me,ou=members,dc=spinnaker,dc=org. If no match is found, will try to find the user using user-search-filter, if set.
@@ -7245,6 +9435,11 @@ hal config security authn saml edit [parameters]
  * `--metadata`: The address to your identity provider's metadata XML file. This can be a URL or the path of a local file.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--service-address-url`: The address of the Gate server that will be accesible by the SAML identity provider. This should be the full URL, including port, e.g. https://gate.org.com:8084/. If deployed behind a load balancer, this would be the laod balancer's address.
+ * `--user-attribute-mapping-first-name`: The first name field returned from your SAML provider.
+ * `--user-attribute-mapping-last-name`: The last name field returned from your SAML provider.
+ * `--user-attribute-mapping-roles`: The roles field returned from your SAML provider.
+ * `--user-attribute-mapping-roles-delimiter`: The roles delimiter field returned from your SAML provider.
+ * `--user-attribute-mapping-username`: The username field returned from your SAML provider.
 
 
 ---
