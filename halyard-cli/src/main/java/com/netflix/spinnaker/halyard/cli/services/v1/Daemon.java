@@ -489,20 +489,20 @@ public class Daemon {
     };
   }
 
-  public static Supplier<Master> getMaster(String deploymentName, String ciName, String masterName, boolean validate) {
+  public static Supplier<CIAccount> getMaster(String deploymentName, String ciName, String masterName, boolean validate) {
     return () -> ResponseUnwrapper.get(getService().getMaster(deploymentName, ciName, masterName, validate));
   }
 
-  public static Supplier<Void> addMaster(String deploymentName, String ciName, boolean validate, Master master) {
+  public static Supplier<Void> addMaster(String deploymentName, String ciName, boolean validate, CIAccount account) {
     return () -> {
-      ResponseUnwrapper.get(getService().addMaster(deploymentName, ciName, validate, master));
+      ResponseUnwrapper.get(getService().addMaster(deploymentName, ciName, validate, account));
       return null;
     };
   }
 
-  public static Supplier<Void> setMaster(String deploymentName, String ciName, String masterName, boolean validate, Master master) {
+  public static Supplier<Void> setMaster(String deploymentName, String ciName, String masterName, boolean validate, CIAccount account) {
     return () -> {
-      ResponseUnwrapper.get(getService().setMaster(deploymentName, ciName, masterName, validate, master));
+      ResponseUnwrapper.get(getService().setMaster(deploymentName, ciName, masterName, validate, account));
       return null;
     };
   }

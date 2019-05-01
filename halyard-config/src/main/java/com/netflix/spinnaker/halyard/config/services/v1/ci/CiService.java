@@ -18,7 +18,7 @@ package com.netflix.spinnaker.halyard.config.services.v1.ci;
 
 import com.netflix.spinnaker.halyard.config.error.v1.ConfigNotFoundException;
 import com.netflix.spinnaker.halyard.config.error.v1.IllegalConfigException;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
@@ -36,7 +36,7 @@ import java.util.List;
  * cis.
  */
 @RequiredArgsConstructor
-public abstract class CiService<T extends Master, U extends Ci<T>> {
+public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
   protected final LookupService lookupService;
   private final ValidateService validateService;
 

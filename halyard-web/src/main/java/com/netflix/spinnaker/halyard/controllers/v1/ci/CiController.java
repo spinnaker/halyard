@@ -21,7 +21,7 @@ import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructur
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 import com.netflix.spinnaker.halyard.config.services.v1.ci.CiService;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-public abstract class CiController<T extends Master, U extends Ci<T>> {
+public abstract class CiController<T extends CIAccount, U extends Ci<T>> {
   protected final ObjectMapper objectMapper = new ObjectMapper();
 
   @Component
