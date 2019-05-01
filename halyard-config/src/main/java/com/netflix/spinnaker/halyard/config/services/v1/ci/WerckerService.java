@@ -19,16 +19,14 @@ package com.netflix.spinnaker.halyard.config.services.v1.ci;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.wercker.WerckerCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.wercker.WerckerMaster;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
-import com.netflix.spinnaker.halyard.config.services.v1.LookupService;
-import com.netflix.spinnaker.halyard.config.services.v1.ValidateService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class WerckerService extends CiService<WerckerMaster, WerckerCi> {
-  public WerckerService(LookupService lookupService, ValidateService validateService) {
-    super(lookupService, validateService);
+  public WerckerService(CiService.Members members) {
+    super(members);
   }
 
   public String ciName() {
@@ -41,5 +39,10 @@ public class WerckerService extends CiService<WerckerMaster, WerckerCi> {
 
   public List<WerckerMaster> getMatchingAccountNodes(NodeFilter filter) {
     return lookupService.getMatchingNodesOfType(filter, WerckerMaster.class);
+  }
+
+  @Override
+  public WerckerMaster convertToAccount(Object object) {
+    return objectMapper.convertValue(object, WerckerMaster.class);
   }
 }

@@ -19,17 +19,16 @@ package com.netflix.spinnaker.halyard.config.services.v1.ci;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins.JenkinsCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins.JenkinsMaster;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
-import com.netflix.spinnaker.halyard.config.services.v1.LookupService;
-import com.netflix.spinnaker.halyard.config.services.v1.ValidateService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class JenkinsService extends CiService<JenkinsMaster, JenkinsCi> {
-  public JenkinsService(LookupService lookupService, ValidateService validateService) {
-    super(lookupService, validateService);
+  public JenkinsService(CiService.Members members) {
+    super(members);
   }
+
 
   public String ciName() {
     return "jenkins";
@@ -41,5 +40,10 @@ public class JenkinsService extends CiService<JenkinsMaster, JenkinsCi> {
 
   protected List<JenkinsMaster> getMatchingAccountNodes(NodeFilter filter) {
     return lookupService.getMatchingNodesOfType(filter, JenkinsMaster.class);
+  }
+
+  @Override
+  public JenkinsMaster convertToAccount(Object object) {
+    return objectMapper.convertValue(object, JenkinsMaster.class);
   }
 }

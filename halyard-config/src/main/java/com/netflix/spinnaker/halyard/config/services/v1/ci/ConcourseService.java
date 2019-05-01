@@ -18,6 +18,7 @@ package com.netflix.spinnaker.halyard.config.services.v1.ci;
 
 import com.netflix.spinnaker.halyard.config.model.v1.ci.concourse.ConcourseCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.concourse.ConcourseMaster;
+import com.netflix.spinnaker.halyard.config.model.v1.ci.travis.TravisMaster;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
 import com.netflix.spinnaker.halyard.config.services.v1.LookupService;
 import com.netflix.spinnaker.halyard.config.services.v1.ValidateService;
@@ -27,8 +28,8 @@ import java.util.List;
 
 @Component
 public class ConcourseService extends CiService<ConcourseMaster, ConcourseCi> {
-  public ConcourseService(LookupService lookupService, ValidateService validateService) {
-    super(lookupService, validateService);
+  public ConcourseService(CiService.Members members) {
+    super(members);
   }
 
   public String ciName() {
@@ -41,5 +42,10 @@ public class ConcourseService extends CiService<ConcourseMaster, ConcourseCi> {
 
   protected List<ConcourseMaster> getMatchingAccountNodes(NodeFilter filter) {
     return lookupService.getMatchingNodesOfType(filter, ConcourseMaster.class);
+  }
+
+  @Override
+  public ConcourseMaster convertToAccount(Object object) {
+    return objectMapper.convertValue(object, ConcourseMaster.class);
   }
 }

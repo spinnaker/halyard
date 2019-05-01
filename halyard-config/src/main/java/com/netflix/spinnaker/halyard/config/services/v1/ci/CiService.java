@@ -16,6 +16,7 @@
 
 package com.netflix.spinnaker.halyard.config.services.v1.ci;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.spinnaker.halyard.config.error.v1.ConfigNotFoundException;
 import com.netflix.spinnaker.halyard.config.error.v1.IllegalConfigException;
 import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
@@ -28,6 +29,7 @@ import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -38,7 +40,24 @@ import java.util.List;
 @RequiredArgsConstructor
 public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
   protected final LookupService lookupService;
+  protected final ObjectMapper objectMapper;
   private final ValidateService validateService;
+
+  @Component
+  @RequiredArgsConstructor
+  public static class Members {
+    private final LookupService lookupService;
+    private final ValidateService validateService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+  }
+
+  public CiService(Members members) {
+    this.lookupService = members.lookupService;
+    this.validateService = members.validateService;
+    this.objectMapper = members.objectMapper;
+  }
+
+  public abstract T convertToAccount(Object object);
 
   protected abstract List<T> getMatchingAccountNodes(NodeFilter filter);
 
