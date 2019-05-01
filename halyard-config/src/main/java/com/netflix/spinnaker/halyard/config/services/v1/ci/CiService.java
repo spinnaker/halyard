@@ -61,20 +61,6 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
     }
   }
 
-  public List<U> getAllCis(String deploymentName) {
-    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).withAnyCi();
-
-    List<U> matching = getMatchingCiNodes(filter);
-
-    if (matching.size() == 0) {
-      throw new ConfigNotFoundException(
-          new ConfigProblemBuilder(Severity.FATAL, "No cis could be found")
-              .build());
-    } else {
-      return matching;
-    }
-  }
-
   public void setEnabled(String deploymentName, boolean enabled) {
     Ci ci = getCi(deploymentName);
     ci.setEnabled(enabled);
@@ -84,15 +70,6 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
     NodeFilter filter = new NodeFilter()
         .setDeployment(deploymentName)
         .setCi(ciName())
-        .withAnyAccount();
-
-    return validateService.validateMatchingFilter(filter);
-  }
-
-  public ProblemSet validateAllCis(String deploymentName) {
-    NodeFilter filter = new NodeFilter()
-        .setDeployment(deploymentName)
-        .withAnyCi()
         .withAnyAccount();
 
     return validateService.validateMatchingFilter(filter);
@@ -130,11 +107,6 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
 
   public T getCiMaster(String deploymentName, String masterName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setCi(ciName()).setMaster(masterName);
-    return getMaster(filter, masterName);
-  }
-
-  public T getAnyCiMaster(String deploymentName, String masterName) {
-    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).withAnyCi().setMaster(masterName);
     return getMaster(filter, masterName);
   }
 

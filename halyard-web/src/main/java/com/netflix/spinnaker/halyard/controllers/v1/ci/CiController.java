@@ -19,9 +19,9 @@ package com.netflix.spinnaker.halyard.controllers.v1.ci;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
-import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 import com.netflix.spinnaker.halyard.config.services.v1.ci.CiService;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
@@ -81,12 +81,11 @@ public abstract class CiController<T extends CIAccount, U extends Ci<T>> {
 
     @RequestMapping(value = "/masters", method = RequestMethod.GET)
     DaemonTask<Halconfig, List<T>> masters(@PathVariable String deploymentName,
-                                                   @PathVariable String ciName,
                                                    @ModelAttribute ValidationSettings validationSettings) {
         return GenericGetRequest.<List<T>>builder()
                 .getter(() -> getCiService().getAllMasters(deploymentName))
                 .validator(() -> getCiService().validateAllMasters(deploymentName))
-                .description("Get all masters for " + ciName)
+                .description("Get all masters for " + getCiService().ciName())
                 .build()
                 .execute(validationSettings);
     }
