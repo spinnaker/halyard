@@ -490,10 +490,7 @@ public class Daemon {
   }
 
   public static Supplier<Master> getMaster(String deploymentName, String ciName, String masterName, boolean validate) {
-    return () -> {
-      Object rawMaster = ResponseUnwrapper.get(getService().getMaster(deploymentName, ciName, masterName, validate));
-      return getObjectMapper().convertValue(rawMaster, Cis.translateMasterType(ciName));
-    };
+    return () -> ResponseUnwrapper.get(getService().getMaster(deploymentName, ciName, masterName, validate));
   }
 
   public static Supplier<Void> addMaster(String deploymentName, String ciName, boolean validate, Master master) {
@@ -518,10 +515,7 @@ public class Daemon {
   }
 
   public static Supplier<Ci> getCi(String deploymentName, String ciName, boolean validate) {
-    return () -> {
-      Object ci = ResponseUnwrapper.get(getService().getCi(deploymentName, ciName, validate));
-      return getObjectMapper().convertValue(ci, Cis.translateCiType(ciName));
-    };
+    return () -> ResponseUnwrapper.get(getService().getCi(deploymentName, ciName, validate));
   }
 
   public static Supplier<Void> setCiEnableDisable(String deploymentName, String ciName, boolean validate, boolean enable) {

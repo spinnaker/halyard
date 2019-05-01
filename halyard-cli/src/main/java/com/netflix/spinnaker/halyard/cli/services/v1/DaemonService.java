@@ -702,7 +702,7 @@ public interface DaemonService {
       @Body Notification notification);
 
   @GET("/v1/config/deployments/{deploymentName}/ci/{ciName}/")
-  DaemonTask<Halconfig, Object> getCi(
+  DaemonTask<Halconfig, Ci> getCi(
       @Path("deploymentName") String deploymentName,
       @Path("ciName") String ciName,
       @Query("validate") boolean validate);
@@ -722,7 +722,7 @@ public interface DaemonService {
       @Body Master master);
 
   @GET("/v1/config/deployments/{deploymentName}/ci/{ciName}/masters/{masterName}/")
-  DaemonTask<Halconfig, Object> getMaster(
+  DaemonTask<Halconfig, Master> getMaster(
       @Path("deploymentName") String deploymentName,
       @Path("ciName") String ciName,
       @Path("masterName") String masterName,
