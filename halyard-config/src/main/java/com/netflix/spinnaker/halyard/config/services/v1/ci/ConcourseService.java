@@ -35,7 +35,6 @@ public class ConcourseService extends CiService<ConcourseMaster, ConcourseCi> {
         return "concourse";
     }
 
-
     protected List<ConcourseCi> getMatchingCiNodes(NodeFilter filter) {
         return lookupService.getMatchingNodesOfType(filter, ConcourseCi.class);
     }

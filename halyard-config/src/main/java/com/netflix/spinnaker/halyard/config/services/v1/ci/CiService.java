@@ -52,12 +52,12 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
     switch (matching.size()) {
       case 0:
         throw new ConfigNotFoundException(new ConfigProblemBuilder(Severity.FATAL,
-            "No Continuous Integration service with name \"" + ciName() + "\" could be found").build());
+            String.format("No Continuous Integration service with name '%s' could be found", ciName())).build());
       case 1:
         return matching.get(0);
       default:
         throw new IllegalConfigException(new ConfigProblemBuilder(Severity.FATAL,
-            "More than one CI with name \"" + ciName() + "\" found").build());
+            String.format("More than one CI with name '%s' found", ciName())).build());
     }
   }
 
@@ -117,14 +117,14 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
     switch (matchingAccounts.size()) {
       case 0:
         throw new ConfigNotFoundException(new ConfigProblemBuilder(
-                Severity.FATAL, "No master with name \"" + masterName + "\" was found")
+                Severity.FATAL, String.format("No master with name '%s' was found", masterName))
                 .setRemediation("Check if this master was defined in another Continuous Integration service, or create a new one").build());
       case 1:
         return matchingAccounts.get(0);
       default:
         throw new IllegalConfigException(new ConfigProblemBuilder(
-                Severity.FATAL, "More than one master named \"" + masterName + "\" was found")
-                .setRemediation("Manually delete/rename duplicate masters with name \"" + masterName + "\" in your halconfig file").build());
+                Severity.FATAL, String.format("No master with name '%s' was found", masterName))
+                .setRemediation(String.format("Manually delete/rename duplicate masters with name '%s' in your halconfig file", masterName)).build());
     }
   }
 
@@ -149,7 +149,7 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
       }
     }
 
-    throw new HalException(new ConfigProblemBuilder(Severity.FATAL, "Master \"" + masterName + "\" wasn't found").build());
+    throw new HalException(new ConfigProblemBuilder(Severity.FATAL, String.format("Master '%s' wasn't found", masterName)).build());
   }
 
   public void deleteMaster(String deploymentName, String masterName) {
@@ -158,7 +158,7 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
 
     if (!removed) {
       throw new HalException(
-              new ConfigProblemBuilder(Severity.FATAL, "Master \"" + masterName + "\" wasn't found")
+              new ConfigProblemBuilder(Severity.FATAL, String.format("Master '%s' wasn't found", masterName))
                       .build());
     }
   }
