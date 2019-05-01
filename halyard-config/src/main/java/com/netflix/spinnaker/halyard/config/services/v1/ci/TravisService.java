@@ -27,19 +27,19 @@ import java.util.List;
 
 @Component
 public class TravisService extends CiService<TravisMaster, TravisCi> {
-    public TravisService(LookupService lookupService, ValidateService validateService) {
-        super(lookupService, validateService);
-    }
+  public TravisService(LookupService lookupService, ValidateService validateService) {
+    super(lookupService, validateService);
+  }
 
-    public String ciName() {
-        return "travis";
-    }
+  public String ciName() {
+    return "travis";
+  }
 
-    protected List<TravisCi> getMatchingCiNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, TravisCi.class);
-    }
+  protected List<TravisCi> getMatchingCiNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, TravisCi.class);
+  }
 
-    protected List<TravisMaster> getMatchingAccountNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, TravisMaster.class);
-    }
+  protected List<TravisMaster> getMatchingAccountNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, TravisMaster.class);
+  }
 }

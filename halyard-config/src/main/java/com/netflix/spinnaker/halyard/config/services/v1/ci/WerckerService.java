@@ -27,19 +27,19 @@ import java.util.List;
 
 @Component
 public class WerckerService extends CiService<WerckerMaster, WerckerCi> {
-    public WerckerService(LookupService lookupService, ValidateService validateService) {
-        super(lookupService, validateService);
-    }
+  public WerckerService(LookupService lookupService, ValidateService validateService) {
+    super(lookupService, validateService);
+  }
 
-    public String ciName() {
-        return "wercker";
-    }
+  public String ciName() {
+    return "wercker";
+  }
 
-    public List<WerckerCi> getMatchingCiNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, WerckerCi.class);
-    }
+  public List<WerckerCi> getMatchingCiNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, WerckerCi.class);
+  }
 
-    public List<WerckerMaster> getMatchingAccountNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, WerckerMaster.class);
-    }
+  public List<WerckerMaster> getMatchingAccountNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, WerckerMaster.class);
+  }
 }

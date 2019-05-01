@@ -27,19 +27,19 @@ import java.util.List;
 
 @Component
 public class ConcourseService extends CiService<ConcourseMaster, ConcourseCi> {
-    public ConcourseService(LookupService lookupService, ValidateService validateService) {
-        super(lookupService, validateService);
-    }
+  public ConcourseService(LookupService lookupService, ValidateService validateService) {
+    super(lookupService, validateService);
+  }
 
-    public String ciName() {
-        return "concourse";
-    }
+  public String ciName() {
+    return "concourse";
+  }
 
-    protected List<ConcourseCi> getMatchingCiNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, ConcourseCi.class);
-    }
+  protected List<ConcourseCi> getMatchingCiNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, ConcourseCi.class);
+  }
 
-    protected List<ConcourseMaster> getMatchingAccountNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, ConcourseMaster.class);
-    }
+  protected List<ConcourseMaster> getMatchingAccountNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, ConcourseMaster.class);
+  }
 }

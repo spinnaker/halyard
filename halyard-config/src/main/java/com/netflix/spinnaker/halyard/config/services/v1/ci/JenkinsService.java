@@ -27,19 +27,19 @@ import java.util.List;
 
 @Component
 public class JenkinsService extends CiService<JenkinsMaster, JenkinsCi> {
-    public JenkinsService(LookupService lookupService, ValidateService validateService) {
-        super(lookupService, validateService);
-    }
+  public JenkinsService(LookupService lookupService, ValidateService validateService) {
+    super(lookupService, validateService);
+  }
 
-    public String ciName() {
-        return "jenkins";
-    }
+  public String ciName() {
+    return "jenkins";
+  }
 
-    protected List<JenkinsCi> getMatchingCiNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, JenkinsCi.class);
-    }
+  protected List<JenkinsCi> getMatchingCiNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, JenkinsCi.class);
+  }
 
-    protected List<JenkinsMaster> getMatchingAccountNodes(NodeFilter filter) {
-        return lookupService.getMatchingNodesOfType(filter, JenkinsMaster.class);
-    }
+  protected List<JenkinsMaster> getMatchingAccountNodes(NodeFilter filter) {
+    return lookupService.getMatchingNodesOfType(filter, JenkinsMaster.class);
+  }
 }
