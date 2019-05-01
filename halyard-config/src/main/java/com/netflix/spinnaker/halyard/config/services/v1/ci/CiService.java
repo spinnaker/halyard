@@ -134,10 +134,10 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
   public void setMaster(String deploymentName, String masterName, T newAccount) {
     U ci = getCi(deploymentName);
 
-    for (int i = 0; i < ci.getMasters().size(); i++) {
-      T account = ci.getMasters().get(i);
+    for (int i = 0; i < ci.getAccounts().size(); i++) {
+      T account = ci.getAccounts().get(i);
       if (account.getNodeName().equals(masterName)) {
-        ci.getMasters().set(i, newAccount);
+        ci.getAccounts().set(i, newAccount);
         return;
       }
     }
@@ -147,7 +147,7 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
 
   public void deleteMaster(String deploymentName, String masterName) {
     U ci = getCi(deploymentName);
-    boolean removed = ci.getMasters().removeIf(master -> master.getName().equals(masterName));
+    boolean removed = ci.getAccounts().removeIf(master -> master.getName().equals(masterName));
 
     if (!removed) {
       throw new HalException(
@@ -158,7 +158,7 @@ public abstract class CiService<T extends CIAccount, U extends Ci<T>> {
 
   public void addMaster(String deploymentName, T newAccount) {
     U ci = getCi(deploymentName);
-    ci.getMasters().add(newAccount);
+    ci.getAccounts().add(newAccount);
   }
 
   public ProblemSet validateMaster(String deploymentName, String masterName) {
