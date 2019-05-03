@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Delete a specific PROVIDER master
+ * Delete a specific Google Cloud Build account
  */
 @Parameters(separators = "=")
 public class GooglecloudBuildDeleteAccountCommand extends AbstractHasAccountCommand {

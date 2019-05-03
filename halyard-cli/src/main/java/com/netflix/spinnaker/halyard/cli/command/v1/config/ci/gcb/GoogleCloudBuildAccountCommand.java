@@ -20,7 +20,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.master.AbstractHasAccountCommand;
 
 /**
- * Interact with the jenkins ci's masters
+ * Interact with Google Cloud Build accounts
  */
 @Parameters(separators = "=")
 public class GoogleCloudBuildAccountCommand extends AbstractHasAccountCommand {

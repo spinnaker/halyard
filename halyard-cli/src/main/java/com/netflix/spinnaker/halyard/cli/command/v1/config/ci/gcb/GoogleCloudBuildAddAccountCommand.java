@@ -66,12 +66,11 @@ public class GoogleCloudBuildAddAccountCommand extends AbstractHasAccountCommand
   private String jsonKey;
 
   protected GoogleCloudBuildAccount buildAccount(String accountName) {
-    GoogleCloudBuildAccount account = new GoogleCloudBuildAccount().setName(accountName);
-    account.setProject(project)
+    return new GoogleCloudBuildAccount()
+        .setName(accountName)
+        .setProject(project)
         .setSubscriptionName(subscriptionName)
         .setJsonKey(jsonKey);
-
-    return account;
   }
 
   @Override

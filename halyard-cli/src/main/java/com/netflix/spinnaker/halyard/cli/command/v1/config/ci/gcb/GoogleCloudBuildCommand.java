@@ -20,7 +20,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.AbstractNamedCiCommand;
 
 /**
- * Interact with the jenkins ci
+ * Interact with the Google Cloud Build ci
  */
 @Parameters(separators = "=")
 public class GoogleCloudBuildCommand extends AbstractNamedCiCommand {
