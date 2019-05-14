@@ -19,7 +19,7 @@ package com.netflix.spinnaker.halyard.config.model.v1.providers.google;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.spinnaker.clouddriver.google.ComputeVersion;
 import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
-import com.netflix.spinnaker.config.secrets.EncryptedSecret;
+import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
 import com.netflix.spinnaker.halyard.config.config.v1.ArtifactSourcesConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.consul.ConsulConfig;

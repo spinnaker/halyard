@@ -1,10 +1,10 @@
 dependencies {
-  compile spinnaker.dependency('bootActuator')
-  compile spinnaker.dependency('bootWeb')
-  compileOnly spinnaker.dependency("lombok")
-  annotationProcessor spinnaker.dependency("lombok")
-  compile spinnaker.dependency('fabric8Api')
-  compile spinnaker.dependency('googleStorage')
+  implementation "org.springframework.boot:spring-boot-starter-actuator"
+  implementation "org.springframework.boot:spring-boot-starter-web"
+  compileOnly "org.projectlombok:lombok"
+  annotationProcessor "org.projectlombok:lombok"
+  implementation "io.fabric8:kubernetes-client"
+  implementation "com.google.apis:google-api-services-storage"
   compile group: 'org.apache.commons', name: 'commons-compress', version: '1.2'
 
   compile project(':halyard-config')

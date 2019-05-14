@@ -1,8 +1,8 @@
 import org.gradle.api.tasks.Exec
 
 dependencies {
-  compileOnly spinnaker.dependency("lombok")
-  annotationProcessor spinnaker.dependency("lombok")
+  compileOnly "org.projectlombok:lombok"
+  annotationProcessor "org.projectlombok:lombok"
 
   compile project(':halyard-config')
   compile project(':halyard-core')

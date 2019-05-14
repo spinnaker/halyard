@@ -1,12 +1,12 @@
 dependencies {
   // TODO(lwander) Move to spinnaker-dependencies
-  compile 'com.google.apis:google-api-services-cloudkms:v1-rev8-1.22.0'
+  implementation 'com.google.apis:google-api-services-cloudkms:v1-rev8-1.22.0'
 
-  compile spinnaker.dependency('bootActuator')
-  compile spinnaker.dependency('bootWeb')
-  compileOnly spinnaker.dependency("lombok")
-  annotationProcessor spinnaker.dependency("lombok")
-  compile spinnaker.dependency('fabric8Api')
+  implementation "org.springframework.boot:spring-boot-starter-actuator"
+  implementation "org.springframework.boot:spring-boot-starter-web"
+  compileOnly "org.projectlombok:lombok"
+  annotationProcessor "org.projectlombok:lombok"
+  implementation "io.fabric8:kubernetes-client"
 
   compile project(':halyard-deploy')
 }
