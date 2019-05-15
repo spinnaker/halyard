@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Target, Inc.
+ * Copyright 2019 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.providers.openstack;
+package com.netflix.spinnaker.halyard.config.model.v1.ci.gcb;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.BakeryDefaults;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class OpenstackBakeryDefaults extends BakeryDefaults<OpenstackBaseImage> {
+@EqualsAndHashCode(callSuper = false)
+public class GoogleCloudBuildAccount extends CIAccount {
+  private String name;
+  private String project;
+  private String subscriptionName;
+  @LocalFile @SecretFile private String jsonKey;
 
-    private String authUrl;
-    private String domainName;
-    private String networkId;
-    private String floatingIpPool;
-    private String securityGroups;
-    private String projectName;
-    private String username;
-    private String password;
-    private Boolean insecure;
-
+  public String getNodeName() {
+    return name;
+  }
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Google, Inc.
+ * Copyright 2019 Google, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.node;
+package com.netflix.spinnaker.halyard.config.model.v1.ci.gcb;
 
-import com.netflix.spinnaker.fiat.model.resources.Permissions;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
-public abstract class Master extends Node implements Cloneable {
-  String name;
-  Permissions.Builder permissions = new Permissions.Builder();
+public class GoogleCloudBuild extends Ci<GoogleCloudBuildAccount> {
+  private boolean enabled;
+  private List<GoogleCloudBuildAccount> accounts = new ArrayList<>();
+
+  public List<GoogleCloudBuildAccount> listAccounts() {
+    return accounts;
+  }
 
   @Override
   public String getNodeName() {
-    return name;
+    return "gcb";
   }
 }
-
