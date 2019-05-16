@@ -24,6 +24,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ClouddriverServ
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.HasServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedLogCollector;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
+import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
@@ -51,6 +52,7 @@ public class KubernetesV1ClouddriverBootstrapService extends ClouddriverBootstra
     List<String> profiles = new ArrayList<>();
     profiles.add("bootstrap");
     profiles.add("bootstrap-local");
+    profiles.add("local");
     KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
     Settings settings = new Settings(profiles);
     String location = kubernetesSharedServiceSettings.getDeployLocation();
@@ -60,6 +62,14 @@ public class KubernetesV1ClouddriverBootstrapService extends ClouddriverBootstra
         .setMonitored(false)
         .setEnabled(true);
     return settings;
+  }
+
+  @Override
+  protected Optional<String> customProfileOutputPath(String profileName) {
+    if (profileName.equals("clouddriver-local.yml")) {
+      return Optional.empty();
+    }
+    return super.customProfileOutputPath(profileName);
   }
 
   public String getArtifactId(String deploymentName) {
