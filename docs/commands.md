@@ -334,6 +334,7 @@
  * [**hal config provider appengine account get**](#hal-config-provider-appengine-account-get)
  * [**hal config provider appengine account list**](#hal-config-provider-appengine-account-list)
  * [**hal config provider appengine disable**](#hal-config-provider-appengine-disable)
+ * [**hal config provider appengine edit**](#hal-config-provider-appengine-edit)
  * [**hal config provider appengine enable**](#hal-config-provider-appengine-enable)
  * [**hal config provider aws**](#hal-config-provider-aws)
  * [**hal config provider aws account**](#hal-config-provider-aws-account)
@@ -3477,10 +3478,10 @@ hal config ci gcb account add ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the master to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--jsonKey`: The path to a JSON service account that Spinnaker will use as credentials
+ * `--json-key`: The path to a JSON service account that Spinnaker will use as credentials
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--project`: (*Required*) The name of the GCP in which to trigger and monitor builds
- * `--subscriptionName`: The name of the PubSub subscription on which to listen for build changes
+ * `--project`: (*Required*) The name of the GCP project in which to trigger and monitor builds
+ * `--subscription-name`: The name of the PubSub subscription on which to listen for build changes
 
 
 ---
@@ -3512,10 +3513,10 @@ hal config ci gcb account edit ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the master to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--jsonKey`: The path to a JSON service account that Spinnaker will use as credentials
+ * `--json-key`: The path to a JSON service account that Spinnaker will use as credentials
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--project`: The name of the GCP in which to trigger and monitor builds
- * `--subscriptionName`: The name of the PubSub subscription on which to listen for build changes
+ * `--project`: The name of the GCP project in which to trigger and monitor builds
+ * `--subscription-name`: The name of the PubSub subscription on which to listen for build changes
 
 
 ---
@@ -6266,6 +6267,7 @@ hal config provider appengine [parameters] [subcommands]
 #### Subcommands
  * `account`: Manage and view Spinnaker configuration for the appengine provider's account
  * `disable`: Set the appengine provider as disabled
+ * `edit`: Edit Spinnaker's app engine configuration.
  * `enable`: Set the appengine provider as enabled
 
 ---
@@ -6429,6 +6431,22 @@ hal config provider appengine disable [parameters]
 
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider appengine edit
+
+Edit Spinnaker's app engine configuration.
+
+#### Usage
+```
+hal config provider appengine edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--gcloudPath`: The path to the gcloud executable on the machine running clouddriver.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 
@@ -9418,7 +9436,7 @@ hal config security authn ldap disable [parameters]
 ---
 ## hal config security authn ldap edit
 
-Lightweight Directory Access Protocol (LDAP) is a standard way many organizations maintain user credentials and group memberships. Spinnaker uses the standard “bind” approach for user authentication. This is a fancy way of saying that Gate uses your username and password to login to the LDAP server, and if the connection is successful, you’re considered authenticated.
+Lightweight Directory Access Protocol (LDAP) is a standard way many organizations maintain user credentials and group memberships. Spinnaker uses the standard 'bind' approach for user authentication. This is a fancy way of saying that Gate uses your username and password to login to the LDAP server, and if the connection is successful, you're considered authenticated.
 
 #### Usage
 ```
@@ -10172,6 +10190,7 @@ Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--endpoint`: An alternate endpoint that your S3-compatible storage can be found at. This is intended for self-hosted storage services with S3-compatible APIs, e.g. Minio. If supplied, this storage type cannot be validated.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--path-style-access`: (*Default*: `false`) when true, use path-style to access bucket; when false, use virtual hosted-style to access bucket.  See https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html#VirtualHostingExamples.
  * `--region`: This is only required if the bucket you specify doesn't exist yet. In that case, the bucket will be created in that region. See http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region.
  * `--root-folder`: The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
  * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) Your AWS Secret Key.
