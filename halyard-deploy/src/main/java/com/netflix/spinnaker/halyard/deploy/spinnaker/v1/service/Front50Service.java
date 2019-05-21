@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import retrofit.http.GET;
@@ -82,9 +81,7 @@ public abstract class Front50Service extends SpringService<Front50Service.Front5
     PersistentStore.PersistentStoreType type =
         deploymentConfiguration.getPersistentStorage().getPersistentStoreType();
     S3PersistentStore store = deploymentConfiguration.getPersistentStorage().getS3();
-    if (type == PersistentStore.PersistentStoreType.S3
-        && !StringUtils.isEmpty(store.getAccessKeyId())
-        && !StringUtils.isEmpty(store.getSecretAccessKey())) {
+    if (type == PersistentStore.PersistentStoreType.S3) {
       String outputFile = awsCredentialsProfileFactoryBuilder.getOutputFile(spinnakerHome);
       return Optional.of(
           awsCredentialsProfileFactoryBuilder

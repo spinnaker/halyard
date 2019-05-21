@@ -92,31 +92,21 @@ public abstract class KayentaService extends SpringService<KayentaService.Kayent
       // between kayenta aws
       // accounts, and front50 and clouddriver configuration.
       if (awsCanaryServiceIntegration.isS3Enabled()) {
-        Optional<AwsCanaryAccount> optionalAwsCanaryAccount =
-            awsCanaryServiceIntegration.getAccounts().stream()
-                .filter(
-                    a ->
-                        !StringUtils.isEmpty(a.getAccessKeyId())
-                            && !StringUtils.isEmpty(a.getSecretAccessKey()))
-                .findFirst();
+        AwsCanaryAccount awsCanaryAccount = awsCanaryServiceIntegration.getAccounts().get(0);
+        String outputFile = awsCredentialsProfileFactoryBuilder.getOutputFile(spinnakerHome);
 
-        if (optionalAwsCanaryAccount.isPresent()) {
-          AwsCanaryAccount awsCanaryAccount = optionalAwsCanaryAccount.get();
-          String outputFile = awsCredentialsProfileFactoryBuilder.getOutputFile(spinnakerHome);
+        awsCredentialsProfileFactoryBuilder.setProfileName(
+            StringUtils.isNotBlank(awsCanaryAccount.getProfileName())
+                ? awsCanaryAccount.getProfileName()
+                : "default");
 
-          awsCredentialsProfileFactoryBuilder.setProfileName(
-              StringUtils.isNotBlank(awsCanaryAccount.getProfileName())
-                  ? awsCanaryAccount.getProfileName()
-                  : "default");
-
-          return Optional.of(
-              awsCredentialsProfileFactoryBuilder
-                  .setArtifact(SpinnakerArtifact.KAYENTA)
-                  .setAccessKeyId(awsCanaryAccount.getAccessKeyId())
-                  .setSecretAccessKey(awsCanaryAccount.getSecretAccessKey())
-                  .build()
-                  .getProfile(name, outputFile, deploymentConfiguration, endpoints));
-        }
+        return Optional.of(
+            awsCredentialsProfileFactoryBuilder
+                .setArtifact(SpinnakerArtifact.KAYENTA)
+                .setAccessKeyId(awsCanaryAccount.getAccessKeyId())
+                .setSecretAccessKey(awsCanaryAccount.getSecretAccessKey())
+                .build()
+                .getProfile(name, outputFile, deploymentConfiguration, endpoints));
       }
     }
 

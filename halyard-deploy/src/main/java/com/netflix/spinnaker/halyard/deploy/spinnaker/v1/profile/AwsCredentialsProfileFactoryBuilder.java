@@ -18,7 +18,11 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.core.error.v1.HalException;
+import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
@@ -26,9 +30,11 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSetting
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,11 +46,43 @@ public class AwsCredentialsProfileFactoryBuilder {
 
   @Setter private String profileName = "default";
 
-  @Setter private String accessKeyId;
+  @Setter(AccessLevel.NONE)
+  private String accessKeyId;
 
-  @Setter private String secretAccessKey;
+  @Setter(AccessLevel.NONE)
+  private String secretAccessKey;
 
   @Setter private SpinnakerArtifact artifact;
+
+  public AwsCredentialsProfileFactoryBuilder setAccessKeyId(String accessKeyId) {
+    if (StringUtils.isEmpty(accessKeyId)) {
+      try {
+        this.accessKeyId =
+            DefaultAWSCredentialsProviderChain.getInstance().getCredentials().getAWSAccessKeyId();
+      } catch (SdkClientException e) {
+        throw new HalException(
+            Problem.Severity.FATAL, "Fail to set aws access key: " + e.getMessage(), e);
+      }
+    } else {
+      this.accessKeyId = accessKeyId;
+    }
+    return this;
+  }
+
+  public AwsCredentialsProfileFactoryBuilder setSecretAccessKey(String secretAccessKey) {
+    if (StringUtils.isEmpty(secretAccessKey)) {
+      try {
+        this.secretAccessKey =
+            DefaultAWSCredentialsProviderChain.getInstance().getCredentials().getAWSSecretKey();
+      } catch (SdkClientException e) {
+        throw new HalException(
+            Problem.Severity.FATAL, "Fail to set aws secret access key: " + e.getMessage(), e);
+      }
+    } else {
+      this.secretAccessKey = secretAccessKey;
+    }
+    return this;
+  }
 
   public AwsCredentialsProfileFactory build() {
     return new AwsCredentialsProfileFactory(artifact, accessKeyId, secretAccessKey);
