@@ -22,20 +22,21 @@ tasks.withType(JavaExec) {
 }
 
 dependencies {
-  implementation "org.springframework.boot:spring-boot-starter-actuator"
-  implementation "org.springframework.boot:spring-boot-starter-web"
-  compileOnly "org.projectlombok:lombok"
-  annotationProcessor "org.projectlombok:lombok"
+  compileOnly 'org.projectlombok:lombok'
+  annotationProcessor 'org.projectlombok:lombok'
 
-  compile project(':halyard-backup')
-  compile project(':halyard-cli')
-  compile project(':halyard-config')
-  compile project(':halyard-core')
-  compile project(':halyard-deploy')
-  compile project(':halyard-proto')
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+  implementation 'commons-lang:commons-lang:2.6'
+  implementation 'com.squareup.retrofit:retrofit'
+  implementation 'org.lognet:grpc-spring-boot-starter:2.3.2'
+  implementation 'org.codehaus.groovy:groovy'
 
-  compile('org.lognet:grpc-spring-boot-starter:2.3.2')
-  compile 'com.google.guava:guava:23.5-jre'
+  implementation project(':halyard-backup')
+  implementation project(':halyard-config')
+  implementation project(':halyard-core')
+  implementation project(':halyard-deploy')
+  implementation project(':halyard-proto')
 }
 
 def cliScript = project.tasks.create('createCliStartScripts', CreateStartScripts) {

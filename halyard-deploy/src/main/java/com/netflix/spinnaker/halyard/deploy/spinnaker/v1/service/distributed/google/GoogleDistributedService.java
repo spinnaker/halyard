@@ -372,7 +372,7 @@ public interface GoogleDistributedService<T> extends DistributedService<T, Googl
 
     AttachedDiskInitializeParams diskParams = new AttachedDiskInitializeParams()
         .setDiskSizeGb(20L)
-        .setDiskStorageType(GCEUtil.buildDiskTypeUrl(project, zone, GoogleDiskType.PD_SSD))
+        .setDiskType(GCEUtil.buildDiskTypeUrl(project, zone, GoogleDiskType.PD_SSD))
         .setSourceImage(getArtifactId(details.getDeploymentName()));
 
     disk.setInitializeParams(diskParams);
