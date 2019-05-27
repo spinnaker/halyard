@@ -36,20 +36,20 @@ class RetrofitConfig {
   @Autowired
   OkHttpClientConfiguration okHttpClientConfig;
 
-  @Value("${okHttpClient.connectionPool.maxIdleConnections:5}")
+  @Value("${ok-http-client.connection-pool.max-idle-connections:5}")
   int maxIdleConnections;
 
-  @Value("${okHttpClient.connectionPool.keepAliveDurationMs:300000}")
+  @Value("${ok-http-client.connection-pool.keep-alive-duration-ms:300000}")
   int keepAliveDurationMs;
 
-  @Value("${okHttpClient.retryOnConnectionFailure:true}")
+  @Value("${ok-http-client.retry-on-connection-failure:true}")
   boolean retryOnConnectionFailure;
 
   @Autowired
   RequestInterceptor spinnakerRequestInterceptor;
 
   @Bean
-  RestAdapter.LogLevel retrofitLogLevel(@Value("${retrofit.logLevel:BASIC}") String retrofitLogLevel) {
+  RestAdapter.LogLevel retrofitLogLevel(@Value("${retrofit.log-level:BASIC}") String retrofitLogLevel) {
     return RestAdapter.LogLevel.valueOf(retrofitLogLevel);
   }
 
