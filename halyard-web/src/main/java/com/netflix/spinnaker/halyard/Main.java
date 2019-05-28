@@ -38,7 +38,13 @@ import java.util.Map;
     excludeFilters = {
       @ComponentScan.Filter(
           type = FilterType.REGEX,
-          pattern = "com\\.netflix\\.spinnaker\\.config\\.ArtifactConfiguration")
+          pattern = "com\\.netflix\\.spinnaker\\.config\\.ArtifactConfiguration"),
+      @ComponentScan.Filter(
+          type = FilterType.REGEX,
+          pattern = "com\\.netflix\\.spinnaker\\.config\\.ActuatorEndpointsConfiguration"),
+      @ComponentScan.Filter(
+          type = FilterType.REGEX,
+          pattern = "com\\.netflix\\.spinnaker\\.config\\.MetricsEndpointConfiguration")
     })
 @EnableAutoConfiguration
 public class Main extends SpringBootServletInitializer {
