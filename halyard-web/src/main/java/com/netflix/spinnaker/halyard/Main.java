@@ -21,13 +21,25 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-@ComponentScan({"com.netflix.spinnaker.config", "com.netflix.spinnaker.halyard",})
+@ComponentScan(
+    value = {
+      "com.netflix.spinnaker.config",
+      "com.netflix.spinnaker.halyard",
+    },
+    // Halyard doesn't use `com.netflix.spinnaker.clouddriver.artifacts.*` and some beans created by
+    // default would require their dependencies to be set up (Front50ArtifactConfiguration).
+    excludeFilters = {
+      @ComponentScan.Filter(
+          type = FilterType.REGEX,
+          pattern = "com\\.netflix\\.spinnaker\\.config\\.ArtifactConfiguration")
+    })
 @EnableAutoConfiguration
 public class Main extends SpringBootServletInitializer {
   private static final Map<String, Object> DEFAULT_PROPS = buildDefaults();
@@ -53,4 +65,3 @@ public class Main extends SpringBootServletInitializer {
     return application.properties(DEFAULT_PROPS).sources(Main.class);
   }
 }
-
