@@ -27,7 +27,6 @@ dependencies {
   implementation 'commons-lang:commons-lang:2.6'
   implementation 'commons-io:commons-io:2.6'
   implementation 'io.fabric8:kubernetes-client'
-  implementation 'com.beust:jcommander:1.48'
   implementation 'org.codehaus.groovy:groovy'
   implementation 'com.squareup.retrofit:retrofit'
   implementation 'com.jcraft:jsch'

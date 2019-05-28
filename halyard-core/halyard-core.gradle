@@ -14,7 +14,6 @@ dependencies {
   implementation 'org.apache.commons:commons-compress:1.14'
   implementation 'commons-io:commons-io:2.6'
   implementation 'io.reactivex:rxjava'
-  implementation 'com.beust:jcommander:1.48'
   implementation 'com.hubspot.jinjava:jinjava:2.2.3'
   implementation 'org.spockframework:spock-spring:1.1-groovy-2.4'
   implementation 'org.yaml:snakeyaml:1.24'

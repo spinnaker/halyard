@@ -13,7 +13,7 @@ dependencies {
   implementation 'com.fasterxml.jackson.core:jackson-core'
   implementation 'com.fasterxml.jackson.core:jackson-databind'
   implementation 'org.aspectj:aspectjweaver'
-  implementation 'com.beust:jcommander:1.48'
+  implementation 'com.beust:jcommander'
   implementation 'org.yaml:snakeyaml:1.24'
   implementation 'org.codehaus.groovy:groovy'
 
