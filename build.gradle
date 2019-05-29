@@ -74,6 +74,12 @@ allprojects {
       }
     }
   }
+
+  // TODO: Remove this after the big code style reformat commit
+  spinnakerCodeStyle {
+    enabled = false
+  }
+  
 }
 
 defaultTasks ':halyard-web:run'
