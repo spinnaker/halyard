@@ -4,8 +4,8 @@ dependencies {
 
   implementation 'org.springframework.boot:spring-boot'
   implementation "com.netflix.spinnaker.fiat:fiat-core:$fiatVersion"
-  implementation 'commons-lang:commons-lang:2.6'
-  implementation "org.apache.commons:commons-lang3"
+  implementation 'org.apache.commons:commons-lang3'
+  implementation 'org.apache.commons:commons-text:1.6'
   implementation 'ch.qos.logback:logback-classic'
   implementation 'com.squareup.retrofit:retrofit'
   implementation 'com.squareup.retrofit:converter-jackson'

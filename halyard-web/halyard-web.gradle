@@ -27,7 +27,7 @@ dependencies {
 
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-starter-web'
-  implementation 'commons-lang:commons-lang:2.6'
+  implementation 'org.apache.commons:commons-lang3'
   implementation 'com.squareup.retrofit:retrofit'
   implementation 'org.lognet:grpc-spring-boot-starter:2.3.2'
   implementation 'org.codehaus.groovy:groovy'

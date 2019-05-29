@@ -7,7 +7,7 @@ dependencies {
   // TODO(lwander) Move to spinnaker-dependencies
   implementation 'com.google.apis:google-api-services-cloudkms:v1-rev8-1.22.0'
   implementation 'com.google.apis:google-api-services-storage'
-  implementation 'commons-lang:commons-lang:2.6'
+  implementation 'org.apache.commons:commons-lang3'
   implementation 'commons-io:commons-io:2.6'
   implementation 'org.apache.commons:commons-compress:1.14'
   implementation 'io.fabric8:kubernetes-client'

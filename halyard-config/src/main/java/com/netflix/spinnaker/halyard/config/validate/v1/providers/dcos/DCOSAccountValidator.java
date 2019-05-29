@@ -10,7 +10,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.Docker
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dcos.DCOSAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dcos.DCOSCluster;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
