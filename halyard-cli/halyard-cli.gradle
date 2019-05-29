@@ -13,9 +13,14 @@ dependencies {
   implementation 'com.fasterxml.jackson.core:jackson-core'
   implementation 'com.fasterxml.jackson.core:jackson-databind'
   implementation 'org.aspectj:aspectjweaver'
-  implementation 'com.beust:jcommander'
   implementation 'org.yaml:snakeyaml:1.24'
   implementation 'org.codehaus.groovy:groovy'
+  implementation('com.beust:jcommander:1.71') {
+    // 1.72 made JCommander.getMainParameter() weird
+    // This was reverted in master but not released yet. Sticking with 1.71 instead of catching NPE in
+    // com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand :287 and :414
+    force = true
+  }
 
   implementation project(':halyard-config')
   implementation project(':halyard-core')

@@ -62,19 +62,6 @@ allprojects {
     testAnnotationProcessor "org.projectlombok:lombok"
   }
 
-  configurations.all {
-    resolutionStrategy {
-      eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group == 'com.beust' && details.requested.name == "jcommander") {
-          // 1.72 made JCommander.getMainParameter() weird
-          // This was reverted in master but not released yet. Better do this here than catch NullPointerException in
-          // com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand :287 and :414 
-          details.useVersion "1.71"
-        }
-      }
-    }
-  }
-
   // TODO: Remove this after the big code style reformat commit
   spinnakerCodeStyle {
     enabled = false
