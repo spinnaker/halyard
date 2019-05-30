@@ -2,7 +2,6 @@ dependencies {
   compileOnly 'org.projectlombok:lombok'
   annotationProcessor 'org.projectlombok:lombok'
 
-  implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-docker:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-google:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-kubernetes:$clouddriverVersion"

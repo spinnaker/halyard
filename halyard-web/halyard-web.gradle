@@ -26,6 +26,7 @@ dependencies {
   annotationProcessor 'org.projectlombok:lombok'
 
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-security'
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.apache.commons:commons-lang3'
   implementation 'com.squareup.retrofit:retrofit'
