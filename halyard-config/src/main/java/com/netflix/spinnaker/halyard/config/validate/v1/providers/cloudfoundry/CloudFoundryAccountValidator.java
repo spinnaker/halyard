@@ -24,18 +24,13 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Slf4j
 public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount> {
-    final private List<CloudFoundryCredentials> credentialsList;
-    final private String halyardVersion;
-
     @Override
     public void validate(ConfigProblemSetBuilder problemSetBuilder, CloudFoundryAccount cloudFoundryAccount) {
         String accountName = cloudFoundryAccount.getName();
@@ -48,6 +43,7 @@ public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount>
         String metricsUri = cloudFoundryAccount.getMetricsUri();
         String password = cloudFoundryAccount.getPassword();
         String user = cloudFoundryAccount.getUser();
+        boolean skipSslValidation = cloudFoundryAccount.isSkipSslValidation();
 
         if (StringUtils.isEmpty(user) || StringUtils.isEmpty(password)) {
             problemSetBuilder.addProblem(Problem.Severity.ERROR, "You must provide a user and a password");
@@ -67,23 +63,27 @@ public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount>
                     "To be able to link server groups to CF Metrics a URI is required: " + accountName);
         }
 
+        if (skipSslValidation) {
+            problemSetBuilder.addProblem(Problem.Severity.WARNING,
+                    "SKIPPING SSL server certificate validation of the CloudFoundry API endpoint for account: " + accountName);
+        }
+
+        CloudFoundryCredentials cloudFoundryCredentials = new CloudFoundryCredentials(
+            cloudFoundryAccount.getName(),
+            appsManagerUri,
+            metricsUri,
+            apiHost,
+            user,
+            password,
+            environment,
+            skipSslValidation
+        );
+
         try {
-            CloudFoundryCredentials cloudFoundryCredentials = new CloudFoundryCredentials(
-                    cloudFoundryAccount.getName(),
-                    appsManagerUri,
-                    metricsUri,
-                    apiHost,
-                    user,
-                    password,
-                    environment
-            );
-            credentialsList.add(cloudFoundryCredentials);
-            Collection<Map<String, String>> regions = cloudFoundryCredentials.getRegions();
-            if (regions.isEmpty()) {
-                throw new Exception(accountName + " does not have access to any Cloud Foundry Orgs and Spaces");
-            }
+            int count = cloudFoundryCredentials.getCredentials().getSpaces().all().size();
+            log.debug("Retrieved {} spaces using account {}", count, accountName);
         } catch (Exception e) {
-            problemSetBuilder.addProblem(Problem.Severity.ERROR, "Failed to establish a connection for account '"
+            problemSetBuilder.addProblem(Problem.Severity.ERROR, "Failed to fetch spaces while validating account '"
                     + accountName + "': " + e.getMessage() + ".");
         }
     }
