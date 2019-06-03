@@ -31,44 +31,56 @@ import org.apache.commons.lang3.StringUtils;
 @EqualsAndHashCode(callSuper = false)
 @Slf4j
 public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount> {
-    @Override
-    public void validate(ConfigProblemSetBuilder problemSetBuilder, CloudFoundryAccount cloudFoundryAccount) {
-        String accountName = cloudFoundryAccount.getName();
+  @Override
+  public void validate(
+      ConfigProblemSetBuilder problemSetBuilder, CloudFoundryAccount cloudFoundryAccount) {
+    String accountName = cloudFoundryAccount.getName();
 
-        DaemonTaskHandler.message("Validating " + accountName + " with " + CloudFoundryAccountValidator.class.getSimpleName());
+    DaemonTaskHandler.message(
+        "Validating "
+            + accountName
+            + " with "
+            + CloudFoundryAccountValidator.class.getSimpleName());
 
-        String environment = cloudFoundryAccount.getEnvironment();
-        String apiHost = cloudFoundryAccount.getApiHost();
-        String appsManagerUri = cloudFoundryAccount.getAppsManagerUri();
-        String metricsUri = cloudFoundryAccount.getMetricsUri();
-        String password = cloudFoundryAccount.getPassword();
-        String user = cloudFoundryAccount.getUser();
-        boolean skipSslValidation = cloudFoundryAccount.isSkipSslValidation();
+    String environment = cloudFoundryAccount.getEnvironment();
+    String apiHost = cloudFoundryAccount.getApiHost();
+    String appsManagerUri = cloudFoundryAccount.getAppsManagerUri();
+    String metricsUri = cloudFoundryAccount.getMetricsUri();
+    String password = cloudFoundryAccount.getPassword();
+    String user = cloudFoundryAccount.getUser();
+    boolean skipSslValidation = cloudFoundryAccount.isSkipSslValidation();
 
-        if (StringUtils.isEmpty(user) || StringUtils.isEmpty(password)) {
-            problemSetBuilder.addProblem(Problem.Severity.ERROR, "You must provide a user and a password");
-        }
+    if (StringUtils.isEmpty(user) || StringUtils.isEmpty(password)) {
+      problemSetBuilder.addProblem(
+          Problem.Severity.ERROR, "You must provide a user and a password");
+    }
 
-        if (StringUtils.isEmpty(apiHost)) {
-            problemSetBuilder.addProblem(Problem.Severity.ERROR, "You must provide a CF api endpoint host");
-        }
+    if (StringUtils.isEmpty(apiHost)) {
+      problemSetBuilder.addProblem(
+          Problem.Severity.ERROR, "You must provide a CF api endpoint host");
+    }
 
-        if (StringUtils.isEmpty(appsManagerUri)) {
-            problemSetBuilder.addProblem(Problem.Severity.WARNING,
-                    "To be able to link server groups to CF Appsmanager a URI is required: " + accountName);
-        }
+    if (StringUtils.isEmpty(appsManagerUri)) {
+      problemSetBuilder.addProblem(
+          Problem.Severity.WARNING,
+          "To be able to link server groups to CF Appsmanager a URI is required: " + accountName);
+    }
 
-        if (StringUtils.isEmpty(metricsUri)) {
-            problemSetBuilder.addProblem(Problem.Severity.WARNING,
-                    "To be able to link server groups to CF Metrics a URI is required: " + accountName);
-        }
+    if (StringUtils.isEmpty(metricsUri)) {
+      problemSetBuilder.addProblem(
+          Problem.Severity.WARNING,
+          "To be able to link server groups to CF Metrics a URI is required: " + accountName);
+    }
 
-        if (skipSslValidation) {
-            problemSetBuilder.addProblem(Problem.Severity.WARNING,
-                    "SKIPPING SSL server certificate validation of the CloudFoundry API endpoint for account: " + accountName);
-        }
+    if (skipSslValidation) {
+      problemSetBuilder.addProblem(
+          Problem.Severity.WARNING,
+          "SKIPPING SSL server certificate validation of the CloudFoundry API endpoint for account: "
+              + accountName);
+    }
 
-        CloudFoundryCredentials cloudFoundryCredentials = new CloudFoundryCredentials(
+    CloudFoundryCredentials cloudFoundryCredentials =
+        new CloudFoundryCredentials(
             cloudFoundryAccount.getName(),
             appsManagerUri,
             metricsUri,
@@ -76,15 +88,19 @@ public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount>
             user,
             password,
             environment,
-            skipSslValidation
-        );
+            skipSslValidation);
 
-        try {
-            int count = cloudFoundryCredentials.getCredentials().getSpaces().all().size();
-            log.debug("Retrieved {} spaces using account {}", count, accountName);
-        } catch (Exception e) {
-            problemSetBuilder.addProblem(Problem.Severity.ERROR, "Failed to fetch spaces while validating account '"
-                    + accountName + "': " + e.getMessage() + ".");
-        }
+    try {
+      int count = cloudFoundryCredentials.getCredentials().getSpaces().all().size();
+      log.debug("Retrieved {} spaces using account {}", count, accountName);
+    } catch (Exception e) {
+      problemSetBuilder.addProblem(
+          Problem.Severity.ERROR,
+          "Failed to fetch spaces while validating account '"
+              + accountName
+              + "': "
+              + e.getMessage()
+              + ".");
     }
+  }
 }

@@ -23,9 +23,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CloudFoundryProviderValidator extends Validator<CloudFoundryProvider> {
-    @Override
-    public void validate(ConfigProblemSetBuilder problemSetBuilder, CloudFoundryProvider provider) {
-        CloudFoundryAccountValidator cloudFoundryAccountValidator = new CloudFoundryAccountValidator();
-        provider.getAccounts().forEach(cloudFoundryAccount -> cloudFoundryAccountValidator.validate(problemSetBuilder, cloudFoundryAccount));
-    }
+  @Override
+  public void validate(ConfigProblemSetBuilder problemSetBuilder, CloudFoundryProvider provider) {
+    CloudFoundryAccountValidator cloudFoundryAccountValidator = new CloudFoundryAccountValidator();
+    provider
+        .getAccounts()
+        .forEach(
+            cloudFoundryAccount ->
+                cloudFoundryAccountValidator.validate(problemSetBuilder, cloudFoundryAccount));
+  }
 }
