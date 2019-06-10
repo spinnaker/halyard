@@ -381,6 +381,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         probe = new JinjaJarResource("/kubernetes/manifests/httpReadinessProbe.yml");
         probe.addBinding("port", settings.getPort());
         probe.addBinding("path", settings.getHealthEndpoint());
+	// Support for HTTPS scheme.
         probe.addBinding("scheme", settings.getScheme().toUpperCase());
       }
     } else {
