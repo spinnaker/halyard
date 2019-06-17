@@ -28,7 +28,7 @@ dependencies {
   implementation 'io.fabric8:kubernetes-client'
   implementation 'com.squareup.retrofit:retrofit'
   implementation 'com.jcraft:jsch'
-
+  implementation'com.kjetland:mbknor-jackson-jsonschema_2.12:1.0.34'
 //  TODO: add clouddriverDCOS once that's merged
   implementation project(':halyard-core')
 
