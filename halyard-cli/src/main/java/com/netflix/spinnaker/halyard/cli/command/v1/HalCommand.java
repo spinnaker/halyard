@@ -49,6 +49,9 @@ public class HalCommand extends NestableCommand {
   @Parameter(names = "--docs", description = "Print markdown docs for the hal CLI.")
   private boolean docs;
 
+  @Parameter(names = "--json", description = "Generate json")
+  private boolean json;
+
   public HalCommand() {
     registerSubcommand(new AdminCommand());
     registerSubcommand(new BackupCommand());
@@ -94,6 +97,9 @@ public class HalCommand extends NestableCommand {
 
     if (!version && !printBashCompletion && !docs) {
       showHelp();
+    }
+    if (json) {
+      System.out.println(getAccountsFields());
     }
   }
 }
