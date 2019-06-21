@@ -47,9 +47,9 @@ public class TravisAddMasterCommand extends AbstractAddMasterCommand {
   public String githubToken;
 
   @Parameter(
-      names = "--number-of-repositories",
-      description = TravisCommandProperties.NUMBER_OF_REPOSITORIES_DESCRIPTION)
-  public Integer numberOfRepositories;
+      names = "--number-of-jobs",
+      description = TravisCommandProperties.NUMBER_OF_JOBS_DESCRIPTION)
+  public Integer numberOfJobs;
 
   @Override
   protected CIAccount buildMaster(String masterName) {
@@ -58,7 +58,7 @@ public class TravisAddMasterCommand extends AbstractAddMasterCommand {
         .setAddress(address)
         .setBaseUrl(baseUrl)
         .setGithubToken(githubToken)
-        .setNumberOfRepositories(numberOfRepositories);
+        .setNumberOfJobs(numberOfJobs);
 
     return master;
   }

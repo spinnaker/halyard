@@ -26,8 +26,10 @@ public class TravisCommandProperties {
   static final String GITHUB_TOKEN_DESCRIPTION =
       "The github token to authentiacte against travis with.";
 
-  static final String NUMBER_OF_REPOSITORIES_DESCRIPTION =
-      "How many repositories the travis integration should"
-          + " fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of"
-          + " repositories built within the poll interval.";
+  static final String NUMBER_OF_JOBS_DESCRIPTION =
+      "How many jobs the travis integration should fetch from the api each time the poller runs."
+          + " If you have a busy Travis server and/or some very slow builds, you might need"
+          + " to increase this from the default value (100). Example: A build takes 60 minutes to complete."
+          + " By the time it is completed, more than 100 other jobs have ran. Then the slow build will"
+          + " have been pushed out of the polling window.";
 }

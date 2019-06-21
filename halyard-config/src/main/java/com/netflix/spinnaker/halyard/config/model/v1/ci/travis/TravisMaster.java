@@ -34,5 +34,5 @@ public class TravisMaster extends CIAccount {
   private String address;
   private String baseUrl;
   @Secret private String githubToken;
-  private Integer numberOfRepositories;
+  private Integer numberOfJobs;
 }
