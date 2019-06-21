@@ -31,24 +31,34 @@ import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiPrinter;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiStoryBuilder;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiStyle;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.core.job.v1.JobExecutor;
 import com.netflix.spinnaker.halyard.core.job.v1.JobExecutorLocal;
 import com.netflix.spinnaker.halyard.core.resource.v1.StringReplaceJarResource;
 import java.io.Console;
+import java.lang.reflect.Field;
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.nibor.autolink.*;
+import net.minidev.json.JSONObject;
+import org.nibor.autolink.LinkExtractor;
+import org.nibor.autolink.LinkSpan;
+import org.nibor.autolink.LinkType;
+import org.nibor.autolink.Span;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import retrofit.RetrofitError;
 
 @Parameters(separators = "=")
@@ -629,7 +639,8 @@ public abstract class NestableCommand {
 
       commander.addCommand(subCommand.getCommandName(), subCommand);
 
-      // We need to provide the subcommand with its own commander before recursively populating its
+      // We need to provide the subcommand with its own commander before recursively
+      // populating its
       // subcommands, since
       // they need to be registered with this subcommander we retrieve here.
       JCommander subCommander = commander.getCommands().get(subCommand.getCommandName());
@@ -648,5 +659,53 @@ public abstract class NestableCommand {
     }
 
     return jobExecutor;
+  }
+
+  public String getAccountsFields() {
+    Class<?> clazz = Account.class;
+    JSONObject accounts = new JSONObject();
+    for (Class<?> c : getSubTypesOfClasses(clazz)) {
+      Field[] all = getFields(c);
+      JSONObject fields = new JSONObject();
+      JSONObject field = new JSONObject();
+      for (Field f : all) {
+        JSONObject row = new JSONObject();
+        if (f.getType().isEnum()) {
+          Object[] objects = f.getType().getEnumConstants();
+          List<Object> array = new ArrayList<>();
+          for (Object obj : objects) {
+            array.add(obj);
+          }
+          row.put("type", "string");
+          row.put("enum", array);
+          field.put(f.getName(), row);
+
+        } else {
+          row.put("type", f.getType().getSimpleName().toLowerCase());
+          field.put(f.getName(), row);
+        }
+        fields.put("fields", field);
+      }
+      accounts.put(c.getSimpleName(), fields);
+    }
+    return accounts.toString();
+  }
+
+  public Set<Class<?>> getSubTypesOfClasses(Class<?> c) {
+    Reflections reflections =
+        new Reflections(
+            "com.netflix.spinnaker.halyard.config.model.v1.providers", new SubTypesScanner());
+    Set<?> subTypes = reflections.getSubTypesOf(c);
+    return (Set<Class<?>>) subTypes;
+  }
+
+  public Field[] getFields(Class<?> c) {
+    Field[] extendedFields = c.getSuperclass().getDeclaredFields();
+    Field[] fields = c.getDeclaredFields();
+    Field[] allFields = new Field[extendedFields.length + fields.length];
+    Arrays.setAll(
+        allFields,
+        i -> (i < extendedFields.length ? extendedFields[i] : fields[i - extendedFields.length]));
+    return allFields;
   }
 }
