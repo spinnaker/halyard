@@ -22,6 +22,7 @@ dependencies {
     force = true
   }
   implementation 'org.nibor.autolink:autolink:0.10.0'
+  implementation 'org.reflections:reflections:0.9.11'
 
   implementation project(':halyard-config')
   implementation project(':halyard-core')
