@@ -79,27 +79,26 @@ public class HalCommand extends NestableCommand {
 
   @Override
   protected void executeThis() {
-    if (docs) {
-      System.out.println(generateDocs());
-    }
-
-    if (version) {
-      System.out.println(getVersion());
-    }
-
-    if (printBashCompletion) {
-      System.out.println(commandCompletor());
-    }
-
-    if (healthy) {
-      System.exit(Daemon.isHealthy() ? 0 : -1);
-    }
-
-    if (!version && !printBashCompletion && !docs) {
-      showHelp();
-    }
     if (json) {
-      System.out.println(getAccountsFields());
+      System.out.println(generateJson());
+    } else {
+      if (docs) {
+        System.out.println(generateDocs());
+      }
+      if (version) {
+        System.out.println(getVersion());
+      }
+      if (printBashCompletion) {
+        System.out.println(commandCompletor());
+      }
+
+      if (healthy) {
+        System.exit(Daemon.isHealthy() ? 0 : -1);
+      }
+
+      if (!version && !printBashCompletion && !docs) {
+        showHelp();
+      }
     }
   }
 }
