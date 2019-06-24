@@ -23,6 +23,7 @@ dependencies {
   }
   implementation 'org.nibor.autolink:autolink:0.10.0'
   implementation 'org.reflections:reflections:0.9.11'
+  implementation 'net.minidev:json-smart:1.1.1'
 
   implementation project(':halyard-config')
   implementation project(':halyard-core')
@@ -66,3 +67,14 @@ task updateDocs(dependsOn: generateDocs) {
 }
 
 tasks.check.dependsOn(checkDocs)
+
+task generateJson(type: Exec ) {
+  workingDir "$projectDir"
+  commandLine './hal', '--json'
+  standardOutput new ByteArrayOutputStream()
+  doLast {
+    new File("$projectDir/../docs/schema.json").withWriter { writer ->
+      writer.write(standardOutput.toString())
+    }
+  }
+}
