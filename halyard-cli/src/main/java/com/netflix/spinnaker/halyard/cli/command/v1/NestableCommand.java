@@ -661,7 +661,7 @@ public abstract class NestableCommand {
     return jobExecutor;
   }
 
-  public String getAccountsFields() {
+  public String generateJson() {
     Class<?> clazz = Account.class;
     JSONObject accounts = new JSONObject();
     for (Class<?> c : getSubTypesOfClasses(clazz)) {
