@@ -668,8 +668,8 @@ public abstract class NestableCommand {
     JSONObject provider = new JSONObject();
     JSONObject field = new JSONObject();
     for (Field var : providerTypes) {
-      JSONObject fields = new JSONObject();
       for (Field v : getFields(var.getType())) {
+        JSONObject fields = new JSONObject();
         if (v.getName().equals("bakeryDefaults")) {
           Field[] bakes = getFields(BakeryDefaults.class);
           JSONObject bakeFields = new JSONObject();
@@ -703,11 +703,11 @@ public abstract class NestableCommand {
             accField.put(f.getName(), row);
           }
           if (field.containsKey(key)) {
-            fields.put("accountFields", accField);
+            JSONObject ob = (JSONObject) field.get(key);
+            ob.put("accountFields", accField);
           }
         }
       }
-      field.put(var.getName(), fields);
     }
     provider.put("providers", field);
     return provider.toString();
