@@ -32,6 +32,8 @@ import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiStoryBuilder;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiStyle;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
+import com.netflix.spinnaker.halyard.config.model.v1.node.BakeryDefaults;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Providers;
 import com.netflix.spinnaker.halyard.core.job.v1.JobExecutor;
 import com.netflix.spinnaker.halyard.core.job.v1.JobExecutorLocal;
 import com.netflix.spinnaker.halyard.core.resource.v1.StringReplaceJarResource;
@@ -662,33 +664,53 @@ public abstract class NestableCommand {
   }
 
   public String generateJson() {
-    Class<?> clazz = Account.class;
-    JSONObject accounts = new JSONObject();
-    for (Class<?> c : getSubTypesOfClasses(clazz)) {
-      Field[] all = getFields(c);
+    Field[] providerTypes = Providers.class.getDeclaredFields();
+    JSONObject provider = new JSONObject();
+    JSONObject field = new JSONObject();
+    for (Field var : providerTypes) {
       JSONObject fields = new JSONObject();
-      JSONObject field = new JSONObject();
-      for (Field f : all) {
-        JSONObject row = new JSONObject();
-        if (f.getType().isEnum()) {
-          Object[] objects = f.getType().getEnumConstants();
-          List<Object> array = new ArrayList<>();
-          for (Object obj : objects) {
-            array.add(obj);
+      for (Field v : getFields(var.getType())) {
+        if (v.getName().equals("bakeryDefaults")) {
+          Field[] bakes = getFields(BakeryDefaults.class);
+          JSONObject bakeFields = new JSONObject();
+          for (Field b : bakes) {
+            bakeFields.put(b.getName(), b.getType().getSimpleName().toLowerCase());
           }
-          row.put("type", "string");
-          row.put("enum", array);
-          field.put(f.getName(), row);
-
+          fields.put("useBakery", "boolean");
+          fields.put("bakeryFields", bakeFields);
         } else {
-          row.put("type", f.getType().getSimpleName().toLowerCase());
-          field.put(f.getName(), row);
+          fields.put(v.getName(), v.getType().getSimpleName().toLowerCase());
         }
-        fields.put("fields", field);
+        field.put(var.getName(), fields);
       }
-      accounts.put(c.getSimpleName(), fields);
+      for (Class<?> c : getSubTypesOfClasses(Account.class)) {
+        Field[] all = getFields(c);
+        String key = c.getSimpleName().toLowerCase().replace("account", "");
+        JSONObject accField = new JSONObject();
+        for (Field f : all) {
+          JSONObject row = new JSONObject();
+          if (f.getType().isEnum()) {
+            Object[] objects = f.getType().getEnumConstants();
+            List<Object> array = new ArrayList<>();
+            for (Object obj : objects) {
+              array.add(obj);
+            }
+            row.put("type", "string");
+            row.put("enum", array);
+            accField.put(f.getName(), row);
+          } else {
+            row.put("type", f.getType().getSimpleName().toLowerCase());
+            accField.put(f.getName(), row);
+          }
+          if (field.containsKey(key)) {
+            fields.put("accountFields", accField);
+          }
+        }
+      }
+      field.put(var.getName(), fields);
     }
-    return accounts.toString();
+    provider.put("providers", field);
+    return provider.toString();
   }
 
   public Set<Class<?>> getSubTypesOfClasses(Class<?> c) {
