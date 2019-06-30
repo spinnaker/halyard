@@ -272,7 +272,7 @@ public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
       try {
         KubernetesClient client = new DefaultKubernetesClient(config);
 
-        client.namespaces().list();
+        client.pods().list();
       } catch (Exception e) {
         ConfigProblemBuilder pb =
             psBuilder.addProblem(
