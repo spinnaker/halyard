@@ -182,12 +182,12 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
     vault.setEnabled(isSet(vaultEnabled) ? vaultEnabled : vault.isEnabled());
     deploymentEnvironment.setVault(vault);
 
-    livenessProbeConfig.setEnabled(
-        isSet(livenessProbesEnabled) ? livenessProbesEnabled : livenessProbeConfig.isEnabled());
-    livenessProbeConfig.setInitialDelaySeconds(
-        isSet(livenessProbeInitialDelaySeconds)
-            ? livenessProbeInitialDelaySeconds
-            : livenessProbeConfig.getInitialDelaySeconds());
+    if (isSet(livenessProbesEnabled)) {
+      livenessProbeConfig.setEnabled(livenessProbesEnabled);
+    }
+    if (isSet(livenessProbeInitialDelaySeconds)) {
+      livenessProbeConfig.setInitialDelaySeconds(livenessProbeInitialDelaySeconds);
+    }
     deploymentEnvironment.setLivenessProbeConfig(livenessProbeConfig);
 
     deploymentEnvironment.setLocation(
