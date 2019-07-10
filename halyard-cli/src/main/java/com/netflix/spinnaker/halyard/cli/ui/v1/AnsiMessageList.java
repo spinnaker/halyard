@@ -16,15 +16,13 @@
 
 package com.netflix.spinnaker.halyard.cli.ui.v1;
 
-import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 public class AnsiMessageList {
-  @Getter
-  List<AnsiSnippet> messages = new ArrayList<>();
+  @Getter List<AnsiSnippet> messages = new ArrayList<>();
 
   private AnsiSnippet addIndentedMessage(int indentWidth, String messageText) {
     String indent = StringUtils.leftPad("", indentWidth);

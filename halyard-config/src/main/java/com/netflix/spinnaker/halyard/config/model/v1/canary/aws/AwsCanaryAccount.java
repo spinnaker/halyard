@@ -18,13 +18,13 @@ package com.netflix.spinnaker.halyard.config.model.v1.canary.aws;
 
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryServiceIntegration;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -37,6 +37,7 @@ public class AwsCanaryAccount extends AbstractCanaryAccount implements Cloneable
   private String profileName;
   private String endpoint;
   private String accessKeyId;
-  private String secretAccessKey;
-  private Set<AbstractCanaryServiceIntegration.SupportedTypes> supportedTypes = new HashSet<>();
+  @Secret private String secretAccessKey;
+  private SortedSet<AbstractCanaryServiceIntegration.SupportedTypes> supportedTypes =
+      new TreeSet<>();
 }

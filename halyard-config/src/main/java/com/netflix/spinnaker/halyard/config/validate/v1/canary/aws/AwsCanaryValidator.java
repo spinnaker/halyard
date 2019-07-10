@@ -16,17 +16,14 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.canary.aws;
 
-import com.netflix.spectator.api.Registry;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.aws.AwsCanaryAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.aws.AwsCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
-import lombok.Setter;
-import org.springframework.util.CollectionUtils;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.util.CollectionUtils;
 
 public class AwsCanaryValidator extends Validator<AwsCanaryServiceIntegration> {
 
@@ -34,13 +31,12 @@ public class AwsCanaryValidator extends Validator<AwsCanaryServiceIntegration> {
   public void validate(ConfigProblemSetBuilder p, AwsCanaryServiceIntegration n) {
     if (n.isS3Enabled()) {
       List<AwsCanaryAccount> accountsWithBucket =
-          n.getAccounts()
-              .stream()
-              .filter(a -> a.getBucket() != null)
-              .collect(Collectors.toList());
+          n.getAccounts().stream().filter(a -> a.getBucket() != null).collect(Collectors.toList());
 
       if (CollectionUtils.isEmpty(accountsWithBucket)) {
-        p.addProblem(Problem.Severity.ERROR, "At least one AWS account must specify a bucket if S3 is enabled.");
+        p.addProblem(
+            Problem.Severity.ERROR,
+            "At least one AWS account must specify a bucket if S3 is enabled.");
       }
     }
   }

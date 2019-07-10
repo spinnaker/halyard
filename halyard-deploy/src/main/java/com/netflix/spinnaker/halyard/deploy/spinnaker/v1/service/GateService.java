@@ -17,44 +17,37 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
-
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.security.ApiSecurity;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
-import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.GateBoot128ProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.GateBoot154ProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.GateProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 @Slf4j
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
-abstract public class GateService extends SpringService<GateService.Gate> {
+public abstract class GateService extends SpringService<GateService.Gate> {
 
   private static final String BOOT_UPGRADED_VERSION = "0.7.0";
 
-  @Autowired
-  private GateBoot154ProfileFactory boot154ProfileFactory;
+  @Autowired private GateBoot154ProfileFactory boot154ProfileFactory;
 
-  @Autowired
-  private GateBoot128ProfileFactory boot128ProfileFactory;
-
-  @Autowired
-  private ArtifactService artifactService;
+  @Autowired private GateBoot128ProfileFactory boot128ProfileFactory;
 
   @Override
   public SpinnakerArtifact getArtifact() {
@@ -71,26 +64,37 @@ abstract public class GateService extends SpringService<GateService.Gate> {
     return Gate.class;
   }
 
+  protected void appendReadonlyClouddriverForDeck(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {}
+
   @Override
-  public List<Profile> getProfiles(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  public List<Profile> getProfiles(
+      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     List<Profile> profiles = super.getProfiles(deploymentConfiguration, endpoints);
     String filename = "gate.yml";
 
     String path = Paths.get(getConfigOutputPath(), filename).toString();
-    GateProfileFactory gateProfileFactory = getGateProfileFactory(deploymentConfiguration.getName());
-    Profile profile = gateProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints);
+    GateProfileFactory gateProfileFactory =
+        getGateProfileFactory(deploymentConfiguration.getName());
+    Profile profile =
+        gateProfileFactory.getProfile(filename, path, deploymentConfiguration, endpoints);
+
+    appendReadonlyClouddriverForDeck(profile, deploymentConfiguration, endpoints);
 
     profiles.add(profile);
     return profiles;
   }
 
   private GateProfileFactory getGateProfileFactory(String deploymentName) {
-    String version = artifactService.getArtifactVersion(deploymentName, SpinnakerArtifact.GATE);
+    String version =
+        getArtifactService().getArtifactVersion(deploymentName, SpinnakerArtifact.GATE);
     try {
       if (Versions.lessThan(version, BOOT_UPGRADED_VERSION)) {
         return boot128ProfileFactory;
       }
-    } catch (NumberFormatException nfe) {
+    } catch (IllegalArgumentException iae) {
       log.warn("Could not resolve Gate version, using `boot154ProfileFactory`.");
     }
     return boot154ProfileFactory;
@@ -100,7 +104,7 @@ abstract public class GateService extends SpringService<GateService.Gate> {
     super();
   }
 
-  public interface Gate { }
+  public interface Gate {}
 
   @EqualsAndHashCode(callSuper = true)
   @Data
@@ -121,6 +125,11 @@ abstract public class GateService extends SpringService<GateService.Gate> {
     public Settings() {}
 
     public Settings(ApiSecurity apiSecurity) {
+      this(apiSecurity, Collections.emptyList());
+    }
+
+    public Settings(ApiSecurity apiSecurity, List<String> profiles) {
+      setProfiles(profiles);
       setOverrideBaseUrl(apiSecurity.getOverrideBaseUrl());
       if (apiSecurity.getSsl().isEnabled()) {
         scheme = "https";

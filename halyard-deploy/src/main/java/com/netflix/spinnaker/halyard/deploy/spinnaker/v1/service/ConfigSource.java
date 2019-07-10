@@ -17,15 +17,20 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
-import lombok.Data;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.Data;
 
 @Data
 public class ConfigSource {
   String id;
   String mountPath;
+  Type type = Type.secret;
   Map<String, String> env = new HashMap<>();
-}
 
+  public enum Type {
+    emptyDir,
+    configMap,
+    secret
+  }
+}

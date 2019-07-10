@@ -20,15 +20,12 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.CommonCanaryCommandProperties;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.account.AbstractAddCanaryAccountCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.account.CanaryUtils;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.google.CommonCanaryGoogleCommandProperties;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.google.CommonGoogleCommandProperties;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.LocalFileConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
-import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.google.GoogleCanaryAccount;
-import com.netflix.spinnaker.halyard.config.model.v1.canary.google.GoogleCanaryServiceIntegration;
 
 @Parameters(separators = "=")
 public class GoogleAddCanaryAccountCommand extends AbstractAddCanaryAccountCommand {
@@ -41,54 +38,36 @@ public class GoogleAddCanaryAccountCommand extends AbstractAddCanaryAccountComma
   @Parameter(
       names = "--project",
       required = true,
-      description = CommonCanaryGoogleCommandProperties.PROJECT_DESCRIPTION
-  )
+      description = CommonCanaryGoogleCommandProperties.PROJECT_DESCRIPTION)
   private String project;
 
   @Parameter(
       names = "--json-path",
       converter = LocalFileConverter.class,
-      description = CommonGoogleCommandProperties.JSON_PATH_DESCRIPTION
-  )
+      description = CommonGoogleCommandProperties.JSON_PATH_DESCRIPTION)
   private String jsonPath;
 
-  @Parameter(
-      names = "--bucket",
-      description = CommonCanaryCommandProperties.BUCKET
-  )
+  @Parameter(names = "--bucket", description = CommonCanaryCommandProperties.BUCKET)
   private String bucket;
 
-  @Parameter(
-      names = "--root-folder",
-      description = CommonCanaryCommandProperties.ROOT_FOLDER
-  )
+  @Parameter(names = "--root-folder", description = CommonCanaryCommandProperties.ROOT_FOLDER)
   private String rootFolder;
 
   @Parameter(
       names = "--bucket-location",
-      description = CommonCanaryGoogleCommandProperties.BUCKET_LOCATION
-  )
+      description = CommonCanaryGoogleCommandProperties.BUCKET_LOCATION)
   private String bucketLocation;
 
   @Override
   protected AbstractCanaryAccount buildAccount(Canary canary, String accountName) {
-    GoogleCanaryAccount account = (GoogleCanaryAccount)new GoogleCanaryAccount().setName(accountName);
+    GoogleCanaryAccount account =
+        (GoogleCanaryAccount) new GoogleCanaryAccount().setName(accountName);
     account.setProject(project).setJsonPath(jsonPath);
 
     account.setBucket(bucket).setBucketLocation(bucketLocation);
     account.setRootFolder(isSet(rootFolder) ? rootFolder : account.getRootFolder());
 
-    GoogleCanaryServiceIntegration googleCanaryServiceIntegration =
-        (GoogleCanaryServiceIntegration)CanaryUtils.getServiceIntegrationByClass(canary, GoogleCanaryServiceIntegration.class);
-
-    if (googleCanaryServiceIntegration.isStackdriverEnabled()) {
-      account.getSupportedTypes().add(AbstractCanaryServiceIntegration.SupportedTypes.METRICS_STORE);
-    }
-
-    if (googleCanaryServiceIntegration.isGcsEnabled()) {
-      account.getSupportedTypes().add(AbstractCanaryServiceIntegration.SupportedTypes.CONFIGURATION_STORE);
-      account.getSupportedTypes().add(AbstractCanaryServiceIntegration.SupportedTypes.OBJECT_STORE);
-    }
+    GoogleAddEditCanaryAccountUtils.updateSupportedTypes(canary, account);
 
     return account;
   }

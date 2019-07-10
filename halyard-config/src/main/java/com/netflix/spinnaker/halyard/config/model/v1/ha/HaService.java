@@ -21,8 +21,6 @@ package com.netflix.spinnaker.halyard.config.model.v1.ha;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,19 +40,13 @@ public abstract class HaService extends Node implements Cloneable {
     return haServiceType().getName();
   }
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
-  abstract public HaServiceType haServiceType();
+  public abstract HaServiceType haServiceType();
 
   public enum HaServiceType {
     CLOUDDRIVER("clouddriver"),
     ECHO("echo");
 
-    @Getter
-    final String name;
+    @Getter final String name;
 
     HaServiceType(String name) {
       this.name = name;

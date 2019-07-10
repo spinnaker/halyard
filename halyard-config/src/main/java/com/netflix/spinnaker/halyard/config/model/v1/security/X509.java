@@ -16,8 +16,6 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -30,7 +28,4 @@ public class X509 extends AuthnMethod {
 
   private String roleOid;
   private String subjectPrincipalRegex;
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v ) { v.validate(psBuilder, this); }
 }

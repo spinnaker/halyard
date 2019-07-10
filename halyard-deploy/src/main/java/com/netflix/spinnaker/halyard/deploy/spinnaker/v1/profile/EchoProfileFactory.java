@@ -16,16 +16,15 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Notifications;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Pubsubs;
+import com.netflix.spinnaker.halyard.config.model.v1.ci.gcb.GoogleCloudBuild;
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
-import lombok.Data;
-import org.springframework.stereotype.Component;
-
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
+import org.springframework.stereotype.Component;
 
 @Component
 public class EchoProfileFactory extends SpringProfileFactory {
@@ -35,28 +34,55 @@ public class EchoProfileFactory extends SpringProfileFactory {
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  public String getMinimumSecretDecryptionVersion(String deploymentName) {
+    return "2.3.2";
+  }
+
+  @Override
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
 
     List<String> files = new ArrayList<>();
 
     profile.appendContents("global.spinnaker.timezone: " + deploymentConfiguration.getTimezone());
-    profile.appendContents("spinnaker.baseUrl: " + endpoints.getServices().getDeck().getBaseUrl());
+    profile.appendContents(
+        "spinnaker.baseUrl: " + endpoints.getServiceSettings(Type.DECK).getBaseUrl());
 
     Notifications notifications = deploymentConfiguration.getNotifications();
     if (notifications != null) {
       files.addAll(backupRequiredFiles(notifications, deploymentConfiguration.getName()));
-      profile.appendContents(yamlToString(notifications));
+      profile.appendContents(
+          yamlToString(deploymentConfiguration.getName(), profile, notifications));
     }
 
     Pubsubs pubsubs = deploymentConfiguration.getPubsub();
     if (pubsubs != null) {
       files.addAll(backupRequiredFiles(pubsubs, deploymentConfiguration.getName()));
-      profile.appendContents(yamlToString(new PubsubWrapper(pubsubs)));
+      profile.appendContents(
+          yamlToString(deploymentConfiguration.getName(), profile, new PubsubWrapper(pubsubs)));
     }
 
-    profile.appendContents(profile.getBaseContents())
-        .setRequiredFiles(files);
+    Artifacts artifacts = deploymentConfiguration.getArtifacts();
+    if (artifacts != null) {
+      files.addAll(backupRequiredFiles(artifacts, deploymentConfiguration.getName()));
+      profile.appendContents(
+          yamlToString(deploymentConfiguration.getName(), profile, new ArtifactWrapper(artifacts)));
+    }
+
+    Cis cis = deploymentConfiguration.getCi();
+    if (cis != null) {
+      GoogleCloudBuild gcb = cis.getGcb();
+      if (gcb != null) {
+        files.addAll(backupRequiredFiles(gcb, deploymentConfiguration.getName()));
+        profile.appendContents(
+            yamlToString(deploymentConfiguration.getName(), profile, new GCBWrapper(gcb)));
+      }
+    }
+
+    profile.appendContents(profile.getBaseContents()).setRequiredFiles(files);
   }
 
   @Data
@@ -65,6 +91,24 @@ public class EchoProfileFactory extends SpringProfileFactory {
 
     PubsubWrapper(Pubsubs pubsub) {
       this.pubsub = pubsub;
+    }
+  }
+
+  @Data
+  private static class ArtifactWrapper {
+    private Artifacts artifacts;
+
+    ArtifactWrapper(Artifacts artifacts) {
+      this.artifacts = artifacts;
+    }
+  }
+
+  @Data
+  private static class GCBWrapper {
+    private GoogleCloudBuild gcb;
+
+    GCBWrapper(GoogleCloudBuild gcb) {
+      this.gcb = gcb;
     }
   }
 }

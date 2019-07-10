@@ -18,17 +18,12 @@
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Optional;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -42,26 +37,18 @@ public class GroupMembership extends Node {
   private FileRoleProvider file = new FileRoleProvider();
   private LdapRoleProvider ldap = new LdapRoleProvider();
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
   public static Class<? extends RoleProvider> translateRoleProviderType(String roleProvider) {
-    Optional<? extends Class<?>> res = Arrays.stream(GroupMembership.class.getDeclaredFields())
-        .filter(f -> f.getName().equals(roleProvider))
-        .map(Field::getType)
-        .findFirst();
+    Optional<? extends Class<?>> res =
+        Arrays.stream(GroupMembership.class.getDeclaredFields())
+            .filter(f -> f.getName().equals(roleProvider))
+            .map(Field::getType)
+            .findFirst();
 
     if (res.isPresent()) {
-      return (Class<? extends RoleProvider>)res.get();
+      return (Class<? extends RoleProvider>) res.get();
     } else {
-      throw new IllegalArgumentException("No role provider with name \"" + roleProvider + "\" handled by halyard");
+      throw new IllegalArgumentException(
+          "No role provider with name \"" + roleProvider + "\" handled by halyard");
     }
   }
 
@@ -72,8 +59,7 @@ public class GroupMembership extends Node {
     GITHUB("github"),
     LDAP("ldap");
 
-    @Getter
-    final String id;
+    @Getter final String id;
 
     RoleProviderType(String id) {
       this.id = id;

@@ -17,7 +17,6 @@
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
-import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
@@ -30,14 +29,18 @@ public class SpringProfileFactory extends RegistryBackedProfileFactory {
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
     SpectatorConfig spectatorConfig = new SpectatorConfig();
     spectatorConfig
         .getSpectator()
         .getWebEndpoint()
         .setEnabled(deploymentConfiguration.getMetricStores().isEnabled());
 
-    profile.appendContents(yamlToString(spectatorConfig));
+    profile.appendContents(
+        yamlToString(deploymentConfiguration.getName(), profile, spectatorConfig));
   }
 
   @Override

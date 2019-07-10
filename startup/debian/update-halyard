@@ -50,7 +50,7 @@ function configure_defaults() {
 function print_usage() {
   cat <<EOF
 usage: $0 [-y] [--version=<version>] [--user=<user>]
-    --version <version>             Specify the exact verison of Halyard to
+    --version <version>             Specify the exact version of Halyard to
                                     install. Default is 'stable'.
 EOF
 }
@@ -67,6 +67,10 @@ function configure_bash_completion() {
     echo "No completion file found at '/etc/bash_completion.d/hal'."
     echo "Assuming no bash completion is configured, skipping."
   fi
+}
+
+function kill_daemon() {
+    pkill -f '/opt/halyard/lib/halyard-web' || true
 }
 
 function install_halyard() {
@@ -93,6 +97,9 @@ configure_defaults
 
 install_halyard
 
-su -c "hal -v" -s /bin/bash $HAL_USER
+echo "Install completed... restarting Halyard"
+kill_daemon
+
+su -l -c "hal -v" -s /bin/bash $HAL_USER
 
 configure_bash_completion

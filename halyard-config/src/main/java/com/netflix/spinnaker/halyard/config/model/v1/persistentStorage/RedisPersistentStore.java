@@ -19,12 +19,9 @@
 package com.netflix.spinnaker.halyard.config.model.v1.persistentStorage;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.PersistentStore;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import java.net.URI;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.net.URI;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -36,11 +33,6 @@ public class RedisPersistentStore extends PersistentStore {
   @Override
   public PersistentStoreType persistentStoreType() {
     return PersistentStoreType.REDIS;
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 
   @Override

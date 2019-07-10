@@ -21,20 +21,20 @@ import com.netflix.spinnaker.clouddriver.google.ComputeVersion;
 import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.config.v1.ArtifactSourcesConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.consul.ConsulConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.consul.SupportsConsul;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
+import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -47,16 +47,16 @@ public class GoogleAccount extends CommonGoogleAccount implements Cloneable, Sup
   @LocalFile String userDataFile;
   private List<String> regions;
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
   @JsonIgnore
-  public GoogleNamedAccountCredentials getNamedAccountCredentials(String version, ConfigProblemSetBuilder p) {
+  public GoogleNamedAccountCredentials getNamedAccountCredentials(
+      String version, SecretSessionManager secretSessionManager, ConfigProblemSetBuilder p) {
     String jsonKey = null;
     if (!StringUtils.isEmpty(getJsonPath())) {
-      jsonKey = ValidatingFileReader.contents(p, getJsonPath());
+      if (secretSessionManager != null && EncryptedSecret.isEncryptedSecret(getJsonPath())) {
+        jsonKey = secretSessionManager.decrypt(getJsonPath());
+      } else {
+        jsonKey = ValidatingFileReader.contents(p, getJsonPath());
+      }
 
       if (jsonKey == null) {
         return null;
@@ -80,8 +80,11 @@ public class GoogleAccount extends CommonGoogleAccount implements Cloneable, Sup
           .liveLookupsEnabled(false)
           .build();
     } catch (Exception e) {
-      p.addProblem(Problem.Severity.ERROR, "Error instantiating Google credentials: " + e.getMessage() + ".")
-          .setRemediation("Do the provided credentials have access to project " + getProject() + "?");
+      p.addProblem(
+              Problem.Severity.ERROR,
+              "Error instantiating Google credentials: " + e.getMessage() + ".")
+          .setRemediation(
+              "Do the provided credentials have access to project " + getProject() + "?");
       return null;
     }
   }

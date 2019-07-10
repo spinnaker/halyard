@@ -18,29 +18,38 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.netflix.spinnaker.halyard.config.model.v1.artifacts.ArtifactTemplate;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.bitbucket.BitbucketArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.gcs.GcsArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.github.GitHubArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.gitlab.GitlabArtifactProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.artifacts.helm.HelmArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.http.HttpArtifactProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.artifacts.maven.MavenArtifactProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.artifacts.oracle.OracleArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.s3.S3ArtifactProvider;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Artifacts extends Node {
   BitbucketArtifactProvider bitbucket = new BitbucketArtifactProvider();
   GcsArtifactProvider gcs = new GcsArtifactProvider();
+  OracleArtifactProvider oracle = new OracleArtifactProvider();
   GitHubArtifactProvider github = new GitHubArtifactProvider();
   GitlabArtifactProvider gitlab = new GitlabArtifactProvider();
   HttpArtifactProvider http = new HttpArtifactProvider();
+  HelmArtifactProvider helm = new HelmArtifactProvider();
   S3ArtifactProvider s3 = new S3ArtifactProvider();
+  MavenArtifactProvider maven = new MavenArtifactProvider();
+  List<ArtifactTemplate> templates = new ArrayList<>();
 
   @Override
   public String getNodeName() {
@@ -49,24 +58,25 @@ public class Artifacts extends Node {
 
   @Override
   public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
+    return NodeIteratorFactory.makeAppendNodeIterator(
+        NodeIteratorFactory.makeReflectiveIterator(this),
+        NodeIteratorFactory.makeListIterator(
+            templates.stream().map(t -> (Node) t).collect(Collectors.toList())));
   }
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
-  public static Class<? extends ArtifactProvider> translateArtifactProviderType(String providerName) {
-    Optional<? extends Class<?>> res = Arrays.stream(Artifacts.class.getDeclaredFields())
-        .filter(f -> f.getName().equals(providerName))
-        .map(Field::getType)
-        .findFirst();
+  public static Class<? extends ArtifactProvider> translateArtifactProviderType(
+      String providerName) {
+    Optional<? extends Class<?>> res =
+        Arrays.stream(Artifacts.class.getDeclaredFields())
+            .filter(f -> f.getName().equals(providerName))
+            .map(Field::getType)
+            .findFirst();
 
     if (res.isPresent()) {
-      return (Class<? extends ArtifactProvider>)res.get();
+      return (Class<? extends ArtifactProvider>) res.get();
     } else {
-      throw new IllegalArgumentException("No artifact provider with name \"" + providerName + "\" handled by halyard");
+      throw new IllegalArgumentException(
+          "No artifact provider with name \"" + providerName + "\" handled by halyard");
     }
   }
 
@@ -77,7 +87,8 @@ public class Artifacts extends Node {
     try {
       return (Class<? extends ArtifactAccount>) Class.forName(accountClassName);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No artifact account for class \"" + accountClassName + "\" found", e);
+      throw new IllegalArgumentException(
+          "No artifact account for class \"" + accountClassName + "\" found", e);
     }
   }
 }

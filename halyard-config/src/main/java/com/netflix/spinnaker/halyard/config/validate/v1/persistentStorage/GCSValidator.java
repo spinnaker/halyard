@@ -24,33 +24,57 @@ import com.netflix.spinnaker.halyard.config.model.v1.persistentStorage.GcsPersis
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GCSValidator extends Validator<GcsPersistentStore> {
-  @Autowired
-  private AccountService accountService;
+  @Autowired private AccountService accountService;
 
-  @Autowired
-  private Registry registry;
+  @Autowired private Registry registry;
+
+  @Autowired private SecretSessionManager secretSessionManager;
+
+  @Autowired TaskScheduler taskScheduler;
+
+  private int connectTimeoutSec = 45;
+  private int readTimeoutSec = 45;
+  private long maxWaitInterval = 60000;
+  private long retryIntervalbase = 2;
+  private long jitterMultiplier = 1000;
+  private long maxRetries = 10;
 
   @Override
   public void validate(ConfigProblemSetBuilder ps, GcsPersistentStore n) {
     String jsonPath = n.getJsonPath();
     try {
-      StorageService storageService = new GcsStorageService(
-          n.getBucket(),
-          n.getBucketLocation(),
-          n.getRootFolder(),
-          n.getProject(),
-          jsonPath != null ? jsonPath : "",
-          "halyard",
-          registry);
+      StorageService storageService =
+          new GcsStorageService(
+              n.getBucket(),
+              n.getBucketLocation(),
+              n.getRootFolder(),
+              n.getProject(),
+              jsonPath != null ? secretSessionManager.decryptAsFile(jsonPath) : "",
+              "halyard",
+              connectTimeoutSec,
+              readTimeoutSec,
+              maxWaitInterval,
+              retryIntervalbase,
+              jitterMultiplier,
+              maxRetries,
+              taskScheduler,
+              registry);
 
       storageService.ensureBucketExists();
     } catch (Exception e) {
-      ps.addProblem(Severity.ERROR, "Failed to ensure the required bucket \"" + n.getBucket() + "\" exists: " + e.getMessage());
+      ps.addProblem(
+          Severity.ERROR,
+          "Failed to ensure the required bucket \""
+              + n.getBucket()
+              + "\" exists: "
+              + e.getMessage());
     }
   }
 }

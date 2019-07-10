@@ -17,9 +17,15 @@
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Features;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Webhook;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.integrations.IntegrationsConfigWrapper;
+import java.util.List;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,8 +36,17 @@ public class OrcaProfileFactory extends SpringProfileFactory {
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  public String getMinimumSecretDecryptionVersion(String deploymentName) {
+    return "2.4.1";
+  }
+
+  @Override
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
+
     profile.appendContents(profile.getBaseContents());
 
     AwsProvider awsProvider = deploymentConfiguration.getProviders().getAws();
@@ -41,9 +56,28 @@ public class OrcaProfileFactory extends SpringProfileFactory {
       profile.appendContents("default.vpc.securityGroups: ");
     }
 
-    String pipelineTemplates = Boolean.toString(deploymentConfiguration.getFeatures().getPipelineTemplates() != null ? deploymentConfiguration.getFeatures().getPipelineTemplates() : false);
+    final Features features = deploymentConfiguration.getFeatures();
+    IntegrationsConfigWrapper integrationsConfig = new IntegrationsConfigWrapper(features);
+    Webhook webhook = deploymentConfiguration.getWebhook();
+    List<String> files = backupRequiredFiles(webhook, deploymentConfiguration.getName());
+    profile.setRequiredFiles(files);
+    profile
+        .appendContents(
+            yamlToString(deploymentConfiguration.getName(), profile, new WebhookWrapper(webhook)))
+        .appendContents(
+            yamlToString(deploymentConfiguration.getName(), profile, integrationsConfig));
+
+    String pipelineTemplates =
+        Boolean.toString(
+            features.getPipelineTemplates() != null ? features.getPipelineTemplates() : false);
     profile.appendContents("pipelineTemplates.enabled: " + pipelineTemplates);
     // For backward compatibility
     profile.appendContents("pipelineTemplate.enabled: " + pipelineTemplates);
+  }
+
+  @Data
+  @RequiredArgsConstructor
+  private static class WebhookWrapper {
+    private final Webhook webhook;
   }
 }

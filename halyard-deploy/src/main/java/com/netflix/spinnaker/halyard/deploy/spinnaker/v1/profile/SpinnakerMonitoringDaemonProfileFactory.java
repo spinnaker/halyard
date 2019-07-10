@@ -26,12 +26,12 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.MetricStores;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -48,9 +48,11 @@ public class SpinnakerMonitoringDaemonProfileFactory extends RegistryBackedProfi
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
-    SpinnakerRuntimeSettings.Services services = endpoints.getServices();
-    ServiceSettings monitoringService = services.getMonitoringDaemon();
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
+    ServiceSettings monitoringService = endpoints.getServiceSettings(Type.MONITORING_DAEMON);
     MetricStores metricStores = deploymentConfiguration.getMetricStores();
     List<String> enabledMetricStores = new ArrayList<>();
     List<String> files = new ArrayList<>();
@@ -71,25 +73,23 @@ public class SpinnakerMonitoringDaemonProfileFactory extends RegistryBackedProfi
       files.addAll(backupRequiredFiles(stackdriverStore, deploymentConfiguration.getName()));
     }
 
-    profile.appendContents(yamlToString(metricStores));
+    profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, metricStores));
 
-    Server server = new Server()
-        .setHost(monitoringService.getHost())
-        .setPort(monitoringService.getPort());
+    Server server =
+        new Server().setHost(monitoringService.getHost()).setPort(monitoringService.getPort());
 
     ServerConfig serverConfig = new ServerConfig();
     serverConfig.setServer(server);
 
-    profile.appendContents(yamlToString(serverConfig));
+    profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, serverConfig));
 
-    Monitor monitor = new Monitor()
-        .setPeriod(metricStores.getPeriod())
-        .setMetricStore(enabledMetricStores);
+    Monitor monitor =
+        new Monitor().setPeriod(metricStores.getPeriod()).setMetricStore(enabledMetricStores);
 
     MonitorConfig monitorConfig = new MonitorConfig();
     monitorConfig.setMonitor(monitor);
 
-    profile.appendContents(yamlToString(monitorConfig));
+    profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, monitorConfig));
     profile.appendContents(profile.getBaseContents());
     profile.setRequiredFiles(files);
   }

@@ -22,6 +22,7 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.aws.CanaryAwsC
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.datadog.CanaryDatadogCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.google.CanaryGoogleCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.prometheus.CanaryPrometheusCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.signalfx.CanarySignalfxCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
@@ -38,8 +39,6 @@ public class CanaryCommand extends AbstractConfigCommand {
 
   String shortDescription = "Configure your canary analysis settings for Spinnaker.";
 
-  String longDescription = shortDescription;
-
   public CanaryCommand() {
     registerSubcommand(new EnableDisableCanaryCommandBuilder().setEnable(true).build());
     registerSubcommand(new EnableDisableCanaryCommandBuilder().setEnable(false).build());
@@ -47,6 +46,7 @@ public class CanaryCommand extends AbstractConfigCommand {
     registerSubcommand(new CanaryGoogleCommand());
     registerSubcommand(new CanaryPrometheusCommand());
     registerSubcommand(new CanaryDatadogCommand());
+    registerSubcommand(new CanarySignalfxCommand());
     registerSubcommand(new CanaryAwsCommand());
   }
 

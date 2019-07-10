@@ -19,22 +19,15 @@ package com.netflix.spinnaker.halyard.config.model.v1.security;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import java.util.Arrays;
 import java.util.HashMap;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class OAuth2 extends AuthnMethod {
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
   @Override
   public String getNodeName() {
     return "oauth2";
@@ -63,11 +56,12 @@ public class OAuth2 extends AuthnMethod {
       return;
     }
 
-    Client newClient = new Client()
-        .setClientId(client.getClientId())
-        .setClientSecret(client.getClientSecret())
-        .setPreEstablishedRedirectUri(client.getPreEstablishedRedirectUri())
-        .setUseCurrentUri(client.getUseCurrentUri());
+    Client newClient =
+        new Client()
+            .setClientId(client.getClientId())
+            .setClientSecret(client.getClientSecret())
+            .setPreEstablishedRedirectUri(client.getPreEstablishedRedirectUri())
+            .setUseCurrentUri(client.getUseCurrentUri());
     Resource newResource = new Resource();
     UserInfoMapping newUserInfoMapping = new UserInfoMapping();
 
@@ -109,8 +103,10 @@ public class OAuth2 extends AuthnMethod {
         newUserInfoMapping.setUsername("preferred_username");
         break;
       case AZURE:
-        newClient.setAccessTokenUri("https://login.microsoftonline.com/${azureTenantId}/oauth2/token");
-        newClient.setUserAuthorizationUri("https://login.microsoftonline.com/${azureTenantId}/oauth2/authorize?resource=https://graph.windows.net");
+        newClient.setAccessTokenUri(
+            "https://login.microsoftonline.com/${azureTenantId}/oauth2/token");
+        newClient.setUserAuthorizationUri(
+            "https://login.microsoftonline.com/${azureTenantId}/oauth2/authorize?resource=https://graph.windows.net");
         newClient.setScope("profile");
         newClient.setClientAuthenticationScheme("query");
 
@@ -131,7 +127,7 @@ public class OAuth2 extends AuthnMethod {
         newUserInfoMapping.setEmail(userInfoMapping.getEmail());
         newUserInfoMapping.setFirstName(userInfoMapping.getFirstName());
         newUserInfoMapping.setLastName(userInfoMapping.getLastName());
-        newUserInfoMapping.setUsername(userInfoMapping.getUsername());  
+        newUserInfoMapping.setUsername(userInfoMapping.getUsername());
         break;
       default:
         throw new RuntimeException("Unknown provider type " + provider);
@@ -145,7 +141,7 @@ public class OAuth2 extends AuthnMethod {
   @Data
   public static class Client {
     private String clientId;
-    private String clientSecret;
+    @Secret private String clientSecret;
     private String accessTokenUri;
     private String userAuthorizationUri;
     private String clientAuthenticationScheme;
@@ -197,8 +193,11 @@ public class OAuth2 extends AuthnMethod {
         }
       }
 
-      throw new IllegalArgumentException("Provider \"" + name + "\" is not a valid choice. The options are: "
-          + Arrays.toString(Provider.values()));
+      throw new IllegalArgumentException(
+          "Provider \""
+              + name
+              + "\" is not a valid choice. The options are: "
+              + Arrays.toString(Provider.values()));
     }
   }
 }

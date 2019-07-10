@@ -33,23 +33,23 @@ public class EditMetricStoresCommand extends AbstractConfigCommand {
   private String commandName = "edit";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Configure global metric stores properties.";
+  private String shortDescription = "Configure global metric stores properties.";
 
   @Parameter(
       names = "--period",
       required = true,
-      description = "Set the polling period for the monitoring daemon."
-  )
+      description = "Set the polling period for the monitoring daemon.")
   private Integer period;
 
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
 
-    MetricStores metricStores = new OperationHandler<MetricStores>()
-        .setOperation(Daemon.getMetricStores(currentDeployment, false))
-        .setFailureMesssage("Failed to load metric stores.")
-        .get();
+    MetricStores metricStores =
+        new OperationHandler<MetricStores>()
+            .setOperation(Daemon.getMetricStores(currentDeployment, false))
+            .setFailureMesssage("Failed to load metric stores.")
+            .get();
 
     int originalHash = metricStores.hashCode();
 

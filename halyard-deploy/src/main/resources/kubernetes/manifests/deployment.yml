@@ -9,6 +9,10 @@ metadata:
   labels:
     app: spin
     cluster: spin-{{ name }}
+    app.kubernetes.io/name: {{ name }}
+    app.kubernetes.io/managed-by: halyard
+    app.kubernetes.io/part-of: spinnaker
+    app.kubernetes.io/version: {{ version }}
 spec:
   replicas: {{ replicas }}
   selector:
@@ -24,4 +28,11 @@ spec:
       labels:
         app: spin
         cluster: spin-{{ name }}
+        app.kubernetes.io/name: {{ name }}
+        app.kubernetes.io/managed-by: halyard
+        app.kubernetes.io/part-of: spinnaker
+        app.kubernetes.io/version: {{ version }}
+        {% for key, value in podLabels.items() %}
+        "{{ key }}" : "{{ value }}"{% if not loop.last %}, {% endif %}
+        {% endfor %}
     spec: {{ podSpec }}

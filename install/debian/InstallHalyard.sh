@@ -11,7 +11,7 @@ function check_migration_needed() {
 
     if [ "$?" != "1" ]; then
       >&2 echo "Attempting to install halyard while a debian installation is present."
-      >&2 echo "Please visit: http://spinnaker.io/setup/install/halyard_migration"
+      >&2 echo "Please visit: https://spinnaker.io/setup/install/halyard_migration/"
       exit 1
     fi
   fi
@@ -81,7 +81,7 @@ function process_args() {
 function get_user() {
   local user
 
-  user=$(who -m | awk '{print $1;}')
+  user=$(whoami)
   if [ -z "$YES" ]; then
     if [ "$user" = "root" ] || [ -z "$user" ]; then
       read -p "Please supply a non-root user to run Halyard as: " user
@@ -201,11 +201,11 @@ usage: $0 [-y] [--version=<version>] [--user=<user>]
     -y                              Accept all default options during install
                                     (non-interactive mode).
 
-    --halyard-bucket <name>         The bucket the Halyard JAR to be installed
-                                    is stored in.
+    --halyard-bucket-base-url <name>   The bucket the Halyard JAR to be installed
+                                       is stored in.
 
     --download-with-gsutil          If specifying a GCS bucket using
-                                    --halyard-bucket, this flag causes the 
+                                    --halyard-bucket-base-url, this flag causes the 
                                     install script to rely on gsutil and its 
                                     authentication to fetch the Halyard JAR.
 
@@ -224,7 +224,7 @@ usage: $0 [-y] [--version=<version>] [--user=<user>]
                                     rather than the default project, which is
                                     $SPINNAKER_GCE_PROJECT.
 
-    --version <version>             Specify the exact verison of Halyard to
+    --version <version>             Specify the exact version of Halyard to
                                     install.
 
     --user <user>                   Specify the user to run Halyard as. This
@@ -264,13 +264,16 @@ function install_java() {
     # This causes the /etc/ssl/certs/java/cacerts file to never be generated, causing a startup
     # failure in Clouddriver.
     dpkg --purge --force-depends ca-certificates-java
-    apt-get install ca-certificates-java
+    apt-get install -y ca-certificates-java
   elif [ "$ID" = "debian" ] && [ "$VERSION_ID" = "8" ]; then
     echo "Running debian 8 (jessie)"
-    apt install -t jessie-backports openjdk-8-jre-headless ca-certificates-java
+    apt install -yt jessie-backports openjdk-8-jre-headless ca-certificates-java
   elif [ "$ID" = "debian" ] && [ "$VERSION_ID" = "9" ]; then
     echo "Running debian 9 (stretch)"
-    apt install -t stretch-backports openjdk-8-jre-headless ca-certificates-java
+    apt install -yt stretch-backports openjdk-8-jre-headless ca-certificates-java
+  elif [ "$ID" = "arch" ] || [ "$ID_LIKE" = "arch" ]; then
+    echo "Running Arch Linux based distro ($PRETTY_NAME)"
+    pacman -Sy --noconfirm java-runtime=8 ca-certificates-utils
   else
     >&2 echo "Distribution $PRETTY_NAME is not supported yet - please file an issue"
     >&2 echo "  https://github.com/spinnaker/halyard/issues"
@@ -336,8 +339,20 @@ function install_halyard() {
 
   tar --no-same-owner -xvf halyard.tar.gz -C /opt
 
-  groupadd halyard || true
-  groupadd spinnaker || true
+
+  if which systemd-sysusers &>/dev/null; then
+    cat > /usr/lib/sysusers.d/halyard.conf <<EOL
+g halyard - -
+g spinnaker - -
+EOL
+
+    systemd-sysusers &> /dev/null || true
+
+  else
+    groupadd halyard || true
+    groupadd spinnaker || true
+  fi
+
   usermod -G halyard -a $HAL_USER || true
   usermod -G spinnaker -a $HAL_USER || true
   chown $HAL_USER:halyard /opt/halyard
@@ -368,6 +383,6 @@ configure_defaults
 install_java
 install_halyard
 
-su -c "hal -v" -s /bin/bash $HAL_USER
+su -l -c "hal -v" -s /bin/bash $HAL_USER
 
 configure_bash_completion

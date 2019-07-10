@@ -19,22 +19,20 @@ package com.netflix.spinnaker.halyard.cli.ui.v1;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Cluster;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeDiff;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import java.util.List;
 import java.util.Map;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 public class AnsiFormatUtils {
-  private static Yaml yamlParser = null;
+  private static ThreadLocal<Yaml> yamlParser =
+      ThreadLocal.withInitial(AnsiFormatUtils::getYamlParser);
   private static ObjectMapper objectMapper = null;
 
-  public enum Format  {
+  public enum Format {
     YAML,
     JSON,
     STRING,
@@ -47,20 +45,17 @@ public class AnsiFormatUtils {
         }
       }
 
-      throw new IllegalArgumentException("Unknown format type: " + value + " valid arguments are YAML, JSON, STRING, or NONE.");
+      throw new IllegalArgumentException(
+          "Unknown format type: " + value + " valid arguments are YAML, JSON, STRING, or NONE.");
     }
   }
 
   private static Yaml getYamlParser() {
-    if (yamlParser == null) {
-      DumperOptions options = new DumperOptions();
-      options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-      options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
+    DumperOptions options = new DumperOptions();
+    options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+    options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
 
-      yamlParser = new Yaml(options);
-    }
-
-    return yamlParser;
+    return new Yaml(new SafeConstructor(), new Representer(), options);
   }
 
   private static ObjectMapper getObjectMapper() {
@@ -73,7 +68,11 @@ public class AnsiFormatUtils {
   }
 
   private static String formatYaml(Object yaml) {
-    return getYamlParser().dump(getObjectMapper().convertValue(yaml, Map.class));
+    if (yaml instanceof List) {
+      return yamlParser.get().dump(getObjectMapper().convertValue(yaml, List.class));
+    }
+
+    return yamlParser.get().dump(getObjectMapper().convertValue(yaml, Map.class));
   }
 
   private static String formatJson(Object json) {
@@ -103,49 +102,21 @@ public class AnsiFormatUtils {
     }
   }
 
-  public static String format(Account account) {
+  public static String format(Node node) {
     AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
     AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
 
-    paragraph.addSnippet(account.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
+    paragraph.addSnippet(node.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
 
     resultBuilder.addNewline();
 
     paragraph = resultBuilder.addParagraph();
-    paragraph.addSnippet(account.toString());
+    paragraph.addSnippet(node.toString());
 
     return resultBuilder.toString();
   }
 
-  public static String format(AbstractCanaryAccount account) {
-    AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
-    AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
-
-    paragraph.addSnippet(account.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
-
-    resultBuilder.addNewline();
-
-    paragraph = resultBuilder.addParagraph();
-    paragraph.addSnippet(account.toString());
-
-    return resultBuilder.toString();
-  }
-
-  public static String format(Cluster cluster) {
-    AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
-    AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
-
-    paragraph.addSnippet(cluster.getNodeName().toUpperCase()).addStyle(AnsiStyle.BOLD);
-
-    resultBuilder.addNewline();
-
-    paragraph = resultBuilder.addParagraph();
-    paragraph.addSnippet(cluster.toString());
-
-    return resultBuilder.toString();
-  }
-
-  public static String format(Provider provider) {
+  public static <A extends Account> String format(Provider<A> provider) {
     AnsiStoryBuilder resultBuilder = new AnsiStoryBuilder();
     AnsiParagraphBuilder paragraph = resultBuilder.addParagraph();
 
@@ -161,15 +132,17 @@ public class AnsiFormatUtils {
     paragraph = resultBuilder.addParagraph();
     paragraph.addSnippet("accounts: ");
 
-    List<Account> accounts = provider.getAccounts();
+    List<A> accounts = provider.getAccounts();
     if (accounts == null || accounts.isEmpty()) {
       paragraph.addSnippet("[]");
     } else {
-      accounts.forEach(account -> {
-        AnsiParagraphBuilder list = resultBuilder.addParagraph().setIndentFirstLine(true).setIndentWidth(1);
-        list.addSnippet("- ");
-        list.addSnippet(account.getName());
-      });
+      accounts.forEach(
+          account -> {
+            AnsiParagraphBuilder list =
+                resultBuilder.addParagraph().setIndentFirstLine(true).setIndentWidth(1);
+            list.addSnippet("- ");
+            list.addSnippet(account.getName());
+          });
     }
 
     return resultBuilder.toString();
@@ -181,7 +154,7 @@ public class AnsiFormatUtils {
     return resultBuilder.toString();
   }
 
-  static void format(NodeDiff diff, AnsiStoryBuilder resultBuilder) {
+  private static void format(NodeDiff diff, AnsiStoryBuilder resultBuilder) {
 
     AnsiSnippet snippet = null;
     AnsiParagraphBuilder paragraph = null;

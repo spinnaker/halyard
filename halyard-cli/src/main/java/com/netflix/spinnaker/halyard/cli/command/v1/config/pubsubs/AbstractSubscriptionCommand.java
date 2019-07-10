@@ -32,25 +32,20 @@ public abstract class AbstractSubscriptionCommand extends AbstractHasSubscriptio
   }
 
   @Override
-  public String getDescription() {
-    return "Manage and view Spinnaker configuration for the " + getPubsubName() + " pubsub's subscription";
+  public String getShortDescription() {
+    return "Manage and view Spinnaker configuration for the "
+        + getPubsubName()
+        + " pubsub's subscription";
   }
 
   protected AbstractSubscriptionCommand() {
-    registerSubcommand(new DeleteSubscriptionCommandBuilder()
-        .setPubsubName(getPubsubName())
-        .build()
-    );
+    registerSubcommand(
+        new DeleteSubscriptionCommandBuilder().setPubsubName(getPubsubName()).build());
 
-    registerSubcommand(new GetSubscriptionCommandBuilder()
-        .setPubsubName(getPubsubName())
-        .build()
-    );
+    registerSubcommand(new GetSubscriptionCommandBuilder().setPubsubName(getPubsubName()).build());
 
-    registerSubcommand(new ListSubscriptionsCommandBuilder()
-        .setPubsubName(getPubsubName())
-        .build()
-    );
+    registerSubcommand(
+        new ListSubscriptionsCommandBuilder().setPubsubName(getPubsubName()).build());
   }
 
   @Override

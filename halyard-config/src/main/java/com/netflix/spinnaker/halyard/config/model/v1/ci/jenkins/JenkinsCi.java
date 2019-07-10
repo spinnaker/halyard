@@ -17,18 +17,23 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class JenkinsCi extends Ci<JenkinsMaster> {
+  protected List<JenkinsMaster> masters = new ArrayList<>();
+
   @Override
   public String getNodeName() {
     return "jenkins";
   }
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
+  public List<JenkinsMaster> listAccounts() {
+    return masters;
   }
 }

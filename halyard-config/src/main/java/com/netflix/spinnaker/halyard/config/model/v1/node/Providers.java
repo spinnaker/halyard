@@ -16,31 +16,31 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.appengine.AppengineProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.azure.AzureProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.cloudfoundry.CloudFoundryProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dcos.DCOSProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.ecs.EcsProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.google.GoogleProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesProvider;
-import com.netflix.spinnaker.halyard.config.model.v1.providers.openstack.OpenstackProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.oracle.OracleBMCSProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.oracle.OracleProvider;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@JsonIgnoreProperties({"openstack"})
 public class Providers extends Node implements Cloneable {
   AppengineProvider appengine = new AppengineProvider();
   AwsProvider aws = new AwsProvider();
@@ -50,10 +50,12 @@ public class Providers extends Node implements Cloneable {
   DockerRegistryProvider dockerRegistry = new DockerRegistryProvider();
   GoogleProvider google = new GoogleProvider();
   KubernetesProvider kubernetes = new KubernetesProvider();
-  OpenstackProvider openstack = new OpenstackProvider();
+
   @JsonProperty(access = Access.WRITE_ONLY)
   OracleBMCSProvider oraclebmcs = new OracleBMCSProvider();
+
   OracleProvider oracle = new OracleProvider();
+  CloudFoundryProvider cloudfoundry = new CloudFoundryProvider();
 
   @Override
   public String getNodeName() {
@@ -63,7 +65,7 @@ public class Providers extends Node implements Cloneable {
   public OracleProvider getOracle() {
     return OracleProvider.mergeOracleBMCSProvider(oracle, oraclebmcs);
   }
-  
+
   @Override
   public NodeIterator getChildren() {
     List<Node> nodes = new ArrayList<Node>();
@@ -82,21 +84,18 @@ public class Providers extends Node implements Cloneable {
     return NodeIteratorFactory.makeListIterator(nodes);
   }
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
   public static Class<? extends Provider> translateProviderType(String providerName) {
-    Optional<? extends Class<?>> res = Arrays.stream(Providers.class.getDeclaredFields())
-        .filter(f -> f.getName().equals(providerName))
-        .map(Field::getType)
-        .findFirst();
+    Optional<? extends Class<?>> res =
+        Arrays.stream(Providers.class.getDeclaredFields())
+            .filter(f -> f.getName().equals(providerName))
+            .map(Field::getType)
+            .findFirst();
 
     if (res.isPresent()) {
-      return (Class<? extends Provider>)res.get();
+      return (Class<? extends Provider>) res.get();
     } else {
-      throw new IllegalArgumentException("No provider with name \"" + providerName + "\" handled by halyard");
+      throw new IllegalArgumentException(
+          "No provider with name \"" + providerName + "\" handled by halyard");
     }
   }
 
@@ -107,18 +106,21 @@ public class Providers extends Node implements Cloneable {
     try {
       return (Class<? extends Account>) Class.forName(accountClassName);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No account for class \"" + accountClassName + "\" found", e);
+      throw new IllegalArgumentException(
+          "No account for class \"" + accountClassName + "\" found", e);
     }
   }
 
   public static Class<? extends BakeryDefaults> translateBakeryDefaultsType(String providerName) {
     Class<? extends Provider> providerClass = translateProviderType(providerName);
 
-    String bakeryDefaultsClassName = providerClass.getName().replaceAll("Provider", "BakeryDefaults");
+    String bakeryDefaultsClassName =
+        providerClass.getName().replaceAll("Provider", "BakeryDefaults");
     try {
       return (Class<? extends BakeryDefaults>) Class.forName(bakeryDefaultsClassName);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No bakeryDefaults for class \"" + bakeryDefaultsClassName + "\" found", e);
+      throw new IllegalArgumentException(
+          "No bakeryDefaults for class \"" + bakeryDefaultsClassName + "\" found", e);
     }
   }
 
@@ -129,7 +131,8 @@ public class Providers extends Node implements Cloneable {
     try {
       return (Class<? extends BaseImage>) Class.forName(baseImageClassName);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No baseImage for class \"" + baseImageClassName + "\" found", e);
+      throw new IllegalArgumentException(
+          "No baseImage for class \"" + baseImageClassName + "\" found", e);
     }
   }
 
@@ -140,8 +143,8 @@ public class Providers extends Node implements Cloneable {
     try {
       return (Class<? extends Cluster>) Class.forName(clusterClassName);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No cluster for class \"" + clusterClassName + "\" found", e);
+      throw new IllegalArgumentException(
+          "No cluster for class \"" + clusterClassName + "\" found", e);
     }
   }
-
 }

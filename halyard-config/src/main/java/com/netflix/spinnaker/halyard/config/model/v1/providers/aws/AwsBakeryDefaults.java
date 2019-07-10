@@ -17,21 +17,15 @@
 package com.netflix.spinnaker.halyard.config.model.v1.providers.aws;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.BakeryDefaults;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class AwsBakeryDefaults extends BakeryDefaults<AwsBaseImage> {
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
   private String awsAccessKey;
-  private String awsSecretKey;
+  @Secret private String awsSecretKey;
   private String awsSubnetId;
   private String awsVpcId;
   private Boolean awsAssociatePublicIpAddress;

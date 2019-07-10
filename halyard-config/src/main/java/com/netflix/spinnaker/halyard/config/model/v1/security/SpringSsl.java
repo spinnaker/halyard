@@ -17,23 +17,21 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.*;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
+import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
+import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.web.server.Ssl;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
 public class SpringSsl extends Node {
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
-  @Getter
-  private final String nodeName = "ssl";
+  @Getter private final String nodeName = "ssl";
 
   @Override
   public NodeIterator getChildren() {
@@ -42,11 +40,11 @@ public class SpringSsl extends Node {
 
   boolean enabled = false;
   String keyAlias;
-  @LocalFile String keyStore;
+  @LocalFile @SecretFile String keyStore;
   String keyStoreType;
-  String keyStorePassword;
-  @LocalFile String trustStore;
+  @Secret String keyStorePassword;
+  @LocalFile @SecretFile String trustStore;
   String trustStoreType;
-  String trustStorePassword;
+  @Secret String trustStorePassword;
   Ssl.ClientAuth clientAuth;
 }

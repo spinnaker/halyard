@@ -21,17 +21,19 @@ import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCrede
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
+import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -39,17 +41,23 @@ import java.util.Set;
 @Slf4j
 public class GoogleCanaryAccount extends AbstractCanaryAccount implements Cloneable {
   private String project;
-  @LocalFile private String jsonPath;
+  @LocalFile @SecretFile private String jsonPath;
   private String bucket;
   private String bucketLocation;
   private String rootFolder = "kayenta";
-  private Set<AbstractCanaryServiceIntegration.SupportedTypes> supportedTypes = new HashSet<>();
+  private SortedSet<AbstractCanaryServiceIntegration.SupportedTypes> supportedTypes =
+      new TreeSet<>();
 
   @JsonIgnore
-  public GoogleNamedAccountCredentials getNamedAccountCredentials(String version, ConfigProblemSetBuilder p) {
+  public GoogleNamedAccountCredentials getNamedAccountCredentials(
+      String version, SecretSessionManager secretSessionManager, ConfigProblemSetBuilder p) {
     String jsonKey = null;
     if (!StringUtils.isEmpty(getJsonPath())) {
-      jsonKey = ValidatingFileReader.contents(p, getJsonPath());
+      if (EncryptedSecret.isEncryptedSecret(getJsonPath())) {
+        jsonKey = secretSessionManager.decrypt(getJsonPath());
+      } else {
+        jsonKey = ValidatingFileReader.contents(p, getJsonPath());
+      }
 
       if (jsonKey == null) {
         return null;
@@ -72,8 +80,11 @@ public class GoogleCanaryAccount extends AbstractCanaryAccount implements Clonea
           .liveLookupsEnabled(false)
           .build();
     } catch (Exception e) {
-      p.addProblem(Problem.Severity.ERROR, "Error instantiating Google credentials: " + e.getMessage() + ".")
-          .setRemediation("Do the provided credentials have access to project " + getProject() + "?");
+      p.addProblem(
+              Problem.Severity.ERROR,
+              "Error instantiating Google credentials: " + e.getMessage() + ".")
+          .setRemediation(
+              "Do the provided credentials have access to project " + getProject() + "?");
       return null;
     }
   }

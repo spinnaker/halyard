@@ -24,6 +24,8 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.CanaryCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.CiCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ProviderCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.pubsubs.PubsubCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.repository.RepositoryCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.webhook.WebhookCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
@@ -34,20 +36,20 @@ import lombok.Getter;
 /**
  * This is a top-level command for dealing with your halconfig.
  *
- * Usage is `$ hal config`
+ * <p>Usage is `$ hal config`
  */
-@Parameters(separators =  "=")
+@Parameters(separators = "=")
 public class ConfigCommand extends AbstractConfigCommand {
   @Getter(AccessLevel.PUBLIC)
   private String commandName = "config";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Configure, validate, and view your halconfig.";
+  private String shortDescription = "Configure, validate, and view your halconfig.";
 
   @Parameter(
       names = "--set-current-deployment",
-      description = "If supplied, set the current active deployment to the supplied value, creating it if need-be."
-  )
+      description =
+          "If supplied, set the current active deployment to the supplied value, creating it if need-be.")
   private String setCurrentDeployment;
 
   ConfigCommand() {
@@ -64,7 +66,10 @@ public class ConfigCommand extends AbstractConfigCommand {
     registerSubcommand(new PubsubCommand());
     registerSubcommand(new SecurityCommand());
     registerSubcommand(new VersionConfigCommand());
+    registerSubcommand(new WebhookCommand());
     registerSubcommand(new CiCommand());
+    registerSubcommand(new ListCommand());
+    registerSubcommand(new RepositoryCommand());
   }
 
   @Override
@@ -84,6 +89,6 @@ public class ConfigCommand extends AbstractConfigCommand {
           .setSuccessMessage("Configured deployment: ")
           .setFailureMesssage("Failed to deployment configuration.")
           .get();
-      }
+    }
   }
 }

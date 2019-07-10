@@ -23,11 +23,10 @@ import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactAccount;
-import lombok.AccessLevel;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @Parameters(separators = "=")
 public abstract class AbstractAddArtifactAccountCommand extends AbstractHasArtifactAccountCommand {
@@ -41,7 +40,7 @@ public abstract class AbstractAddArtifactAccountCommand extends AbstractHasArtif
 
   protected abstract ArtifactAccount emptyArtifactAccount();
 
-  public String getDescription() {
+  public String getShortDescription() {
     return "Add an artifact account to the " + getArtifactProviderName() + " artifact provider.";
   }
 
@@ -53,9 +52,20 @@ public abstract class AbstractAddArtifactAccountCommand extends AbstractHasArtif
 
     String currentDeployment = getCurrentDeployment();
     new OperationHandler<Void>()
-        .setFailureMesssage("Failed to add artifact account " + accountName + " for artifact provider " + providerName + ".")
-        .setSuccessMessage("Successfully added artifact account " + accountName + " for artifact provider " + providerName + ".")
-        .setOperation(Daemon.addArtifactAccount(currentDeployment, providerName, !noValidate, account))
+        .setFailureMesssage(
+            "Failed to add artifact account "
+                + accountName
+                + " for artifact provider "
+                + providerName
+                + ".")
+        .setSuccessMessage(
+            "Successfully added artifact account "
+                + accountName
+                + " for artifact provider "
+                + providerName
+                + ".")
+        .setOperation(
+            Daemon.addArtifactAccount(currentDeployment, providerName, !noValidate, account))
         .get();
   }
 }

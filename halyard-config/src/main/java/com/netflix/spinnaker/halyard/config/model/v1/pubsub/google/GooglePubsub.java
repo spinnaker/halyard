@@ -19,21 +19,17 @@
 package com.netflix.spinnaker.halyard.config.model.v1.pubsub.google;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Pubsub;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class GooglePubsub extends Pubsub<GoogleSubscription> {
-  @Override
-  public PubsubType pubsubType() {
-    return PubsubType.GOOGLE;
-  }
+public class GooglePubsub extends Pubsub<GoogleSubscription, GooglePublisher> {
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
+  private PubsubType pubsubType = PubsubType.GOOGLE;
+
+  private List<GoogleSubscription> subscriptions = new ArrayList<>();
+  private List<GooglePublisher> publishers = new ArrayList<>();
 }

@@ -20,11 +20,10 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
-import lombok.AccessLevel;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @Parameters(separators = "=")
 public abstract class AbstractProviderEnableDisableCommand extends AbstractProviderCommand {
@@ -47,12 +46,11 @@ public abstract class AbstractProviderEnableDisableCommand extends AbstractProvi
   private Map<String, NestableCommand> subcommands = new HashMap<>();
 
   @Override
-  public String getDescription() {
+  public String getShortDescription() {
     return "Set the " + getProviderName() + " provider as " + subjunctivePerfectAction();
   }
 
-  private void setEnable() {
-  }
+  private void setEnable() {}
 
   @Override
   protected void executeThis() {
@@ -62,7 +60,8 @@ public abstract class AbstractProviderEnableDisableCommand extends AbstractProvi
     new OperationHandler<Void>()
         .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + providerName)
         .setFailureMesssage("Failed to " + getCommandName() + " " + getProviderName())
-        .setOperation(Daemon.setProviderEnableDisable(currentDeployment, providerName, !noValidate, enable))
+        .setOperation(
+            Daemon.setProviderEnableDisable(currentDeployment, providerName, !noValidate, enable))
         .get();
   }
 }

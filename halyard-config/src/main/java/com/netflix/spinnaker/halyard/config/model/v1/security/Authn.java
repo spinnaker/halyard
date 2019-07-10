@@ -18,10 +18,6 @@
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,18 +25,7 @@ import lombok.Getter;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Authn extends Node {
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
-  @Getter
-  private String nodeName = "authn";
-
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
+  @Getter private String nodeName = "authn";
 
   private OAuth2 oauth2 = new OAuth2();
   private Saml saml = new Saml();
@@ -50,8 +35,11 @@ public class Authn extends Node {
   private boolean enabled;
 
   public boolean isEnabled() {
-    return getOauth2().isEnabled() || getSaml().isEnabled() || getLdap().isEnabled()
-        || getX509().isEnabled() || getIap().isEnabled();
+    return getOauth2().isEnabled()
+        || getSaml().isEnabled()
+        || getLdap().isEnabled()
+        || getX509().isEnabled()
+        || getIap().isEnabled();
   }
 
   public void setEnabled(boolean _ignored) {}

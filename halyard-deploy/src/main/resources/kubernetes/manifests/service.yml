@@ -6,11 +6,18 @@ metadata:
   labels:
     app: spin
     cluster: spin-{{ name }}
+    {% for key, value in serviceLabels.items() %}
+    "{{ key }}" : "{{ value }}"{% if not loop.last %}, {% endif %}
+    {% endfor %}
 spec:
   selector:
     app: spin
     cluster: spin-{{ name }}
+  type: {{ type }}
   ports:
   - protocol: TCP
     port: {{ port }}
     targetPort: {{ port }}
+  {% if nodePort and type == "NodePort" %}
+    nodePort: {{ nodePort }}
+  {% endif %}

@@ -21,14 +21,22 @@ import com.netflix.spinnaker.halyard.config.model.v1.security.ApiSecurity;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.integrations.IntegrationsConfigWrapper;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class GateProfileFactory extends SpringProfileFactory {
+  // Some versions of gate have integrations in the base halyard config; we'll generate an invalid
+  // config
+  // if we add another integrations block.  As a workaround we'll remove that block from the base
+  // profile
+  // if we encounter it.
+  private static final String INTEGRATION_BLOCK =
+      "integrations:\n  gremlin:\n    enabled: ${features.gremlin:false}\n    baseUrl: https://api.gremlin.com/v1\n";
 
   @Override
   public SpinnakerArtifact getArtifact() {
@@ -36,18 +44,34 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
   }
 
   @Override
-  public void setProfile(Profile profile,
+  public String getMinimumSecretDecryptionVersion(String deploymentName) {
+    return "1.5.3";
+  }
+
+  @Override
+  public void setProfile(
+      Profile profile,
       DeploymentConfiguration deploymentConfiguration,
       SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
+
     Security security = deploymentConfiguration.getSecurity();
-    List<String> requiredFiles = backupRequiredFiles(security.getApiSecurity(), deploymentConfiguration.getName());
-    requiredFiles.addAll(backupRequiredFiles(security.getAuthn(), deploymentConfiguration.getName()));
-    requiredFiles.addAll(backupRequiredFiles(security.getAuthz(), deploymentConfiguration.getName()));
-    GateConfig gateConfig = getGateConfig(endpoints.getServices().getGate(), security);
+    List<String> requiredFiles =
+        backupRequiredFiles(security.getApiSecurity(), deploymentConfiguration.getName());
+    requiredFiles.addAll(
+        backupRequiredFiles(security.getAuthn(), deploymentConfiguration.getName()));
+    requiredFiles.addAll(
+        backupRequiredFiles(security.getAuthz(), deploymentConfiguration.getName()));
+    GateConfig gateConfig = getGateConfig(endpoints.getServiceSettings(Type.GATE), security);
     gateConfig.getCors().setAllowedOriginsPattern(security.getApiSecurity());
-    profile.appendContents(yamlToString(gateConfig))
-        .appendContents(profile.getBaseContents())
+    IntegrationsConfigWrapper integrationsConfig =
+        new IntegrationsConfigWrapper(deploymentConfiguration.getFeatures());
+
+    profile
+        .appendContents(yamlToString(deploymentConfiguration.getName(), profile, gateConfig))
+        .appendContents(
+            yamlToString(deploymentConfiguration.getName(), profile, integrationsConfig))
+        .appendContents(profile.getBaseContents().replace(INTEGRATION_BLOCK, ""))
         .setRequiredFiles(requiredFiles);
   }
 

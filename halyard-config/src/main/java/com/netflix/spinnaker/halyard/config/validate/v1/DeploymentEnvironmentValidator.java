@@ -29,20 +29,23 @@ import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
 import com.netflix.spinnaker.halyard.config.validate.v1.providers.kubernetes.KubernetesAccountValidator;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class DeploymentEnvironmentValidator extends Validator<DeploymentEnvironment> {
-  @Autowired
-  AccountService accountService;
+  @Autowired AccountService accountService;
 
-  @Autowired
-  KubernetesAccountValidator kubernetesAccountValidator;
+  @Autowired KubernetesAccountValidator kubernetesAccountValidator;
 
   @Override
   public void validate(ConfigProblemSetBuilder p, DeploymentEnvironment n) {
+
+    log.info("[VALIDATE-COSTI] DeploymentEnvironmentValidator");
+
     DeploymentType type = n.getType();
     switch (type) {
       case LocalDebian:
@@ -57,42 +60,68 @@ public class DeploymentEnvironmentValidator extends Validator<DeploymentEnvironm
       default:
         throw new RuntimeException("Unknown deployment environment type " + type);
     }
+
+    validateLivenessProbeConfig(p, n);
   }
 
   private void validateGitDeployment(ConfigProblemSetBuilder p, DeploymentEnvironment n) {
     if (StringUtils.isEmpty(n.getGitConfig().getOriginUser())) {
-      p.addProblem(Problem.Severity.FATAL, "A git origin user must be supplied when deploying from git.")
-        .setRemediation("Your github username is recommended.");
+      p.addProblem(
+              Problem.Severity.FATAL, "A git origin user must be supplied when deploying from git.")
+          .setRemediation("Your github username is recommended.");
     }
 
     if (StringUtils.isEmpty(n.getGitConfig().getUpstreamUser())) {
-      p.addProblem(Problem.Severity.FATAL, "A git upstream user must be supplied when deploying from git.")
-        .setRemediation("The user 'spinnaker' is recommended (unless you have a fork maintained by the org you develop under).");
+      p.addProblem(
+              Problem.Severity.FATAL,
+              "A git upstream user must be supplied when deploying from git.")
+          .setRemediation(
+              "The user 'spinnaker' is recommended (unless you have a fork maintained by the org you develop under).");
     }
   }
 
   private void validateDistributedDeployment(ConfigProblemSetBuilder p, DeploymentEnvironment n) {
     String accountName = n.getAccountName();
     if (StringUtils.isEmpty(accountName)) {
-      p.addProblem(Problem.Severity.FATAL, "An account name must be specified when using a Distributed deployment.");
+      p.addProblem(
+          Problem.Severity.FATAL,
+          "An account name must be specified when using a Distributed deployment.");
       return;
     }
 
     DeploymentConfiguration deploymentConfiguration = n.parentOfType(DeploymentConfiguration.class);
     Account account;
     try {
-      account = accountService.getAnyProviderAccount(deploymentConfiguration.getName(), n.getAccountName());
+      account =
+          accountService.getAnyProviderAccount(
+              deploymentConfiguration.getName(), n.getAccountName());
     } catch (ConfigNotFoundException e) {
       p.addProblem(Problem.Severity.FATAL, "Account " + accountName + " not defined.");
       return;
     }
 
     if (account instanceof GoogleAccount) {
-      p.addProblem(Problem.Severity.WARNING, "Support for distributed deployments on GCE aren't fully supported yet.");
+      p.addProblem(
+          Problem.Severity.WARNING,
+          "Support for distributed deployments on GCE aren't fully supported yet.");
     } else if (account instanceof KubernetesAccount) {
       kubernetesAccountValidator.ensureKubectlExists(p);
     } else {
-      p.addProblem(Problem.Severity.FATAL, "Account " + accountName + " is not in a provider that supports distributed installation of Spinnaker yet");
+      p.addProblem(
+          Problem.Severity.FATAL,
+          "Account "
+              + accountName
+              + " is not in a provider that supports distributed installation of Spinnaker yet");
+    }
+  }
+
+  private void validateLivenessProbeConfig(ConfigProblemSetBuilder p, DeploymentEnvironment n) {
+    if (n.getLivenessProbeConfig() != null && n.getLivenessProbeConfig().isEnabled()) {
+      if (n.getLivenessProbeConfig().getInitialDelaySeconds() == null) {
+        p.addProblem(
+            Problem.Severity.FATAL,
+            "Setting `initialDelaySeconds` is required when enabling liveness probes. Use the --liveness-probe-initial-delay-seconds sub-command to set `initialDelaySeconds`.");
+      }
     }
   }
 }

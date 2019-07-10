@@ -13,9 +13,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.AbstractNamedProviderCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Provider;
 
-/**
- * Interact with the aws provider
- */
+/** Interact with the aws provider */
 @Parameters(separators = "=")
 public class OracleCommand extends AbstractNamedProviderCommand {
   protected String getProviderName() {
@@ -25,5 +23,6 @@ public class OracleCommand extends AbstractNamedProviderCommand {
   public OracleCommand() {
     super();
     registerSubcommand(new OracleAccountCommand());
+    registerSubcommand(new OracleBakeryCommand());
   }
 }

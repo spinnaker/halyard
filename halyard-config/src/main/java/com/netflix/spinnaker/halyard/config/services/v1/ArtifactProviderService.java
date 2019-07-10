@@ -24,7 +24,9 @@ import com.netflix.spinnaker.halyard.config.model.v1.artifacts.bitbucket.Bitbuck
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.gcs.GcsArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.github.GitHubArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.gitlab.GitlabArtifactProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.artifacts.helm.HelmArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.http.HttpArtifactProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.artifacts.oracle.OracleArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.artifacts.s3.S3ArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Artifacts;
@@ -33,61 +35,68 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
- * This service is meant to be autowired into any service or controller that needs to inspect the current halconfigs
- * providers.
+ * This service is meant to be autowired into any service or controller that needs to inspect the
+ * current halconfigs providers.
  */
 @Component
 public class ArtifactProviderService {
-  @Autowired
-  private LookupService lookupService;
+  @Autowired private LookupService lookupService;
 
-  @Autowired
-  private ValidateService validateService;
+  @Autowired private ValidateService validateService;
 
-  @Autowired
-  private DeploymentService deploymentService;
+  @Autowired private DeploymentService deploymentService;
 
   public ArtifactProvider getArtifactProvider(String deploymentName, String providerName) {
-    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setArtifactProvider(providerName);
+    NodeFilter filter =
+        new NodeFilter().setDeployment(deploymentName).setArtifactProvider(providerName);
 
-    List<ArtifactProvider> matching = lookupService.getMatchingNodesOfType(filter, ArtifactProvider.class);
+    List<ArtifactProvider> matching =
+        lookupService.getMatchingNodesOfType(filter, ArtifactProvider.class);
 
     switch (matching.size()) {
       case 0:
-        throw new ConfigNotFoundException(new ConfigProblemBuilder(Severity.FATAL,
-            "No provider with name \"" + providerName + "\" could be found")
-            .setRemediation("Create a new provider with name \"" + providerName + "\"").build());
+        throw new ConfigNotFoundException(
+            new ConfigProblemBuilder(
+                    Severity.FATAL, "No provider with name \"" + providerName + "\" could be found")
+                .setRemediation("Create a new provider with name \"" + providerName + "\"")
+                .build());
       case 1:
         return matching.get(0);
       default:
-        throw new IllegalConfigException(new ConfigProblemBuilder(Severity.FATAL,
-            "More than one provider with name \"" + providerName + "\" found")
-            .setRemediation("Manually delete or rename duplicate providers with name \"" + providerName + "\" in your halconfig file").build());
+        throw new IllegalConfigException(
+            new ConfigProblemBuilder(
+                    Severity.FATAL,
+                    "More than one provider with name \"" + providerName + "\" found")
+                .setRemediation(
+                    "Manually delete or rename duplicate providers with name \""
+                        + providerName
+                        + "\" in your halconfig file")
+                .build());
     }
   }
 
   public List<ArtifactProvider> getAllArtifactProviders(String deploymentName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).withAnyArtifactProvider();
 
-    List<ArtifactProvider> matching = lookupService.getMatchingNodesOfType(filter, ArtifactProvider.class);
+    List<ArtifactProvider> matching =
+        lookupService.getMatchingNodesOfType(filter, ArtifactProvider.class);
 
     if (matching.size() == 0) {
       throw new ConfigNotFoundException(
-          new ConfigProblemBuilder(Severity.FATAL, "No providers could be found")
-              .build());
+          new ConfigProblemBuilder(Severity.FATAL, "No providers could be found").build());
     } else {
       return matching;
     }
   }
 
   public void setArtifactProvider(String deploymentName, ArtifactProvider provider) {
-    DeploymentConfiguration deploymentConfiguration = deploymentService.getDeploymentConfiguration(deploymentName);
+    DeploymentConfiguration deploymentConfiguration =
+        deploymentService.getDeploymentConfiguration(deploymentName);
     Artifacts artifacts = deploymentConfiguration.getArtifacts();
     switch (provider.providerType()) {
       case BITBUCKET:
@@ -95,6 +104,9 @@ public class ArtifactProviderService {
         break;
       case GCS:
         artifacts.setGcs((GcsArtifactProvider) provider);
+        break;
+      case ORACLE:
+        artifacts.setOracle((OracleArtifactProvider) provider);
         break;
       case GITHUB:
         artifacts.setGithub((GitHubArtifactProvider) provider);
@@ -104,6 +116,9 @@ public class ArtifactProviderService {
         break;
       case HTTP:
         artifacts.setHttp((HttpArtifactProvider) provider);
+        break;
+      case HELM:
+        artifacts.setHelm((HelmArtifactProvider) provider);
         break;
       case S3:
         artifacts.setS3((S3ArtifactProvider) provider);
@@ -119,21 +134,20 @@ public class ArtifactProviderService {
   }
 
   public ProblemSet validateArtifactProvider(String deploymentName, String providerName) {
-    NodeFilter filter = new NodeFilter()
-        .setDeployment(deploymentName)
-        .setArtifactProvider(providerName)
-        .withAnyAccount()
-        .setBakeryDefaults()
-        .withAnyBaseImage();
+    NodeFilter filter =
+        new NodeFilter()
+            .setDeployment(deploymentName)
+            .setArtifactProvider(providerName)
+            .withAnyAccount()
+            .setBakeryDefaults()
+            .withAnyBaseImage();
 
     return validateService.validateMatchingFilter(filter);
   }
 
   public ProblemSet validateAllArtifactProviders(String deploymentName) {
-    NodeFilter filter = new NodeFilter()
-        .setDeployment(deploymentName)
-        .withAnyArtifactProvider()
-        .withAnyAccount();
+    NodeFilter filter =
+        new NodeFilter().setDeployment(deploymentName).withAnyArtifactProvider().withAnyAccount();
 
     return validateService.validateMatchingFilter(filter);
   }

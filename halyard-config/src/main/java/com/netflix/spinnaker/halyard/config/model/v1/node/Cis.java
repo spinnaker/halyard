@@ -16,16 +16,13 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.netflix.spinnaker.halyard.config.model.v1.ci.concourse.ConcourseCi;
+import com.netflix.spinnaker.halyard.config.model.v1.ci.gcb.GoogleCloudBuild;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins.JenkinsCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.travis.TravisCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.wercker.WerckerCi;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Optional;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -33,6 +30,8 @@ public class Cis extends Node implements Cloneable {
   JenkinsCi jenkins = new JenkinsCi();
   TravisCi travis = new TravisCi();
   WerckerCi wercker = new WerckerCi();
+  ConcourseCi concourse = new ConcourseCi();
+  GoogleCloudBuild gcb = new GoogleCloudBuild();
 
   public boolean ciEnabled() {
     NodeIterator iterator = getChildren();
@@ -49,41 +48,7 @@ public class Cis extends Node implements Cloneable {
   }
 
   @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
-  @Override
   public String getNodeName() {
     return "ci";
-  }
-
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeReflectiveIterator(this);
-  }
-
-  public static Class<? extends Ci> translateCiType(String ciName) {
-    Optional<? extends Class<?>> res = Arrays.stream(Cis.class.getDeclaredFields())
-        .filter(f -> f.getName().equals(ciName))
-        .map(Field::getType)
-        .findFirst();
-
-    if (res.isPresent()) {
-      return (Class<? extends Ci>)res.get();
-    } else {
-      throw new IllegalArgumentException("No Continous Integration service with name \"" + ciName + "\" handled by halyard");
-    }
-  }
-
-  public static Class<? extends Master> translateMasterType(String ciName) {
-    Class<? extends Ci> ciClass = translateCiType(ciName);
-
-    String masterClassName = ciClass.getName().replaceAll("Ci", "Master");
-    try {
-      return (Class<? extends Master>) Class.forName(masterClassName);
-    } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No master for class \"" + masterClassName + "\" found", e);
-    }
   }
 }

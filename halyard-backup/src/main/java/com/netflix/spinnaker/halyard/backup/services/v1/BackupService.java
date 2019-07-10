@@ -17,11 +17,25 @@
 
 package com.netflix.spinnaker.halyard.backup.services.v1;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -33,28 +47,12 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Objects;
-
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
 @Component
 @Slf4j
 public class BackupService {
-  @Autowired
-  HalconfigParser halconfigParser;
+  @Autowired HalconfigParser halconfigParser;
 
-  @Autowired
-  HalconfigDirectoryStructure directoryStructure;
+  @Autowired HalconfigDirectoryStructure directoryStructure;
 
   static String[] omitPaths = {"service-logs"};
 
@@ -75,12 +73,16 @@ public class BackupService {
     halconfig.makeLocalFilesRelative(halconfigDir);
     halconfigParser.saveConfig();
 
-    String tarOutputName = String.format("halbackup-%s.tar", new Date()).replace(" ", "_").replace(":", "-");
+    SimpleDateFormat dateFormatter =
+        new SimpleDateFormat("'halyard'-yyyy-MM-dd_HH-mm-ss-SSSXXX'.tar'");
+    String tarOutputName = dateFormatter.format(new Date());
+
     String halconfigTar = Paths.get(System.getProperty("user.home"), tarOutputName).toString();
     try {
       tarHalconfig(halconfigDir, halconfigTar);
     } catch (IOException e) {
-      throw new HalException(Problem.Severity.FATAL, "Unable to safely backup halconfig " + e.getMessage(), e);
+      throw new HalException(
+          Problem.Severity.FATAL, "Unable to safely backup halconfig " + e.getMessage(), e);
     } finally {
       halconfigParser.switchToBackupConfig();
       halconfigParser.getHalconfig();
@@ -91,15 +93,15 @@ public class BackupService {
     return halconfigTar;
   }
 
-
   private void untarHalconfig(String halconfigDir, String halconfigTar) {
     FileInputStream tarInput = null;
     TarArchiveInputStream tarArchiveInputStream = null;
 
     try {
       tarInput = new FileInputStream(new File(halconfigTar));
-      tarArchiveInputStream = (TarArchiveInputStream) new ArchiveStreamFactory()
-          .createArchiveInputStream("tar", tarInput);
+      tarArchiveInputStream =
+          (TarArchiveInputStream)
+              new ArchiveStreamFactory().createArchiveInputStream("tar", tarInput);
 
     } catch (IOException | ArchiveException e) {
       throw new HalException(Problem.Severity.FATAL, "Failed to open backup: " + e.getMessage(), e);
@@ -124,7 +126,8 @@ public class BackupService {
         archiveEntry = tarArchiveInputStream.getNextEntry();
       }
     } catch (IOException e) {
-      throw new HalException(Problem.Severity.FATAL, "Failed to read archive entry: " + e.getMessage(), e);
+      throw new HalException(
+          Problem.Severity.FATAL, "Failed to read archive entry: " + e.getMessage(), e);
     }
   }
 
@@ -137,6 +140,7 @@ public class BackupService {
       tarOutput = new FileOutputStream(new File(halconfigTar));
       bufferedTarOutput = new BufferedOutputStream(tarOutput);
       tarArchiveOutputStream = new TarArchiveOutputStream(bufferedTarOutput);
+      tarArchiveOutputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
       TarArchiveOutputStream finalTarArchiveOutputStream = tarArchiveOutputStream;
       Arrays.stream(new File(halconfigDir).listFiles())
           .filter(Objects::nonNull)
@@ -146,7 +150,8 @@ public class BackupService {
       throw e;
     } catch (IOException e) {
       log.info("IOException caught during tar operation", e);
-      throw new HalException(Problem.Severity.FATAL, "Failed to backup halconfig: " + e.getMessage(), e);
+      throw new HalException(
+          Problem.Severity.FATAL, "Failed to backup halconfig: " + e.getMessage(), e);
     } finally {
       if (tarArchiveOutputStream != null) {
         try {
@@ -171,7 +176,8 @@ public class BackupService {
     }
   }
 
-  private void addFileToTar(TarArchiveOutputStream tarArchiveOutputStream, String path, String base) {
+  private void addFileToTar(
+      TarArchiveOutputStream tarArchiveOutputStream, String path, String base) {
     File file = new File(path);
     String fileName = file.getName();
 
@@ -194,7 +200,15 @@ public class BackupService {
         log.warn("Unknown file type: " + file + " - skipping addition to tar archive");
       }
     } catch (IOException e) {
-      throw new HalException(Problem.Severity.FATAL, "Unable to file " + file.getName() + " to archive entry: " + tarEntryName + " " + e.getMessage(), e);
+      throw new HalException(
+          Problem.Severity.FATAL,
+          "Unable to file "
+              + file.getName()
+              + " to archive entry: "
+              + tarEntryName
+              + " "
+              + e.getMessage(),
+          e);
     }
   }
 }

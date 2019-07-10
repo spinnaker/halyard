@@ -17,7 +17,21 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
+import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class Validator<T extends Node> {
-  abstract public void validate(ConfigProblemSetBuilder p, T n);
+  @Autowired SecretSessionManager secretSessionManager;
+
+  public abstract void validate(ConfigProblemSetBuilder p, T n);
+
+  public String validatingFileDecrypt(ConfigProblemSetBuilder p, String filePath) {
+    if (EncryptedSecret.isEncryptedSecret(filePath)) {
+      return secretSessionManager.decrypt(filePath);
+    } else {
+      return ValidatingFileReader.contents(p, filePath);
+    }
+  }
 }

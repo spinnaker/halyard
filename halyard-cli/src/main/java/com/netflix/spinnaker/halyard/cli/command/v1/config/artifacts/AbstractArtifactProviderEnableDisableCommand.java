@@ -20,14 +20,14 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Parameters(separators = "=")
-public abstract class AbstractArtifactProviderEnableDisableCommand extends AbstractArtifactProviderCommand {
+public abstract class AbstractArtifactProviderEnableDisableCommand
+    extends AbstractArtifactProviderCommand {
   @Override
   public String getCommandName() {
     return isEnable() ? "enable" : "disable";
@@ -47,12 +47,14 @@ public abstract class AbstractArtifactProviderEnableDisableCommand extends Abstr
   private Map<String, NestableCommand> subcommands = new HashMap<>();
 
   @Override
-  public String getDescription() {
-    return "Set the " + getArtifactProviderName() + " artifact provider as " + subjunctivePerfectAction();
+  public String getShortDescription() {
+    return "Set the "
+        + getArtifactProviderName()
+        + " artifact provider as "
+        + subjunctivePerfectAction();
   }
 
-  private void setEnable() {
-  }
+  private void setEnable() {}
 
   @Override
   protected void executeThis() {
@@ -62,7 +64,9 @@ public abstract class AbstractArtifactProviderEnableDisableCommand extends Abstr
     new OperationHandler<Void>()
         .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + providerName)
         .setFailureMesssage("Failed to " + getCommandName() + " " + getArtifactProviderName())
-        .setOperation(Daemon.setArtifactProviderEnableDisable(currentDeployment, providerName, !noValidate, enable))
+        .setOperation(
+            Daemon.setArtifactProviderEnableDisable(
+                currentDeployment, providerName, !noValidate, enable))
         .get();
   }
 }

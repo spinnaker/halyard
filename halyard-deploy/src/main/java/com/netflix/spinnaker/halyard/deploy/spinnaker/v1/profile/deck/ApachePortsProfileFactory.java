@@ -22,24 +22,26 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.TemplateBackedProfileFactory;
-import org.springframework.stereotype.Component;
-
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ApachePortsProfileFactory extends TemplateBackedProfileFactory {
-  private static String PORTS_TEMPLATE = String.join("\n",
-      "Listen {%deck-host%}:{%deck-port%}",
-      "",
-      "<IfModule ssl_module>",
-      "  Listen 443",
-      "  SSLPassPhraseDialog exec:/etc/apache2/passphrase",
-      "</IfModule>",
-      "",
-      "<IfModule mod_gnutls.c>",
-      "  Listen 443",
-      "</IfModule>");
+  private static String PORTS_TEMPLATE =
+      String.join(
+          "\n",
+          "Listen {%deck-host%}:{%deck-port%}",
+          "",
+          "<IfModule ssl_module>",
+          "  Listen 443",
+          "  SSLPassPhraseDialog exec:/etc/apache2/passphrase",
+          "</IfModule>",
+          "",
+          "<IfModule mod_gnutls.c>",
+          "  Listen 443",
+          "</IfModule>");
 
   @Override
   protected String getTemplate() {
@@ -47,16 +49,20 @@ public class ApachePortsProfileFactory extends TemplateBackedProfileFactory {
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
     profile.setUser(ApacheSettings.APACHE_USER);
   }
 
   @Override
-  protected Map<String, Object> getBindings(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  protected Map<String, Object> getBindings(
+      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     Map<String, Object> bindings = new HashMap<>();
-    bindings.put("deck-host", endpoints.getServices().getDeck().getHost());
-    bindings.put("deck-port", endpoints.getServices().getDeck().getPort() + "");
+    bindings.put("deck-host", endpoints.getServiceSettings(Type.DECK).getHost());
+    bindings.put("deck-port", endpoints.getServiceSettings(Type.DECK).getPort() + "");
     return bindings;
   }
 

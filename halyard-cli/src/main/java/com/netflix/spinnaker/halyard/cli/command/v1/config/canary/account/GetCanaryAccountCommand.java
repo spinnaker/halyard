@@ -40,12 +40,9 @@ public class GetCanaryAccountCommand extends AbstractHasCanaryAccountCommand {
 
   @Override
   public String getShortDescription() {
-    return "Get the specified canary account details for the " + getServiceIntegration() + " service integration.";
-  }
-
-  @Override
-  public String getLongDescription() {
-    return getShortDescription();
+    return "Get the specified canary account details for the "
+        + getServiceIntegration()
+        + " service integration.";
   }
 
   @Override
@@ -57,11 +54,18 @@ public class GetCanaryAccountCommand extends AbstractHasCanaryAccountCommand {
     String currentDeployment = getCurrentDeployment();
     String serviceIntegration = getServiceIntegration();
     return new OperationHandler<AbstractCanaryAccount>()
-        .setFailureMesssage("Failed to get canary account " + accountName + " for service integration " + serviceIntegration + ".")
+        .setFailureMesssage(
+            "Failed to get canary account "
+                + accountName
+                + " for service integration "
+                + serviceIntegration
+                + ".")
         .setSuccessMessage("Canary account " + accountName + ": ")
         .setFormat(AnsiFormatUtils.Format.STRING)
         .setUserFormatted(true)
-        .setOperation(Daemon.getCanaryAccount(currentDeployment, serviceIntegration.toLowerCase(), accountName, false))
+        .setOperation(
+            Daemon.getCanaryAccount(
+                currentDeployment, serviceIntegration.toLowerCase(), accountName, false))
         .get();
   }
 }

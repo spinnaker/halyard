@@ -17,21 +17,14 @@
 package com.netflix.spinnaker.halyard.config.model.v1.artifacts.s3;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactProvider;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class S3ArtifactProvider extends ArtifactProvider<S3ArtifactAccount> {
-    @Override
-    public ArtifactProvider.ProviderType providerType() {
-        return ArtifactProvider.ProviderType.S3;
-    }
-
-    @Override
-    public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-        v.validate(psBuilder, this);
-    }
+  @Override
+  public ArtifactProvider.ProviderType providerType() {
+    return ArtifactProvider.ProviderType.S3;
+  }
 }

@@ -25,11 +25,15 @@ import com.netflix.spinnaker.halyard.config.model.v1.persistentStorage.S3Persist
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.providers.aws.AwsAccountValidator;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class S3Validator extends Validator<S3PersistentStore> {
+  @Autowired private SecretSessionManager secretSessionManager;
+
   @Override
   public void validate(ConfigProblemSetBuilder ps, S3PersistentStore n) {
     if (!StringUtils.isEmpty(n.getEndpoint())) {
@@ -37,7 +41,9 @@ public class S3Validator extends Validator<S3PersistentStore> {
     }
 
     try {
-      AWSCredentialsProvider credentialsProvider = AwsAccountValidator.getAwsCredentialsProvider(n.getAccessKeyId(), n.getSecretAccessKey());
+      AWSCredentialsProvider credentialsProvider =
+          AwsAccountValidator.getAwsCredentialsProvider(
+              n.getAccessKeyId(), secretSessionManager.decrypt(n.getSecretAccessKey()));
       S3Config s3Config = new S3Config();
       S3Properties s3Properties = new S3Properties();
       s3Properties.setBucket(n.getBucket());
@@ -46,7 +52,12 @@ public class S3Validator extends Validator<S3PersistentStore> {
       AmazonS3 s3Client = s3Config.awsS3Client(credentialsProvider, s3Properties);
       new S3Config().s3StorageService(s3Client, s3Properties);
     } catch (Exception e) {
-      ps.addProblem(Problem.Severity.ERROR, "Failed to ensure the required bucket \"" + n.getBucket() + "\" exists: " + e.getMessage());
+      ps.addProblem(
+          Problem.Severity.ERROR,
+          "Failed to ensure the required bucket \""
+              + n.getBucket()
+              + "\" exists: "
+              + e.getMessage());
     }
   }
 }

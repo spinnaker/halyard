@@ -27,12 +27,11 @@ import lombok.Getter;
 
 @Parameters(separators = "=")
 abstract class AbstractGetArtifactAccountCommand extends AbstractHasArtifactAccountCommand {
-  public String getDescription() {
+  public String getShortDescription() {
     return "Get the specified account details for the " + getArtifactProviderName() + " provider.";
   }
 
-  @Getter
-  private String commandName = "get";
+  @Getter private String commandName = "get";
 
   @Override
   protected void executeThis() {
@@ -43,11 +42,13 @@ abstract class AbstractGetArtifactAccountCommand extends AbstractHasArtifactAcco
     String currentDeployment = getCurrentDeployment();
     String providerName = getArtifactProviderName();
     return new OperationHandler<ArtifactAccount>()
-        .setFailureMesssage("Failed to get artifact account " + accountName + " for provider " + providerName + ".")
+        .setFailureMesssage(
+            "Failed to get artifact account " + accountName + " for provider " + providerName + ".")
         .setSuccessMessage("Artifact account " + accountName + ": ")
         .setFormat(AnsiFormatUtils.Format.STRING)
         .setUserFormatted(true)
-        .setOperation(Daemon.getArtifactAccount(currentDeployment, providerName, accountName, false))
+        .setOperation(
+            Daemon.getArtifactAccount(currentDeployment, providerName, accountName, false))
         .get();
   }
 }

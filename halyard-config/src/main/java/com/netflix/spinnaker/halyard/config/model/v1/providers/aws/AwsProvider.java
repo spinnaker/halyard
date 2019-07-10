@@ -18,24 +18,24 @@
 package com.netflix.spinnaker.halyard.config.model.v1.providers.aws;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.HasImageProvider;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import java.util.Collections;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Collections;
-import java.util.List;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class AwsProvider extends HasImageProvider<AwsAccount, AwsBakeryDefaults> implements Cloneable {
+public class AwsProvider extends HasImageProvider<AwsAccount, AwsBakeryDefaults>
+    implements Cloneable {
   private String accessKeyId;
-  private String secretAccessKey;
+  @Secret String secretAccessKey;
 
   private String defaultAssumeRole;
   private String defaultKeyPairTemplate = "{{name}}-keypair";
 
-  private List<AwsRegion> defaultRegions = Collections.singletonList(new AwsRegion().setName("us-west-2"));
+  private List<AwsRegion> defaultRegions =
+      Collections.singletonList(new AwsRegion().setName("us-west-2"));
   private AwsDefaults defaults = new AwsDefaults();
 
   @Data
@@ -51,11 +51,6 @@ public class AwsProvider extends HasImageProvider<AwsAccount, AwsBakeryDefaults>
   @Override
   public ProviderType providerType() {
     return ProviderType.AWS;
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 
   @Override

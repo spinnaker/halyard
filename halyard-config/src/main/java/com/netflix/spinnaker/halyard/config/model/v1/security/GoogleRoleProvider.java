@@ -18,20 +18,22 @@
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class GoogleRoleProvider extends RoleProvider {
-  private final GroupMembership.RoleProviderType roleProviderType = GroupMembership.RoleProviderType.GOOGLE;
+  private final GroupMembership.RoleProviderType roleProviderType =
+      GroupMembership.RoleProviderType.GOOGLE;
+
   @Override
   public String getNodeName() {
     return "google";
   }
 
-  @LocalFile
-  private String credentialPath;
+  @LocalFile @SecretFile private String credentialPath;
   private String adminUsername;
   private String domain;
 }

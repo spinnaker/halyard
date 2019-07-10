@@ -17,29 +17,20 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * Maps the entire contents of ~/.hal/config.
- */
+/** Maps the entire contents of ~/.hal/config. */
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class Halconfig extends Node {
-  /**
-   * File path this was found at.
-   */
-  @JsonIgnore
-  private String path;
+  /** File path this was found at. */
+  @JsonIgnore private String path;
 
-  /**
-   * Version of Halyard required to manage this deployment.
-   */
+  /** Version of Halyard required to manage this deployment. */
   private String halyardVersion;
 
   /**
@@ -49,9 +40,7 @@ public class Halconfig extends Node {
    */
   private String currentDeployment;
 
-  /**
-   * List of available deployments.
-   */
+  /** List of available deployments. */
   private List<DeploymentConfiguration> deploymentConfigurations = new ArrayList<>();
 
   public Halconfig() {
@@ -64,13 +53,9 @@ public class Halconfig extends Node {
   public String toString() {
     StringBuilder result = new StringBuilder();
 
-    result.append("version: ")
-        .append(halyardVersion)
-        .append('\n');
+    result.append("version: ").append(halyardVersion).append('\n');
 
-    result.append("currentDeployment: ")
-        .append(currentDeployment)
-        .append('\n');
+    result.append("currentDeployment: ").append(currentDeployment).append('\n');
 
     result.append("deployments: ");
 
@@ -81,17 +66,10 @@ public class Halconfig extends Node {
     result.append('\n');
 
     for (DeploymentConfiguration deployment : deploymentConfigurations) {
-      result.append("  - ")
-          .append(deployment.getName())
-          .append('\n');
+      result.append("  - ").append(deployment.getName()).append('\n');
     }
 
     return result.toString();
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 
   @Override
@@ -101,6 +79,7 @@ public class Halconfig extends Node {
 
   @Override
   public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeListIterator(deploymentConfigurations.stream().map(d -> (Node) d).collect(Collectors.toList()));
+    return NodeIteratorFactory.makeListIterator(
+        deploymentConfigurations.stream().map(d -> (Node) d).collect(Collectors.toList()));
   }
 }

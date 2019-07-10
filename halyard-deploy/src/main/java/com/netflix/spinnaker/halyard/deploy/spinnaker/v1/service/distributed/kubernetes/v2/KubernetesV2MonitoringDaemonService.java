@@ -21,15 +21,26 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonitoringDaemonService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.Delegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+@Data
 @Component
-public class KubernetesV2MonitoringDaemonService extends SpinnakerMonitoringDaemonService implements KubernetesV2Service<SpinnakerMonitoringDaemonService.SpinnakerMonitoringDaemon> {
-  @Delegate
-  @Autowired
-  KubernetesV2ServiceDelegate serviceDelegate;
+@EqualsAndHashCode(callSuper = true)
+public class KubernetesV2MonitoringDaemonService extends SpinnakerMonitoringDaemonService
+    implements KubernetesV2Service<SpinnakerMonitoringDaemonService.SpinnakerMonitoringDaemon> {
+  final DeployPriority deployPriority = new DeployPriority(0);
+
+  @Delegate @Autowired KubernetesV2ServiceDelegate serviceDelegate;
+
+  @Override
+  public boolean runsOnJvm() {
+    return false;
+  }
 
   @Override
   public boolean isEnabled(DeploymentConfiguration deploymentConfiguration) {
@@ -37,7 +48,7 @@ public class KubernetesV2MonitoringDaemonService extends SpinnakerMonitoringDaem
   }
 
   @Override
-  public ServiceSettings defaultServiceSettings() {
+  public ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration) {
     return new Settings();
   }
 }

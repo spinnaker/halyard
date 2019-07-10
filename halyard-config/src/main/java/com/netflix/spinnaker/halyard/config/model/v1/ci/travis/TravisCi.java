@@ -17,17 +17,22 @@
 package com.netflix.spinnaker.halyard.config.model.v1.ci.travis;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class TravisCi extends Ci<TravisMaster> {
+  protected List<TravisMaster> masters = new ArrayList<>();
+
   @Override
   public String getNodeName() {
     return "travis";
   }
 
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
+  public List<TravisMaster> listAccounts() {
+    return masters;
   }
 }

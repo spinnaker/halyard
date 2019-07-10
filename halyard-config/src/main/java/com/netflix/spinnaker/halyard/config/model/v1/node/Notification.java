@@ -19,14 +19,16 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 public abstract class Notification extends Node implements Cloneable {
-  @ValidForSpinnakerVersion(lowerBound = "1.4.0", message = "Spinnaker's base configuration is missing components required to enable notifications with Halyard.")
+  @ValidForSpinnakerVersion(
+      lowerBound = "1.4.0",
+      tooLowMessage =
+          "Spinnaker's base configuration is missing components required to enable notifications with Halyard.")
   boolean enabled;
 
   @JsonIgnore
@@ -35,17 +37,13 @@ public abstract class Notification extends Node implements Cloneable {
   String nodeName = getNotificationType().toString();
 
   @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
-  }
-
-  @Override
   public NodeIterator getChildren() {
     return NodeIteratorFactory.makeEmptyIterator();
   }
 
   public enum NotificationType {
-    SLACK("slack");
+    SLACK("slack"),
+    TWILIO("twilio");
 
     private final String name;
 

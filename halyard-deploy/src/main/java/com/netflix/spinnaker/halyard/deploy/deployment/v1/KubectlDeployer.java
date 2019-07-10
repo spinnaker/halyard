@@ -19,71 +19,123 @@
 package com.netflix.spinnaker.halyard.deploy.deployment.v1;
 
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
+import com.netflix.spinnaker.halyard.core.DaemonResponse;
 import com.netflix.spinnaker.halyard.core.RemoteAction;
+import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubectlServiceProvider;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2Executor;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2Service;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2Utils;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Component
-public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountDeploymentDetails<KubernetesAccount>> {
+public class KubectlDeployer
+    implements Deployer<KubectlServiceProvider, AccountDeploymentDetails<KubernetesAccount>> {
+  @Autowired KubernetesV2Utils kubernetesV2Utils;
+
   @Override
-  public RemoteAction deploy(KubectlServiceProvider serviceProvider,
+  public RemoteAction deploy(
+      KubectlServiceProvider serviceProvider,
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       GenerateService.ResolvedConfiguration resolvedConfiguration,
-      List<SpinnakerService.Type> serviceTypes) {
+      List<SpinnakerService.Type> serviceTypes,
+      boolean waitForCompletion) {
     List<KubernetesV2Service> services = serviceProvider.getServicesByPriority(serviceTypes);
-    services.stream().forEach((service) -> {
-      if (service instanceof SidecarService) {
-        return;
-      }
+    services.stream()
+        .forEach(
+            (service) -> {
+              if (service instanceof SidecarService) {
+                return;
+              }
 
-      ServiceSettings settings = resolvedConfiguration.getServiceSettings((SpinnakerService) service);
-      if (settings == null) {
-        return;
-      }
+              ServiceSettings settings =
+                  resolvedConfiguration.getServiceSettings((SpinnakerService) service);
+              if (settings == null) {
+                return;
+              }
 
-      if (settings.getEnabled() != null && !settings.getEnabled()) {
-        return;
-      }
+              if (settings.getEnabled() != null && !settings.getEnabled()) {
+                return;
+              }
 
-      if (settings.getSkipLifeCycleManagement() != null && settings.getSkipLifeCycleManagement()) {
-        return;
-      }
-      
-      DaemonTaskHandler.newStage("Deploying " + service.getServiceName() + " with kubectl");
+              if (settings.getSkipLifeCycleManagement() != null
+                  && settings.getSkipLifeCycleManagement()) {
+                return;
+              }
 
-      KubernetesAccount account = deploymentDetails.getAccount();
-      String namespaceDefinition = service.getNamespaceYaml(resolvedConfiguration);
-      String serviceDefinition = service.getServiceYaml(resolvedConfiguration);
+              DaemonResponse.StaticRequestBuilder<Void> builder =
+                  new DaemonResponse.StaticRequestBuilder<>(
+                      () -> {
+                        DaemonTaskHandler.newStage(
+                            "Deploying " + service.getServiceName() + " with kubectl");
 
-      if (!KubernetesV2Utils.exists(account, namespaceDefinition)) {
-        KubernetesV2Utils.apply(account, namespaceDefinition);
-      }
+                        KubernetesAccount account = deploymentDetails.getAccount();
+                        KubernetesV2Executor executor =
+                            new KubernetesV2Executor(
+                                DaemonTaskHandler.getJobExecutor(), account, kubernetesV2Utils);
+                        String namespaceDefinition =
+                            service.getNamespaceYaml(resolvedConfiguration);
+                        String serviceDefinition = service.getServiceYaml(resolvedConfiguration);
 
-      if (!KubernetesV2Utils.exists(account, serviceDefinition)) {
-        KubernetesV2Utils.apply(account, serviceDefinition);
-      }
+                        if (!executor.exists(namespaceDefinition)) {
+                          executor.apply(namespaceDefinition);
+                        }
 
-      String resourceDefinition = service.getResourceYaml(deploymentDetails, resolvedConfiguration);
-      DaemonTaskHandler.message("Running kubectl apply on the resource definition...");
-      KubernetesV2Utils.apply(account, resourceDefinition);
-    });
+                        if (!executor.exists(serviceDefinition)) {
+                          executor.apply(serviceDefinition);
+                        }
+
+                        String resourceDefinition =
+                            service.getResourceYaml(
+                                executor, deploymentDetails, resolvedConfiguration);
+                        if (((SpinnakerService) service).getType().equals(Type.REDIS)
+                            && executor.exists(resourceDefinition)) {
+                          // We do not want to bounce the Redis pod because user data will be lost.
+                          DaemonTaskHandler.message(
+                              "Redis deployment already exists... not redeploying...");
+                        } else {
+                          DaemonTaskHandler.message(
+                              "Running kubectl apply on the resource definition...");
+                          executor.apply(resourceDefinition);
+
+                          if (waitForCompletion) {
+                            DaemonTaskHandler.message("Waiting for service to be ready...");
+                            while (!executor.isReady(
+                                service.getNamespace(settings), service.getServiceName())) {
+                              DaemonTaskHandler.safeSleep(TimeUnit.SECONDS.toMillis(5));
+                            }
+                          }
+                        }
+                        return null;
+                      });
+              DaemonTaskHandler.submitTask(
+                  builder::build,
+                  "Deploy " + service.getServiceName(),
+                  TimeUnit.MINUTES.toMillis(10));
+            });
+
+    DaemonTaskHandler.message("Waiting on deployments to complete");
+    DaemonTaskHandler.reduceChildren(null, (t1, t2) -> null, (t1, t2) -> null)
+        .getProblemSet()
+        .throwifSeverityExceeds(Problem.Severity.WARNING);
 
     return new RemoteAction();
   }
 
   @Override
-  public void rollback(KubectlServiceProvider serviceProvider,
+  public void rollback(
+      KubectlServiceProvider serviceProvider,
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings,
       List<SpinnakerService.Type> serviceTypes) {
@@ -91,7 +143,8 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
   }
 
   @Override
-  public void collectLogs(KubectlServiceProvider serviceProvider,
+  public void collectLogs(
+      KubectlServiceProvider serviceProvider,
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings,
       List<SpinnakerService.Type> serviceTypes) {
@@ -99,16 +152,23 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
   }
 
   @Override
-  public RemoteAction connectCommand(KubectlServiceProvider serviceProvider,
+  public RemoteAction connectCommand(
+      KubectlServiceProvider serviceProvider,
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings,
       List<SpinnakerService.Type> serviceTypes) {
     RemoteAction result = new RemoteAction();
 
-    String connectCommands = String.join(" &\n", serviceTypes.stream()
-        .map(t -> serviceProvider.getService(t)
-            .connectCommand(deploymentDetails, runtimeSettings))
-        .collect(Collectors.toList()));
+    String connectCommands =
+        String.join(
+            " &\n",
+            serviceTypes.stream()
+                .map(
+                    t ->
+                        serviceProvider
+                            .getService(t)
+                            .connectCommand(deploymentDetails, runtimeSettings, kubernetesV2Utils))
+                .collect(Collectors.toList()));
     result.setScript("#!/bin/bash\n" + connectCommands);
     result.setScriptDescription(
         "The generated script will open connections to the API & UI servers using ssh tunnels");
@@ -117,9 +177,52 @@ public class KubectlDeployer implements Deployer<KubectlServiceProvider,AccountD
   }
 
   @Override
-  public void flushInfrastructureCaches(KubectlServiceProvider serviceProvider,
+  public void flushInfrastructureCaches(
+      KubectlServiceProvider serviceProvider,
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings) {
     throw new UnsupportedOperationException("todo(lwander)");
+  }
+
+  @Override
+  public void deleteDisabledServices(
+      KubectlServiceProvider serviceProvider,
+      AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
+      GenerateService.ResolvedConfiguration resolvedConfiguration,
+      List<SpinnakerService.Type> serviceTypes) {
+
+    List<KubernetesV2Service> services = serviceProvider.getServicesByPriority(serviceTypes);
+    services.stream()
+        .forEach(
+            (service) -> {
+              if (service instanceof SidecarService) {
+                return;
+              }
+
+              ServiceSettings settings =
+                  resolvedConfiguration.getServiceSettings((SpinnakerService) service);
+              if (settings == null) {
+                return;
+              }
+
+              if (settings.getEnabled() == null || settings.getEnabled()) {
+                return;
+              }
+
+              if (settings.getSkipLifeCycleManagement() != null
+                  && settings.getSkipLifeCycleManagement()) {
+                return;
+              }
+              KubernetesAccount account = deploymentDetails.getAccount();
+              KubernetesV2Executor executor =
+                  new KubernetesV2Executor(
+                      DaemonTaskHandler.getJobExecutor(), account, kubernetesV2Utils);
+
+              DaemonTaskHandler.newStage(
+                  "Deleting disabled service " + service.getServiceName() + " with kubectl");
+              DaemonTaskHandler.message(
+                  "Running kubectl delete on the resource, service, and secret definitions...");
+              executor.delete(service.getNamespace(settings), service.getServiceName());
+            });
   }
 }

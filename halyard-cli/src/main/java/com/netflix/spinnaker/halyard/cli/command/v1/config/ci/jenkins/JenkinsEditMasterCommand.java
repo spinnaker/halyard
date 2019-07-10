@@ -21,7 +21,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.master.AbstractEditMasterCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins.JenkinsMaster;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 
 @Parameters(separators = "=")
 public class JenkinsEditMasterCommand extends AbstractEditMasterCommand<JenkinsMaster> {
@@ -29,34 +29,23 @@ public class JenkinsEditMasterCommand extends AbstractEditMasterCommand<JenkinsM
     return "jenkins";
   }
 
-  @Parameter(
-      names = "--address",
-      description = JenkinsCommandProperties.ADDRESS_DESCRIPTION
-  )
+  @Parameter(names = "--address", description = JenkinsCommandProperties.ADDRESS_DESCRIPTION)
   private String address;
 
-  @Parameter(
-      names = "--username",
-      description = JenkinsCommandProperties.USERNAME_DESCRIPTION
-  )
+  @Parameter(names = "--username", description = JenkinsCommandProperties.USERNAME_DESCRIPTION)
   public String username;
 
   @Parameter(
       names = "--password",
       password = true,
-      description = JenkinsCommandProperties.PASSWORD_DESCRIPTION
-  )
+      description = JenkinsCommandProperties.PASSWORD_DESCRIPTION)
   public String password;
 
-  @Parameter(
-      names = "--csrf",
-      arity = 1,
-      description = JenkinsCommandProperties.CSRF_DESCRIPTION
-  )
+  @Parameter(names = "--csrf", arity = 1, description = JenkinsCommandProperties.CSRF_DESCRIPTION)
   public Boolean csrf;
 
   @Override
-  protected Master editMaster(JenkinsMaster master) {
+  protected CIAccount editMaster(JenkinsMaster master) {
     master.setAddress(isSet(address) ? address : master.getAddress());
     master.setUsername(isSet(username) ? username : master.getUsername());
     master.setPassword(isSet(password) ? password : master.getPassword());
@@ -64,5 +53,4 @@ public class JenkinsEditMasterCommand extends AbstractEditMasterCommand<JenkinsM
 
     return master;
   }
-
 }

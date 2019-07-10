@@ -21,11 +21,10 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
-import lombok.AccessLevel;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @Parameters(separators = "=")
 public class InterruptTaskCommand extends NestableCommand {
@@ -33,7 +32,7 @@ public class InterruptTaskCommand extends NestableCommand {
   private String commandName = "interrupt";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Interrupt (attempt to kill) a given task.";
+  private String shortDescription = "Interrupt (attempt to kill) a given task.";
 
   @Override
   public String getMainParameter() {

@@ -21,20 +21,19 @@ import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.appengine.AppengineCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.aws.AwsCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.azure.AzureCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.cloudfoundry.CloudFoundryCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.dcos.DCOSCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.dockerRegistry.DockerRegistryCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ecs.EcsCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.google.GoogleCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.kubernetes.KubernetesCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.openstack.OpenstackCommand;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
  * This is a top-level command for dealing with your halconfig.
  *
- * Usage is `$ hal config provider`
+ * <p>Usage is `$ hal config provider`
  */
 @Parameters(separators = "=")
 public class ProviderCommand extends NestableCommand {
@@ -42,19 +41,20 @@ public class ProviderCommand extends NestableCommand {
   private String commandName = "provider";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Configure, validate, and view the specified provider.";
+  private String shortDescription = "Configure, validate, and view the specified provider.";
 
   public ProviderCommand() {
     registerSubcommand(new AppengineCommand());
     registerSubcommand(new AwsCommand());
     registerSubcommand(new AzureCommand());
+    registerSubcommand(new CloudFoundryCommand());
     registerSubcommand(new DCOSCommand());
     registerSubcommand(new DockerRegistryCommand());
     registerSubcommand(new EcsCommand());
     registerSubcommand(new GoogleCommand());
     registerSubcommand(new KubernetesCommand());
-    registerSubcommand(new OpenstackCommand());
-    registerSubcommand(new com.netflix.spinnaker.halyard.cli.command.v1.config.providers.oracle.OracleCommand());
+    registerSubcommand(
+        new com.netflix.spinnaker.halyard.cli.command.v1.config.providers.oracle.OracleCommand());
   }
 
   @Override

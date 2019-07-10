@@ -18,25 +18,19 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
-abstract public class MetricStore extends Node {
+public abstract class MetricStore extends Node {
   boolean enabled;
 
   @JsonIgnore
-  abstract public MetricStores.MetricStoreType getMetricStoreType();
+  public abstract MetricStores.MetricStoreType getMetricStoreType();
 
   @Override
   public NodeIterator getChildren() {
     return NodeIteratorFactory.makeEmptyIterator();
-  }
-
-  @Override
-  public void accept(ConfigProblemSetBuilder psBuilder, Validator v) {
-    v.validate(psBuilder, this);
   }
 }

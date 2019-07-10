@@ -20,13 +20,16 @@ package com.netflix.spinnaker.halyard.config.model.v1.artifacts.http;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class HttpArtifactAccount extends ArtifactAccount {
   String name;
   String username;
-  String password;
-  @LocalFile
-  String usernamePasswordFile;
+  @Secret String password;
+  @LocalFile @SecretFile String usernamePasswordFile;
 }

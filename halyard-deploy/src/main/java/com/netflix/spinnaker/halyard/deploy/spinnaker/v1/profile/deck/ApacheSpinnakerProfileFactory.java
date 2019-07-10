@@ -26,30 +26,34 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.TemplateBackedProfileFactory;
-import org.springframework.stereotype.Component;
-
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ApacheSpinnakerProfileFactory extends TemplateBackedProfileFactory {
-  private static String SSL_TEMPLATE = String.join("\n",
-      "    SSLEngine on",
-      "    SSLCertificateFile \"{%cert-file%}\"",
-      "    SSLCertificateKeyFile \"{%key-file%}\"");
+  private static String SSL_TEMPLATE =
+      String.join(
+          "\n",
+          "    SSLEngine on",
+          "    SSLCertificateFile \"{%cert-file%}\"",
+          "    SSLCertificateKeyFile \"{%key-file%}\"");
 
-  private static String SPINNAKER_TEMPLATE = String.join("\n",
-      "<VirtualHost {%deck-host%}:{%deck-port%}>",
-      "  <IfModule ssl_module>",
-      "{%ssl%}",
-      "  </IfModule>",
-      "  DocumentRoot /opt/deck/html",
-      "",
-      "  <Directory \"/opt/deck/html/\">",
-      "     Require all granted",
-      "  </Directory>",
-      "</VirtualHost>");
+  private static String SPINNAKER_TEMPLATE =
+      String.join(
+          "\n",
+          "<VirtualHost {%deck-host%}:{%deck-port%}>",
+          "  <IfModule ssl_module>",
+          "{%ssl%}",
+          "  </IfModule>",
+          "  DocumentRoot /opt/deck/html",
+          "",
+          "  <Directory \"/opt/deck/html/\">",
+          "     Require all granted",
+          "  </Directory>",
+          "</VirtualHost>");
 
   @Override
   protected String getTemplate() {
@@ -58,17 +62,22 @@ public class ApacheSpinnakerProfileFactory extends TemplateBackedProfileFactory 
 
   @Override
   protected List<String> requiredFiles(DeploymentConfiguration deploymentConfiguration) {
-   return backupRequiredFiles(deploymentConfiguration.getSecurity().getUiSecurity(), deploymentConfiguration.getName());
+    return backupRequiredFiles(
+        deploymentConfiguration.getSecurity().getUiSecurity(), deploymentConfiguration.getName());
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
     profile.setUser(ApacheSettings.APACHE_USER);
   }
 
   @Override
-  protected Map<String, Object> getBindings(DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  protected Map<String, Object> getBindings(
+      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
     TemplatedResource resource = new StringResource(SSL_TEMPLATE);
     Map<String, Object> bindings = new HashMap<>();
     UiSecurity uiSecurity = deploymentConfiguration.getSecurity().getUiSecurity();
@@ -78,8 +87,8 @@ public class ApacheSpinnakerProfileFactory extends TemplateBackedProfileFactory 
     String ssl = resource.setBindings(bindings).toString();
     bindings.clear();
     bindings.put("ssl", ssl);
-    bindings.put("deck-host", endpoints.getServices().getDeck().getHost());
-    bindings.put("deck-port", endpoints.getServices().getDeck().getPort() + "");
+    bindings.put("deck-host", endpoints.getServiceSettings(Type.DECK).getHost());
+    bindings.put("deck-port", endpoints.getServiceSettings(Type.DECK).getPort() + "");
     return bindings;
   }
 

@@ -30,14 +30,14 @@ public class EditVersionCommand extends AbstractConfigCommand {
   private String commandName = "edit";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Set the desired Spinnaker version.";
+  private String shortDescription = "Set the desired Spinnaker version.";
 
   @Parameter(
       names = "--version",
       required = true,
-      description = "Must be either a version number \"X.Y.Z\" for a specific release of Spinnaker, "
-      + "or \"$BRANCH-latest-unvalidated\" for the most recently built (unvalidated) Spinnaker on $BRANCH."
-  )
+      description =
+          "Must be either a version number \"X.Y.Z\" for a specific release of Spinnaker, "
+              + "or \"$BRANCH-latest-unvalidated\" for the most recently built (unvalidated) Spinnaker on $BRANCH.")
   private String version;
 
   @Override
@@ -45,8 +45,11 @@ public class EditVersionCommand extends AbstractConfigCommand {
     String currentDeployment = getCurrentDeployment();
     new OperationHandler<Void>()
         .setOperation(Daemon.setVersion(currentDeployment, !noValidate, version))
-        .setSuccessMessage("Spinnaker has been configured to update/install version \"" + version + "\". "
-            + "Deploy this version of Spinnaker with `hal deploy apply`.")
+        .setSuccessMessage(
+            "Spinnaker has been configured to update/install version \""
+                + version
+                + "\". "
+                + "Deploy this version of Spinnaker with `hal deploy apply`.")
         .setFailureMesssage("Failed to update version.")
         .get();
   }
