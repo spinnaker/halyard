@@ -54,7 +54,7 @@ public class PrometheusCanaryAccountValidator extends CanaryAccountValidator {
     if (StringUtils.isNotEmpty(usernamePasswordFile)) {
       String usernamePassword = validatingFileDecrypt(p, usernamePasswordFile);
 
-      if (usernamePassword != null && StringUtils.isEmpty(usernamePassword)) {
+      if (StringUtils.isEmpty(usernamePassword)) {
         p.addProblem(ERROR, "The supplied username password file does not exist or is empty.")
             .setRemediation("Supply a valid username password file.");
       } else if (!usernamePassword.contains(":")) {
