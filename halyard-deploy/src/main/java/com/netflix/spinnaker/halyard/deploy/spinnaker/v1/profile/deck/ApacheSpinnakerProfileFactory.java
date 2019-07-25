@@ -22,6 +22,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.security.ApacheSsl;
 import com.netflix.spinnaker.halyard.config.model.v1.security.UiSecurity;
 import com.netflix.spinnaker.halyard.core.resource.v1.StringResource;
 import com.netflix.spinnaker.halyard.core.resource.v1.TemplatedResource;
+import com.netflix.spinnaker.halyard.deploy.config.v1.secrets.BindingsSecretDecrypter;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
@@ -77,13 +78,24 @@ public class ApacheSpinnakerProfileFactory extends TemplateBackedProfileFactory 
 
   @Override
   protected Map<String, Object> getBindings(
-      DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+      DeploymentConfiguration deploymentConfiguration,
+      Profile profile,
+      SpinnakerRuntimeSettings endpoints) {
     TemplatedResource resource = new StringResource(SSL_TEMPLATE);
     Map<String, Object> bindings = new HashMap<>();
+    BindingsSecretDecrypter bsc =
+        new BindingsSecretDecrypter(
+            secretSessionManager,
+            profile,
+            halconfigDirectoryStructure.getStagingDependenciesPath(
+                deploymentConfiguration.getName()));
     UiSecurity uiSecurity = deploymentConfiguration.getSecurity().getUiSecurity();
     ApacheSsl apacheSsl = uiSecurity.getSsl();
-    bindings.put("cert-file", apacheSsl.getSslCertificateFile());
-    bindings.put("key-file", apacheSsl.getSslCertificateKeyFile());
+    bindings.put(
+        "cert-file", bsc.trackSecretFile(apacheSsl.getSslCertificateFile(), "sslCertificateFile"));
+    bindings.put(
+        "key-file",
+        bsc.trackSecretFile(apacheSsl.getSslCertificateKeyFile(), "sslCertificateKeyFile"));
     String ssl = resource.setBindings(bindings).toString();
     bindings.clear();
     bindings.put("ssl", ssl);

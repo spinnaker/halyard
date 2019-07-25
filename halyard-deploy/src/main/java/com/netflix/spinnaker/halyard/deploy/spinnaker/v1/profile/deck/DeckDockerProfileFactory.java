@@ -20,6 +20,7 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.deck;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.security.ApacheSsl;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
+import com.netflix.spinnaker.halyard.deploy.config.v1.secrets.BindingsSecretDecrypter;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
@@ -56,12 +57,22 @@ public class DeckDockerProfileFactory extends DeckProfileFactory {
     Map<String, String> env = profile.getEnv();
 
     if (apacheSsl.isEnabled()) {
+      BindingsSecretDecrypter bsc =
+          new BindingsSecretDecrypter(
+              secretSessionManager,
+              profile,
+              halconfigDirectoryStructure.getStagingDependenciesPath(
+                  deploymentConfiguration.getName()));
       env.put("DECK_HOST", deckSettings.getHost());
       env.put("DECK_PORT", deckSettings.getPort() + "");
       env.put("API_HOST", gateSettings.getBaseUrl());
-      env.put("DECK_CERT", apacheSsl.getSslCertificateFile());
-      env.put("DECK_KEY", apacheSsl.getSslCertificateKeyFile());
-      env.put("PASSPHRASE", apacheSsl.getSslCertificatePassphrase());
+      env.put(
+          "DECK_CERT",
+          bsc.trackSecretFile(apacheSsl.getSslCertificateFile(), "sslCertificateFile"));
+      env.put(
+          "DECK_KEY",
+          bsc.trackSecretFile(apacheSsl.getSslCertificateKeyFile(), "sslCertificateKeyFile"));
+      env.put("PASSPHRASE", secretSessionManager.decrypt(apacheSsl.getSslCertificatePassphrase()));
     }
 
     env.put(
