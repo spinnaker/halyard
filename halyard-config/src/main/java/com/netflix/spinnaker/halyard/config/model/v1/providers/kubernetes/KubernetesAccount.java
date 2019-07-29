@@ -16,32 +16,18 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes;
 
-import static com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity.ERROR;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.netflix.spinnaker.halyard.config.config.v1.ArtifactSourcesConfig;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.ValidForSpinnakerVersion;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.ContainerAccount;
-import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryProvider;
-import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
-import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
-import io.fabric8.kubernetes.api.model.Config;
-import io.fabric8.kubernetes.api.model.NamedContext;
-import io.fabric8.kubernetes.client.internal.KubeConfigUtils;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -105,8 +91,6 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
 
   Boolean debug;
 
-  @Autowired private SecretSessionManager secretSessionManager;
-
   public boolean usesServiceAccount() {
     return serviceAccount != null && serviceAccount;
   }
@@ -120,40 +104,6 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
       return System.getProperty("user.home") + "/.kube/config";
     } else {
       return kubeconfigFile;
-    }
-  }
-
-  protected List<String> contextOptions(ConfigProblemSetBuilder psBuilder) {
-    Config kubeconfig;
-    try {
-      if (EncryptedSecret.isEncryptedSecret(getKubeconfigFile())) {
-        kubeconfig =
-            KubeConfigUtils.parseConfigFromString(
-                secretSessionManager.decrypt(getKubeconfigFile()));
-      } else {
-        File kubeconfigFileOpen = new File(getKubeconfigFile());
-        kubeconfig = KubeConfigUtils.parseConfig(kubeconfigFileOpen);
-      }
-    } catch (IOException e) {
-      psBuilder.addProblem(ERROR, e.getMessage());
-      return null;
-    }
-
-    return kubeconfig.getContexts().stream()
-        .map(NamedContext::getName)
-        .collect(Collectors.toList());
-  }
-
-  protected List<String> dockerRegistriesOptions(ConfigProblemSetBuilder psBuilder) {
-    DeploymentConfiguration context = parentOfType(DeploymentConfiguration.class);
-    DockerRegistryProvider dockerRegistryProvider = context.getProviders().getDockerRegistry();
-
-    if (dockerRegistryProvider != null) {
-      return dockerRegistryProvider.getAccounts().stream()
-          .map(Account::getName)
-          .collect(Collectors.toList());
-    } else {
-      return null;
     }
   }
 
@@ -189,5 +139,42 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
   public static class KubernetesCachingPolicy {
     String kubernetesKind;
     int maxEntriesPerAgent;
+  }
+
+  // These six methods exist for backwards compatibility. Versions of Halyard prior to 1.22 would
+  // write this field out twice: to 'oAuthScopes' and to 'oauthScopes'. Whichever came last in the
+  // file would end up taking precedence. These methods replicate that behavior during parsing, but
+  // will only write out 'oAuthScopes' during serialization. They can be deleted after a few months
+  // (at which point Lombok will generate the first four automatically). If you're reading this in
+  // 2020 or later, you can definitely delete these (and also: whoah, the future is probably so fun,
+  // how are those flying cars working out?)
+  @JsonProperty("oAuthScopes")
+  public List<String> getOAuthScopes() {
+    return oAuthScopes;
+  }
+
+  @JsonProperty("oAuthScopes")
+  public void setOAuthScopes(List<String> oAuthScopes) {
+    this.oAuthScopes = oAuthScopes;
+  }
+
+  @JsonProperty("oAuthServiceAccount")
+  public String getOAuthServiceAccount() {
+    return oAuthServiceAccount;
+  }
+
+  @JsonProperty("oAuthServiceAccount")
+  public void setOAuthServiceAccount(String oAuthServiceAccount) {
+    this.oAuthServiceAccount = oAuthServiceAccount;
+  }
+
+  @JsonProperty("oauthScopes")
+  public void setOauthScopes(List<String> oAuthScopes) {
+    this.oAuthScopes = oAuthScopes;
+  }
+
+  @JsonProperty("oauthServiceAccount")
+  public void setOauthServiceAccount(String oAuthServiceAccount) {
+    this.oAuthServiceAccount = oAuthServiceAccount;
   }
 }

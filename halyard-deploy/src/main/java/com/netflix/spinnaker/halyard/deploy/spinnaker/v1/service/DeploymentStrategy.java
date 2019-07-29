@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright (c) 2019, salesforce.com, inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,20 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.netflix.spinnaker.halyard.config.config.v1;
+package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Component;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Data;
 
-@Component
-public class StrictObjectMapper extends ObjectMapper {
-  public StrictObjectMapper() {
-    super();
-    this.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-    this.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+@Data
+public class DeploymentStrategy {
+  private DeploymentStrategy.Type type = Type.rollingUpdate;
+  private Map<String, String> strategySettings = new HashMap<>();
+
+  public enum Type {
+    rollingUpdate,
+    recreate
   }
 }
