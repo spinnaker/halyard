@@ -29,7 +29,7 @@ public class TravisCommandProperties {
   static final String NUMBER_OF_JOBS_DESCRIPTION =
       "How many jobs the travis integration should fetch from the api each time the poller runs."
           + " If you have a busy Travis server and/or some very slow builds, you might need"
-          + " to increase this from the default value (100). Example: A build takes 60 minutes to complete."
-          + " By the time it is completed, more than 100 other jobs have ran. Then the slow build will"
+          + " to increase this from the default value (300). Example: A build takes 60 minutes to complete."
+          + " By the time it is completed, more than 300 other jobs have ran. Then the slow build will"
           + " have been pushed out of the polling window.";
 }
