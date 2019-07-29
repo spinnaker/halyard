@@ -58,7 +58,8 @@ public class ApachePassphraseProfileFactory extends TemplateBackedProfileFactory
       SpinnakerRuntimeSettings endpoints) {
     Map<String, Object> bindings = new HashMap<>();
     ApacheSsl ssl = deploymentConfiguration.getSecurity().getUiSecurity().getSsl();
-    if (EncryptedSecret.isEncryptedSecret(ssl.getSslCertificatePassphrase())) {
+    if (EncryptedSecret.isEncryptedSecret(ssl.getSslCertificatePassphrase())
+        && !supportsSecretDecryption(deploymentConfiguration.getName())) {
       bindings.put("passphrase", secretSessionManager.decrypt(ssl.getSslCertificatePassphrase()));
     } else {
       bindings.put("passphrase", ssl.getSslCertificatePassphrase());

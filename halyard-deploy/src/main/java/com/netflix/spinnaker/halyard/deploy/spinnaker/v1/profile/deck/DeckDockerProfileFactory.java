@@ -34,6 +34,8 @@ import org.springframework.stereotype.Component;
 public class DeckDockerProfileFactory extends DeckProfileFactory {
   @Autowired AccountService accountService;
 
+  @Autowired BindingsSecretDecrypter bindingsSecretDecrypter;
+
   @Override
   public String commentPrefix() {
     return "// ";
@@ -57,22 +59,33 @@ public class DeckDockerProfileFactory extends DeckProfileFactory {
     Map<String, String> env = profile.getEnv();
 
     if (apacheSsl.isEnabled()) {
-      BindingsSecretDecrypter bsc =
-          new BindingsSecretDecrypter(
-              secretSessionManager,
-              profile,
-              halconfigDirectoryStructure.getStagingDependenciesPath(
-                  deploymentConfiguration.getName()));
       env.put("DECK_HOST", deckSettings.getHost());
       env.put("DECK_PORT", deckSettings.getPort() + "");
       env.put("API_HOST", gateSettings.getBaseUrl());
-      env.put(
-          "DECK_CERT",
-          bsc.trackSecretFile(apacheSsl.getSslCertificateFile(), "sslCertificateFile"));
-      env.put(
-          "DECK_KEY",
-          bsc.trackSecretFile(apacheSsl.getSslCertificateKeyFile(), "sslCertificateKeyFile"));
-      env.put("PASSPHRASE", secretSessionManager.decrypt(apacheSsl.getSslCertificatePassphrase()));
+      if (supportsSecretDecryption(deploymentConfiguration.getName())) {
+        env.put("DECK_CERT", apacheSsl.getSslCertificateFile());
+        env.put("DECK_KEY", apacheSsl.getSslCertificateKeyFile());
+        env.put("PASSPHRASE", apacheSsl.getSslCertificatePassphrase());
+      } else {
+        env.put(
+            "DECK_CERT",
+            bindingsSecretDecrypter.trackSecretFile(
+                profile,
+                halconfigDirectoryStructure.getStagingDependenciesPath(
+                    deploymentConfiguration.getName()),
+                apacheSsl.getSslCertificateFile(),
+                "sslCertificateFile"));
+        env.put(
+            "DECK_KEY",
+            bindingsSecretDecrypter.trackSecretFile(
+                profile,
+                halconfigDirectoryStructure.getStagingDependenciesPath(
+                    deploymentConfiguration.getName()),
+                apacheSsl.getSslCertificateKeyFile(),
+                "sslCertificateKeyFile"));
+        env.put(
+            "PASSPHRASE", secretSessionManager.decrypt(apacheSsl.getSslCertificatePassphrase()));
+      }
     }
 
     env.put(
