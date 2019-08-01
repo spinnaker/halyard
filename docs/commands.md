@@ -3813,12 +3813,12 @@ hal config ci travis master add MASTER [parameters]
 
 #### Parameters
 `MASTER`: The name of the master to operate on.
- * `--address`: (*Required*) The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
- * `--base-url`: (*Required*) The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--address`: (*Required*) The address of the Travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
+ * `--base-url`: (*Required*) The base URL to the Travis UI ([https://travis-ci.org](https://travis-ci.org)).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
+ * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The Github token to authenticate against Travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--number-of-jobs`: How many jobs the travis integration should fetch from the api each time the poller runs. If you have a busy Travis server and/or some very slow builds, you might need to increase this from the default value (100). Example: A build takes 60 minutes to complete. By the time it is completed, more than 100 other jobs have ran. Then the slow build will have been pushed out of the polling window.
+ * `--number-of-jobs`: How many jobs the travis integration should fetch from the api each time the poller runs. Unless you have a very busy Travis server, you shouldn't need to change this value. It is most efficient to increase it in multiples of 100. Default: 100
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build master.
 
@@ -3853,12 +3853,12 @@ hal config ci travis master edit MASTER [parameters]
 `MASTER`: The name of the master to operate on.
  * `--add-read-permission`: Add this permission to the list of read permissions.
  * `--add-write-permission`: Add this permission to the list of write permissions.
- * `--address`: The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
- * `--base-url`: The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--address`: The address of the Travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
+ * `--base-url`: The base URL to the Travis UI ([https://travis-ci.org](https://travis-ci.org)).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
+ * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The Github token to authenticate against Travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--number-of-jobs`: How many jobs the travis integration should fetch from the api each time the poller runs. If you have a busy Travis server and/or some very slow builds, you might need to increase this from the default value (100). Example: A build takes 60 minutes to complete. By the time it is completed, more than 100 other jobs have ran. Then the slow build will have been pushed out of the polling window.
+ * `--number-of-jobs`: How many jobs the travis integration should fetch from the api each time the poller runs. Unless you have a very busy Travis server, you shouldn't need to change this value. It is most efficient to increase it in multiples of 100. Default: 100
  * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-write-permission`: Remove this permission from the list of write permissions.

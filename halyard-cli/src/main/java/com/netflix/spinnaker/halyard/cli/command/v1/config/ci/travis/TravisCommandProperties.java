@@ -18,18 +18,16 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.travis;
 
 public class TravisCommandProperties {
   static final String ADDRESS_DESCRIPTION =
-      "The address of the travis API (https://api.travis-ci.org).";
+      "The address of the Travis API (https://api.travis-ci.org).";
 
   static final String BASE_URL_DESCRIPTION =
-      "The base URL to the travis UI (https://travis-ci.org).";
+      "The base URL to the Travis UI (https://travis-ci.org).";
 
   static final String GITHUB_TOKEN_DESCRIPTION =
-      "The github token to authentiacte against travis with.";
+      "The Github token to authenticate against Travis with.";
 
   static final String NUMBER_OF_JOBS_DESCRIPTION =
       "How many jobs the travis integration should fetch from the api each time the poller runs."
-          + " If you have a busy Travis server and/or some very slow builds, you might need"
-          + " to increase this from the default value (100). Example: A build takes 60 minutes to complete."
-          + " By the time it is completed, more than 100 other jobs have ran. Then the slow build will"
-          + " have been pushed out of the polling window.";
+          + " Unless you have a very busy Travis server, you shouldn't need to change this value."
+          + " It is most efficient to increase it in multiples of 100. Default: 100";
 }
