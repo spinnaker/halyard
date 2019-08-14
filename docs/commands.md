@@ -547,8 +547,10 @@
  * [**hal plugins add**](#hal-plugins-add)
  * [**hal plugins delete**](#hal-plugins-delete)
  * [**hal plugins disable**](#hal-plugins-disable)
+ * [**hal plugins disableDownloading**](#hal-plugins-disableDownloading)
  * [**hal plugins edit**](#hal-plugins-edit)
  * [**hal plugins enable**](#hal-plugins-enable)
+ * [**hal plugins enableDownloading**](#hal-plugins-enableDownloading)
  * [**hal plugins list**](#hal-plugins-list)
  * [**hal shutdown**](#hal-shutdown)
  * [**hal spin**](#hal-spin)
@@ -10487,8 +10489,10 @@ hal plugins [parameters] [subcommands]
  * `add`: Add a plugin
  * `delete`: Delete a plugin
  * `disable`: Enable or disable all plugins
+ * `disableDownloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
  * `edit`: Edit a plugin
  * `enable`: Enable or disable all plugins
+ * `enableDownloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
  * `list`: List all plugins
 
 ---
@@ -10541,6 +10545,21 @@ hal plugins disable [parameters]
 
 
 ---
+## hal plugins disableDownloading
+
+Enable or disable the ability for Spinnaker services to download jars for plugins
+
+#### Usage
+```
+hal plugins disableDownloading [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal plugins edit
 
 Edit a plugin
@@ -10566,6 +10585,21 @@ Enable or disable all plugins
 #### Usage
 ```
 hal plugins enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal plugins enableDownloading
+
+Enable or disable the ability for Spinnaker services to download jars for plugins
+
+#### Usage
+```
+hal plugins enableDownloading [parameters]
 ```
 
 #### Parameters
