@@ -29,7 +29,7 @@ import java.util.List;
 @Parameters(separators = "=")
 public abstract class AbstractHasPluginCommand extends AbstractConfigCommand {
   @Parameter(description = "The name of the plugin to operate on.", arity = 1)
-  List<String> plugins = new ArrayList<>();
+  private List<String> plugins = new ArrayList<>();
 
   @Override
   public String getMainParameter() {
