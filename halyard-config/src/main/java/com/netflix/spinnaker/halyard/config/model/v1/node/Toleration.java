@@ -20,12 +20,12 @@ import lombok.Data;
 
 @Data
 public class Toleration {
-  String key;
-  Operator operator;
-  String value;
-  String effect;
+  private String key;
+  private Operator operator;
+  private String value;
+  private String effect;
 
-  enum Operator {
+  public enum Operator {
     Exists,
     Equal,
     DoesNotExist
