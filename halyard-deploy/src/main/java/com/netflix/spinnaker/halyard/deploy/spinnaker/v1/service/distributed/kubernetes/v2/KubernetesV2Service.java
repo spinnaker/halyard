@@ -691,13 +691,13 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
             .getTolerations()
             .getOrDefault(getService().getServiceName(), new ArrayList<>());
 
-    if (toleration.equals(new ArrayList<>())) {
+    if (toleration.isEmpty()) {
       toleration =
           details
               .getDeploymentConfiguration()
               .getDeploymentEnvironment()
               .getTolerations()
-              .getOrDefault(getService().getServiceName(), new ArrayList<>());
+              .getOrDefault(getService().getBaseCanonicalName(), new ArrayList<>());
     }
 
     try {
