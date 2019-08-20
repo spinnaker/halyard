@@ -64,7 +64,7 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   private Boolean artifacts = null;
 
   @Parameter(
-      names = "--artifactsRewrite",
+      names = "--artifacts-rewrite",
       description =
           "Enable new artifact support. Read more at https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/",
       arity = 1)
