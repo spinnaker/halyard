@@ -16,9 +16,12 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes;
 
+import static com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment.ImageVariant.SLIM;
+
 import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.KubernetesUtil;
 import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.description.servergroup.KubernetesImageDescription;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment.ImageVariant;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
@@ -36,11 +39,23 @@ public interface KubernetesService {
     String version = getArtifactService().getArtifactVersion(deploymentName, getArtifact());
     version = Versions.isLocal(version) ? Versions.fromLocal(version) : version;
 
+    ImageVariant imageVariant =
+        deploymentConfiguration.getDeploymentEnvironment().getImageVariant();
+
+    final String tag;
+    if (imageVariant == SLIM) {
+      // Keep using the variantless tag until `gs://halconfig/versions.yml` only contains
+      // versions >= 1.16.0
+      tag = version;
+    } else {
+      tag = String.format("%s-%s", version, imageVariant.toString().toLowerCase());
+    }
+
     KubernetesImageDescription image =
         KubernetesImageDescription.builder()
             .registry(getDockerRegistry(deploymentName, getArtifact()))
             .repository(artifactName)
-            .tag(version)
+            .tag(tag)
             .build();
     return KubernetesUtil.getImageId(image);
   }
