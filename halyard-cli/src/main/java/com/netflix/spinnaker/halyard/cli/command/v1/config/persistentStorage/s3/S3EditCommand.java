@@ -69,7 +69,12 @@ public class S3EditCommand extends AbstractPersistentStoreEditCommand<S3Persiste
               + " See https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html#VirtualHostingExamples.")
   private Boolean pathStyleAccess = false;
 
-  @Parameter(names = "--server-side-encryption", description = "Placeholder " + "placeholder")
+  @Parameter(
+      names = "--server-side-encryption",
+      description =
+          "Use Amazon Server-Side Encryption ('x-amz-server-side-encryption' header). "
+              + "Supports 'AES256' (for Amazon S3-managed encryption keys, equivalent to a header value of 'AES256')"
+              + " and 'AWSKMS' (for AWS KMS-managed encryption keys, equivalent to a header value of 'aws:kms'.")
   private ServerSideEncryption serverSideEncryption;
 
   @Parameter(names = "--assume-role", description = AwsCommandProperties.ASSUME_ROLE_DESCRIPTION)
