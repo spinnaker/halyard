@@ -69,12 +69,7 @@ public class S3EditCommand extends AbstractPersistentStoreEditCommand<S3Persiste
               + " See https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html#VirtualHostingExamples.")
   private Boolean pathStyleAccess = false;
 
-
-  @Parameter(
-      names = "--server-side-encryption",
-      description =
-          "Placeholder "
-              + "placeholder")
+  @Parameter(names = "--server-side-encryption", description = "Placeholder " + "placeholder")
   private ServerSideEncryption serverSideEncryption;
 
   @Parameter(names = "--assume-role", description = AwsCommandProperties.ASSUME_ROLE_DESCRIPTION)
@@ -107,8 +102,9 @@ public class S3EditCommand extends AbstractPersistentStoreEditCommand<S3Persiste
     persistentStore.setSecretAccessKey(
         isSet(secretAccessKey) ? secretAccessKey : persistentStore.getSecretAccessKey());
     persistentStore.setServerSideEncryption(
-        isSet(serverSideEncryption) ? serverSideEncryption : persistentStore.getServerSideEncryption());
-
+        isSet(serverSideEncryption)
+            ? serverSideEncryption
+            : persistentStore.getServerSideEncryption());
 
     if (persistentStore.getBucket() == null) {
       String bucketName = "spin-" + UUID.randomUUID().toString();
