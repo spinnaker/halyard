@@ -29,6 +29,7 @@ import lombok.EqualsAndHashCode;
 public class SlackNotification extends Notification {
   String botName;
   @Secret String token;
+  String baseUrl;
 
   @Override
   @JsonIgnore

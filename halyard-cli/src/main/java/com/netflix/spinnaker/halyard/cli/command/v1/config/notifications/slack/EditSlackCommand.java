@@ -37,8 +37,12 @@ public class EditSlackCommand extends AbstractEditNotificationCommand<SlackNotif
   @Parameter(names = "--token", password = true, description = "Your slack bot token.")
   private String token;
 
+  @Parameter(names = "--base-url", description = "Slack endpoint.")
+  private String baseUrl;
+
   @Override
   protected Notification editNotification(SlackNotification notification) {
+    notification.setBaseUrl(isSet(baseUrl) ? baseUrl : notification.getBaseUrl());
     notification.setBotName(isSet(botName) ? botName : notification.getBotName());
     notification.setToken(isSet(token) ? token : notification.getToken());
     return notification;
