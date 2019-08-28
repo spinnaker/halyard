@@ -82,6 +82,13 @@ public class EchoProfileFactory extends SpringProfileFactory {
       }
     }
 
+    Telemetry telemetry = deploymentConfiguration.getTelemetry();
+    if (telemetry != null) {
+      profile.appendContents(
+          yamlToString(
+              deploymentConfiguration.getName(), profile, new TelemetryWrapper(telemetry)));
+    }
+
     profile.appendContents(profile.getBaseContents()).setRequiredFiles(files);
   }
 
@@ -109,6 +116,15 @@ public class EchoProfileFactory extends SpringProfileFactory {
 
     GCBWrapper(GoogleCloudBuild gcb) {
       this.gcb = gcb;
+    }
+  }
+
+  @Data
+  private static class TelemetryWrapper {
+    private Telemetry telemetry;
+
+    TelemetryWrapper(Telemetry telemetry) {
+      this.telemetry = telemetry;
     }
   }
 }
