@@ -77,7 +77,9 @@ public class HalconfigParser {
    */
   Halconfig parseHalconfig(InputStream is) throws IllegalArgumentException {
     Object obj = yamlParser.load(is);
-    return objectMapper.convertValue(obj, Halconfig.class);
+    Halconfig halconfig = objectMapper.convertValue(obj, Halconfig.class);
+    halconfig.setPrefixToRelativeFiles(halconfigDirectoryStructure.halconfigDirectory);
+    return halconfig;
   }
 
   /**
@@ -231,6 +233,7 @@ public class HalconfigParser {
 
     AtomicFileWriter writer = null;
     try {
+      local.removePrefixFromUnchangedRelativeFiles(halconfigDirectoryStructure.halconfigDirectory);
       writer = new AtomicFileWriter(path);
       writer.write(yamlParser.dump(objectMapper.convertValue(local, Map.class)));
       writer.commit();

@@ -36,6 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
@@ -52,6 +53,9 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Slf4j
 public abstract class Node implements Validatable {
+
+  // @LocalFile fields whose file path is relative
+  @JsonIgnore private Map<Field, String> relativeFileReferences = new ConcurrentHashMap<>();
 
   @JsonIgnore
   public abstract String getNodeName();
@@ -412,6 +416,73 @@ public abstract class Node implements Validatable {
       return null;
     }
     return result;
+  }
+
+  public void removePrefixFromUnchangedRelativeFiles(String prefix) {
+    Consumer<Node> fileFinder =
+        n ->
+            n.localFiles()
+                .forEach(
+                    f -> {
+                      try {
+                        f.setAccessible(true);
+                        if (!relativeFileReferences.containsKey(f)) {
+                          return;
+                        }
+
+                        String currentPath = (String) f.get(n);
+                        if (StringUtils.isEmpty(currentPath)) {
+                          return;
+                        }
+
+                        // restore original relative path
+                        String relativePath = relativeFileReferences.get(f);
+                        String absolutePath = prefix + File.separator + relativePath;
+                        if (currentPath.equals(absolutePath)) {
+                          f.set(n, relativePath);
+                          relativeFileReferences.remove(f);
+                        }
+                      } catch (IllegalAccessException e) {
+                        throw new RuntimeException(
+                            "Failed to get local files for node " + n.getNodeName(), e);
+                      } finally {
+                        f.setAccessible(false);
+                      }
+                    });
+
+    recursiveConsume(fileFinder);
+  }
+
+  public void setPrefixToRelativeFiles(String prefix) {
+    Consumer<Node> fileFinder =
+        n ->
+            n.localFiles()
+                .forEach(
+                    f -> {
+                      try {
+                        f.setAccessible(true);
+                        String fPath = (String) f.get(n);
+                        if (StringUtils.isEmpty(fPath)) {
+                          return;
+                        }
+                        if (fPath.startsWith(LocalFile.RELATIVE_PATH_PLACEHOLDER)
+                            || new File(fPath).isAbsolute()) {
+                          return;
+                        }
+
+                        // backup relative path
+                        relativeFileReferences.put(f, fPath);
+                        fPath = prefix + File.separator + fPath;
+                        f.set(n, fPath);
+                      } catch (IllegalAccessException e) {
+                        throw new RuntimeException(
+                            "Failed to get local files for node " + n.getNodeName(), e);
+                      } finally {
+                        f.setAccessible(false);
+                      }
+                    });
+
+    recursiveConsume(fileFinder);
   }
 
   private void swapLocalFilePrefixes(String to, String from) {

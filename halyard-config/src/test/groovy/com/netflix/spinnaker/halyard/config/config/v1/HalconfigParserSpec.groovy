@@ -28,12 +28,16 @@ class HalconfigParserSpec extends Specification {
   String HALYARD_VERSION = "0.1.0"
   String SPINNAKER_VERSION = "1.0.0"
   String CURRENT_DEPLOYMENT = "my-spinnaker-deployment"
+  String HALCONFIG_HOME = "/home/spinnaker/.hal"
   HalconfigParser parser
 
   void setup() {
     parser = new HalconfigParser()
     parser.yamlParser = new Yaml(new SafeConstructor())
     parser.objectMapper = new StrictObjectMapper()
+    def hcDirStructure = new HalconfigDirectoryStructure()
+    hcDirStructure.halconfigDirectory = HALCONFIG_HOME
+    parser.halconfigDirectoryStructure = hcDirStructure
   }
 
   void "Accept minimal config"() {
@@ -159,4 +163,44 @@ deploymentConfigurations:
     // Uncomment the below to implement LDAP. Then fill in the rest of the LDAP properties, one per line.
 //    "ldap"        | "enabled"    | true
   }
+
+    void "Adds hal config home to relative file paths"() {
+        setup:
+        String config = """
+halyardVersion: 1
+currentDeployment: $CURRENT_DEPLOYMENT
+deploymentConfigurations:
+- name: $CURRENT_DEPLOYMENT
+  version: $SPINNAKER_VERSION
+  providers:
+    kubernetes:
+      enabled: true
+      accounts:
+      - name: kubernetes
+        requiredGroupMembership: []
+        providerVersion: V2
+        permissions: {}
+        dockerRegistries: []
+        configureImagePullSecrets: true
+        cacheThreads: 1
+        namespaces: []
+        omitNamespaces: []
+        kinds: []
+        omitKinds: []
+        customResources: []
+        cachingPolicies: []
+        kubeconfigFile: required-files/kubecfg
+        oAuthScopes: []
+        onlySpinnakerManaged: false
+      primaryAccount: kubernetes
+"""
+        InputStream stream = new ByteArrayInputStream(config.getBytes(StandardCharsets.UTF_8))
+        Halconfig out = null
+
+        when:
+        out = parser.parseHalconfig(stream)
+
+        then:
+        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "$HALCONFIG_HOME/required-files/kubecfg"
+    }
 }
