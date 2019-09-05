@@ -470,6 +470,11 @@ public abstract class Node implements Validatable {
                           return;
                         }
 
+                        // only prefix paths that resolve to subdirectories of the input prefix
+                        if (fPath.contains("..")) {
+                          return;
+                        }
+
                         // backup relative path
                         relativeFileReferences.put(f, fPath);
                         fPath = prefix + File.separator + fPath;
