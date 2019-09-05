@@ -17,6 +17,7 @@
 package com.netflix.spinnaker.halyard.config.config.v1
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig
+import com.netflix.spinnaker.halyard.core.error.v1.HalException
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.SafeConstructor
 import spock.lang.Specification
@@ -202,5 +203,45 @@ deploymentConfigurations:
 
         then:
         out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "$HALCONFIG_HOME/required-files/kubecfg"
+    }
+
+    void "Throws error when trying to escape hal config home with relative local file paths"() {
+        setup:
+        String config = """
+halyardVersion: 1
+currentDeployment: $CURRENT_DEPLOYMENT
+deploymentConfigurations:
+- name: $CURRENT_DEPLOYMENT
+  version: $SPINNAKER_VERSION
+  providers:
+    kubernetes:
+      enabled: true
+      accounts:
+      - name: kubernetes
+        requiredGroupMembership: []
+        providerVersion: V2
+        permissions: {}
+        dockerRegistries: []
+        configureImagePullSecrets: true
+        cacheThreads: 1
+        namespaces: []
+        omitNamespaces: []
+        kinds: []
+        omitKinds: []
+        customResources: []
+        cachingPolicies: []
+        kubeconfigFile: poison/../../.kube/config
+        oAuthScopes: []
+        onlySpinnakerManaged: false
+      primaryAccount: kubernetes
+"""
+        InputStream stream = new ByteArrayInputStream(config.getBytes(StandardCharsets.UTF_8))
+        Halconfig out = null
+
+        when:
+        out = parser.parseHalconfig(stream)
+
+        then:
+        thrown HalException
     }
 }

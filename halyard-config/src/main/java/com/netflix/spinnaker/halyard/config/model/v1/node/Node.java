@@ -466,19 +466,23 @@ public abstract class Node implements Validatable {
                           return;
                         }
                         if (fPath.startsWith(LocalFile.RELATIVE_PATH_PLACEHOLDER)
-                            || new File(fPath).isAbsolute()) {
+                            || Paths.get(fPath).isAbsolute()) {
                           return;
                         }
 
-                        // only prefix paths that resolve to subdirectories of the input prefix
-                        if (fPath.contains("..")) {
-                          return;
+                        Path absolutePath = Paths.get(prefix + File.separator + fPath).normalize();
+                        if (!absolutePath.startsWith(prefix)) {
+                          throw new HalException(
+                              FATAL,
+                              "Error resolving file path '"
+                                  + fPath
+                                  + "': Relative file paths must resolve to files inside "
+                                  + prefix);
                         }
 
                         // backup relative path
                         relativeFileReferences.put(f, fPath);
-                        fPath = prefix + File.separator + fPath;
-                        f.set(n, fPath);
+                        f.set(n, absolutePath.toString());
                       } catch (IllegalAccessException e) {
                         throw new RuntimeException(
                             "Failed to get local files for node " + n.getNodeName(), e);
