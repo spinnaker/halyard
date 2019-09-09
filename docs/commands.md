@@ -555,10 +555,10 @@
  * [**hal plugins add**](#hal-plugins-add)
  * [**hal plugins delete**](#hal-plugins-delete)
  * [**hal plugins disable**](#hal-plugins-disable)
- * [**hal plugins disableDownloading**](#hal-plugins-disableDownloading)
+ * [**hal plugins disable-downloading**](#hal-plugins-disable-downloading)
  * [**hal plugins edit**](#hal-plugins-edit)
  * [**hal plugins enable**](#hal-plugins-enable)
- * [**hal plugins enableDownloading**](#hal-plugins-enableDownloading)
+ * [**hal plugins enable-downloading**](#hal-plugins-enable-downloading)
  * [**hal plugins list**](#hal-plugins-list)
  * [**hal shutdown**](#hal-shutdown)
  * [**hal spin**](#hal-spin)
@@ -10391,6 +10391,7 @@ Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--region`: This is only required if the bucket you specify doesn't exist yet. In that case, the bucket will be created in that region. See [http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region).
  * `--root-folder`: The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
  * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) Your AWS Secret Key.
+ * `--server-side-encryption`: Use Amazon Server-Side Encryption ('x-amz-server-side-encryption' header). Supports 'AES256' (for Amazon S3-managed encryption keys, equivalent to a header value of 'AES256') and 'AWSKMS' (for AWS KMS-managed encryption keys, equivalent to a header value of 'aws:kms'.
 
 
 ---
@@ -10735,10 +10736,10 @@ hal plugins [parameters] [subcommands]
  * `add`: Add a plugin
  * `delete`: Delete a plugin
  * `disable`: Enable or disable all plugins
- * `disableDownloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
+ * `disable-downloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
  * `edit`: Edit a plugin
  * `enable`: Enable or disable all plugins
- * `enableDownloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
+ * `enable-downloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
  * `list`: List all plugins
 
 ---
@@ -10791,13 +10792,13 @@ hal plugins disable [parameters]
 
 
 ---
-## hal plugins disableDownloading
+## hal plugins disable-downloading
 
 Enable or disable the ability for Spinnaker services to download jars for plugins
 
 #### Usage
 ```
-hal plugins disableDownloading [parameters]
+hal plugins disable-downloading [parameters]
 ```
 
 #### Parameters
@@ -10839,13 +10840,13 @@ hal plugins enable [parameters]
 
 
 ---
-## hal plugins enableDownloading
+## hal plugins enable-downloading
 
 Enable or disable the ability for Spinnaker services to download jars for plugins
 
 #### Usage
 ```
-hal plugins enableDownloading [parameters]
+hal plugins enable-downloading [parameters]
 ```
 
 #### Parameters
