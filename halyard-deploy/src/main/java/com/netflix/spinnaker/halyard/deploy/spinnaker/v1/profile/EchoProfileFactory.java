@@ -31,11 +31,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class EchoProfileFactory extends SpringProfileFactory {
 
-  @Autowired
-  String spinconfigBucket;
+  @Autowired String spinconfigBucket;
 
-  @Autowired
-  boolean gcsEnabled;
+  @Autowired boolean gcsEnabled;
 
   @Override
   public SpinnakerArtifact getArtifact() {
@@ -98,7 +96,8 @@ public class EchoProfileFactory extends SpringProfileFactory {
       // so we should only log the version if using our public releases (as indicated by using our
       // public GCS bucket).
       String telemetryVersion = "custom";
-      if (gcsEnabled && spinconfigBucket.equalsIgnoreCase(ResourceConfig.DEFAULT_HALCONFIG_BUCKET)) {
+      if (gcsEnabled
+          && spinconfigBucket.equalsIgnoreCase(ResourceConfig.DEFAULT_HALCONFIG_BUCKET)) {
         telemetryVersion = deploymentConfiguration.getVersion();
       }
       telemetry.setSpinnakerVersion(telemetryVersion);
