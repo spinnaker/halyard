@@ -24,12 +24,17 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class Telemetry extends Node {
 
+  public static String DEFAULT_TELEMETRY_ENDPOINT = "https://stats.spinnaker.io";
+
   @Override
   public String getNodeName() {
     return "telemetry";
   }
 
-  private Boolean enabled = true;
-  private String endpoint = "https://fix-me";
+  private Boolean enabled = false;
+  private String endpoint = DEFAULT_TELEMETRY_ENDPOINT;
   private String instanceId = UUID.randomUUID().toString();
+  private String spinnakerVersion;
+  private int connectionTimeoutMillis = 3000;
+  private int readTimeoutMillis = 5000;
 }
