@@ -45,7 +45,9 @@ public class TelemetryEditCommand extends AbstractConfigCommand {
             .setFailureMesssage("Failed to load telemetry settings.")
             .get();
 
-    telemetry.setEndpoint(isSet(endpoint) ? endpoint : telemetry.getEndpoint());
+    if (isSet(endpoint)) {
+      telemetry.setEndpoint(endpoint);
+    }
 
     new OperationHandler<Void>()
         .setOperation(Daemon.setTelemetry(currentDeployment, !noValidate, telemetry))
