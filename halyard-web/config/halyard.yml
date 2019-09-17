@@ -18,6 +18,7 @@ spinnaker:
         enabled: true
       writerEnabled: false
       bucket: halconfig
+    versionCheckEnabled: true
 
 management:
   endpoint:

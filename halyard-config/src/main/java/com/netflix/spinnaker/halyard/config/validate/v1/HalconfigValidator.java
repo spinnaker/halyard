@@ -29,16 +29,25 @@ import java.io.File;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class HalconfigValidator extends Validator<Halconfig> {
+
   @Autowired VersionsService versionsService;
+
+  @Value("${spinnaker.config.versionCheckEnabled}")
+  public boolean versionCheckEnabled;
 
   @Override
   public void validate(ConfigProblemSetBuilder p, Halconfig n) {
     try {
+      if (!versionCheckEnabled) {
+        log.warn("you had been disabled version check, your spinnaker and halyard my be old");
+        return;
+      }
       String runningVersion = versionsService.getRunningHalyardVersion();
       String latestVersion = versionsService.getLatestHalyardVersion();
 

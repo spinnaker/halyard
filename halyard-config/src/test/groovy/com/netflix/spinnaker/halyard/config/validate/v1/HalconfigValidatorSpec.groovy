@@ -29,6 +29,7 @@ class HalconfigValidatorSpec extends Specification {
     versionsServiceMock.getLatestHalyardVersion() >> latest
     versionsServiceMock.getRunningHalyardVersion() >> current
     HalconfigValidator validator = new HalconfigValidator()
+    validator.versionCheckEnabled = true
     validator.versionsService = versionsServiceMock
 
     ConfigProblemSetBuilder problemBuilder = new ConfigProblemSetBuilder(null);
