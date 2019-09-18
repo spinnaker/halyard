@@ -8507,6 +8507,7 @@ during clouddriver startup when you have many kubernetes accounts configured. Th
  * `--configure-image-pull-secrets`: (*Default*: `true`) (Only applicable to the v1 provider). When true, Spinnaker will create & manage your image pull secrets for you; when false, you will have to create and attach them to your pod specs by hand.
  * `--context`: The kubernetes context to be managed by Spinnaker. See [http://kubernetes.io/docs/user-guide/kubeconfig-file/#context](http://kubernetes.io/docs/user-guide/kubeconfig-file/#context) for more information.
 When no context is configured for an account the 'current-context' in your kubeconfig is assumed.
+ * `--custom-resources`: (*Default*: `[]`) (V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--docker-registries`: (*Default*: `[]`) A list of the Spinnaker docker registry account names this Spinnaker account can use as image sources. These docker registry accounts must be registered in your halconfig before you can add them here.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)

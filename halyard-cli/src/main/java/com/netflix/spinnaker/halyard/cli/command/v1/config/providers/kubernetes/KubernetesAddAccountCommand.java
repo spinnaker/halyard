@@ -119,6 +119,12 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
       description = KubernetesCommandProperties.CACHE_THREADS)
   private int cacheThreads = 1;
 
+  @Parameter(
+      names = "--custom-resources",
+      variableArity = true,
+      description = KubernetesCommandProperties.CUSTOM_RESOURCES)
+  public List<String> customResources = new ArrayList<>();
+
   @Override
   protected Account buildAccount(String accountName) {
     KubernetesAccount account = (KubernetesAccount) new KubernetesAccount().setName(accountName);
@@ -143,6 +149,14 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
     account.setCheckPermissionsOnStartup(checkPermissionsOnStartup);
     account.setLiveManifestCalls(liveManifestCalls);
     account.setCacheThreads(cacheThreads);
+    customResources.forEach(
+        customResource ->
+            account
+                .getCustomResources()
+                .add(
+                    new KubernetesAccount.CustomKubernetesResource()
+                        .setKubernetesKind(customResource)
+                        .setVersioned(false)));
     return account;
   }
 

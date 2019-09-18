@@ -69,4 +69,6 @@ public class KubernetesCommandProperties {
   static final String CACHE_THREADS =
       "Number of caching agents for this kubernetes account. Each agent handles a subset of the namespaces available to this account. "
           + "By default, only 1 agent caches all kinds for all namespaces in the account.";
+  static final String CUSTOM_RESOURCES =
+      "(V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages.";
 }
