@@ -119,6 +119,12 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
       description = KubernetesCommandProperties.CACHE_THREADS)
   private int cacheThreads = 1;
 
+  @Parameter(
+            names = "--is-cluster-registry",
+            arity = 1,
+            description = KubernetesCommandProperties.CLUSTER_REGISTRY)
+  private Boolean isClusterRegistry = false;
+
   @Override
   protected Account buildAccount(String accountName) {
     KubernetesAccount account = (KubernetesAccount) new KubernetesAccount().setName(accountName);
@@ -143,6 +149,7 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
     account.setCheckPermissionsOnStartup(checkPermissionsOnStartup);
     account.setLiveManifestCalls(liveManifestCalls);
     account.setCacheThreads(cacheThreads);
+    account.setIsClusterRegistry(isClusterRegistry);
     return account;
   }
 

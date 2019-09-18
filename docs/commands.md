@@ -8515,6 +8515,7 @@ When no context is configured for an account the 'current-context' in your kubec
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--docker-registries`: (*Default*: `[]`) A list of the Spinnaker docker registry account names this Spinnaker account can use as image sources. These docker registry accounts must be registered in your halconfig before you can add them here.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--is-cluster-registry`: (*Default*: `false`) Sync k8s account from this cluster using cluster registry crd only support true/false
  * `--kinds`: (*Default*: `[]`) (V2 Only) A list of resource kinds this Spinnaker account can deploy to and will cache.
 When no kinds are configured, this defaults to 'all kinds described here [https://spinnaker.io/reference/providers/kubernetes-v2/](https://spinnaker.io/reference/providers/kubernetes-v2/)'.
  * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.

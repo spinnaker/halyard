@@ -91,6 +91,8 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
 
   Boolean debug;
 
+  Boolean isClusterRegistry;
+
   public boolean usesServiceAccount() {
     return serviceAccount != null && serviceAccount;
   }
