@@ -445,9 +445,11 @@
  * [**hal config provider kubernetes account edit**](#hal-config-provider-kubernetes-account-edit)
  * [**hal config provider kubernetes account get**](#hal-config-provider-kubernetes-account-get)
  * [**hal config provider kubernetes account list**](#hal-config-provider-kubernetes-account-list)
+ * [**hal config provider kubernetes account sync**](#hal-config-provider-kubernetes-account-sync)
  * [**hal config provider kubernetes disable**](#hal-config-provider-kubernetes-disable)
  * [**hal config provider kubernetes edit**](#hal-config-provider-kubernetes-edit)
  * [**hal config provider kubernetes enable**](#hal-config-provider-kubernetes-enable)
+ * [**hal config provider kubernetes sync**](#hal-config-provider-kubernetes-sync)
  * [**hal config provider oracle**](#hal-config-provider-oracle)
  * [**hal config provider oracle account**](#hal-config-provider-oracle-account)
  * [**hal config provider oracle account add**](#hal-config-provider-oracle-account-add)
@@ -8635,6 +8637,7 @@ hal config provider kubernetes [parameters] [subcommands]
  * `disable`: Set the kubernetes provider as disabled
  * `edit`: Set provider-wide properties for the Kubernetes provider
  * `enable`: Set the kubernetes provider as enabled
+ * `sync`: sync account from the kubernetes provider cluster registry.
 
 ---
 ## hal config provider kubernetes account
@@ -8659,6 +8662,7 @@ hal config provider kubernetes account ACCOUNT [parameters] [subcommands]
  * `edit`: Edit an account in the kubernetes provider.
  * `get`: Get the specified account details for the kubernetes provider.
  * `list`: List the account names for the kubernetes provider.
+ * `sync`: sync account from the kubernetes provider cluster registry.
 
 ---
 ## hal config provider kubernetes account add
@@ -8811,6 +8815,24 @@ hal config provider kubernetes account list [parameters]
 
 
 ---
+## hal config provider kubernetes account sync
+
+sync account from the kubernetes provider cluster registry.
+
+#### Usage
+```
+hal config provider kubernetes account sync ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--kubeconfig-file`: (*Required*) The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--sync-policy`: (*Required*) Sync k8s account from this cluster registry policy support `skip` or `overwrite`. skip means if an cluster registry resource name the same with a kubernetes account. it will skip this resource as a kubernetes account.  overwrite means it will edit all accounts that has the same account name with cluster registry resource.
+
+
+---
 ## hal config provider kubernetes disable
 
 Set the kubernetes provider as disabled
@@ -8853,6 +8875,24 @@ hal config provider kubernetes enable [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider kubernetes sync
+
+sync account from the kubernetes provider cluster registry.
+
+#### Usage
+```
+hal config provider kubernetes sync ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--kubeconfig-file`: (*Required*) The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--sync-policy`: (*Required*) Sync k8s account from this cluster registry policy support `skip` or `overwrite`. skip means if an cluster registry resource name the same with a kubernetes account. it will skip this resource as a kubernetes account.  overwrite means it will edit all accounts that has the same account name with cluster registry resource.
 
 
 ---

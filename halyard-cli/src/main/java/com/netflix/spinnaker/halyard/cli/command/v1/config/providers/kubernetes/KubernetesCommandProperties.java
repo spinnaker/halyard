@@ -69,4 +69,9 @@ public class KubernetesCommandProperties {
   static final String CACHE_THREADS =
       "Number of caching agents for this kubernetes account. Each agent handles a subset of the namespaces available to this account. "
           + "By default, only 1 agent caches all kinds for all namespaces in the account.";
+
+  static final String CLUSTER_REGISTRY =
+      "Sync k8s account from this cluster registry policy support `skip` or `overwrite`. skip means if an cluster registry resource name "
+          + "the same with a kubernetes account. it will skip this resource as a kubernetes account.  overwrite means it will edit all"
+          + " accounts that has the same account name with cluster registry resource.";
 }
