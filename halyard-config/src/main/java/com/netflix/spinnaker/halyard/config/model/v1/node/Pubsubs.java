@@ -19,12 +19,11 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.netflix.spinnaker.halyard.config.model.v1.pubsub.google.GooglePubsub;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Optional;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -52,15 +51,17 @@ public class Pubsubs extends Node implements Cloneable {
   }
 
   public static Class<? extends Pubsub> translatePubsubType(String pubsubName) {
-    Optional<? extends Class<?>> res = Arrays.stream(Pubsubs.class.getDeclaredFields())
-        .filter(f -> f.getName().equals(pubsubName))
-        .map(Field::getType)
-        .findFirst();
+    Optional<? extends Class<?>> res =
+        Arrays.stream(Pubsubs.class.getDeclaredFields())
+            .filter(f -> f.getName().equals(pubsubName))
+            .map(Field::getType)
+            .findFirst();
 
     if (res.isPresent()) {
-      return (Class<? extends Pubsub>)res.get();
+      return (Class<? extends Pubsub>) res.get();
     } else {
-      throw new IllegalArgumentException("No pubsub with name \"" + pubsubName + "\" handled by halyard");
+      throw new IllegalArgumentException(
+          "No pubsub with name \"" + pubsubName + "\" handled by halyard");
     }
   }
 
@@ -71,7 +72,20 @@ public class Pubsubs extends Node implements Cloneable {
     try {
       return (Class<? extends Subscription>) Class.forName(subscriptionClassName);
     } catch (ClassNotFoundException e) {
-      throw new IllegalArgumentException("No subscription for class \"" + subscriptionClassName + "\" found", e);
+      throw new IllegalArgumentException(
+          "No subscription for class \"" + subscriptionClassName + "\" found", e);
+    }
+  }
+
+  public static Class<? extends Publisher> translatePublisherType(String pubsubName) {
+    Class<? extends Pubsub> pubsubClass = translatePubsubType(pubsubName);
+
+    String publisherClassName = pubsubClass.getName().replaceAll("Pubsub", "Publisher");
+    try {
+      return (Class<? extends Publisher>) Class.forName(publisherClassName);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalArgumentException(
+          "No publisher for class \"" + publisherClassName + "\" found", e);
     }
   }
 }

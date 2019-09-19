@@ -19,14 +19,14 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings.SlimServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import java.util.Collections;
-import java.util.List;
-import lombok.Data;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import lombok.Data;
 
 @Data
 public class SpinnakerRuntimeSettings {
@@ -37,7 +37,8 @@ public class SpinnakerRuntimeSettings {
     SpinnakerRuntimeSettings serviceOverrides = new SpinnakerRuntimeSettings();
     for (Type type : overrideServiceEndpoints) {
       if (this.serviceIsEnabled(type)) {
-        serviceOverrides.setServiceSettings(type.getBaseType(), this.getServiceSettings(type).withOnlyBaseUrl());
+        serviceOverrides.setServiceSettings(
+            type.getBaseType(), this.getServiceSettings(type).withOnlyBaseUrl());
       }
     }
     return serviceOverrides;
@@ -62,5 +63,17 @@ public class SpinnakerRuntimeSettings {
 
   public boolean serviceIsEnabled(Type type) {
     return services.containsKey(type) && services.get(type).getEnabled();
+  }
+
+  public SlimRuntimeSettings slim() {
+    SlimRuntimeSettings srs = new SlimRuntimeSettings();
+    services.forEach((t, service) -> srs.services.put(t, service.slim()));
+    return srs;
+  }
+
+  @Data
+  public static class SlimRuntimeSettings {
+    @JsonPropertyOrder(alphabetic = true)
+    private Map<Type, SlimServiceSettings> services = new HashMap<>();
   }
 }

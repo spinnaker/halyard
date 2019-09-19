@@ -26,8 +26,9 @@ import lombok.Getter;
 public class DeleteArtifactTemplateCommand extends AbstractHasArtifactTemplateCommand {
   @Getter(AccessLevel.PUBLIC)
   private String commandName = "delete";
+
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Delete an artifact template";
+  private String shortDescription = "Delete an artifact template";
 
   @Override
   protected void executeThis() {

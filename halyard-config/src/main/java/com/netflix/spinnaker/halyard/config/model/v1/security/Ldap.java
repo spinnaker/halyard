@@ -16,10 +16,9 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
+import java.net.URI;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.net.URI;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -32,4 +31,7 @@ public class Ldap extends AuthnMethod {
   private String userDnPattern;
   private String userSearchBase;
   private String userSearchFilter;
+  private String managerDn;
+  private String managerPassword;
+  private String groupSearchBase;
 }

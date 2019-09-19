@@ -17,10 +17,22 @@
 package com.netflix.spinnaker.halyard.config.model.v1.ci.travis;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class TravisCi extends Ci<TravisMaster> {
+  protected List<TravisMaster> masters = new ArrayList<>();
+
   @Override
   public String getNodeName() {
     return "travis";
+  }
+
+  public List<TravisMaster> listAccounts() {
+    return masters;
   }
 }

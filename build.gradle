@@ -15,33 +15,33 @@
  */
 
 buildscript {
+  ext {
+    clouddriverVersion = "5.8.0"
+    front50Version = "2.1.0"
+    fiatVersion = "1.0.5"
+  }
   repositories {
     jcenter()
-    maven { url "http://spinnaker.bintray.com/gradle" }
+    maven { url "https://spinnaker.bintray.com/gradle" }
     maven { url "https://plugins.gradle.org/m2/" }
   }
   dependencies {
-    classpath 'com.netflix.spinnaker.gradle:spinnaker-dev-plugin:5.2.2'
-    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
-
+    classpath 'com.netflix.spinnaker.gradle:spinnaker-dev-plugin:6.5.0'
+    if (Boolean.valueOf(enablePublishing)) {
+      classpath "com.netflix.spinnaker.gradle:spinnaker-gradle-project:6.5.0"
+    }
+    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
   }
 }
 
 allprojects {
   group = "com.netflix.spinnaker.halyard"
   apply plugin: 'spinnaker.base-project'
+  apply plugin: 'java-library'
   apply plugin: 'groovy'
 
-  ext {
-    spinnakerDependenciesVersion = '1.14.0'
-    if (project.hasProperty('spinnakerDependenciesVersion')) {
-      spinnakerDependenciesVersion = project.property('spinnakerDependenciesVersion')
-    }
-  }
-
-  spinnaker {
-    dependenciesVersion = spinnakerDependenciesVersion
-  }
+  sourceSets.main.java.srcDirs = []
+  sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
   test {
     testLogging {
@@ -51,21 +51,14 @@ allprojects {
     minHeapSize = "512m"
     maxHeapSize = "512m"
   }
-}
 
-subprojects { project ->
   dependencies {
-    spinnaker.group('test')
-    testCompile spinnaker.dependency('groovy')
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
-    testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
-  }
+    implementation platform("com.netflix.spinnaker.kork:kork-bom:$korkVersion")
 
-  //c&p this because NetflixOss reverts it to 1.7 and ends up getting applied last..
-  project.plugins.withType(JavaBasePlugin) {
-    JavaPluginConvention convention = project.convention.getPlugin(JavaPluginConvention)
-    convention.sourceCompatibility = JavaVersion.VERSION_1_8
-    convention.targetCompatibility = JavaVersion.VERSION_1_8
+    annotationProcessor platform("com.netflix.spinnaker.kork:kork-bom:$korkVersion")
+    annotationProcessor "org.projectlombok:lombok"
+    testAnnotationProcessor platform("com.netflix.spinnaker.kork:kork-bom:$korkVersion")
+    testAnnotationProcessor "org.projectlombok:lombok"
   }
 }
 

@@ -32,31 +32,27 @@ import org.springframework.stereotype.Component;
 @EqualsAndHashCode(callSuper = true)
 @Component
 @Data
-public class KubernetesV1FiatService extends FiatService implements KubernetesV1DistributedService<FiatService.Fiat> {
-  @Delegate
-  @Autowired
-  KubernetesV1DistributedServiceDelegate distributedServiceDelegate;
+public class KubernetesV1FiatService extends FiatService
+    implements KubernetesV1DistributedService<FiatService.Fiat> {
+  @Delegate @Autowired KubernetesV1DistributedServiceDelegate distributedServiceDelegate;
 
   @Delegate(excludes = HasServiceSettings.class)
   public DistributedLogCollector getLogCollector() {
     return getLogCollectorFactory().build(this);
   }
 
-
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
+    KubernetesSharedServiceSettings kubernetesSharedServiceSettings =
+        new KubernetesSharedServiceSettings(deploymentConfiguration);
     Settings settings = new Settings();
     String location = kubernetesSharedServiceSettings.getDeployLocation();
-    settings.setAddress(buildAddress(location))
-        .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
+    settings
+        .setAddress(buildAddress(location))
+        .setArtifactId(getArtifactId(deploymentConfiguration))
         .setLocation(location)
         .setEnabled(deploymentConfiguration.getSecurity().getAuthz().isEnabled());
     return settings;
-  }
-
-  public String getArtifactId(String deploymentName) {
-    return KubernetesV1DistributedService.super.getArtifactId(deploymentName);
   }
 
   final DeployPriority deployPriority = new DeployPriority(0);

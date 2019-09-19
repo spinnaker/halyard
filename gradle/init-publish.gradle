@@ -2,7 +2,7 @@ initscript {
     repositories {
       mavenLocal()
       jcenter()
-      maven { url 'http://dl.bintray.com/spinnaker/gradle/' }
+      maven { url 'https://dl.bintray.com/spinnaker/gradle/' }
       maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
@@ -12,4 +12,3 @@ initscript {
 
 // Can't use the plugin ID (spinnaker.project) on init scripts for some reason.
 apply plugin: com.netflix.spinnaker.gradle.project.SpinnakerProjectPlugin
-

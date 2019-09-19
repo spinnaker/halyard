@@ -35,38 +35,38 @@ public class LdapValidator extends Validator<Ldap> {
 
     if (ldap.getUrl() == null) {
       p.addProblem(Problem.Severity.ERROR, "LDAP url missing.");
-    }
-    else if (ldap.getUrl().getScheme() == null) {
+    } else if (ldap.getUrl().getScheme() == null) {
       p.addProblem(Problem.Severity.ERROR, "LDAP url scheme is missing.");
-    }
-    else if (ldap.getUrl().getPort() == -1) {
+    } else if (ldap.getUrl().getPort() == -1) {
       p.addProblem(Problem.Severity.ERROR, "LDAP url port is undefined");
-    }
-    else if (!ldap.getUrl().getScheme().equalsIgnoreCase("ldaps") && !ldap.getUrl().getScheme().equalsIgnoreCase("ldap")) {
+    } else if (!ldap.getUrl().getScheme().equalsIgnoreCase("ldaps")
+        && !ldap.getUrl().getScheme().equalsIgnoreCase("ldap")) {
       p.addProblem(Problem.Severity.ERROR, "LDAP url must use ldap or ldaps protocol.");
     }
 
-    switch(UserSearchMethod.toUserSearchMethod(ldap)) {
+    switch (UserSearchMethod.toUserSearchMethod(ldap)) {
       case DN_PATTERN: // fall through.
-      case SEARCH_AND_FILTER:
+      case SEARCH_AND_OR_BASE:
         break;
       case UNSPECIFIED_OR_INVALID: // fall through.
       default:
-        p.addProblem(Problem.Severity.ERROR, "No valid user search method defined. Please " +
-            "specify with either --user-dn-pattern OR (--user-search-base and --user-search-filter).");
+        p.addProblem(
+            Problem.Severity.ERROR,
+            "No valid user search method defined. Please "
+                + "specify with either --user-dn-pattern OR (--user-search-filter with an optional --user-search-base).");
     }
   }
 
   enum UserSearchMethod {
     UNSPECIFIED_OR_INVALID,
     DN_PATTERN,
-    SEARCH_AND_FILTER;
+    SEARCH_AND_OR_BASE;
 
     static UserSearchMethod toUserSearchMethod(Ldap ldap) {
       if (StringUtils.isNotEmpty(ldap.getUserDnPattern())) {
         return DN_PATTERN;
-      } else if (StringUtils.isNotEmpty(ldap.getUserSearchBase()) && StringUtils.isNotEmpty(ldap.getUserSearchFilter())) {
-        return SEARCH_AND_FILTER;
+      } else if (StringUtils.isNotEmpty(ldap.getUserSearchFilter())) {
+        return SEARCH_AND_OR_BASE;
       }
       return UNSPECIFIED_OR_INVALID;
     }

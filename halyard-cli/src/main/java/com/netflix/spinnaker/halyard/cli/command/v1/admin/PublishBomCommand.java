@@ -32,16 +32,14 @@ public class PublishBomCommand extends NestableCommand {
   private String commandName = "bom";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Publish a Bill of Materials (BOM).";
+  private String shortDescription = "Publish a Bill of Materials (BOM).";
 
   @Parameter(
       names = "--bom-path",
       converter = LocalFileConverter.class,
       required = true,
-      description = "The path to the BOM owning the artifact to publish."
-  )
+      description = "The path to the BOM owning the artifact to publish.")
   private String bomPath;
-
 
   @Override
   protected void executeThis() {

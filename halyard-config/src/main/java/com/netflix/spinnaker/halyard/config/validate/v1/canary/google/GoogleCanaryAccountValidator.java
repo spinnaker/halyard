@@ -20,71 +20,121 @@ import com.netflix.spectator.api.Registry;
 import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
 import com.netflix.spinnaker.front50.model.GcsStorageService;
 import com.netflix.spinnaker.front50.model.StorageService;
-import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.google.GoogleCanaryAccount;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.canary.CanaryAccountValidator;
+import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.stereotype.Component;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Component
-public class GoogleCanaryAccountValidator extends CanaryAccountValidator {
+public class GoogleCanaryAccountValidator extends CanaryAccountValidator<GoogleCanaryAccount> {
 
-  @Setter
   private String halyardVersion;
 
-  @Setter
   private Registry registry;
 
-  @Setter
   TaskScheduler taskScheduler;
 
+  private int connectTimeoutSec = 45;
+  private int readTimeoutSec = 45;
   private long maxWaitInterval = 60000;
   private long retryIntervalBase = 2;
   private long jitterMultiplier = 1000;
   private long maxRetries = 10;
 
+  GoogleCanaryAccountValidator(SecretSessionManager secretSessionManager) {
+    this.secretSessionManager = secretSessionManager;
+  }
+
   @Override
-  public void validate(ConfigProblemSetBuilder p, AbstractCanaryAccount n) {
+  public void validate(ConfigProblemSetBuilder p, GoogleCanaryAccount n) {
     super.validate(p, n);
 
-    GoogleCanaryAccount canaryAccount = (GoogleCanaryAccount)n;
+    DaemonTaskHandler.message(
+        "Validating "
+            + n.getNodeName()
+            + " with "
+            + GoogleCanaryAccountValidator.class.getSimpleName());
 
-    DaemonTaskHandler.message("Validating " + n.getNodeName() + " with " + GoogleCanaryAccountValidator.class.getSimpleName());
-
-    GoogleNamedAccountCredentials credentials = canaryAccount.getNamedAccountCredentials(halyardVersion, p);
+    GoogleNamedAccountCredentials credentials = getNamedAccountCredentials(p, n);
 
     if (credentials == null) {
       return;
     }
 
-    String jsonPath = canaryAccount.getJsonPath();
+    String jsonPath = n.getJsonPath();
 
     try {
-      StorageService storageService = new GcsStorageService(
-          canaryAccount.getBucket(),
-          canaryAccount.getBucketLocation(),
-          canaryAccount.getRootFolder(),
-          canaryAccount.getProject(),
-          jsonPath != null ? jsonPath : "",
-          "halyard",
-          maxWaitInterval,
-          retryIntervalBase,
-          jitterMultiplier,
-          maxRetries,
-          taskScheduler,
-          registry);
+      StorageService storageService =
+          new GcsStorageService(
+              n.getBucket(),
+              n.getBucketLocation(),
+              n.getRootFolder(),
+              n.getProject(),
+              jsonPath != null ? secretSessionManager.decryptAsFile(jsonPath) : "",
+              "halyard",
+              connectTimeoutSec,
+              readTimeoutSec,
+              maxWaitInterval,
+              retryIntervalBase,
+              jitterMultiplier,
+              maxRetries,
+              taskScheduler,
+              registry);
 
       storageService.ensureBucketExists();
     } catch (Exception e) {
-      p.addProblem(Severity.ERROR, "Failed to ensure the required bucket \"" + canaryAccount.getBucket() + "\" exists: " + e.getMessage());
+      p.addProblem(
+          Severity.ERROR,
+          "Failed to ensure the required bucket \""
+              + n.getBucket()
+              + "\" exists: "
+              + e.getMessage());
+    }
+  }
+
+  private GoogleNamedAccountCredentials getNamedAccountCredentials(
+      ConfigProblemSetBuilder p, GoogleCanaryAccount canaryAccount) {
+    String jsonKey = null;
+    if (!StringUtils.isEmpty(canaryAccount.getJsonPath())) {
+      jsonKey = validatingFileDecrypt(p, canaryAccount.getJsonPath());
+
+      if (jsonKey == null) {
+        return null;
+      } else if (jsonKey.isEmpty()) {
+        p.addProblem(Problem.Severity.WARNING, "The supplied credentials file is empty.");
+      }
+    }
+
+    if (StringUtils.isEmpty(canaryAccount.getProject())) {
+      p.addProblem(Problem.Severity.ERROR, "No google project supplied.");
+      return null;
+    }
+
+    try {
+      return new GoogleNamedAccountCredentials.Builder()
+          .name(canaryAccount.getName())
+          .jsonKey(jsonKey)
+          .project(canaryAccount.getProject())
+          .applicationName("halyard " + halyardVersion)
+          .liveLookupsEnabled(false)
+          .build();
+    } catch (Exception e) {
+      p.addProblem(
+              Problem.Severity.ERROR,
+              "Error instantiating Google credentials: " + e.getMessage() + ".")
+          .setRemediation(
+              "Do the provided credentials have access to project "
+                  + canaryAccount.getProject()
+                  + "?");
+      return null;
     }
   }
 }

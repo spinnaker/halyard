@@ -37,7 +37,9 @@ public class S3Validator extends Validator<S3PersistentStore> {
     }
 
     try {
-      AWSCredentialsProvider credentialsProvider = AwsAccountValidator.getAwsCredentialsProvider(n.getAccessKeyId(), n.getSecretAccessKey());
+      AWSCredentialsProvider credentialsProvider =
+          AwsAccountValidator.getAwsCredentialsProvider(
+              n.getAccessKeyId(), secretSessionManager.decrypt(n.getSecretAccessKey()));
       S3Config s3Config = new S3Config();
       S3Properties s3Properties = new S3Properties();
       s3Properties.setBucket(n.getBucket());
@@ -46,7 +48,12 @@ public class S3Validator extends Validator<S3PersistentStore> {
       AmazonS3 s3Client = s3Config.awsS3Client(credentialsProvider, s3Properties);
       new S3Config().s3StorageService(s3Client, s3Properties);
     } catch (Exception e) {
-      ps.addProblem(Problem.Severity.ERROR, "Failed to ensure the required bucket \"" + n.getBucket() + "\" exists: " + e.getMessage());
+      ps.addProblem(
+          Problem.Severity.ERROR,
+          "Failed to ensure the required bucket \""
+              + n.getBucket()
+              + "\" exists: "
+              + e.getMessage());
     }
   }
 }

@@ -18,10 +18,9 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
 import com.netflix.spinnaker.halyard.config.model.v1.security.Ldap;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
+import java.net.URI;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.net.URI;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -32,6 +31,8 @@ public class LdapConfig {
   String userDnPattern;
   String userSearchBase;
   String userSearchFilter;
+  String managerDn;
+  String managerPassword;
 
   public LdapConfig(Security security) {
     if (!security.getAuthn().getLdap().isEnabled()) {
@@ -45,5 +46,7 @@ public class LdapConfig {
     this.userDnPattern = ldap.getUserDnPattern();
     this.userSearchBase = ldap.getUserSearchBase();
     this.userSearchFilter = ldap.getUserSearchFilter();
+    this.managerDn = ldap.getManagerDn();
+    this.managerPassword = ldap.getManagerPassword();
   }
 }

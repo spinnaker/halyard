@@ -48,8 +48,11 @@ public abstract class AbstractHaServiceEnableDisableCommand extends AbstractHaSe
   private Map<String, NestableCommand> subcommands = new HashMap<>();
 
   @Override
-  public String getDescription() {
-    return "Set the " + getServiceName() + " high availability service as " + subjunctivePerfectAction();
+  public String getShortDescription() {
+    return "Set the "
+        + getServiceName()
+        + " high availability service as "
+        + subjunctivePerfectAction();
   }
 
   @Override
@@ -60,8 +63,8 @@ public abstract class AbstractHaServiceEnableDisableCommand extends AbstractHaSe
     new OperationHandler<Void>()
         .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + serviceName)
         .setFailureMesssage("Failed to " + getCommandName() + " " + serviceName)
-        .setOperation(Daemon
-            .setHaServiceEnableDisable(currentDeployment, serviceName, !noValidate, enable))
+        .setOperation(
+            Daemon.setHaServiceEnableDisable(currentDeployment, serviceName, !noValidate, enable))
         .get();
   }
 }

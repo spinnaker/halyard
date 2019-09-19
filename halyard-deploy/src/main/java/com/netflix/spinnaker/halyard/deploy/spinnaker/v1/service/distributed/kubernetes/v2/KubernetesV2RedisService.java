@@ -35,16 +35,14 @@ import redis.clients.jedis.Jedis;
 public class KubernetesV2RedisService extends RedisService implements KubernetesV2Service<Jedis> {
   final DeployPriority deployPriority = new DeployPriority(5);
 
-  @Delegate
-  @Autowired
-  KubernetesV2ServiceDelegate serviceDelegate;
+  @Delegate @Autowired KubernetesV2ServiceDelegate serviceDelegate;
 
   @Override
   public boolean runsOnJvm() {
     return false;
   }
 
-  public String getArtifactId(String deploymentName) {
+  public String getArtifactId(DeploymentConfiguration deploymentConfiguration) {
     return "gcr.io/kubernetes-spinnaker/redis-cluster:v2";
   }
 

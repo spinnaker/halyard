@@ -34,7 +34,7 @@ function process_args() {
 }
 
 function get_user() {
-  local user 
+  local user
 
   user=$(who -m | awk '{print $1;}')
   if [ -z "$YES" ]; then
@@ -122,7 +122,7 @@ rm -rf /var/log/spinnaker/halyard
 
 echo "Deleting halconfig and artifacts"
 rm -rf /opt/spinnaker/config/halyard*
-rm -rf $halconfig_dir 
+rm -rf $halconfig_dir
 EOL
 
   chmod +x $halconfig_dir/uninstall.sh
@@ -136,7 +136,7 @@ usage: $0 [-y] [--version=<version>] [--user=<user>]
     -y                              Accept all default options during install
                                     (non-interactive mode).
 
-    --version <version>             Specify the exact verison of Halyard to
+    --version <version>             Specify the exact version of Halyard to
                                     install.
 
     --user <user>                   Specify the user to run Halyard as. This
@@ -153,6 +153,7 @@ function install_java() {
      [[ "$java_version" == *"9.0"* ]] || \
      [[ "$java_version" == *"10.0"* ]] || \
      [[ "$java_version" == *"11"* ]] || \
+     [[ "$java_version" == *"12"* ]] || \
      [[ "$java_version" == "java version \"10\""* ]]; then
     echo "Java is already installed & at the right version"
     return 0;
@@ -178,7 +179,7 @@ function install_halyard() {
   if [ -f /opt/update-halyard ]; then
     mv /opt/update-halyard /usr/local/bin
     chmod +x /usr/local/bin/update-halyard
-  else 
+  else
     echo "No update script supplied with installer..."
   fi
 
@@ -196,4 +197,4 @@ configure_defaults
 install_java
 install_halyard
 
-su $HAL_USER -l -c "hal -v" -s /bin/bash
+su $HAL_USER -l -c "/bin/bash hal -v"

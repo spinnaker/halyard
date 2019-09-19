@@ -24,16 +24,14 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.consul.ConsulConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.consul.SupportsConsul;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -47,16 +45,12 @@ public class GoogleAccount extends CommonGoogleAccount implements Cloneable, Sup
   private List<String> regions;
 
   @JsonIgnore
-  public GoogleNamedAccountCredentials getNamedAccountCredentials(String version, ConfigProblemSetBuilder p) {
-    String jsonKey = null;
-    if (!StringUtils.isEmpty(getJsonPath())) {
-      jsonKey = ValidatingFileReader.contents(p, getJsonPath());
-
-      if (jsonKey == null) {
-        return null;
-      } else if (jsonKey.isEmpty()) {
-        p.addProblem(Problem.Severity.WARNING, "The supplied credentials file is empty.");
-      }
+  public GoogleNamedAccountCredentials getNamedAccountCredentials(
+      String version, String jsonKey, ConfigProblemSetBuilder p) {
+    if (jsonKey == null) {
+      return null;
+    } else if (jsonKey.isEmpty()) {
+      p.addProblem(Problem.Severity.WARNING, "The supplied credentials file is empty.");
     }
 
     if (StringUtils.isEmpty(getProject())) {
@@ -74,8 +68,11 @@ public class GoogleAccount extends CommonGoogleAccount implements Cloneable, Sup
           .liveLookupsEnabled(false)
           .build();
     } catch (Exception e) {
-      p.addProblem(Problem.Severity.ERROR, "Error instantiating Google credentials: " + e.getMessage() + ".")
-          .setRemediation("Do the provided credentials have access to project " + getProject() + "?");
+      p.addProblem(
+              Problem.Severity.ERROR,
+              "Error instantiating Google credentials: " + e.getMessage() + ".")
+          .setRemediation(
+              "Do the provided credentials have access to project " + getProject() + "?");
       return null;
     }
   }

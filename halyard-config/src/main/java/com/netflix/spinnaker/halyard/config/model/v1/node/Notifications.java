@@ -18,21 +18,27 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Notification.NotificationType;
+import com.netflix.spinnaker.halyard.config.model.v1.notifications.GithubStatusNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.TwilioNotification;
+import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Optional;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class Notifications extends Node implements Cloneable {
   SlackNotification slack = new SlackNotification();
   TwilioNotification twilio = new TwilioNotification();
+
+  @JsonProperty("github-status")
+  GithubStatusNotification githubStatus = new GithubStatusNotification();
 
   @Override
   public String getNodeName() {
@@ -41,19 +47,31 @@ public class Notifications extends Node implements Cloneable {
 
   @JsonIgnore
   public boolean isEnabled() {
-    return slack.isEnabled() || twilio.isEnabled();
+    return slack.isEnabled() || twilio.isEnabled() || githubStatus.isEnabled();
   }
 
   public static Class<? extends Notification> translateNotificationType(String notificationName) {
-    Optional<? extends Class<?>> res = Arrays.stream(Notifications.class.getDeclaredFields())
-        .filter(f -> f.getName().equals(notificationName))
-        .map(Field::getType)
-        .findFirst();
 
-    if (res.isPresent()) {
-      return (Class<? extends Notification>)res.get();
-    } else {
-      throw new IllegalArgumentException("No notification type with name \"" + notificationName + "\" handled by halyard");
+    Optional<NotificationType> notificationType =
+        Stream.of(NotificationType.values())
+            .filter(type -> type.getName().equals(notificationName))
+            .findAny();
+
+    checkArgument(
+        notificationType.isPresent(),
+        "No notification type with name %s handled by halyard",
+        notificationName);
+
+    switch (notificationType.get()) {
+      case SLACK:
+        return SlackNotification.class;
+      case TWILIO:
+        return TwilioNotification.class;
+      case GITHUB_STATUS:
+        return GithubStatusNotification.class;
+      default:
+        throw new IllegalArgumentException(
+            "No notification type with name \"" + notificationName + "\" handled by halyard");
     }
   }
 }

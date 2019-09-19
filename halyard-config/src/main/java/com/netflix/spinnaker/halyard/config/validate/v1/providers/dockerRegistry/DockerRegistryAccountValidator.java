@@ -16,28 +16,36 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.providers.dockerRegistry;
 
+import com.netflix.spinnaker.clouddriver.docker.registry.api.v2.client.DefaultDockerOkClientProvider;
 import com.netflix.spinnaker.clouddriver.docker.registry.api.v2.client.DockerRegistryCatalog;
 import com.netflix.spinnaker.clouddriver.docker.registry.security.DockerRegistryNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.util.PropertyUtils;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
-import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
+import java.nio.charset.Charset;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 @Component
 @Slf4j
 public class DockerRegistryAccountValidator extends Validator<DockerRegistryAccount> {
+  private static final String namePattern = "^[a-z0-9]+([-a-z0-9]*[a-z0-9])?$";
+
   @Override
   public void validate(ConfigProblemSetBuilder p, DockerRegistryAccount n) {
-    String resolvedPassword = null;
+    if (!Pattern.matches(namePattern, n.getName())) {
+      p.addProblem(Severity.ERROR, "Account name must match pattern " + namePattern)
+          .setRemediation(
+              "It must start and end with a lower-case character or number, and only contain lower-case characters, numbers, or dashes");
+    }
+
+    String resolvedPassword = "";
     String password = n.getPassword();
     String passwordCommand = n.getPasswordCommand();
     String passwordFile = n.getPasswordFile();
@@ -47,15 +55,19 @@ public class DockerRegistryAccountValidator extends Validator<DockerRegistryAcco
     boolean passwordCommandProvided = passwordCommand != null && !passwordCommand.isEmpty();
     boolean passwordFileProvided = passwordFile != null && !passwordFile.isEmpty();
 
-    if (passwordProvided && passwordFileProvided || passwordCommandProvided && passwordProvided || passwordCommandProvided && passwordFileProvided) {
-      p.addProblem(Severity.ERROR, "You have provided more than one of password, password command, or password file for your docker registry. You can specify at most one.");
+    if (passwordProvided && passwordFileProvided
+        || passwordCommandProvided && passwordProvided
+        || passwordCommandProvided && passwordFileProvided) {
+      p.addProblem(
+          Severity.ERROR,
+          "You have provided more than one of password, password command, or password file for your docker registry. You can specify at most one.");
       return;
     }
 
     if (passwordProvided) {
-      resolvedPassword = password;
+      resolvedPassword = secretSessionManager.decrypt(password);
     } else if (passwordFileProvided) {
-      resolvedPassword = ValidatingFileReader.contents(p, passwordFile);
+      resolvedPassword = validatingFileDecrypt(p, passwordFile);
       if (resolvedPassword == null) {
         return;
       }
@@ -71,24 +83,29 @@ public class DockerRegistryAccountValidator extends Validator<DockerRegistryAcco
         log.debug("Full command is" + pb.command());
 
         if (errCode != 0) {
-          String err = IOUtils.toString(process.getErrorStream());
+          String err = IOUtils.toString(process.getErrorStream(), Charset.defaultCharset());
           log.error("Password command returned a non 0 return code, stderr/stdout was:" + err);
-          p.addProblem(Severity.WARNING, String.format("Password command returned non 0 return code, stderr/stdout was:" + err));
+          p.addProblem(
+              Severity.WARNING,
+              "Password command returned non 0 return code, stderr/stdout was:" + err);
         }
 
-        resolvedPassword = IOUtils.toString(process.getInputStream()).trim();
+        resolvedPassword =
+            IOUtils.toString(process.getInputStream(), Charset.defaultCharset()).trim();
 
         if (resolvedPassword.length() != 0) {
           log.debug("resolvedPassword is" + resolvedPassword);
         } else {
-          p.addProblem(Severity.WARNING, String.format("Resolved Password was empty, missing dependencies for running password command?"));
+          p.addProblem(
+              Severity.WARNING,
+              "Resolved Password was empty, missing dependencies for running password command?");
         }
 
-      } catch(Exception e) {
-        p.addProblem(Severity.WARNING, String.format("Exception encountered when running password command: %s", e));
+      } catch (Exception e) {
+        p.addProblem(
+            Severity.WARNING,
+            String.format("Exception encountered when running password command: %s", e));
       }
-    } else {
-      resolvedPassword = "";
     }
 
     if (!resolvedPassword.isEmpty()) {
@@ -103,24 +120,36 @@ public class DockerRegistryAccountValidator extends Validator<DockerRegistryAcco
 
     DockerRegistryNamedAccountCredentials credentials;
     try {
-      credentials = (new DockerRegistryNamedAccountCredentials.Builder())
-          .accountName(n.getName())
-          .address(n.getAddress())
-          .email(n.getEmail())
-          .password(n.getPassword())
-          .passwordCommand(n.getPasswordCommand())
-          .passwordFile(n.getPasswordFile())
-          .dockerconfigFile(n.getDockerconfigFile())
-          .username(n.getUsername())
-          .clientTimeoutMillis(n.getClientTimeoutMillis())
-          .cacheThreads(n.getCacheThreads())
-          .paginateSize(n.getPaginateSize())
-          .sortTagsByDate(n.getSortTagsByDate())
-          .trackDigests(n.getTrackDigests())
-          .insecureRegistry(n.getInsecureRegistry())
-          .build();
+      credentials =
+          (new DockerRegistryNamedAccountCredentials.Builder())
+              .accountName(n.getName())
+              .address(n.getAddress())
+              .email(n.getEmail())
+              .password(secretSessionManager.decrypt(n.getPassword()))
+              .passwordCommand(n.getPasswordCommand())
+              .passwordFile(secretSessionManager.decryptAsFile(n.getPasswordFile()))
+              .dockerconfigFile(n.getDockerconfigFile())
+              .username(n.getUsername())
+              .clientTimeoutMillis(n.getClientTimeoutMillis())
+              .cacheThreads(n.getCacheThreads())
+              .paginateSize(n.getPaginateSize())
+              .sortTagsByDate(n.getSortTagsByDate())
+              .trackDigests(n.getTrackDigests())
+              .insecureRegistry(n.getInsecureRegistry())
+              .dockerOkClientProvider(new DefaultDockerOkClientProvider())
+              .build();
     } catch (Exception e) {
-      p.addProblem(Severity.ERROR, "Failed to instantiate docker credentials for account \"" + n.getName() + "\".");
+      p.addProblem(
+          Severity.ERROR,
+          "Failed to instantiate docker credentials for account \"" + n.getName() + "\".");
+      return;
+    }
+
+    if (PropertyUtils.anyContainPlaceholder(
+        n.getAddress(), n.getUsername(), n.getPassword(), n.getPasswordCommand())) {
+      p.addProblem(
+          Severity.WARNING,
+          "Skipping connection validation because one or more credential contains a placeholder value");
       return;
     }
 
@@ -130,34 +159,56 @@ public class DockerRegistryAccountValidator extends Validator<DockerRegistryAcco
         DockerRegistryCatalog catalog = credentials.getCredentials().getClient().getCatalog();
 
         if (catalog.getRepositories() == null || catalog.getRepositories().size() == 0) {
-          p.addProblem(Severity.WARNING, "Your docker registry has no repositories specified, and the registry's catalog is empty. Spinnaker will not be able to deploy any images until some are pushed to this registry.")
-              .setRemediation("Manually specify some repositories for this docker registry to index.");
+          p.addProblem(
+                  Severity.WARNING,
+                  "Your docker registry has no repositories specified, and the registry's catalog is empty. Spinnaker will not be able to deploy any images until some are pushed to this registry.")
+              .setRemediation(
+                  "Manually specify some repositories for this docker registry to index.");
         }
       } catch (Exception e) {
         if (n.getAddress().endsWith("gcr.io")) {
-          p.addProblem(Severity.ERROR, "The GCR service requires the Resource Manager API to be enabled for the catalog endpoint to work.")
-              .setRemediation("Visit https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview to enable the API.");
+          p.addProblem(
+                  Severity.ERROR,
+                  "The GCR service requires the Resource Manager API to be enabled for the catalog endpoint to work.")
+              .setRemediation(
+                  "Visit https://console.developers.google.com/apis/api/cloudresourcemanager.googleapis.com/overview to enable the API.");
         }
 
-        authFailureProblem = p.addProblem(Severity.ERROR, "Unable to connect the registries catalog endpoint: " + e.getMessage() + ".");
+        authFailureProblem =
+            p.addProblem(
+                Severity.ERROR,
+                "Unable to connect the registries catalog endpoint: " + e.getMessage() + ".");
       }
     } else {
-      try {
-        // effectively final
-        int tagCount[] = new int[1];
-        tagCount[0] = 0;
-        n.getRepositories().forEach(r -> tagCount[0] += credentials.getCredentials().getClient().getTags(r).getTags().size());
-        if (tagCount[0] == 0) {
-          p.addProblem(Severity.WARNING, "None of your supplied repositories contain any tags. Spinnaker will not be able to deploy anything.")
-              .setRemediation("Push some images to your registry.");
-        }
-      } catch (Exception e) {
-        authFailureProblem = p.addProblem(Severity.ERROR, "Unable to reach repository: " +  e.getMessage() + ".");
+      // effectively final
+      int[] tagCount = new int[1];
+      n.getRepositories()
+          .forEach(
+              r -> {
+                try {
+                  tagCount[0] +=
+                      credentials.getCredentials().getClient().getTags(r).getTags().size();
+                } catch (Exception e) {
+                  p.addProblem(
+                          Severity.ERROR,
+                          "Unable to fetch tags from the docker repository: "
+                              + r
+                              + ", "
+                              + e.getMessage())
+                      .setRemediation("Can the provided user access this repository?");
+                }
+              });
+      if (tagCount[0] == 0) {
+        p.addProblem(
+                Severity.WARNING,
+                "None of your supplied repositories contain any tags. Spinnaker will not be able to deploy any docker images.")
+            .setRemediation("Push some images to your registry.");
       }
     }
 
     if (authFailureProblem != null && !StringUtils.isEmpty(resolvedPassword)) {
-      String message = "Your registry password has %s whitespace; if this is unintentional, this may be the cause of failed authentication.";
+      String message =
+          "Your registry password has %s whitespace; if this is unintentional, this may be the cause of failed authentication.";
       if (Character.isWhitespace(resolvedPassword.charAt(0))) {
         authFailureProblem.setRemediation(String.format(message, "leading"));
       }
@@ -167,9 +218,10 @@ public class DockerRegistryAccountValidator extends Validator<DockerRegistryAcco
         authFailureProblem.setRemediation(String.format(message, "trailing"));
 
         if (passwordFileProvided && c == '\n')
-          authFailureProblem.setRemediation("Your password file has a trailing newline; many text editors append a newline to files they open."
-              + " If you think this is causing authentication issues, you can strip the newline with the command:\n\n"
-              + " tr -d '\\n' < PASSWORD_FILE | tee PASSWORD_FILE");
+          authFailureProblem.setRemediation(
+              "Your password file has a trailing newline; many text editors append a newline to files they open."
+                  + " If you think this is causing authentication issues, you can strip the newline with the command:\n\n"
+                  + " tr -d '\\n' < PASSWORD_FILE | tee PASSWORD_FILE");
       }
     }
   }

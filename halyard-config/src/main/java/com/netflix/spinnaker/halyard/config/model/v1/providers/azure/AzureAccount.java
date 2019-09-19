@@ -18,6 +18,8 @@ package com.netflix.spinnaker.halyard.config.model.v1.providers.azure;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -33,4 +35,6 @@ public class AzureAccount extends Account {
   private String defaultKeyVault;
   private String packerResourceGroup;
   private String packerStorageAccount;
+  private List<String> regions = new ArrayList<>();
+  private String useSshPublicKey;
 }

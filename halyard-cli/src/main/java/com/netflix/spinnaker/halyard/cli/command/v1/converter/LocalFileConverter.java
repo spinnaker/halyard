@@ -21,23 +21,34 @@ import com.beust.jcommander.IStringConverter;
 import com.netflix.spinnaker.halyard.core.GlobalApplicationOptions;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
-import org.aspectj.util.FileUtil;
-
+import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
 import java.io.File;
 import java.io.IOException;
+import org.aspectj.util.FileUtil;
 
 public class LocalFileConverter implements IStringConverter<String> {
 
+  private static final String CONFIG_SERVER_PREFIX = "configserver:";
+
   @Override
   public String convert(String value) {
+    if (EncryptedSecret.isEncryptedSecret(value) || isConfigServerResource(value)) {
+      return value;
+    }
+
     if (GlobalApplicationOptions.getInstance().isUseRemoteDaemon()) {
       try {
         return FileUtil.readAsString(new File(value));
       } catch (IOException e) {
-        throw new HalException(Problem.Severity.FATAL,
+        throw new HalException(
+            Problem.Severity.FATAL,
             "Was passed parameter " + value + " to unreadable file: " + e.getMessage());
       }
     }
     return new File(value).getAbsolutePath();
+  }
+
+  private boolean isConfigServerResource(String value) {
+    return value.startsWith(CONFIG_SERVER_PREFIX);
   }
 }

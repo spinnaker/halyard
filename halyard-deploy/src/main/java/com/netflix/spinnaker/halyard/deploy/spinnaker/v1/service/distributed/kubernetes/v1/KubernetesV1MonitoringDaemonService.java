@@ -18,10 +18,9 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v1;
 
-import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.KubernetesUtil;
-import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.description.servergroup.KubernetesImageDescription;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonitoringDaemonService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,30 +31,19 @@ import org.springframework.stereotype.Component;
 @EqualsAndHashCode(callSuper = true)
 @Component
 @Data
-public class KubernetesV1MonitoringDaemonService extends SpinnakerMonitoringDaemonService {
-  @Delegate
-  @Autowired
-  KubernetesV1DistributedServiceDelegate distributedServiceDelegate;
+public class KubernetesV1MonitoringDaemonService extends SpinnakerMonitoringDaemonService
+    implements KubernetesService {
+  @Delegate @Autowired KubernetesV1DistributedServiceDelegate distributedServiceDelegate;
 
   @Override
   public Settings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    KubernetesSharedServiceSettings kubernetesSharedServiceSettings = new KubernetesSharedServiceSettings(deploymentConfiguration);
+    KubernetesSharedServiceSettings kubernetesSharedServiceSettings =
+        new KubernetesSharedServiceSettings(deploymentConfiguration);
     Settings settings = new Settings();
-    settings.setArtifactId(getArtifactId(deploymentConfiguration.getName()))
+    settings
+        .setArtifactId(getArtifactId(deploymentConfiguration))
         .setLocation(kubernetesSharedServiceSettings.getDeployLocation())
         .setEnabled(deploymentConfiguration.getMetricStores().isEnabled());
     return settings;
-  }
-
-  private String getArtifactId(String deploymentName) {
-    String artifactName = getArtifact().getName();
-    String version = getArtifactService().getArtifactVersion(deploymentName, getArtifact());
-
-    KubernetesImageDescription image = KubernetesImageDescription.builder()
-        .registry(getDockerRegistry(deploymentName, getArtifact()))
-        .repository(artifactName)
-        .tag(version)
-        .build();
-    return KubernetesUtil.getImageId(image);
   }
 }

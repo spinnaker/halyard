@@ -17,16 +17,14 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.*;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class JenkinsMaster extends Master {
+public class JenkinsMaster extends CIAccount {
   @Override
   public NodeIterator getChildren() {
     return NodeIteratorFactory.makeEmptyIterator();
@@ -36,4 +34,7 @@ public class JenkinsMaster extends Master {
   private String username;
   @Secret private String password;
   private Boolean csrf;
+  @LocalFile @SecretFile private String trustStore;
+  private String trustStoreType;
+  @Secret private String trustStorePassword;
 }

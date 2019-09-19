@@ -17,14 +17,11 @@
 
 package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.wercker;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.master.AbstractAddMasterCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.wercker.WerckerMaster;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Master;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 
 @Parameters(separators = "=")
 public class WerckerAddMasterCommand extends AbstractAddMasterCommand {
@@ -34,31 +31,24 @@ public class WerckerAddMasterCommand extends AbstractAddMasterCommand {
   }
 
   @Parameter(
-    names = "--address",
-    required = true,
-    description = WerckerCommandProperties.ADDRESS_DESCRIPTION
-  )
+      names = "--address",
+      required = true,
+      description = WerckerCommandProperties.ADDRESS_DESCRIPTION)
   private String address;
 
-  @Parameter(
-    names = "--user",
-    description = WerckerCommandProperties.USER_DESCRIPTION
-  )
+  @Parameter(names = "--user", description = WerckerCommandProperties.USER_DESCRIPTION)
   public String user;
 
   @Parameter(
-    names = "--token",
-    password = true,
-    description = WerckerCommandProperties.TOKEN_DESCRIPTION
-  )
+      names = "--token",
+      password = true,
+      description = WerckerCommandProperties.TOKEN_DESCRIPTION)
   public String token;
 
   @Override
-  protected Master buildMaster(String masterName) {
+  protected CIAccount buildMaster(String masterName) {
     WerckerMaster master = (WerckerMaster) new WerckerMaster().setName(masterName);
-    master.setAddress(address)
-        .setToken(token)
-        .setUser(user);
+    master.setAddress(address).setToken(token).setUser(user);
 
     return master;
   }

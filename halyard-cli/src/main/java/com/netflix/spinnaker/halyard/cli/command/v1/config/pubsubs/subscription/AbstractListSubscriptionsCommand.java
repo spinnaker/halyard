@@ -25,18 +25,16 @@ import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Pubsub;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Subscription;
-import lombok.Getter;
-
 import java.util.List;
+import lombok.Getter;
 
 @Parameters(separators = "=")
 abstract class AbstractListSubscriptionsCommand extends AbstractPubsubCommand {
-  public String getDescription() {
+  public String getShortDescription() {
     return "List the subscription names for the " + getPubsubName() + " pubsub.";
   }
 
-  @Getter
-  private String commandName = "list";
+  @Getter private String commandName = "list";
 
   private Pubsub getPubsub() {
     String currentDeployment = getCurrentDeployment();

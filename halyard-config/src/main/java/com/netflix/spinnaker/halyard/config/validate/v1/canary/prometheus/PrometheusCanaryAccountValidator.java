@@ -16,39 +16,43 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.canary.prometheus;
 
-import com.google.common.base.Strings;
-import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
+import static com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity.ERROR;
+
 import com.netflix.spinnaker.halyard.config.model.v1.canary.prometheus.PrometheusCanaryAccount;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.canary.CanaryAccountValidator;
-import com.netflix.spinnaker.halyard.config.validate.v1.util.ValidatingFileReader;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity.ERROR;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Component
-public class PrometheusCanaryAccountValidator extends CanaryAccountValidator {
+public class PrometheusCanaryAccountValidator
+    extends CanaryAccountValidator<PrometheusCanaryAccount> {
+
+  @Autowired private SecretSessionManager secretSessionManager;
 
   @Override
-  public void validate(ConfigProblemSetBuilder p, AbstractCanaryAccount n) {
+  public void validate(ConfigProblemSetBuilder p, PrometheusCanaryAccount n) {
     super.validate(p, n);
 
-    PrometheusCanaryAccount canaryAccount = (PrometheusCanaryAccount)n;
+    DaemonTaskHandler.message(
+        "Validating "
+            + n.getNodeName()
+            + " with "
+            + PrometheusCanaryAccountValidator.class.getSimpleName());
 
-    DaemonTaskHandler.message("Validating " + n.getNodeName() + " with " + PrometheusCanaryAccountValidator.class.getSimpleName());
-
-    String usernamePasswordFile = canaryAccount.getUsernamePasswordFile();
+    String usernamePasswordFile = n.getUsernamePasswordFile();
 
     if (StringUtils.isNotEmpty(usernamePasswordFile)) {
-      String usernamePassword = ValidatingFileReader.contents(p, usernamePasswordFile);
+      String usernamePassword = validatingFileDecrypt(p, usernamePasswordFile);
 
-      if (Strings.isNullOrEmpty(usernamePassword)) {
+      if (StringUtils.isEmpty(usernamePassword)) {
         p.addProblem(ERROR, "The supplied username password file does not exist or is empty.")
             .setRemediation("Supply a valid username password file.");
       } else if (!usernamePassword.contains(":")) {

@@ -31,25 +31,18 @@ public abstract class AbstractMasterCommand extends AbstractHasMasterCommand {
   }
 
   @Override
-  public String getDescription() {
-    return "Manage and view Spinnaker configuration for the " + getCiName() + " Continuous Integration services's master";
+  public String getShortDescription() {
+    return "Manage and view Spinnaker configuration for the "
+        + getCiName()
+        + " Continuous Integration services's master";
   }
 
   protected AbstractMasterCommand() {
-    registerSubcommand(new DeleteMasterCommandBuilder()
-        .setCiName(getCiName())
-        .build()
-    );
+    registerSubcommand(new DeleteMasterCommandBuilder().setCiName(getCiName()).build());
 
-    registerSubcommand(new GetMasterCommandBuilder()
-        .setCiName(getCiName())
-        .build()
-    );
+    registerSubcommand(new GetMasterCommandBuilder().setCiName(getCiName()).build());
 
-    registerSubcommand(new ListMastersCommandBuilder()
-        .setCiName(getCiName())
-        .build()
-    );
+    registerSubcommand(new ListMastersCommandBuilder().setCiName(getCiName()).build());
   }
 
   @Override

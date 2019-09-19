@@ -28,15 +28,25 @@ import org.springframework.stereotype.Component;
 public class AzsValidator extends Validator<AzsPersistentStore> {
   @Override
   public void validate(ConfigProblemSetBuilder ps, AzsPersistentStore n) {
-    String connectionString = "DefaultEndpointsProtocol=https;AccountName=" + n.getStorageAccountName() + ";AccountKey=" + n.getStorageAccountKey();
+    String connectionString =
+        "DefaultEndpointsProtocol=https;AccountName="
+            + n.getStorageAccountName()
+            + ";AccountKey="
+            + secretSessionManager.decrypt(n.getStorageAccountKey());
 
     try {
       CloudStorageAccount storageAccount = CloudStorageAccount.parse(connectionString);
 
-      CloudBlobContainer container = storageAccount.createCloudBlobClient().getContainerReference(n.getStorageContainerName());
+      CloudBlobContainer container =
+          storageAccount.createCloudBlobClient().getContainerReference(n.getStorageContainerName());
       container.exists();
     } catch (Exception e) {
-      ps.addProblem(Problem.Severity.ERROR, "Failed to connect to the Azure storage account \"" + n.getStorageAccountName() + "\": " + e.getMessage());
+      ps.addProblem(
+          Problem.Severity.ERROR,
+          "Failed to connect to the Azure storage account \""
+              + n.getStorageAccountName()
+              + "\": "
+              + e.getMessage());
       return;
     }
   }

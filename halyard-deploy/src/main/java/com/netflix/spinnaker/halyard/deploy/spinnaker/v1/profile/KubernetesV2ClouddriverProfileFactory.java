@@ -24,29 +24,45 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Providers;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
+import com.netflix.spinnaker.kork.configserver.CloudConfigResourceService;
+import com.netflix.spinnaker.kork.configserver.ConfigFileService;
+import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.Yaml;
 
 @Component
 @Slf4j
 public class KubernetesV2ClouddriverProfileFactory extends ClouddriverProfileFactory {
-  @Autowired
-  ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-  @Autowired
-  Yaml yamlParser;
+  private final Yaml yamlParser;
+
+  private final SecretSessionManager secretSessionManager;
+
+  private final ConfigFileService configFileService;
+  private final CloudConfigResourceService cloudConfigResourceService;
+
+  public KubernetesV2ClouddriverProfileFactory(
+      ObjectMapper objectMapper,
+      Yaml yamlParser,
+      SecretSessionManager secretSessionManager,
+      ConfigFileService configFileService,
+      CloudConfigResourceService cloudConfigResourceService) {
+    this.objectMapper = objectMapper;
+    this.yamlParser = yamlParser;
+    this.secretSessionManager = secretSessionManager;
+    this.configFileService = configFileService;
+    this.cloudConfigResourceService = cloudConfigResourceService;
+  }
 
   @Override
   protected void processProviders(Providers providers) {
@@ -61,47 +77,57 @@ public class KubernetesV2ClouddriverProfileFactory extends ClouddriverProfileFac
     }
 
     String kubeconfigFile = account.getKubeconfigFile();
+    String kubeconfigContents = getKubconfigFileContents(kubeconfigFile);
     String context = account.getContext();
-    FileInputStream is = null;
-    try {
-      is = new FileInputStream(kubeconfigFile);
-    } catch (FileNotFoundException e) {
-      throw new IllegalStateException("No kubeconfig file '" + kubeconfigFile + "' found, but validation passed: " + e.getMessage(), e);
-    }
 
-    Object obj = yamlParser.load(is);
-    Map<String, Object> parsedKubeconfig = objectMapper.convertValue(obj, new TypeReference<Map<String, Object>>() {});
+    Object obj = yamlParser.load(kubeconfigContents);
+    Map<String, Object> parsedKubeconfig =
+        objectMapper.convertValue(obj, new TypeReference<Map<String, Object>>() {});
 
     if (StringUtils.isEmpty(context)) {
       context = (String) parsedKubeconfig.get("current-context");
     }
 
     if (StringUtils.isEmpty(context)) {
-      throw new HalException(Problem.Severity.FATAL, "No context specified in kubernetes account " + account.getName() + " and no 'current-context' in " + kubeconfigFile);
+      throw new HalException(
+          Problem.Severity.FATAL,
+          "No context specified in kubernetes account "
+              + account.getName()
+              + " and no 'current-context' in "
+              + kubeconfigFile);
     }
 
     final String finalContext = context;
 
-    String user = (String) ((List<Map<String, Object>>) parsedKubeconfig.getOrDefault("contexts", new ArrayList<>()))
-        .stream()
-        .filter(c -> c.getOrDefault("name", "").equals(finalContext))
-        .findFirst()
-        .map(m -> ((Map<String, Object>) m.getOrDefault("context", new HashMap<>())).get("user"))
-        .orElse("");
+    String user =
+        (String)
+            ((List<Map<String, Object>>)
+                    parsedKubeconfig.getOrDefault("contexts", new ArrayList<>()))
+                .stream()
+                    .filter(c -> c.getOrDefault("name", "").equals(finalContext))
+                    .findFirst()
+                    .map(
+                        m ->
+                            ((Map<String, Object>) m.getOrDefault("context", new HashMap<>()))
+                                .get("user"))
+                    .orElse("");
 
     if (StringUtils.isEmpty(user)) {
       return;
     }
 
-    Map<String, Object> userProperties = (Map<String, Object>) ((List<Map<String, Object>>) parsedKubeconfig.getOrDefault("users", new ArrayList<>()))
-        .stream()
-        .filter(c -> c.getOrDefault("name", "").equals(user))
-        .findFirst()
-        .map(u -> u.get("user"))
-        .orElse(null);
+    Map<String, Object> userProperties =
+        (Map<String, Object>)
+            ((List<Map<String, Object>>) parsedKubeconfig.getOrDefault("users", new ArrayList<>()))
+                .stream()
+                    .filter(c -> c.getOrDefault("name", "").equals(user))
+                    .findFirst()
+                    .map(u -> u.get("user"))
+                    .orElse(null);
 
     if (userProperties == null) {
-      throw new HalException(Problem.Severity.FATAL, "No user named '" + user + "' exists in your kubeconfig file.");
+      throw new HalException(
+          Problem.Severity.FATAL, "No user named '" + user + "' exists in your kubeconfig file.");
     }
 
     Map<String, Object> authProvider = (Map<String, Object>) userProperties.get("auth-provider");
@@ -121,7 +147,31 @@ public class KubernetesV2ClouddriverProfileFactory extends ClouddriverProfileFac
     try {
       yamlParser.dump(parsedKubeconfig, new FileWriter(kubeconfigFile));
     } catch (IOException e) {
-      throw new HalException(Problem.Severity.FATAL, "Unable to write the kubeconfig file to the staging area. This may be a user permissions issue.");
+      throw new HalException(
+          Problem.Severity.FATAL,
+          "Unable to write the kubeconfig file to the staging area. This may be a user permissions issue.");
+    }
+  }
+
+  private String getKubconfigFileContents(String kubeconfigFile) {
+    try {
+      if (EncryptedSecret.isEncryptedSecret(kubeconfigFile)) {
+        return secretSessionManager.decrypt(kubeconfigFile);
+      }
+
+      if (CloudConfigResourceService.isCloudConfigResource(kubeconfigFile)) {
+        String localPath = cloudConfigResourceService.getLocalPath(kubeconfigFile);
+        return configFileService.getContents(localPath);
+      }
+
+      return kubeconfigFile;
+    } catch (Exception e) {
+      throw new IllegalStateException(
+          "Failed to read kubeconfig file '"
+              + kubeconfigFile
+              + "', but validation passed: "
+              + e.getMessage(),
+          e);
     }
   }
 }

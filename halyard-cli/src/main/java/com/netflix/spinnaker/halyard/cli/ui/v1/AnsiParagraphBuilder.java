@@ -16,22 +16,18 @@
 
 package com.netflix.spinnaker.halyard.cli.ui.v1;
 
-import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 public class AnsiParagraphBuilder {
-  @Setter
-  int indentWidth = 0;
+  @Setter int indentWidth = 0;
 
-  @Setter
-  int maxLineWidth = 80;
+  @Setter int maxLineWidth = 80;
 
-  @Setter
-  boolean indentFirstLine = true;
+  @Setter boolean indentFirstLine = true;
 
   List<AnsiSnippet> snippets = new ArrayList<>();
 

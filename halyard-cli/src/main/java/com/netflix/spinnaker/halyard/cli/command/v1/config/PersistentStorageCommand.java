@@ -20,8 +20,8 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.persistentStorage.EditPersistentStorageCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.persistentStorage.azs.AzsCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.persistentStorage.gcs.GcsCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.persistentStorage.s3.S3Command;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.persistentStorage.oracle.OracleCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.persistentStorage.s3.S3Command;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
@@ -35,7 +35,7 @@ public class PersistentStorageCommand extends AbstractConfigCommand {
   private String commandName = "storage";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Show Spinnaker's persistent storage configuration.";
+  private String shortDescription = "Show Spinnaker's persistent storage configuration.";
 
   public PersistentStorageCommand() {
     registerSubcommand(new GcsCommand());

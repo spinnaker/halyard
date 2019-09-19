@@ -23,9 +23,7 @@ import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-/**
- * This is the base command, where we will register all the subcommands.
- */
+/** This is the base command, where we will register all the subcommands. */
 @Parameters(separators = "=")
 public class HalCommand extends NestableCommand {
   @Getter(AccessLevel.PUBLIC)
@@ -33,26 +31,22 @@ public class HalCommand extends NestableCommand {
 
   @Parameter(
       names = "--print-bash-completion",
-      description = "Print bash command completion. This is used during the installation of Halyard."
-  )
+      description =
+          "Print bash command completion. This is used during the installation of Halyard.")
   private boolean printBashCompletion;
 
   @Parameter(
       names = {"--version", "-v"},
-      description = "Version of Halyard."
-  )
+      description = "Version of Halyard.")
   private boolean version;
 
   @Parameter(
       names = "--ready",
-      description = "Check if Halyard is up and running. Will exit with non-zero return code when it isn't."
-  )
+      description =
+          "Check if Halyard is up and running. Will exit with non-zero return code when it isn't.")
   private boolean healthy;
 
-  @Parameter(
-      names = "--docs",
-      description = "Print markdown docs for the hal CLI."
-  )
+  @Parameter(names = "--docs", description = "Print markdown docs for the hal CLI.")
   private boolean docs;
 
   public HalCommand() {
@@ -64,18 +58,19 @@ public class HalCommand extends NestableCommand {
     registerSubcommand(new TaskCommand());
     registerSubcommand(new VersionCommand());
     registerSubcommand(new SpinCommand());
+    registerSubcommand(new PluginCommand());
   }
 
   static String getVersion() {
-    return Optional
-        .ofNullable(HalCommand.class.getPackage().getImplementationVersion()).orElse("Unknown");
+    return Optional.ofNullable(HalCommand.class.getPackage().getImplementationVersion())
+        .orElse("Unknown");
   }
 
   @Override
-  public String getDescription() {
+  public String getShortDescription() {
     return "A tool for configuring, installing, and updating Spinnaker.\n\n"
         + "If this is your first time using Halyard to install Spinnaker we recommend that you skim "
-        + "the documentation on www.spinnaker.io/docs for some familiarity with the product. If at any "
+        + "the documentation on https://spinnaker.io/reference/halyard/ for some familiarity with the product. If at any "
         + "point you get stuck using 'hal', every command can be suffixed with '--help' for usage "
         + "information.\n";
   }

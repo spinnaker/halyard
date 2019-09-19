@@ -20,20 +20,21 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.deck;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.security.ApacheSsl;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
+import com.netflix.spinnaker.halyard.deploy.config.v1.secrets.BindingsSecretDecrypter;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
 public class DeckDockerProfileFactory extends DeckProfileFactory {
-  @Autowired
-  AccountService accountService;
+  @Autowired AccountService accountService;
+
+  @Autowired BindingsSecretDecrypter bindingsSecretDecrypter;
 
   @Override
   public String commentPrefix() {
@@ -46,24 +47,52 @@ public class DeckDockerProfileFactory extends DeckProfileFactory {
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
 
     ServiceSettings deckSettings = endpoints.getServiceSettings(Type.DECK);
     ServiceSettings gateSettings = endpoints.getServiceSettings(Type.GATE);
-    ApacheSsl apacheSsl= deploymentConfiguration.getSecurity().getUiSecurity().getSsl();
+    ApacheSsl apacheSsl = deploymentConfiguration.getSecurity().getUiSecurity().getSsl();
     Map<String, String> env = profile.getEnv();
 
     if (apacheSsl.isEnabled()) {
       env.put("DECK_HOST", deckSettings.getHost());
       env.put("DECK_PORT", deckSettings.getPort() + "");
       env.put("API_HOST", gateSettings.getBaseUrl());
-      env.put("DECK_CERT", apacheSsl.getSslCertificateFile());
-      env.put("DECK_KEY", apacheSsl.getSslCertificateKeyFile());
-      env.put("PASSPHRASE", apacheSsl.getSslCertificatePassphrase());
+      if (supportsSecretDecryption(deploymentConfiguration.getName())) {
+        env.put("DECK_CERT", apacheSsl.getSslCertificateFile());
+        env.put("DECK_KEY", apacheSsl.getSslCertificateKeyFile());
+        env.put("PASSPHRASE", apacheSsl.getSslCertificatePassphrase());
+      } else {
+        env.put(
+            "DECK_CERT",
+            bindingsSecretDecrypter.trackSecretFile(
+                profile,
+                halconfigDirectoryStructure.getStagingDependenciesPath(
+                    deploymentConfiguration.getName()),
+                apacheSsl.getSslCertificateFile(),
+                "sslCertificateFile"));
+        env.put(
+            "DECK_KEY",
+            bindingsSecretDecrypter.trackSecretFile(
+                profile,
+                halconfigDirectoryStructure.getStagingDependenciesPath(
+                    deploymentConfiguration.getName()),
+                apacheSsl.getSslCertificateKeyFile(),
+                "sslCertificateKeyFile"));
+        env.put(
+            "PASSPHRASE", secretSessionManager.decrypt(apacheSsl.getSslCertificatePassphrase()));
+      }
     }
 
-    env.put("AUTH_ENABLED", Boolean.toString(deploymentConfiguration.getSecurity().getAuthn().isEnabled()));
-    env.put("FIAT_ENABLED", Boolean.toString(deploymentConfiguration.getSecurity().getAuthz().isEnabled()));
+    env.put(
+        "AUTH_ENABLED",
+        Boolean.toString(deploymentConfiguration.getSecurity().getAuthn().isEnabled()));
+    env.put(
+        "FIAT_ENABLED",
+        Boolean.toString(deploymentConfiguration.getSecurity().getAuthz().isEnabled()));
   }
 }

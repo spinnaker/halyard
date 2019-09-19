@@ -32,9 +32,8 @@ import lombok.EqualsAndHashCode;
 public class ApiSecurityCommand extends AbstractConfigCommand {
   private String commandName = "api";
 
-  private String shortDescription = "Configure and view the API server's addressable URL and CORS policies.";
-
-  private String longDescription = shortDescription;
+  private String shortDescription =
+      "Configure and view the API server's addressable URL and CORS policies.";
 
   public ApiSecurityCommand() {
     registerSubcommand(new ApiSecurityEditCommand());

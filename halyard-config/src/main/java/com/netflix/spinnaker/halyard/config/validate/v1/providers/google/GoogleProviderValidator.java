@@ -20,25 +20,25 @@ import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCrede
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.google.GoogleProvider;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class GoogleProviderValidator extends Validator<GoogleProvider> {
-  @Autowired
-  private String halyardVersion;
+  @Autowired private String halyardVersion;
 
   @Override
   public void validate(ConfigProblemSetBuilder p, GoogleProvider n) {
     List<GoogleNamedAccountCredentials> credentialsList = new ArrayList<>();
 
-    GoogleAccountValidator googleAccountValidator = new GoogleAccountValidator(credentialsList, halyardVersion);
+    GoogleAccountValidator googleAccountValidator =
+        new GoogleAccountValidator(credentialsList, halyardVersion, secretSessionManager);
 
     n.getAccounts().forEach(googleAccount -> googleAccountValidator.validate(p, googleAccount));
 
-    new GoogleBakeryDefaultsValidator(credentialsList, halyardVersion).validate(p, n.getBakeryDefaults());
+    new GoogleBakeryDefaultsValidator(credentialsList, halyardVersion)
+        .validate(p, n.getBakeryDefaults());
   }
 }

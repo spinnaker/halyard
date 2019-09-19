@@ -18,10 +18,22 @@
 package com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Ci;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class JenkinsCi extends Ci<JenkinsMaster> {
+  protected List<JenkinsMaster> masters = new ArrayList<>();
+
   @Override
   public String getNodeName() {
     return "jenkins";
+  }
+
+  public List<JenkinsMaster> listAccounts() {
+    return masters;
   }
 }

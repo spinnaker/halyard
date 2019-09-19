@@ -20,16 +20,14 @@ import com.netflix.spinnaker.halyard.config.model.v1.artifacts.ArtifactTemplate;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaService;
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaServices;
+import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
 import com.netflix.spinnaker.halyard.config.model.v1.security.*;
 import com.netflix.spinnaker.halyard.config.model.v1.webook.WebhookTrust;
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 
-/**
- * A way to identify a spot in your halconfig.
- */
+/** A way to identify a spot in your halconfig. */
 @Data
 public class NodeFilter implements Cloneable {
   List<NodeMatcher> matchers = new ArrayList<>();
@@ -53,15 +51,31 @@ public class NodeFilter implements Cloneable {
     return this;
   }
 
-  public NodeFilter withAnyCi() {
-    matchers.add(Node.thisNodeAcceptor(Cis.class));
-    matchers.add(Node.thisNodeAcceptor(Ci.class));
-    return this;
-  }
-
   public NodeFilter setCi(String name) {
     matchers.add(Node.thisNodeAcceptor(Cis.class));
     matchers.add(Node.namedNodeAcceptor(Ci.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnyRepository() {
+    matchers.add(Node.thisNodeAcceptor(Repositories.class));
+    matchers.add(Node.thisNodeAcceptor(Repository.class));
+    return this;
+  }
+
+  public NodeFilter setRepository(String name) {
+    matchers.add(Node.thisNodeAcceptor(Repositories.class));
+    matchers.add(Node.namedNodeAcceptor(Repository.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnySearch() {
+    matchers.add(Node.thisNodeAcceptor(Search.class));
+    return this;
+  }
+
+  public NodeFilter setSearch(String name) {
+    matchers.add(Node.namedNodeAcceptor(Search.class, name));
     return this;
   }
 
@@ -96,6 +110,16 @@ public class NodeFilter implements Cloneable {
 
   public NodeFilter setAccount(String name) {
     matchers.add(Node.namedNodeAcceptor(Account.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnyPublisher() {
+    matchers.add(Node.thisNodeAcceptor(Publisher.class));
+    return this;
+  }
+
+  public NodeFilter setPublisher(String name) {
+    matchers.add(Node.namedNodeAcceptor(Publisher.class, name));
     return this;
   }
 
@@ -154,12 +178,12 @@ public class NodeFilter implements Cloneable {
   }
 
   public NodeFilter withAnyMaster() {
-    matchers.add(Node.thisNodeAcceptor(Master.class));
+    matchers.add(Node.thisNodeAcceptor(CIAccount.class));
     return this;
   }
 
   public NodeFilter setMaster(String name) {
-    matchers.add(Node.namedNodeAcceptor(Master.class, name));
+    matchers.add(Node.namedNodeAcceptor(CIAccount.class, name));
     return this;
   }
 
@@ -305,6 +329,28 @@ public class NodeFilter implements Cloneable {
   public NodeFilter setArtifactTemplate(String name) {
     matchers.add(Node.thisNodeAcceptor(Artifacts.class));
     matchers.add(Node.namedNodeAcceptor(ArtifactTemplate.class, name));
+    return this;
+  }
+
+  public NodeFilter setPlugin() {
+    matchers.add(Node.thisNodeAcceptor(Plugins.class));
+    return this;
+  }
+
+  public NodeFilter setPlugin(String name) {
+    matchers.add(Node.thisNodeAcceptor(Plugins.class));
+    matchers.add(Node.namedNodeAcceptor(Plugin.class, name));
+    return this;
+  }
+
+  public NodeFilter withAnyPlugin() {
+    matchers.add(Node.thisNodeAcceptor(Plugins.class));
+    matchers.add(Node.thisNodeAcceptor(Plugin.class));
+    return this;
+  }
+
+  public NodeFilter setTelemetry() {
+    matchers.add(Node.thisNodeAcceptor(Telemetry.class));
     return this;
   }
 

@@ -19,6 +19,8 @@
 package com.netflix.spinnaker.halyard.cli.command.v1.config;
 
 import com.beust.jcommander.Parameters;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.github.GithubStatusCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.pubsub.PubsubCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.slack.SlackCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.notifications.twilio.TwilioCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
@@ -34,9 +36,11 @@ public class NotificationCommand extends AbstractConfigCommand {
   private String commandName = "notification";
 
   @Getter(AccessLevel.PUBLIC)
-  private String description = "Display the state of Spinnaker's notification settings.";
+  private String shortDescription = "Display the state of Spinnaker's notification settings.";
 
   public NotificationCommand() {
+    registerSubcommand(new GithubStatusCommand());
+    registerSubcommand(new PubsubCommand());
     registerSubcommand(new SlackCommand());
     registerSubcommand(new TwilioCommand());
   }

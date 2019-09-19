@@ -24,7 +24,7 @@ import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTask;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -38,51 +38,58 @@ public class AdminController {
       @RequestParam(required = false) String latestSpinnaker,
       @RequestParam(required = false) String latestHalyard,
       @RequestBody String _ignored) {
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(() -> {
-      if (!StringUtils.isEmpty(latestSpinnaker)) {
-        artifactService.publishLatestSpinnaker(latestSpinnaker);
-      }
+    StaticRequestBuilder<Void> builder =
+        new StaticRequestBuilder<>(
+            () -> {
+              if (!StringUtils.isEmpty(latestSpinnaker)) {
+                artifactService.publishLatestSpinnaker(latestSpinnaker);
+              }
 
-      if (!StringUtils.isEmpty(latestHalyard)) {
-        artifactService.publishLatestHalyard(latestHalyard);
-      }
-      return null;
-    });
+              if (!StringUtils.isEmpty(latestHalyard)) {
+                artifactService.publishLatestHalyard(latestHalyard);
+              }
+              return null;
+            });
 
     return DaemonTaskHandler.submitTask(builder::build, "Update the latest version");
   }
 
   @RequestMapping(value = "/deprecateVersion", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> deprecateVersion(
-      @RequestParam(required = false) String illegalReason,
-      @RequestBody Versions.Version version) {
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>( () -> {
-      artifactService.deprecateVersion(version, illegalReason);
-      return null;
-    });
+      @RequestParam(required = false) String illegalReason, @RequestBody Versions.Version version) {
+    StaticRequestBuilder<Void> builder =
+        new StaticRequestBuilder<>(
+            () -> {
+              artifactService.deprecateVersion(version, illegalReason);
+              return null;
+            });
 
-    return DaemonTaskHandler.submitTask(builder::build, "Deprecate version " + version.getVersion());
+    return DaemonTaskHandler.submitTask(
+        builder::build, "Deprecate version " + version.getVersion());
   }
 
   @RequestMapping(value = "/publishVersion", method = RequestMethod.PUT)
-  DaemonTask<Halconfig, Void> publishVersion(
-      @RequestBody Versions.Version version) {
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(() -> {
-      artifactService.publishVersion(version);
-      return null;
-    });
+  DaemonTask<Halconfig, Void> publishVersion(@RequestBody Versions.Version version) {
+    StaticRequestBuilder<Void> builder =
+        new StaticRequestBuilder<>(
+            () -> {
+              artifactService.publishVersion(version);
+              return null;
+            });
 
-    return DaemonTaskHandler.submitTask(builder::build, "Publish a new version " + version.getVersion());
+    return DaemonTaskHandler.submitTask(
+        builder::build, "Publish a new version " + version.getVersion());
   }
 
   @RequestMapping(value = "/publishBom", method = RequestMethod.PUT)
   DaemonTask<Halconfig, Void> publishBom(
-      @RequestParam String bomPath,
-      @RequestBody String _ignored) {
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(() -> {
-      artifactService.writeBom(bomPath);
-      return null;
-    });
+      @RequestParam String bomPath, @RequestBody String _ignored) {
+    StaticRequestBuilder<Void> builder =
+        new StaticRequestBuilder<>(
+            () -> {
+              artifactService.writeBom(bomPath);
+              return null;
+            });
 
     return DaemonTaskHandler.submitTask(builder::build, "Publish a BOM");
   }
@@ -93,10 +100,12 @@ public class AdminController {
       @PathVariable String artifactName,
       @RequestParam String profilePath,
       @RequestBody String _ignored) {
-    StaticRequestBuilder<Void> builder = new StaticRequestBuilder<>(() -> {
-      artifactService.writeArtifactConfig(bomPath, artifactName, profilePath);
-      return null;
-    });
+    StaticRequestBuilder<Void> builder =
+        new StaticRequestBuilder<>(
+            () -> {
+              artifactService.writeArtifactConfig(bomPath, artifactName, profilePath);
+              return null;
+            });
 
     return DaemonTaskHandler.submitTask(builder::build, "Publish a " + artifactName + " profile");
   }

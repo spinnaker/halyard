@@ -22,15 +22,12 @@ import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Delete a specific PROVIDER master
- */
+/** Delete a specific PROVIDER master */
 @Parameters(separators = "=")
 public abstract class AbstractDeleteMasterCommand extends AbstractHasMasterCommand {
   @Getter(AccessLevel.PROTECTED)
@@ -39,7 +36,7 @@ public abstract class AbstractDeleteMasterCommand extends AbstractHasMasterComma
   @Getter(AccessLevel.PUBLIC)
   private String commandName = "delete";
 
-  public String getDescription() {
+  public String getShortDescription() {
     return "Delete a specific " + getCiName() + " master by name.";
   }
 

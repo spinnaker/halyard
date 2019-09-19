@@ -21,11 +21,10 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
-import lombok.AccessLevel;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @Parameters(separators = "=")
 public abstract class AbstractMetricStoreEnableDisableCommand extends AbstractMetricStoreCommand {
@@ -48,7 +47,7 @@ public abstract class AbstractMetricStoreEnableDisableCommand extends AbstractMe
   private Map<String, NestableCommand> subcommands = new HashMap<>();
 
   @Override
-  public String getDescription() {
+  public String getShortDescription() {
     String metricStoreType = getMetricStoreType().getId();
     return "Set the " + metricStoreType + " method as " + subjunctivePerfectAction();
   }
@@ -59,7 +58,8 @@ public abstract class AbstractMetricStoreEnableDisableCommand extends AbstractMe
     String metricStoreType = getMetricStoreType().getId();
     boolean enable = isEnable();
     new OperationHandler<Void>()
-        .setOperation(Daemon.setMetricStoreEnabled(currentDeployment, metricStoreType, !noValidate, enable))
+        .setOperation(
+            Daemon.setMetricStoreEnabled(currentDeployment, metricStoreType, !noValidate, enable))
         .setFailureMesssage("Failed to " + getCommandName() + " " + metricStoreType)
         .setSuccessMessage("Successfully " + indicativePastPerfectAction() + " " + metricStoreType)
         .get();

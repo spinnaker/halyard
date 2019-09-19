@@ -17,16 +17,23 @@
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Features;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Webhook;
+import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.integrations.IntegrationsConfigWrapper;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
+@Slf4j
 @Component
 public class OrcaProfileFactory extends SpringProfileFactory {
   @Override
@@ -35,7 +42,15 @@ public class OrcaProfileFactory extends SpringProfileFactory {
   }
 
   @Override
-  protected void setProfile(Profile profile, DeploymentConfiguration deploymentConfiguration, SpinnakerRuntimeSettings endpoints) {
+  public String getMinimumSecretDecryptionVersion(String deploymentName) {
+    return "2.4.1";
+  }
+
+  @Override
+  protected void setProfile(
+      Profile profile,
+      DeploymentConfiguration deploymentConfiguration,
+      SpinnakerRuntimeSettings endpoints) {
     super.setProfile(profile, deploymentConfiguration, endpoints);
 
     profile.appendContents(profile.getBaseContents());
@@ -47,15 +62,37 @@ public class OrcaProfileFactory extends SpringProfileFactory {
       profile.appendContents("default.vpc.securityGroups: ");
     }
 
+    final Features features = deploymentConfiguration.getFeatures();
+    IntegrationsConfigWrapper integrationsConfig = new IntegrationsConfigWrapper(features);
     Webhook webhook = deploymentConfiguration.getWebhook();
     List<String> files = backupRequiredFiles(webhook, deploymentConfiguration.getName());
     profile.setRequiredFiles(files);
-    profile.appendContents(yamlToString(new WebhookWrapper(webhook)));
+    profile
+        .appendContents(
+            yamlToString(deploymentConfiguration.getName(), profile, new WebhookWrapper(webhook)))
+        .appendContents(
+            yamlToString(deploymentConfiguration.getName(), profile, integrationsConfig));
 
-    String pipelineTemplates = Boolean.toString(deploymentConfiguration.getFeatures().getPipelineTemplates() != null ? deploymentConfiguration.getFeatures().getPipelineTemplates() : false);
+    String pipelineTemplates =
+        Boolean.toString(
+            features.getPipelineTemplates() != null ? features.getPipelineTemplates() : false);
     profile.appendContents("pipelineTemplates.enabled: " + pipelineTemplates);
     // For backward compatibility
     profile.appendContents("pipelineTemplate.enabled: " + pipelineTemplates);
+
+    final List<Plugin> plugins = deploymentConfiguration.getPlugins().getPlugins();
+    Map<String, Object> fullyRenderedYaml = new LinkedHashMap<>();
+    Map<String, Object> pluginMetadata =
+        plugins.stream()
+            .filter(p -> p.getEnabled())
+            .filter(p -> !p.getManifestLocation().isEmpty())
+            .map(p -> p.generateManifest())
+            .collect(Collectors.toMap(m -> m.getName(), m -> m.getOptions()));
+
+    fullyRenderedYaml.put("plugins", pluginMetadata);
+
+    profile.appendContents(
+        yamlToString(deploymentConfiguration.getName(), profile, fullyRenderedYaml));
   }
 
   @Data

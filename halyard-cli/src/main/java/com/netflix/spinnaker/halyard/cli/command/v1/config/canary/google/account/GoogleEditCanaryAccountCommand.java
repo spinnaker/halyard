@@ -23,11 +23,15 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.account.Abstra
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.google.CommonCanaryGoogleCommandProperties;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.google.CommonGoogleCommandProperties;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.LocalFileConverter;
+import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
+import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.google.GoogleCanaryAccount;
 
 @Parameters(separators = "=")
-public class GoogleEditCanaryAccountCommand extends AbstractEditCanaryAccountCommand<GoogleCanaryAccount> {
+public class GoogleEditCanaryAccountCommand
+    extends AbstractEditCanaryAccountCommand<GoogleCanaryAccount> {
 
   @Override
   protected String getServiceIntegration() {
@@ -36,33 +40,24 @@ public class GoogleEditCanaryAccountCommand extends AbstractEditCanaryAccountCom
 
   @Parameter(
       names = "--project",
-      description = CommonCanaryGoogleCommandProperties.PROJECT_DESCRIPTION
-  )
+      description = CommonCanaryGoogleCommandProperties.PROJECT_DESCRIPTION)
   private String project;
 
   @Parameter(
       names = "--json-path",
       converter = LocalFileConverter.class,
-      description = CommonGoogleCommandProperties.JSON_PATH_DESCRIPTION
-  )
+      description = CommonGoogleCommandProperties.JSON_PATH_DESCRIPTION)
   private String jsonPath;
 
-  @Parameter(
-      names = "--bucket",
-      description = CommonCanaryCommandProperties.BUCKET
-  )
+  @Parameter(names = "--bucket", description = CommonCanaryCommandProperties.BUCKET)
   private String bucket;
 
-  @Parameter(
-      names = "--root-folder",
-      description = CommonCanaryCommandProperties.ROOT_FOLDER
-  )
+  @Parameter(names = "--root-folder", description = CommonCanaryCommandProperties.ROOT_FOLDER)
   private String rootFolder;
 
   @Parameter(
       names = "--bucket-location",
-      description = CommonCanaryGoogleCommandProperties.BUCKET_LOCATION
-  )
+      description = CommonCanaryGoogleCommandProperties.BUCKET_LOCATION)
   private String bucketLocation;
 
   @Override
@@ -72,6 +67,16 @@ public class GoogleEditCanaryAccountCommand extends AbstractEditCanaryAccountCom
     account.setBucket(isSet(bucket) ? bucket : account.getBucket());
     account.setRootFolder(isSet(rootFolder) ? rootFolder : account.getRootFolder());
     account.setBucketLocation(isSet(bucketLocation) ? bucketLocation : account.getBucketLocation());
+
+    String currentDeployment = getCurrentDeployment();
+    // Disable validation here, since we don't want an illegal config to prevent us from fixing it.
+    Canary canary =
+        new OperationHandler<Canary>()
+            .setFailureMesssage("Failed to get canary.")
+            .setOperation(Daemon.getCanary(currentDeployment, false))
+            .get();
+
+    GoogleAddEditCanaryAccountUtils.updateSupportedTypes(canary, account);
 
     return account;
   }

@@ -26,13 +26,12 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.springframework.boot.context.embedded.Ssl;
+import org.springframework.boot.web.server.Ssl;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
 public class SpringSsl extends Node {
-  @Getter
-  private final String nodeName = "ssl";
+  @Getter private final String nodeName = "ssl";
 
   @Override
   public NodeIterator getChildren() {
@@ -44,10 +43,8 @@ public class SpringSsl extends Node {
   @LocalFile @SecretFile String keyStore;
   String keyStoreType;
   @Secret String keyStorePassword;
-  @LocalFile @SecretFile
-  String trustStore;
+  @LocalFile @SecretFile String trustStore;
   String trustStoreType;
-  @Secret
-  String trustStorePassword;
+  @Secret String trustStorePassword;
   Ssl.ClientAuth clientAuth;
 }

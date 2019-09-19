@@ -31,22 +31,16 @@ public abstract class AbstractNamedCiCommand extends AbstractCiCommand {
   }
 
   @Override
-  public String getDescription() {
+  public String getShortDescription() {
     return "Manage and view Spinnaker configuration for the " + getCiName() + " ci";
   }
 
   protected AbstractNamedCiCommand() {
-    registerSubcommand(new CiEnableDisableCommandBuilder()
-        .setCiName(getCiName())
-        .setEnable(false)
-        .build()
-    );
+    registerSubcommand(
+        new CiEnableDisableCommandBuilder().setCiName(getCiName()).setEnable(false).build());
 
-    registerSubcommand(new CiEnableDisableCommandBuilder()
-        .setCiName(getCiName())
-        .setEnable(true)
-        .build()
-    );
+    registerSubcommand(
+        new CiEnableDisableCommandBuilder().setCiName(getCiName()).setEnable(true).build());
   }
 
   @Override

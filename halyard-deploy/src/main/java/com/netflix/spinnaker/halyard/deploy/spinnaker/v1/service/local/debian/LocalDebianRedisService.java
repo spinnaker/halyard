@@ -38,28 +38,23 @@ import redis.clients.jedis.Jedis;
 public class LocalDebianRedisService extends RedisService implements LocalDebianService<Jedis> {
   @Override
   public ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    return new Settings().setArtifactId("redis")
-        .setHost(getDefaultHost())
-        .setEnabled(true);
+    return new Settings().setArtifactId("redis").setHost(getDefaultHost()).setEnabled(true);
   }
 
-  @Autowired
-  ArtifactService artifactService;
+  @Autowired ArtifactService artifactService;
 
-  @Autowired
-  LocalLogCollectorFactory localLogCollectorFactory;
+  @Autowired LocalLogCollectorFactory localLogCollectorFactory;
 
   @Delegate(excludes = HasServiceSettings.class)
   LogCollector getLocalLogCollector() {
-    return localLogCollectorFactory.build(this, new String[] {
-        "/var/log/upstart/redis-server.log",
-        "/var/log/redis/redis-server.log"
-    });
+    return localLogCollectorFactory.build(
+        this,
+        new String[] {"/var/log/upstart/redis-server.log", "/var/log/redis/redis-server.log"});
   }
 
   @Override
   public String installArtifactCommand(DeploymentDetails deploymentDetails) {
-    return "apt-get -q -y --force-yes install redis-server";
+    return "apt-get -q -y --force-yes install redis-server && (systemctl start redis-server.service || true)";
   }
 
   @Override
