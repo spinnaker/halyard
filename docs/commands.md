@@ -541,6 +541,10 @@
  * [**hal config storage oracle edit**](#hal-config-storage-oracle-edit)
  * [**hal config storage s3**](#hal-config-storage-s3)
  * [**hal config storage s3 edit**](#hal-config-storage-s3-edit)
+ * [**hal config telemetry**](#hal-config-telemetry)
+ * [**hal config telemetry disable**](#hal-config-telemetry-disable)
+ * [**hal config telemetry edit**](#hal-config-telemetry-edit)
+ * [**hal config telemetry enable**](#hal-config-telemetry-enable)
  * [**hal config version**](#hal-config-version)
  * [**hal config version edit**](#hal-config-version-edit)
  * [**hal config webhook**](#hal-config-webhook)
@@ -824,6 +828,7 @@ hal config [parameters] [subcommands]
  * `repository`: Configure, validate, and view the specified repository.
  * `security`: Configure Spinnaker's security. This includes external SSL, authentication mechanisms, and authorization policies.
  * `storage`: Show Spinnaker's persistent storage configuration.
+ * `telemetry`: Show Spinnaker's telemetry settings.
  * `version`: Configure & view the current deployment of Spinnaker's version.
  * `webhook`: Show Spinnaker's webhook configuration.
 
@@ -9959,6 +9964,7 @@ hal config security authn saml edit [parameters]
  * `--metadata`: The address to your identity provider's metadata XML file. This can be a URL or the path of a local file.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--service-address-url`: The address of the Gate server that will be accesible by the SAML identity provider. This should be the full URL, including port, e.g. [https://gate.org.com:8084/](https://gate.org.com:8084/). If deployed behind a load balancer, this would be the laod balancer's address.
+ * `--user-attribute-mapping-email`: The email field returned from your SAML provider.
  * `--user-attribute-mapping-first-name`: The first name field returned from your SAML provider.
  * `--user-attribute-mapping-last-name`: The last name field returned from your SAML provider.
  * `--user-attribute-mapping-roles`: The roles field returned from your SAML provider.
@@ -10552,6 +10558,72 @@ Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--region`: This is only required if the bucket you specify doesn't exist yet. In that case, the bucket will be created in that region. See [http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region).
  * `--root-folder`: The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
  * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) Your AWS Secret Key.
+ * `--server-side-encryption`: Use Amazon Server-Side Encryption ('x-amz-server-side-encryption' header). Supports 'AES256' (for Amazon S3-managed encryption keys, equivalent to a header value of 'AES256') and 'AWSKMS' (for AWS KMS-managed encryption keys, equivalent to a header value of 'aws:kms'.
+
+
+---
+## hal config telemetry
+
+Show Spinnaker's telemetry settings.
+
+#### Usage
+```
+hal config telemetry [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set Spinnaker's telemetry settings to disabled.
+ * `edit`: Edit Spinnaker's telemetry settings.
+ * `enable`: Set Spinnaker's telemetry settings to enabled.
+
+---
+## hal config telemetry disable
+
+Set Spinnaker's telemetry settings to disabled.
+
+#### Usage
+```
+hal config telemetry disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config telemetry edit
+
+Edit Spinnaker's telemetry settings.
+
+#### Usage
+```
+hal config telemetry edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--endpoint`: Set the endpoint for telemetry metrics.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config telemetry enable
+
+Set Spinnaker's telemetry settings to enabled.
+
+#### Usage
+```
+hal config telemetry enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
 
 
 ---
