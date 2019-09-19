@@ -254,7 +254,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
         .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
         .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
         .addBinding("affinity", getAffinity(details))
-        .addBinding("tolerations", getTolerations(details))
+        .addBinding("tolerations", getTolerations(settings, details))
         .addBinding(
             "volumes", combineVolumes(configSources, settings.getKubernetes(), sidecarConfigs))
         .addBinding("securityContext", settings.getKubernetes().getSecurityContext())
@@ -675,13 +675,18 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
     }
   }
 
-  default String getTolerations(AccountDeploymentDetails<KubernetesAccount> details) {
-    List<Toleration> toleration =
-        details
-            .getDeploymentConfiguration()
-            .getDeploymentEnvironment()
-            .getTolerations()
-            .getOrDefault(getService().getServiceName(), new ArrayList<>());
+  default String getTolerations(ServiceSettings settings, AccountDeploymentDetails<KubernetesAccount> details) {
+
+    List<Toleration> toleration = settings.getKubernetes().getTolerations();
+
+    if (toleration.isEmpty()) {
+      toleration =
+          details
+              .getDeploymentConfiguration()
+              .getDeploymentEnvironment()
+              .getTolerations()
+              .getOrDefault(getService().getServiceName(), new ArrayList<>());
+    }
 
     if (toleration.isEmpty()) {
       toleration =
