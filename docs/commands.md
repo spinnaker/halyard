@@ -5577,6 +5577,7 @@ hal config deploy edit [parameters]
 This is only required when Spinnaker is being deployed in non-Kubernetes clustered configuration.
  * `--consul-enabled`: Whether or not to use Consul as a service discovery mechanism to deploy Spinnaker.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--git-origin-baseurl`: This is the git base url that your fork exists under. (defaults to 'git@github.com:')
  * `--git-origin-user`: This is the git user your github fork exists under.
  * `--git-upstream-user`: This is the upstream git user you are configuring to pull changes from & push PRs to.
  * `--image-variant`: The container image variant type to use when deploying a distributed installation of Spinnaker.

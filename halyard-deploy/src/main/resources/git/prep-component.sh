@@ -13,7 +13,7 @@ REPO={%repo%}
 UPDATE={%update%}
 
 ## TODO(lwander): make configurable
-ORIGIN_URL=git@github.com:{%origin%}/${REPO}.git
+ORIGIN_URL={%origin%}/${REPO}.git
 UPSTREAM_URL=git@github.com:{%upstream%}/${REPO}.git
 
 if [ ! -d $ARTIFACT ]; then

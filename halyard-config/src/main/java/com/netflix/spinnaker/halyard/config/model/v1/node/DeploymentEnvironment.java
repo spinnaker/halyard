@@ -161,6 +161,7 @@ public class DeploymentEnvironment extends Node {
   public static class GitConfig {
     String upstreamUser = "spinnaker";
     String originUser;
+    String originBaseUrl = "git@github.com:";
   }
 
   @Data

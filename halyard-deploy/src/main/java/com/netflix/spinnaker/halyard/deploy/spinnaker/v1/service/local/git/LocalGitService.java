@@ -109,7 +109,7 @@ public interface LocalGitService<T> extends LocalService<T> {
     boolean update = env.getUpdateVersions();
 
     bindings.put("update", update ? "true" : "");
-    bindings.put("origin", gitConfig.getOriginUser());
+    bindings.put("origin", gitConfig.getOriginBaseUrl() + gitConfig.getOriginUser());
     bindings.put("upstream", gitConfig.getUpstreamUser());
 
     TemplatedResource prepResource = new StringReplaceJarResource("/git/prep-component.sh");

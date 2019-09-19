@@ -128,6 +128,12 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
   private String gitOriginUser;
 
   @Parameter(
+      names = "--git-origin-baseurl",
+      description =
+          "This is the git base url that your fork exists under. (defaults to 'git@github.com:')")
+  private String gitOriginBaseUrl;
+
+  @Parameter(
       names = "--liveness-probe-enabled",
       arity = 1,
       description =
@@ -161,6 +167,8 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
     gitConfig.setOriginUser(isSet(gitOriginUser) ? gitOriginUser : gitConfig.getOriginUser());
     gitConfig.setUpstreamUser(
         isSet(gitUpstreamUser) ? gitUpstreamUser : gitConfig.getUpstreamUser());
+    gitConfig.setOriginBaseUrl(
+        isSet(gitOriginBaseUrl) ? gitOriginBaseUrl : gitConfig.getOriginBaseUrl());
     deploymentEnvironment.setGitConfig(gitConfig);
 
     DeploymentEnvironment.Consul consul = deploymentEnvironment.getConsul();
