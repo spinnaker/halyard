@@ -675,7 +675,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
     }
   }
 
-  default String getTolerations(ServiceSettings settings, AccountDeploymentDetails<KubernetesAccount> details) {
+  default String getTolerations(
+      ServiceSettings settings, AccountDeploymentDetails<KubernetesAccount> details) {
 
     List<Toleration> toleration = settings.getKubernetes().getTolerations();
 
