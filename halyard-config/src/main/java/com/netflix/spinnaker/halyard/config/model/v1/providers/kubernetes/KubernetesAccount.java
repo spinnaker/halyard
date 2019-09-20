@@ -23,11 +23,12 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.ValidForSpinnakerVersion;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.ContainerAccount;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -90,8 +91,6 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
   Boolean onlySpinnakerManaged;
 
   Boolean debug;
-
-  Boolean isClusterRegistry;
 
   public boolean usesServiceAccount() {
     return serviceAccount != null && serviceAccount;

@@ -42,5 +42,6 @@ public class KubernetesAccountCommand extends AbstractAccountCommand {
     super();
     registerSubcommand(new KubernetesAddAccountCommand());
     registerSubcommand(new KubernetesEditAccountCommand());
+    registerSubcommand(new KubernetesSyncAccountCommand());
   }
 }

@@ -436,9 +436,11 @@
  * [**hal config provider kubernetes account edit**](#hal-config-provider-kubernetes-account-edit)
  * [**hal config provider kubernetes account get**](#hal-config-provider-kubernetes-account-get)
  * [**hal config provider kubernetes account list**](#hal-config-provider-kubernetes-account-list)
+ * [**hal config provider kubernetes account sync**](#hal-config-provider-kubernetes-account-sync)
  * [**hal config provider kubernetes disable**](#hal-config-provider-kubernetes-disable)
  * [**hal config provider kubernetes edit**](#hal-config-provider-kubernetes-edit)
  * [**hal config provider kubernetes enable**](#hal-config-provider-kubernetes-enable)
+ * [**hal config provider kubernetes sync**](#hal-config-provider-kubernetes-sync)
  * [**hal config provider oracle**](#hal-config-provider-oracle)
  * [**hal config provider oracle account**](#hal-config-provider-oracle-account)
  * [**hal config provider oracle account add**](#hal-config-provider-oracle-account-add)
@@ -8469,6 +8471,7 @@ hal config provider kubernetes [parameters] [subcommands]
  * `disable`: Set the kubernetes provider as disabled
  * `edit`: Set provider-wide properties for the Kubernetes provider
  * `enable`: Set the kubernetes provider as enabled
+ * `sync`: sync account from the kubernetes provider cluster registry.
 
 ---
 ## hal config provider kubernetes account
@@ -8493,6 +8496,7 @@ hal config provider kubernetes account ACCOUNT [parameters] [subcommands]
  * `edit`: Edit an account in the kubernetes provider.
  * `get`: Get the specified account details for the kubernetes provider.
  * `list`: List the account names for the kubernetes provider.
+ * `sync`: sync account from the kubernetes provider cluster registry.
 
 ---
 ## hal config provider kubernetes account add
@@ -8515,7 +8519,6 @@ When no context is configured for an account the 'current-context' in your kubec
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--docker-registries`: (*Default*: `[]`) A list of the Spinnaker docker registry account names this Spinnaker account can use as image sources. These docker registry accounts must be registered in your halconfig before you can add them here.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
- * `--is-cluster-registry`: (*Default*: `false`) Sync k8s account from this cluster using cluster registry crd only support true/false
  * `--kinds`: (*Default*: `[]`) (V2 Only) A list of resource kinds this Spinnaker account can deploy to and will cache.
 When no kinds are configured, this defaults to 'all kinds described here [https://spinnaker.io/reference/providers/kubernetes-v2/](https://spinnaker.io/reference/providers/kubernetes-v2/)'.
  * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
@@ -8646,6 +8649,23 @@ hal config provider kubernetes account list [parameters]
 
 
 ---
+## hal config provider kubernetes account sync
+
+sync account from the kubernetes provider cluster registry.
+
+#### Usage
+```
+hal config provider kubernetes account sync ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config provider kubernetes disable
 
 Set the kubernetes provider as disabled
@@ -8687,6 +8707,23 @@ hal config provider kubernetes enable [parameters]
 
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider kubernetes sync
+
+sync account from the kubernetes provider cluster registry.
+
+#### Usage
+```
+hal config provider kubernetes sync ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--kubeconfig-file`: The path to your kubeconfig file. By default, it will be under the Spinnaker user's home directory in the typical .kube/config location.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 

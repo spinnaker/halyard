@@ -23,6 +23,8 @@ dependencies {
     force = true
   }
   implementation 'org.nibor.autolink:autolink:0.10.0'
+  implementation 'io.swagger:swagger-annotations:1.5.12'
+  implementation 'io.alauda:cluster-registry-client-java:1.0.3'
 
   implementation project(':halyard-config')
   implementation project(':halyard-core')
