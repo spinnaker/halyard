@@ -20,7 +20,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.repository.search.AbstractAddSearchCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Search;
-import com.netflix.spinnaker.halyard.config.model.v1.repository.artifactory.ArtifactorySearch;
 import com.netflix.spinnaker.halyard.config.model.v1.repository.nexus.NexusSearch;
 
 @Parameters(separators = "=")
@@ -54,11 +53,8 @@ public class NexusAddSearchCommand extends AbstractAddSearchCommand {
       description = NexusCommandProperties.REPO_DESCRIPTION)
   public String repo;
 
-  @Parameter(
-          names = "--nodeId",
-          description = NexusCommandProperties.NODE_ID_DESCRIPTION)
+  @Parameter(names = "--nodeId", description = NexusCommandProperties.NODE_ID_DESCRIPTION)
   public String nodeId;
-
 
   @Override
   protected Search buildSearch(String searchName) {

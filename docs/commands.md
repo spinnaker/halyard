@@ -9386,8 +9386,6 @@ hal config repository [subcommands]
 
 #### Subcommands
  * `artifactory`: Manage and view Spinnaker configuration for the artifactory repository
- 
-#### Subcommands
  * `nexus`: Manage and view Spinnaker configuration for the nexus repository
 
 ---
@@ -9644,10 +9642,10 @@ hal config repository nexus search add SEARCH [parameters]
  * `--base-url`: (*Required*) The base url your nexus search is reachable at.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--nodeId`: The optional node ID for the repo in your nexus to be searched. Used when repo name is ambiguous.
  * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The password of the nexus user to authenticate as.
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build search or use it as a trigger source.
  * `--repo`: (*Required*) The repo in your nexus to be searched.
- * `--nodeId`: If supplied, the node ID of the repo in your nexus to be searched.
  * `--username`: (*Required*) The username of the nexus user to authenticate as.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build search.
 
@@ -9685,12 +9683,12 @@ hal config repository nexus search edit SEARCH [parameters]
  * `--base-url`: The base url your nexus search is reachable at.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--nodeId`: The optional node ID for the repo in your nexus to be searched. Used when repo name is ambiguous.
  * `--password`: The password of the nexus user to authenticate as.
  * `--read-permissions`: A user must have at least one of these roles in order to view this build search or use it as a trigger source.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--repo`: The repo in your nexus to be searched.
- * `--nodeId`: The node ID of the repo in your nexus to be searched.
  * `--username`: The username of the nexus user to authenticate as.
  * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build search.
 

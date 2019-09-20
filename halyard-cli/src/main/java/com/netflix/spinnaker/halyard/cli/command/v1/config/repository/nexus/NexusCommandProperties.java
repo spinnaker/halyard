@@ -17,16 +17,14 @@
 package com.netflix.spinnaker.halyard.cli.command.v1.config.repository.nexus;
 
 public class NexusCommandProperties {
-  static final String USERNAME_DESCRIPTION =
-      "The username of the nexus user to authenticate as.";
+  static final String USERNAME_DESCRIPTION = "The username of the nexus user to authenticate as.";
 
-  static final String PASSWORD_DESCRIPTION =
-      "The password of the nexus user to authenticate as.";
+  static final String PASSWORD_DESCRIPTION = "The password of the nexus user to authenticate as.";
 
-  static final String BASE_URL_DESCRIPTION =
-      "The base url your nexus search is reachable at.";
+  static final String BASE_URL_DESCRIPTION = "The base url your nexus search is reachable at.";
 
   static final String REPO_DESCRIPTION = "The repo in your nexus to be searched.";
 
-  static final String NODE_ID_DESCRIPTION = "The optional node ID for the repo in your nexus to be searched. Used when repo name is ambiguous.";
+  static final String NODE_ID_DESCRIPTION =
+      "The optional node ID for the repo in your nexus to be searched. Used when repo name is ambiguous.";
 }
