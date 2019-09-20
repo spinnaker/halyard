@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Armory, Inc.
+ * Copyright 2019 New Relic Corporation. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.node;
+package com.netflix.spinnaker.halyard.config.model.v1.canary.newrelic;
 
-import de.huxhorn.sulky.ulid.ULID;
+import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryServiceIntegration;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class Telemetry extends Node {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Slf4j
+public class NewRelicCanaryServiceIntegration
+    extends AbstractCanaryServiceIntegration<NewRelicCanaryAccount> implements Cloneable {
+  public static final String NAME = "newrelic";
 
-  public static String DEFAULT_TELEMETRY_ENDPOINT = "https://stats.spinnaker.io";
-
-  @Override
-  public String getNodeName() {
-    return "telemetry";
-  }
-
-  private Boolean enabled = false;
-  private String endpoint = DEFAULT_TELEMETRY_ENDPOINT;
-  private String instanceId = new ULID().nextULID();
-  private String spinnakerVersion;
-  private int connectionTimeoutMillis = 3000;
-  private int readTimeoutMillis = 5000;
+  String name = NAME;
 }

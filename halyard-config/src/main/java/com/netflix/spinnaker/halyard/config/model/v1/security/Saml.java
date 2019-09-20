@@ -30,7 +30,7 @@ public class Saml extends AuthnMethod {
   private final Method method = Method.SAML;
   private final String nodeName = "saml";
 
-  @LocalFile private String metadataLocal;
+  @LocalFile @SecretFile private String metadataLocal;
   private String metadataRemote;
   private String issuerId;
 
@@ -49,5 +49,6 @@ public class Saml extends AuthnMethod {
     private String roles;
     private String rolesDelimiter;
     private String username;
+    private String email;
   }
 }
