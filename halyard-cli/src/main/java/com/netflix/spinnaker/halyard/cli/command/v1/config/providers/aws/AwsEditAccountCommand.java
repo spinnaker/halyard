@@ -78,7 +78,7 @@ public class AwsEditAccountCommand extends AbstractEditAccountCommand<AwsAccount
   @Parameter(
       names = "--launching-lifecycle-hook-heartbeat-timeout-seconds",
       description = AwsCommandProperties.HOOK_HEARTBEAT_TIMEOUT_DESCRIPTION)
-  private Integer launchingHookHeartbeatTimeoutSeconds = 3200;
+  private Integer launchingHookHeartbeatTimeoutSeconds = 3600;
 
   @Parameter(
       names = "--launching-lifecycle-hook-notification-target-arn",
@@ -98,7 +98,7 @@ public class AwsEditAccountCommand extends AbstractEditAccountCommand<AwsAccount
   @Parameter(
       names = "--terminating-lifecycle-hook-heartbeat-timeout-seconds",
       description = AwsCommandProperties.HOOK_HEARTBEAT_TIMEOUT_DESCRIPTION)
-  private Integer terminatingHookHeartbeatTimeoutSeconds = 3200;
+  private Integer terminatingHookHeartbeatTimeoutSeconds = 3600;
 
   @Parameter(
       names = "--terminating-lifecycle-hook-notification-target-arn",

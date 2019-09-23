@@ -7152,7 +7152,7 @@ Using {{region}} will make Spinnaker use AWS regions in the hostname to access d
  * `--edda`: The endpoint Edda is reachable at. Edda is not a hard dependency of Spinnaker, but is helpful for reducing the request volume against AWS. See [https://github.com/Netflix/edda](https://github.com/Netflix/edda) for more information.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--launching-lifecycle-hook-default-result`: (*Default*: `ABANDON`) Defines the action the Auto Scaling group should take when the lifecycle hook timeout elapses or if an unexpected failure occurs. This parameter can be either CONTINUE or ABANDON. The default value is ABANDON.
- * `--launching-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3200`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
+ * `--launching-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3600`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
           "remain in a wait state for a finite period of time. The default is one hour (3600 seconds).
  * `--launching-lifecycle-hook-notification-target-arn`: The ARN of the notification target that Amazon EC2 Auto Scaling uses to notify you when an instance is in the transition state for the lifecycle hook. This target can be either an SQS queue or an SNS topic.
 
@@ -7163,7 +7163,7 @@ Using {{region}} will make Spinnaker use AWS regions in the hostname to access d
  * `--regions`: (*Default*: `[]`) The AWS regions this Spinnaker account will manage.
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--terminating-lifecycle-hook-default-result`: (*Default*: `ABANDON`) Defines the action the Auto Scaling group should take when the lifecycle hook timeout elapses or if an unexpected failure occurs. This parameter can be either CONTINUE or ABANDON. The default value is ABANDON.
- * `--terminating-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3200`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
+ * `--terminating-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3600`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
           "remain in a wait state for a finite period of time. The default is one hour (3600 seconds).
  * `--terminating-lifecycle-hook-notification-target-arn`: The ARN of the notification target that Amazon EC2 Auto Scaling uses to notify you when an instance is in the transition state for the lifecycle hook. This target can be either an SQS queue or an SNS topic.
 
@@ -7217,7 +7217,7 @@ Using {{region}} will make Spinnaker use AWS regions in the hostname to access d
  * `--edda`: The endpoint Edda is reachable at. Edda is not a hard dependency of Spinnaker, but is helpful for reducing the request volume against AWS. See [https://github.com/Netflix/edda](https://github.com/Netflix/edda) for more information.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--launching-lifecycle-hook-default-result`: (*Default*: `ABANDON`) Defines the action the Auto Scaling group should take when the lifecycle hook timeout elapses or if an unexpected failure occurs. This parameter can be either CONTINUE or ABANDON. The default value is ABANDON.
- * `--launching-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3200`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
+ * `--launching-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3600`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
           "remain in a wait state for a finite period of time. The default is one hour (3600 seconds).
  * `--launching-lifecycle-hook-notification-target-arn`: The ARN of the notification target that Amazon EC2 Auto Scaling uses to notify you when an instance is in the transition state for the lifecycle hook. This target can be either an SQS queue or an SNS topic.
 
@@ -7232,7 +7232,7 @@ Using {{region}} will make Spinnaker use AWS regions in the hostname to access d
  * `--remove-write-permission`: Remove this permission to from list of write permissions.
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--terminating-lifecycle-hook-default-result`: (*Default*: `ABANDON`) Defines the action the Auto Scaling group should take when the lifecycle hook timeout elapses or if an unexpected failure occurs. This parameter can be either CONTINUE or ABANDON. The default value is ABANDON.
- * `--terminating-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3200`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
+ * `--terminating-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3600`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
           "remain in a wait state for a finite period of time. The default is one hour (3600 seconds).
  * `--terminating-lifecycle-hook-notification-target-arn`: The ARN of the notification target that Amazon EC2 Auto Scaling uses to notify you when an instance is in the transition state for the lifecycle hook. This target can be either an SQS queue or an SNS topic.
 
