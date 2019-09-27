@@ -138,6 +138,15 @@
  * [**hal config canary google disable**](#hal-config-canary-google-disable)
  * [**hal config canary google edit**](#hal-config-canary-google-edit)
  * [**hal config canary google enable**](#hal-config-canary-google-enable)
+ * [**hal config canary newrelic**](#hal-config-canary-newrelic)
+ * [**hal config canary newrelic account**](#hal-config-canary-newrelic-account)
+ * [**hal config canary newrelic account add**](#hal-config-canary-newrelic-account-add)
+ * [**hal config canary newrelic account delete**](#hal-config-canary-newrelic-account-delete)
+ * [**hal config canary newrelic account edit**](#hal-config-canary-newrelic-account-edit)
+ * [**hal config canary newrelic account get**](#hal-config-canary-newrelic-account-get)
+ * [**hal config canary newrelic account list**](#hal-config-canary-newrelic-account-list)
+ * [**hal config canary newrelic disable**](#hal-config-canary-newrelic-disable)
+ * [**hal config canary newrelic enable**](#hal-config-canary-newrelic-enable)
  * [**hal config canary prometheus**](#hal-config-canary-prometheus)
  * [**hal config canary prometheus account**](#hal-config-canary-prometheus-account)
  * [**hal config canary prometheus account add**](#hal-config-canary-prometheus-account-add)
@@ -532,6 +541,10 @@
  * [**hal config storage oracle edit**](#hal-config-storage-oracle-edit)
  * [**hal config storage s3**](#hal-config-storage-s3)
  * [**hal config storage s3 edit**](#hal-config-storage-s3-edit)
+ * [**hal config telemetry**](#hal-config-telemetry)
+ * [**hal config telemetry disable**](#hal-config-telemetry-disable)
+ * [**hal config telemetry edit**](#hal-config-telemetry-edit)
+ * [**hal config telemetry enable**](#hal-config-telemetry-enable)
  * [**hal config version**](#hal-config-version)
  * [**hal config version edit**](#hal-config-version-edit)
  * [**hal config webhook**](#hal-config-webhook)
@@ -815,6 +828,7 @@ hal config [parameters] [subcommands]
  * `repository`: Configure, validate, and view the specified repository.
  * `security`: Configure Spinnaker's security. This includes external SSL, authentication mechanisms, and authorization policies.
  * `storage`: Show Spinnaker's persistent storage configuration.
+ * `telemetry`: Show Spinnaker's telemetry settings.
  * `version`: Configure & view the current deployment of Spinnaker's version.
  * `webhook`: Show Spinnaker's webhook configuration.
 
@@ -2358,6 +2372,7 @@ hal config canary [parameters] [subcommands]
  * `edit`: Edit Spinnaker's canary analysis settings.
  * `enable`: Set Spinnaker's canary analysis to enabled.
  * `google`: Configure your canary analysis Google service integration settings for Spinnaker.
+ * `newrelic`: Configure your canary analysis New Relic service integration settings for Spinnaker.
  * `prometheus`: Configure your canary analysis Prometheus service integration settings for Spinnaker.
  * `signalfx`: Configure your canary analysis SignalFx service integration settings for Spinnaker.
 
@@ -2924,6 +2939,162 @@ Set Spinnaker's canary analysis Google service integration to enabled.
 #### Usage
 ```
 hal config canary google enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary newrelic
+
+Configure your canary analysis New Relic service integration settings for Spinnaker.
+
+#### Usage
+```
+hal config canary newrelic [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the newrelic service integration's canary accounts.
+ * `disable`: Set Spinnaker's canary analysis newrelic service integration to disabled.
+ * `enable`: Set Spinnaker's canary analysis newrelic service integration to enabled.
+
+---
+## hal config canary newrelic account
+
+Manage and view Spinnaker configuration for the newrelic service integration's canary accounts.
+
+#### Usage
+```
+hal config canary newrelic account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a canary account to the NewRelic service integration.
+ * `delete`: Delete a specific newrelic canary account by name.
+ * `edit`: Edit a canary account in the newrelic service integration.
+ * `get`: Get the specified canary account details for the newrelic service integration.
+ * `list`: List the canary account names for the newrelic service integration.
+
+---
+## hal config canary newrelic account add
+
+Add a canary account to the NewRelic service integration.
+
+#### Usage
+```
+hal config canary newrelic account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--api-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) Your account's unique New Relic Insights API key. See [https://docs.newrelic.com/docs/insights/insights-api/get-data/query-insights-event-data-api](https://docs.newrelic.com/docs/insights/insights-api/get-data/query-insights-event-data-api).
+ * `--application-key`: (*Required*) Your New Relic account id. See [https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id).
+ * `--base-url`: (*Required*) The base URL to the New Relic Insights server.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary newrelic account delete
+
+Delete a specific newrelic canary account by name.
+
+#### Usage
+```
+hal config canary newrelic account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary newrelic account edit
+
+Edit a canary account in the newrelic service integration.
+
+#### Usage
+```
+hal config canary newrelic account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--api-key`: (*Sensitive data* - user will be prompted on standard input) Your account's unique New Relic Insights API key. See [https://docs.newrelic.com/docs/insights/insights-api/get-data/query-insights-event-data-api](https://docs.newrelic.com/docs/insights/insights-api/get-data/query-insights-event-data-api).
+ * `--application-key`: Your New Relic account id. See [https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id](https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/account-id).
+ * `--base-url`: The base URL to the New Relic Insights server.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary newrelic account get
+
+Get the specified canary account details for the newrelic service integration.
+
+#### Usage
+```
+hal config canary newrelic account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary newrelic account list
+
+List the canary account names for the newrelic service integration.
+
+#### Usage
+```
+hal config canary newrelic account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary newrelic disable
+
+Set Spinnaker's canary analysis newrelic service integration to disabled.
+
+#### Usage
+```
+hal config canary newrelic disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary newrelic enable
+
+Set Spinnaker's canary analysis newrelic service integration to enabled.
+
+#### Usage
+```
+hal config canary newrelic enable [parameters]
 ```
 
 #### Parameters
@@ -9794,6 +9965,7 @@ hal config security authn saml edit [parameters]
  * `--metadata`: The address to your identity provider's metadata XML file. This can be a URL or the path of a local file.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--service-address-url`: The address of the Gate server that will be accesible by the SAML identity provider. This should be the full URL, including port, e.g. [https://gate.org.com:8084/](https://gate.org.com:8084/). If deployed behind a load balancer, this would be the laod balancer's address.
+ * `--user-attribute-mapping-email`: The email field returned from your SAML provider.
  * `--user-attribute-mapping-first-name`: The first name field returned from your SAML provider.
  * `--user-attribute-mapping-last-name`: The last name field returned from your SAML provider.
  * `--user-attribute-mapping-roles`: The roles field returned from your SAML provider.
@@ -10387,6 +10559,72 @@ Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--region`: This is only required if the bucket you specify doesn't exist yet. In that case, the bucket will be created in that region. See [http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region).
  * `--root-folder`: The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
  * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) Your AWS Secret Key.
+ * `--server-side-encryption`: Use Amazon Server-Side Encryption ('x-amz-server-side-encryption' header). Supports 'AES256' (for Amazon S3-managed encryption keys, equivalent to a header value of 'AES256') and 'AWSKMS' (for AWS KMS-managed encryption keys, equivalent to a header value of 'aws:kms'.
+
+
+---
+## hal config telemetry
+
+Show Spinnaker's telemetry settings.
+
+#### Usage
+```
+hal config telemetry [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set Spinnaker's telemetry settings to disabled.
+ * `edit`: Edit Spinnaker's telemetry settings.
+ * `enable`: Set Spinnaker's telemetry settings to enabled.
+
+---
+## hal config telemetry disable
+
+Set Spinnaker's telemetry settings to disabled.
+
+#### Usage
+```
+hal config telemetry disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config telemetry edit
+
+Edit Spinnaker's telemetry settings.
+
+#### Usage
+```
+hal config telemetry edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--endpoint`: Set the endpoint for telemetry metrics.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config telemetry enable
+
+Set Spinnaker's telemetry settings to enabled.
+
+#### Usage
+```
+hal config telemetry enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
 
 
 ---
