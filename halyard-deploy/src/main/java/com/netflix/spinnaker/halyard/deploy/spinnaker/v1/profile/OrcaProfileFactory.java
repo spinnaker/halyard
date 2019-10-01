@@ -19,16 +19,12 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Features;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Webhook;
-import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.integrations.IntegrationsConfigWrapper;
-import java.util.AbstractMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,23 +77,9 @@ public class OrcaProfileFactory extends SpringProfileFactory {
     // For backward compatibility
     profile.appendContents("pipelineTemplate.enabled: " + pipelineTemplates);
 
-    // Plugins
-    final List<Plugin> plugins = deploymentConfiguration.getPlugins().getPlugins();
-    Map<String, Object> fullyRenderedYaml = new LinkedHashMap<>();
-    Map<String, Object> pluginMetadata =
-        plugins.stream()
-            .filter(p -> p.getEnabled())
-            .filter(p -> !p.getManifestLocation().isEmpty())
-            .map(p -> new AbstractMap.SimpleEntry<>(p, p.generateManifest()))
-            .collect(
-                Collectors.toMap(
-                    m -> m.getValue().getName(),
-                    m -> Plugin.merge(m.getValue().getOptions(), m.getKey().getOptions())));
-
-    fullyRenderedYaml.put("plugins", pluginMetadata);
-
-    profile.appendContents(
-        yamlToString(deploymentConfiguration.getName(), profile, fullyRenderedYaml));
+    Map<String, Object> pluginsYaml =
+        deploymentConfiguration.getPlugins().getPluginConfigurations();
+    profile.appendContents(yamlToString(deploymentConfiguration.getName(), profile, pluginsYaml));
   }
 
   @Data

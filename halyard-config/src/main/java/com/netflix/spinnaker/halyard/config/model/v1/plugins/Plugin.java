@@ -111,4 +111,8 @@ public class Plugin extends Node {
     }
     return original;
   }
+
+  public Map<String, Object> getCombinedOptions() {
+    return Plugin.merge(generateManifest().getOptions(), options);
+  }
 }
