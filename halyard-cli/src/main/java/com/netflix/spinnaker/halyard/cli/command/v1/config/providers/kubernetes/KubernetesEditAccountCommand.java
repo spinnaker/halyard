@@ -18,6 +18,7 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.providers.kubernetes
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
+import com.google.common.base.Splitter;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.AbstractEditAccountCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.LocalFileConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
@@ -155,6 +156,24 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
   public String namingStrategy;
 
   @Parameter(
+      names = "--custom-resources",
+      variableArity = true,
+      description = KubernetesCommandProperties.CUSTOM_RESOURCES)
+  public List<String> customResources = new ArrayList<>();
+
+  @Parameter(
+      names = "--add-custom-resource",
+      arity = 1,
+      description = KubernetesCommandProperties.CUSTOM_RESOURCES)
+  public String addCustomResource;
+
+  @Parameter(
+      names = "--remove-custom-resource",
+      arity = 1,
+      description = KubernetesCommandProperties.CUSTOM_RESOURCES)
+  public String removeCustomResource;
+
+  @Parameter(
       names = "--service-account",
       arity = 1,
       description = KubernetesCommandProperties.SERVICE_ACCOUNT_DESCRIPTION)
@@ -242,6 +261,50 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
           updateStringList(account.getOmitKinds(), omitKinds, addOmitKind, removeOmitKind));
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException("Set either --omit-kinds or --[add/remove]-omit-kind");
+    }
+
+    boolean set = customResources != null && !customResources.isEmpty();
+    boolean add = addCustomResource != null && !addCustomResource.isEmpty();
+    boolean remove = removeCustomResource != null && !removeCustomResource.isEmpty();
+
+    if (set && (add || remove)) {
+      throw new IllegalArgumentException(
+          "Set either --custom-resources or --[add/remove]-custom-resource");
+    }
+
+    List<String> toAdd = new ArrayList<>();
+    if (set) {
+      toAdd = customResources;
+    }
+    if (add) {
+      toAdd.add(addCustomResource);
+    }
+
+    toAdd.forEach(
+        customResource -> {
+          KubernetesAccount.CustomKubernetesResource kubeCustomResource =
+              new KubernetesAccount.CustomKubernetesResource();
+          for (String elem : Splitter.on(";").omitEmptyStrings().split(customResource)) {
+            if (elem.contains(":")) {
+              String[] fields = elem.split(":");
+              if (fields[0].equals("spinnakerKind")) {
+                kubeCustomResource.setSpinnakerKind(fields[1]);
+              } else if (fields[0].equals("versioned"))
+                kubeCustomResource.setVersioned(Boolean.parseBoolean(fields[1]));
+            } else {
+              kubeCustomResource.setKubernetesKind(elem);
+            }
+          }
+          account.getCustomResources().add(kubeCustomResource);
+        });
+
+    if (remove) {
+      List<KubernetesAccount.CustomKubernetesResource> newCustomResources =
+          account.getCustomResources().stream()
+              .filter(entry -> !entry.getKubernetesKind().equals(removeCustomResource))
+              .collect(Collectors.toList());
+
+      account.setCustomResources(newCustomResources);
     }
 
     try {
