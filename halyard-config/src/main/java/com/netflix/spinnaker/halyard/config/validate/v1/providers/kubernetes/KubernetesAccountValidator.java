@@ -118,7 +118,7 @@ public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
               .filter(cr -> (cr == null || cr.isEmpty()))
               .collect(Collectors.toList());
       if (CollectionUtils.isNotEmpty(kubernetesKindNotSet)) {
-        psBuilder.addProblem(ERROR, "Custom resources must have \"kubernetesKind\" set.");
+        psBuilder.addProblem(ERROR, "Missing custom resource name (Kubernetes Kind).");
       }
     }
 

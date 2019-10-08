@@ -8678,7 +8678,7 @@ during clouddriver startup when you have many kubernetes accounts configured. Th
  * `--configure-image-pull-secrets`: (*Default*: `true`) (Only applicable to the v1 provider). When true, Spinnaker will create & manage your image pull secrets for you; when false, you will have to create and attach them to your pod specs by hand.
  * `--context`: The kubernetes context to be managed by Spinnaker. See [http://kubernetes.io/docs/user-guide/kubeconfig-file/#context](http://kubernetes.io/docs/user-guide/kubeconfig-file/#context) for more information.
 When no context is configured for an account the 'current-context' in your kubeconfig is assumed.
- * `--custom-resources`: (*Default*: `[]`) (V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages.
+ * `--custom-resources`: (*Default*: `[]`) (V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages. Fields besides the Kubernetes Kind can be set using the following format "RESOURCE_NAME;spinnakerKind:instances;versioned:false" where "spinnakerKind" and "versioned" are optional.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--docker-registries`: (*Default*: `[]`) A list of the Spinnaker docker registry account names this Spinnaker account can use as image sources. These docker registry accounts must be registered in your halconfig before you can add them here.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
@@ -8731,7 +8731,7 @@ hal config provider kubernetes account edit ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
- * `--add-custom-resource`: (V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages.
+ * `--add-custom-resource`: Add this Kubernetes custom resource to the list of custom resources to manage. Fields besides the Kubernetes Kind can be set using the following format "RESOURCE_NAME;spinnakerKind:instances;versioned:false" where "spinnakerKind" and "versioned" are optional.
  * `--add-docker-registry`: Add this docker registry to the list of docker registries to use as a source of images.
  * `--add-kind`: Add this kind to the list of kinds to manage.
  * `--add-namespace`: Add this namespace to the list of namespaces to manage.
@@ -8749,7 +8749,7 @@ during clouddriver startup when you have many kubernetes accounts configured. Th
  * `--configure-image-pull-secrets`: (Only applicable to the v1 provider). When true, Spinnaker will create & manage your image pull secrets for you; when false, you will have to create and attach them to your pod specs by hand.
  * `--context`: The kubernetes context to be managed by Spinnaker. See [http://kubernetes.io/docs/user-guide/kubeconfig-file/#context](http://kubernetes.io/docs/user-guide/kubeconfig-file/#context) for more information.
 When no context is configured for an account the 'current-context' in your kubeconfig is assumed.
- * `--custom-resources`: (*Default*: `[]`) (V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages.
+ * `--custom-resources`: (*Default*: `[]`) (V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages. Fields besides the Kubernetes Kind can be set using the following format "RESOURCE_NAME;spinnakerKind:instances;versioned:false" where "spinnakerKind" and "versioned" are optional.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--docker-registries`: (*Default*: `[]`) A list of the Spinnaker docker registry account names this Spinnaker account can use as image sources. These docker registry accounts must be registered in your halconfig before you can add them here.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
@@ -8769,7 +8769,7 @@ This can only be set when --namespaces is empty or not set.
 created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes.
  * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
  * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
- * `--remove-custom-resource`: (V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages.
+ * `--remove-custom-resource`: Remove this Kubernetes custom resource by name from the list of custom resources to manage. 
  * `--remove-docker-registry`: Remove this docker registry from the list of docker registries to use as a source of images.
  * `--remove-kind`: Remove this kind to the list of kinds to manage.
  * `--remove-namespace`: Remove this namespace to the list of namespaces to manage.
