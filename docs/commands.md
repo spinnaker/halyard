@@ -6022,7 +6022,7 @@ hal config metric-stores datadog [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the datadog method as disabled
- * `edit`: Edit the datadog authentication method.
+ * `edit`: Edit the datadog metric store.
  * `enable`: Set the datadog method as enabled
 
 ---
@@ -6043,7 +6043,7 @@ hal config metric-stores datadog disable [parameters]
 ---
 ## hal config metric-stores datadog edit
 
-Edit the datadog authentication method.
+Edit the datadog metric store.
 
 #### Usage
 ```
@@ -6107,7 +6107,7 @@ hal config metric-stores newrelic [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the newrelic method as disabled
- * `edit`: Edit the newrelic authentication method.
+ * `edit`: Edit the newrelic metric store.
  * `enable`: Set the newrelic method as enabled
 
 ---
@@ -6128,7 +6128,7 @@ hal config metric-stores newrelic disable [parameters]
 ---
 ## hal config metric-stores newrelic edit
 
-Edit the newrelic authentication method.
+Edit the newrelic metric store.
 
 #### Usage
 ```
@@ -6176,7 +6176,7 @@ hal config metric-stores prometheus [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the prometheus method as disabled
- * `edit`: Edit the prometheus authentication method.
+ * `edit`: Edit the prometheus metric store.
  * `enable`: Set the prometheus method as enabled
 
 ---
@@ -6197,7 +6197,7 @@ hal config metric-stores prometheus disable [parameters]
 ---
 ## hal config metric-stores prometheus edit
 
-Edit the prometheus authentication method.
+Edit the prometheus metric store.
 
 #### Usage
 ```
@@ -6241,7 +6241,7 @@ hal config metric-stores stackdriver [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the stackdriver method as disabled
- * `edit`: Edit the stackdriver authentication method.
+ * `edit`: Edit the stackdriver metric store.
  * `enable`: Set the stackdriver method as enabled
 
 ---
@@ -6262,7 +6262,7 @@ hal config metric-stores stackdriver disable [parameters]
 ---
 ## hal config metric-stores stackdriver edit
 
-Edit the stackdriver authentication method.
+Edit the stackdriver metric store.
 
 #### Usage
 ```
