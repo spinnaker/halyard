@@ -22,7 +22,6 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import lombok.Data;
 import lombok.Getter;
 
@@ -30,15 +29,15 @@ import lombok.Getter;
 public class Manifest {
   public String name;
   public String manifestVersion;
-  public List<String> jars;
   public Map<String, Object> options;
+  public Map<String, List<String>> resources;
 
   static final String regex = "^[a-zA-Z0-9]+\\/[\\w-]+$";
   static final Pattern pattern = Pattern.compile(regex);
 
   public void validate() throws HalException {
 
-    if (Stream.of(name, manifestVersion, jars).anyMatch(Objects::isNull)) {
+    if (name == null || manifestVersion == null) {
       throw new HalException(
           new ConfigProblemBuilder(
                   Problem.Severity.FATAL, "Invalid plugin manifest, contains null values")

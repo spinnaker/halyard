@@ -27,8 +27,10 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
@@ -36,23 +38,29 @@ import org.yaml.snakeyaml.representer.Representer;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class Plugin extends Node {
-  public String name;
-  public Boolean enabled;
-  public String manifestLocation;
-  public Map<String, Object> options = new HashMap<>();
+  private String name;
+  private Boolean enabled;
+  private String manifestLocation;
+  private Map<String, Object> options = new HashMap<>();
+
+  @Getter(AccessLevel.NONE)
+  private Manifest manifest;
 
   @Override
   public String getNodeName() {
     return name;
   }
 
-  public Manifest generateManifest() {
+  public Manifest getManifest() {
+    if (manifest != null) {
+      return manifest;
+    }
     Representer representer = new Representer();
     representer.getPropertyUtils().setSkipMissingProperties(true);
     Yaml yaml = new Yaml(new Constructor(Manifest.class), representer);
 
     InputStream manifestContents = downloadManifest();
-    Manifest manifest = yaml.load(manifestContents);
+    manifest = yaml.load(manifestContents);
     manifest.validate();
     return manifest;
   }
@@ -113,6 +121,6 @@ public class Plugin extends Node {
   }
 
   public Map<String, Object> getCombinedOptions() {
-    return Plugin.merge(generateManifest().getOptions(), options);
+    return Plugin.merge(getManifest().getOptions(), options);
   }
 }

@@ -191,6 +191,7 @@ class KubernetesV2ServiceTest extends Specification {
         SidecarConfig.SecretVolumeMount svm = new SidecarConfig.SecretVolumeMount(secretName: "sMap", mountPath: "/secretMap")
         car.getSecretVolumeMounts().add(svm)
         sidecarConfigs.add(car)
+        AccountDeploymentDetails<KubernetesAccount> details = new AccountDeploymentDetails<>();
 
         when:
         List<String> volumes = testService.combineVolumes(configSources, settings, sidecarConfigs)
