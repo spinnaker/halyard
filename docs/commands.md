@@ -308,6 +308,10 @@
  * [**hal config metric-stores datadog edit**](#hal-config-metric-stores-datadog-edit)
  * [**hal config metric-stores datadog enable**](#hal-config-metric-stores-datadog-enable)
  * [**hal config metric-stores edit**](#hal-config-metric-stores-edit)
+ * [**hal config metric-stores newrelic**](#hal-config-metric-stores-newrelic)
+ * [**hal config metric-stores newrelic disable**](#hal-config-metric-stores-newrelic-disable)
+ * [**hal config metric-stores newrelic edit**](#hal-config-metric-stores-newrelic-edit)
+ * [**hal config metric-stores newrelic enable**](#hal-config-metric-stores-newrelic-enable)
  * [**hal config metric-stores prometheus**](#hal-config-metric-stores-prometheus)
  * [**hal config metric-stores prometheus disable**](#hal-config-metric-stores-prometheus-disable)
  * [**hal config metric-stores prometheus edit**](#hal-config-metric-stores-prometheus-edit)
@@ -3331,6 +3335,9 @@ hal config canary signalfx account add ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the canary account to operate on.
  * `--access-token`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The SignalFx access token.
+ * `--base-url`: The base URL to the SignalFx server. Defaults to [https://stream.signalfx.com](https://stream.signalfx.com)
+ * `--default-location-key`: Location key is used to filter by deployment region. If omitted requests must supply the _location_key if it is needed.
+ * `--default-scope-key`: Scope key is used to distinguish between base and canary deployments. If omitted every request must supply the _scope_key param in extended scope params
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
@@ -3364,6 +3371,9 @@ hal config canary signalfx account edit ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the canary account to operate on.
  * `--access-token`: (*Sensitive data* - user will be prompted on standard input) The SignalFx access token.
+ * `--base-url`: The base URL to the SignalFx server. Defaults to [https://stream.signalfx.com](https://stream.signalfx.com)
+ * `--default-location-key`: Location key is used to filter by deployment region. If omitted requests must supply the _location_key if it is needed.
+ * `--default-scope-key`: Scope key is used to distinguish between base and canary deployments. If omitted every request must supply the _scope_key param in extended scope params
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
@@ -5998,6 +6008,7 @@ hal config metric-stores [parameters] [subcommands]
 #### Subcommands
  * `datadog`: Configure your datadog metric store.
  * `edit`: Configure global metric stores properties.
+ * `newrelic`: Configure your newrelic metric store.
  * `prometheus`: Configure your prometheus metric store.
  * `stackdriver`: Configure your stackdriver metric store.
 
@@ -6017,7 +6028,7 @@ hal config metric-stores datadog [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the datadog method as disabled
- * `edit`: Edit the datadog authentication method.
+ * `edit`: Edit the datadog metric store.
  * `enable`: Set the datadog method as enabled
 
 ---
@@ -6038,7 +6049,7 @@ hal config metric-stores datadog disable [parameters]
 ---
 ## hal config metric-stores datadog edit
 
-Edit the datadog authentication method.
+Edit the datadog metric store.
 
 #### Usage
 ```
@@ -6087,6 +6098,75 @@ hal config metric-stores edit [parameters]
 
 
 ---
+## hal config metric-stores newrelic
+
+Configure your newrelic metric store.
+
+#### Usage
+```
+hal config metric-stores newrelic [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set the newrelic method as disabled
+ * `edit`: Edit the newrelic metric store.
+ * `enable`: Set the newrelic method as enabled
+
+---
+## hal config metric-stores newrelic disable
+
+Set the newrelic method as disabled
+
+#### Usage
+```
+hal config metric-stores newrelic disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config metric-stores newrelic edit
+
+Edit the newrelic metric store.
+
+#### Usage
+```
+hal config metric-stores newrelic edit [parameters]
+```
+
+#### Parameters
+ * `--add-tag`: Add this tag to the list of tags. Use the format key:value i.e. --add-tag app:test
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--host`: The URL to post metric data to. In almost all cases, this is set correctly by default and should not be used.
+ * `--insert-key`: Your New Relic Insights insert key
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--remove-tag`: Remove this tag from the list of tags. Use the name of the tag you want to remove i.e. --remove-tag app
+ * `--tags`: (*Default*: `[]`) Your custom tags. Please delimit the KVP with colons i.e. --tags app:test env:dev
+
+
+---
+## hal config metric-stores newrelic enable
+
+Set the newrelic method as enabled
+
+#### Usage
+```
+hal config metric-stores newrelic enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config metric-stores prometheus
 
 Configure your prometheus metric store.
@@ -6102,7 +6182,7 @@ hal config metric-stores prometheus [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the prometheus method as disabled
- * `edit`: Edit the prometheus authentication method.
+ * `edit`: Edit the prometheus metric store.
  * `enable`: Set the prometheus method as enabled
 
 ---
@@ -6123,7 +6203,7 @@ hal config metric-stores prometheus disable [parameters]
 ---
 ## hal config metric-stores prometheus edit
 
-Edit the prometheus authentication method.
+Edit the prometheus metric store.
 
 #### Usage
 ```
@@ -6167,7 +6247,7 @@ hal config metric-stores stackdriver [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the stackdriver method as disabled
- * `edit`: Edit the stackdriver authentication method.
+ * `edit`: Edit the stackdriver metric store.
  * `enable`: Set the stackdriver method as enabled
 
 ---
@@ -6188,7 +6268,7 @@ hal config metric-stores stackdriver disable [parameters]
 ---
 ## hal config metric-stores stackdriver edit
 
-Edit the stackdriver authentication method.
+Edit the stackdriver metric store.
 
 #### Usage
 ```
