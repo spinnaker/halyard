@@ -18,7 +18,6 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.providers.kubernetes
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.google.common.base.Splitter;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.AbstractAddAccountCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.LocalFileConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
@@ -120,12 +119,6 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
       description = KubernetesCommandProperties.CACHE_THREADS)
   private int cacheThreads = 1;
 
-  @Parameter(
-      names = "--custom-resources",
-      variableArity = true,
-      description = KubernetesCommandProperties.CUSTOM_RESOURCES)
-  public List<String> customResources = new ArrayList<>();
-
   @Override
   protected Account buildAccount(String accountName) {
     KubernetesAccount account = (KubernetesAccount) new KubernetesAccount().setName(accountName);
@@ -151,23 +144,6 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
     account.setLiveManifestCalls(liveManifestCalls);
     account.setCacheThreads(cacheThreads);
 
-    customResources.forEach(
-        customResource -> {
-          KubernetesAccount.CustomKubernetesResource kubeCustomResource =
-              new KubernetesAccount.CustomKubernetesResource();
-          for (String elem : Splitter.on(";").omitEmptyStrings().split(customResource)) {
-            if (elem.contains(":")) {
-              String[] fields = elem.split(":");
-              if (fields[0].equals("spinnakerKind")) {
-                kubeCustomResource.setSpinnakerKind(fields[1]);
-              } else if (fields[0].equals("versioned"))
-                kubeCustomResource.setVersioned(Boolean.parseBoolean(fields[1]));
-            } else {
-              kubeCustomResource.setKubernetesKind(elem);
-            }
-          }
-          account.getCustomResources().add(kubeCustomResource);
-        });
     return account;
   }
 

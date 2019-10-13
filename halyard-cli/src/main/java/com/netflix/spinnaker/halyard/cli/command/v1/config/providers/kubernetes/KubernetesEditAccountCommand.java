@@ -18,7 +18,6 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.providers.kubernetes
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.google.common.base.Splitter;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.account.AbstractEditAccountCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.LocalFileConverter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Account;
@@ -156,25 +155,30 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
   public String namingStrategy;
 
   @Parameter(
-      names = "--custom-resources",
-      variableArity = true,
-      description = KubernetesCommandProperties.CUSTOM_RESOURCES)
-  public List<String> customResources = new ArrayList<>();
-
-  @Parameter(
       names = "--add-custom-resource",
       arity = 1,
       description =
           "Add this Kubernetes custom resource to the list of custom resources to manage. "
-              + "Fields besides the Kubernetes Kind can be set using the following format "
-              + "\"RESOURCE_NAME;spinnakerKind:instances;versioned:false\" where \"spinnakerKind\" and \"versioned\" are optional.")
-  public String addCustomResource;
+              + "Fields besides the Kubernetes Kind can be set using the flags \"--spinnaker-kind\" and \"--versioned\"")
+  public String addCustomResourceName;
+
+  @Parameter(
+      names = "--spinnaker-kind",
+      arity = 1,
+      description = "Set the Spinnaker kind for custom resource being added.")
+  public String addCustomResourceSpinnakerKind;
+
+  @Parameter(
+      names = "--versioned",
+      arity = 1,
+      description = "Configure whether the custom resource being added is versioned by Spinnaker.")
+  public Boolean addCustomResourceVersioned;
 
   @Parameter(
       names = "--remove-custom-resource",
       arity = 1,
       description =
-          "Remove this Kubernetes custom resource by name from the list of custom resources to manage. ")
+          "Remove this Kubernetes custom resource by name from the list of custom resources to manage.")
   public String removeCustomResource;
 
   @Parameter(
@@ -267,42 +271,28 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
       throw new IllegalArgumentException("Set either --omit-kinds or --[add/remove]-omit-kind");
     }
 
-    boolean set = customResources != null && !customResources.isEmpty();
-    boolean add = addCustomResource != null && !addCustomResource.isEmpty();
-    boolean remove = removeCustomResource != null && !removeCustomResource.isEmpty();
-
-    if (set && (add || remove)) {
-      throw new IllegalArgumentException(
-          "Set either --custom-resources or --[add/remove]-custom-resource");
+    if (isSet(addCustomResourceName)) {
+      KubernetesAccount.CustomKubernetesResource customKubernetesResource =
+          new KubernetesAccount.CustomKubernetesResource();
+      customKubernetesResource.setKubernetesKind(addCustomResourceName);
+      customKubernetesResource.setSpinnakerKind(
+          isSet(addCustomResourceSpinnakerKind)
+              ? addCustomResourceSpinnakerKind
+              : customKubernetesResource.getSpinnakerKind());
+      customKubernetesResource.setVersioned(
+          isSet(addCustomResourceVersioned)
+              ? addCustomResourceVersioned
+              : customKubernetesResource.isVersioned());
+      account.getCustomResources().add(customKubernetesResource);
+    } else {
+      if (isSet(addCustomResourceSpinnakerKind) || isSet(addCustomResourceVersioned)) {
+        throw new IllegalArgumentException(
+            "\"--spinnaker-kind\" and \"--versioned\" can only be used with \"--add-custom-resource\" "
+                + "to set the name for the custom resource.");
+      }
     }
 
-    List<String> toAdd = new ArrayList<>();
-    if (set) {
-      toAdd = customResources;
-    }
-    if (add) {
-      toAdd.add(addCustomResource);
-    }
-
-    toAdd.forEach(
-        customResource -> {
-          KubernetesAccount.CustomKubernetesResource kubeCustomResource =
-              new KubernetesAccount.CustomKubernetesResource();
-          for (String elem : Splitter.on(";").omitEmptyStrings().split(customResource)) {
-            if (elem.contains(":")) {
-              String[] fields = elem.split(":");
-              if (fields[0].equals("spinnakerKind")) {
-                kubeCustomResource.setSpinnakerKind(fields[1]);
-              } else if (fields[0].equals("versioned"))
-                kubeCustomResource.setVersioned(Boolean.parseBoolean(fields[1]));
-            } else {
-              kubeCustomResource.setKubernetesKind(elem);
-            }
-          }
-          account.getCustomResources().add(kubeCustomResource);
-        });
-
-    if (remove) {
+    if (isSet(removeCustomResource)) {
       List<KubernetesAccount.CustomKubernetesResource> newCustomResources =
           account.getCustomResources().stream()
               .filter(entry -> !entry.getKubernetesKind().equals(removeCustomResource))
