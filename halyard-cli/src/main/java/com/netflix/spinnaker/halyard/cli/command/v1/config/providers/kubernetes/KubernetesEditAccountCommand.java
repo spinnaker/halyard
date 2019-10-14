@@ -157,9 +157,7 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
   @Parameter(
       names = "--add-custom-resource",
       arity = 1,
-      description =
-          "Add this Kubernetes custom resource to the list of custom resources to manage. "
-              + "Fields besides the Kubernetes Kind can be set using the flags \"--spinnaker-kind\" and \"--versioned\"")
+      description = KubernetesCommandProperties.CUSTOM_RESOURCES)
   public String addCustomResourceName;
 
   @Parameter(

@@ -8730,7 +8730,7 @@ hal config provider kubernetes account edit ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
- * `--add-custom-resource`: Add this Kubernetes custom resource to the list of custom resources to manage. Fields besides the Kubernetes Kind can be set using the flags "--spinnaker-kind" and "--versioned"
+ * `--add-custom-resource`: (V2 Only) Add Kubernetes custom resource to the list of custom resources to managed by clouddriver and made available for use in patch and delete manifest stages. Fields besides the Kubernetes Kind (resource name) can be set using the flags "--spinnaker-kind" and "--versioned"
  * `--add-docker-registry`: Add this docker registry to the list of docker registries to use as a source of images.
  * `--add-kind`: Add this kind to the list of kinds to manage.
  * `--add-namespace`: Add this namespace to the list of namespaces to manage.

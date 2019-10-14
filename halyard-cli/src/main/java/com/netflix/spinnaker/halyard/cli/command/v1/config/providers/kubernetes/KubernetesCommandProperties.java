@@ -70,7 +70,6 @@ public class KubernetesCommandProperties {
       "Number of caching agents for this kubernetes account. Each agent handles a subset of the namespaces available to this account. "
           + "By default, only 1 agent caches all kinds for all namespaces in the account.";
   static final String CUSTOM_RESOURCES =
-      "(V2 Only) List of Kubernetes Custom Resources to be cached by clouddriver and available for use in patch and delete pipeline stages. "
-          + "Fields besides the Kubernetes Kind can be set using the following "
-          + "format \"RESOURCE_NAME;spinnakerKind:instances;versioned:false\" where \"spinnakerKind\" and \"versioned\" are optional.";
+      "(V2 Only) Add Kubernetes custom resource to the list of custom resources to managed by clouddriver and made available for use in patch and delete manifest stages. "
+          + "Fields besides the Kubernetes Kind (resource name) can be set using the flags \"--spinnaker-kind\" and \"--versioned\"";
 }
