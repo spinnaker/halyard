@@ -308,6 +308,10 @@
  * [**hal config metric-stores datadog edit**](#hal-config-metric-stores-datadog-edit)
  * [**hal config metric-stores datadog enable**](#hal-config-metric-stores-datadog-enable)
  * [**hal config metric-stores edit**](#hal-config-metric-stores-edit)
+ * [**hal config metric-stores newrelic**](#hal-config-metric-stores-newrelic)
+ * [**hal config metric-stores newrelic disable**](#hal-config-metric-stores-newrelic-disable)
+ * [**hal config metric-stores newrelic edit**](#hal-config-metric-stores-newrelic-edit)
+ * [**hal config metric-stores newrelic enable**](#hal-config-metric-stores-newrelic-enable)
  * [**hal config metric-stores prometheus**](#hal-config-metric-stores-prometheus)
  * [**hal config metric-stores prometheus disable**](#hal-config-metric-stores-prometheus-disable)
  * [**hal config metric-stores prometheus edit**](#hal-config-metric-stores-prometheus-edit)
@@ -3331,6 +3335,9 @@ hal config canary signalfx account add ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the canary account to operate on.
  * `--access-token`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The SignalFx access token.
+ * `--base-url`: The base URL to the SignalFx server. Defaults to [https://stream.signalfx.com](https://stream.signalfx.com)
+ * `--default-location-key`: Location key is used to filter by deployment region. If omitted requests must supply the _location_key if it is needed.
+ * `--default-scope-key`: Scope key is used to distinguish between base and canary deployments. If omitted every request must supply the _scope_key param in extended scope params
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
@@ -3364,6 +3371,9 @@ hal config canary signalfx account edit ACCOUNT [parameters]
 #### Parameters
 `ACCOUNT`: The name of the canary account to operate on.
  * `--access-token`: (*Sensitive data* - user will be prompted on standard input) The SignalFx access token.
+ * `--base-url`: The base URL to the SignalFx server. Defaults to [https://stream.signalfx.com](https://stream.signalfx.com)
+ * `--default-location-key`: Location key is used to filter by deployment region. If omitted requests must supply the _location_key if it is needed.
+ * `--default-scope-key`: Scope key is used to distinguish between base and canary deployments. If omitted every request must supply the _scope_key param in extended scope params
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
@@ -5998,6 +6008,7 @@ hal config metric-stores [parameters] [subcommands]
 #### Subcommands
  * `datadog`: Configure your datadog metric store.
  * `edit`: Configure global metric stores properties.
+ * `newrelic`: Configure your newrelic metric store.
  * `prometheus`: Configure your prometheus metric store.
  * `stackdriver`: Configure your stackdriver metric store.
 
@@ -6017,7 +6028,7 @@ hal config metric-stores datadog [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the datadog method as disabled
- * `edit`: Edit the datadog authentication method.
+ * `edit`: Edit the datadog metric store.
  * `enable`: Set the datadog method as enabled
 
 ---
@@ -6038,7 +6049,7 @@ hal config metric-stores datadog disable [parameters]
 ---
 ## hal config metric-stores datadog edit
 
-Edit the datadog authentication method.
+Edit the datadog metric store.
 
 #### Usage
 ```
@@ -6087,6 +6098,75 @@ hal config metric-stores edit [parameters]
 
 
 ---
+## hal config metric-stores newrelic
+
+Configure your newrelic metric store.
+
+#### Usage
+```
+hal config metric-stores newrelic [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set the newrelic method as disabled
+ * `edit`: Edit the newrelic metric store.
+ * `enable`: Set the newrelic method as enabled
+
+---
+## hal config metric-stores newrelic disable
+
+Set the newrelic method as disabled
+
+#### Usage
+```
+hal config metric-stores newrelic disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config metric-stores newrelic edit
+
+Edit the newrelic metric store.
+
+#### Usage
+```
+hal config metric-stores newrelic edit [parameters]
+```
+
+#### Parameters
+ * `--add-tag`: Add this tag to the list of tags. Use the format key:value i.e. --add-tag app:test
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--host`: The URL to post metric data to. In almost all cases, this is set correctly by default and should not be used.
+ * `--insert-key`: Your New Relic Insights insert key
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--remove-tag`: Remove this tag from the list of tags. Use the name of the tag you want to remove i.e. --remove-tag app
+ * `--tags`: (*Default*: `[]`) Your custom tags. Please delimit the KVP with colons i.e. --tags app:test env:dev
+
+
+---
+## hal config metric-stores newrelic enable
+
+Set the newrelic method as enabled
+
+#### Usage
+```
+hal config metric-stores newrelic enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config metric-stores prometheus
 
 Configure your prometheus metric store.
@@ -6102,7 +6182,7 @@ hal config metric-stores prometheus [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the prometheus method as disabled
- * `edit`: Edit the prometheus authentication method.
+ * `edit`: Edit the prometheus metric store.
  * `enable`: Set the prometheus method as enabled
 
 ---
@@ -6123,7 +6203,7 @@ hal config metric-stores prometheus disable [parameters]
 ---
 ## hal config metric-stores prometheus edit
 
-Edit the prometheus authentication method.
+Edit the prometheus metric store.
 
 #### Usage
 ```
@@ -6167,7 +6247,7 @@ hal config metric-stores stackdriver [parameters] [subcommands]
 
 #### Subcommands
  * `disable`: Set the stackdriver method as disabled
- * `edit`: Edit the stackdriver authentication method.
+ * `edit`: Edit the stackdriver metric store.
  * `enable`: Set the stackdriver method as enabled
 
 ---
@@ -6188,7 +6268,7 @@ hal config metric-stores stackdriver disable [parameters]
 ---
 ## hal config metric-stores stackdriver edit
 
-Edit the stackdriver authentication method.
+Edit the stackdriver metric store.
 
 #### Usage
 ```
@@ -8730,6 +8810,7 @@ hal config provider kubernetes account edit ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
+ * `--add-custom-resource`: (V2 Only) Add Kubernetes custom resource to the list of custom resources to managed by clouddriver and made available for use in patch and delete manifest stages. Fields besides the Kubernetes Kind (resource name) can be set using the flags "--spinnaker-kind" and "--versioned"
  * `--add-docker-registry`: Add this docker registry to the list of docker registries to use as a source of images.
  * `--add-kind`: Add this kind to the list of kinds to manage.
  * `--add-namespace`: Add this namespace to the list of namespaces to manage.
@@ -8766,6 +8847,7 @@ This can only be set when --namespaces is empty or not set.
 created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes.
  * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
  * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--remove-custom-resource`: Remove this Kubernetes custom resource by name from the list of custom resources to manage.
  * `--remove-docker-registry`: Remove this docker registry from the list of docker registries to use as a source of images.
  * `--remove-kind`: Remove this kind to the list of kinds to manage.
  * `--remove-namespace`: Remove this namespace to the list of namespaces to manage.
@@ -8776,6 +8858,8 @@ created by Spinnaker; as opposed to attempting to configure applications for res
  * `--remove-write-permission`: Remove this permission to from list of write permissions.
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--service-account`: When true, Spinnaker attempt to authenticate against Kubernetes using a Kubernetes service account. This only works when Halyard & Spinnaker are deployed in Kubernetes. Read more about service accounts here: [https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/).
+ * `--spinnaker-kind`: Set the Spinnaker kind for custom resource being added.
+ * `--versioned`: Configure whether the custom resource being added is versioned by Spinnaker.
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
 
