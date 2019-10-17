@@ -16,6 +16,7 @@
 
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service;
 
+import com.netflix.spinnaker.halyard.config.model.v1.node.Toleration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ public class KubernetesSettings {
   Map<String, String> podAnnotations = new HashMap<>();
   Map<String, String> podLabels = new HashMap<>();
   Map<String, String> serviceLabels = new HashMap<>();
+  List<Toleration> tolerations = new ArrayList<>();
   List<ConfigSource> volumes = new ArrayList<>();
   String serviceAccountName = null;
   String serviceType = "ClusterIP";

@@ -394,4 +394,22 @@ class KubernetesV2ServiceTest extends Specification {
         then:
         yaml.contains('"tolerations": [{"key":"test","operator":"Equal","value":"a","effect":"NoSchedule"}]')
     }
+    def "Can we set PodSpec.tolerations?"() {
+        setup:
+        def toleration = new Toleration(
+                key: "test",
+                value: "my-node",
+                effect: "NoSchedule",
+                operator: Toleration.Operator.Equal
+        )
+        serviceSettings.getKubernetes().tolerations = new ArrayList<>()
+        serviceSettings.getKubernetes().tolerations.add(toleration)
+        def executor = Mock(KubernetesV2Executor)
+
+        when:
+        String yaml = testService.getPodSpecYaml(executor, details, config)
+
+        then:
+        yaml.contains('"tolerations": [{"key":"test","operator":"Equal","value":"my-node","effect":"NoSchedule"}]')
+    }
 }
