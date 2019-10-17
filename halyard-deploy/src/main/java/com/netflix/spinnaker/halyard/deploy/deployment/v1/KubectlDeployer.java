@@ -139,7 +139,7 @@ public class KubectlDeployer
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings,
       List<SpinnakerService.Type> serviceTypes) {
-    throw new UnsupportedOperationException("todo(lwander)");
+    throw new UnsupportedOperationException("Please file an issue: https://github.com/spinnaker/spinnaker/issues/new");
   }
 
   @Override
@@ -148,7 +148,7 @@ public class KubectlDeployer
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings,
       List<SpinnakerService.Type> serviceTypes) {
-    throw new UnsupportedOperationException("todo(lwander)");
+    throw new UnsupportedOperationException("Please file an issue: https://github.com/spinnaker/spinnaker/issues/new");
   }
 
   @Override
@@ -181,7 +181,7 @@ public class KubectlDeployer
       KubectlServiceProvider serviceProvider,
       AccountDeploymentDetails<KubernetesAccount> deploymentDetails,
       SpinnakerRuntimeSettings runtimeSettings) {
-    throw new UnsupportedOperationException("todo(lwander)");
+    throw new UnsupportedOperationException("Please file an issue: https://github.com/spinnaker/spinnaker/issues/new");
   }
 
   @Override
