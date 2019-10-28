@@ -20,6 +20,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Saml;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
+import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -30,10 +31,13 @@ import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SamlValidator extends Validator<Saml> {
+  @Autowired SecretSessionManager secretSessionManager;
+
   @Override
   public void validate(ConfigProblemSetBuilder p, Saml saml) {
     if (!saml.isEnabled()) {
@@ -47,7 +51,7 @@ public class SamlValidator extends Validator<Saml> {
 
     if (StringUtils.isNotEmpty(saml.getMetadataLocal())) {
       try {
-        new File(new URI("file:" + validatingFileDecrypt(p, saml.getMetadataLocal())));
+        new File(new URI("file:" + secretSessionManager.decryptAsFile(saml.getMetadataLocal())));
       } catch (Exception f) {
         p.addProblem(Problem.Severity.ERROR, f.getMessage());
       }
