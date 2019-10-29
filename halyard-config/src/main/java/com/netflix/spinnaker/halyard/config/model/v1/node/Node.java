@@ -426,7 +426,7 @@ public abstract class Node implements Validatable {
                     f -> {
                       try {
                         f.setAccessible(true);
-                        if (!relativeFileReferences.containsKey(f)) {
+                        if (!n.relativeFileReferences.containsKey(f)) {
                           return;
                         }
 
@@ -436,11 +436,11 @@ public abstract class Node implements Validatable {
                         }
 
                         // restore original relative path
-                        String relativePath = relativeFileReferences.get(f);
+                        String relativePath = n.relativeFileReferences.get(f);
                         Path absolutePath = Paths.get(prefix, relativePath).normalize();
                         if (currentPath.equals(absolutePath.toString())) {
                           f.set(n, relativePath);
-                          relativeFileReferences.remove(f);
+                          n.relativeFileReferences.remove(f);
                         }
                       } catch (IllegalAccessException e) {
                         throw new RuntimeException(
@@ -481,7 +481,7 @@ public abstract class Node implements Validatable {
                         }
 
                         // backup relative path
-                        relativeFileReferences.put(f, fPath);
+                        n.relativeFileReferences.put(f, fPath);
                         f.set(n, absolutePath.toString());
                       } catch (IllegalAccessException e) {
                         throw new RuntimeException(
