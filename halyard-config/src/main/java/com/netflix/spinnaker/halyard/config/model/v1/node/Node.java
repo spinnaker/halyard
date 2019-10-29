@@ -437,8 +437,7 @@ public abstract class Node implements Validatable {
 
                         // restore original relative path
                         String relativePath = relativeFileReferences.get(f);
-                        Path absolutePath =
-                            Paths.get(prefix + File.separator + relativePath).normalize();
+                        Path absolutePath = Paths.get(prefix, relativePath).normalize();
                         if (currentPath.equals(absolutePath.toString())) {
                           f.set(n, relativePath);
                           relativeFileReferences.remove(f);
@@ -471,7 +470,7 @@ public abstract class Node implements Validatable {
                           return;
                         }
 
-                        Path absolutePath = Paths.get(prefix + File.separator + fPath).normalize();
+                        Path absolutePath = Paths.get(prefix, fPath).normalize();
                         if (!absolutePath.startsWith(prefix)) {
                           throw new HalException(
                               FATAL,
