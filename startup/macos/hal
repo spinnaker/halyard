@@ -12,8 +12,8 @@ function start_daemon() {
     printf "The halyard daemon isn't running yet... starting it manually"
 
     /opt/halyard/bin/halyard \
-      2> /var/log/spinnaker/halyard/halyard.err \
-      > /var/log/spinnaker/halyard/halyard.log &
+      2> ~/dev/spinnaker/logs/halyard/halyard.err \
+      > ~/dev/spinnaker/logs/halyard/halyard.log &
 
     echo $! > $HALYARD_DAEMON_PID_FILE 
 
