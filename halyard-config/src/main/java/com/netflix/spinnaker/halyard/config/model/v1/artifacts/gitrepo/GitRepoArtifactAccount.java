@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2019 Armory, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,26 @@
  *
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.notifications;
+package com.netflix.spinnaker.halyard.config.model.v1.artifacts.gitrepo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Notification;
+import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.SecretFile;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class SlackNotification extends Notification {
-  String botName;
+public class GitRepoArtifactAccount extends ArtifactAccount {
+  String name;
+  String username;
+  @Secret String password;
+  @LocalFile @SecretFile String usernamePasswordFile;
   @Secret String token;
-  String baseUrl;
-  Boolean forceUseIncomingWebhook;
-
-  @Override
-  @JsonIgnore
-  public NotificationType getNotificationType() {
-    return NotificationType.SLACK;
-  }
+  @LocalFile @SecretFile String tokenFile;
+  @LocalFile @SecretFile String sshPrivateKeyFilePath;
+  @Secret String sshPrivateKeyPassphrase;
+  @LocalFile @SecretFile String sshKnownHostsFilePath;
+  boolean sshTrustUnknownHosts;
 }

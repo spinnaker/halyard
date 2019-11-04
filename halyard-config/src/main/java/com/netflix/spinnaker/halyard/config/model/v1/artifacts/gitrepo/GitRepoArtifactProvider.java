@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2019 Armory, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,17 @@
  *
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.notifications;
+package com.netflix.spinnaker.halyard.config.model.v1.artifacts.gitrepo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Notification;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.ArtifactProvider;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
-public class SlackNotification extends Notification {
-  String botName;
-  @Secret String token;
-  String baseUrl;
-  Boolean forceUseIncomingWebhook;
-
+@Data
+public class GitRepoArtifactProvider extends ArtifactProvider<GitRepoArtifactAccount> {
   @Override
-  @JsonIgnore
-  public NotificationType getNotificationType() {
-    return NotificationType.SLACK;
+  public ProviderType providerType() {
+    return ProviderType.GITREPO;
   }
 }
