@@ -451,6 +451,15 @@
  * [**hal config provider google disable**](#hal-config-provider-google-disable)
  * [**hal config provider google edit**](#hal-config-provider-google-edit)
  * [**hal config provider google enable**](#hal-config-provider-google-enable)
+ * [**hal config provider huaweicloud**](#hal-config-provider-huaweicloud)
+ * [**hal config provider huaweicloud account**](#hal-config-provider-huaweicloud-account)
+ * [**hal config provider huaweicloud account add**](#hal-config-provider-huaweicloud-account-add)
+ * [**hal config provider huaweicloud account delete**](#hal-config-provider-huaweicloud-account-delete)
+ * [**hal config provider huaweicloud account edit**](#hal-config-provider-huaweicloud-account-edit)
+ * [**hal config provider huaweicloud account get**](#hal-config-provider-huaweicloud-account-get)
+ * [**hal config provider huaweicloud account list**](#hal-config-provider-huaweicloud-account-list)
+ * [**hal config provider huaweicloud disable**](#hal-config-provider-huaweicloud-disable)
+ * [**hal config provider huaweicloud enable**](#hal-config-provider-huaweicloud-enable)
  * [**hal config provider kubernetes**](#hal-config-provider-kubernetes)
  * [**hal config provider kubernetes account**](#hal-config-provider-kubernetes-account)
  * [**hal config provider kubernetes account add**](#hal-config-provider-kubernetes-account-add)
@@ -6865,6 +6874,7 @@ hal config provider [subcommands]
  * `docker-registry`: Manage and view Spinnaker configuration for the dockerRegistry provider
  * `ecs`: Manage and view Spinnaker configuration for the ecs provider
  * `google`: Manage and view Spinnaker configuration for the google provider
+ * `huaweicloud`: Manage and view Spinnaker configuration for the huaweicloud provider
  * `kubernetes`: Manage and view Spinnaker configuration for the kubernetes provider
  * `oracle`: Manage and view Spinnaker configuration for the oracle provider
 
@@ -8890,6 +8900,190 @@ Set the google provider as enabled
 #### Usage
 ```
 hal config provider google enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud
+
+Manage and view Spinnaker configuration for the huaweicloud provider
+
+#### Usage
+```
+hal config provider huaweicloud [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the huaweicloud provider's account
+ * `disable`: Set the huaweicloud provider as disabled
+ * `enable`: Set the huaweicloud provider as enabled
+
+---
+## hal config provider huaweicloud account
+
+Manage and view Spinnaker configuration for the huaweicloud provider's account
+
+#### Usage
+```
+hal config provider huaweicloud account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add an account to the huaweicloud provider.
+ * `delete`: Delete a specific huaweicloud account by name.
+ * `edit`: Edit an account in the huaweicloud provider.
+ * `get`: Get the specified account details for the huaweicloud provider.
+ * `list`: List the account names for the huaweicloud provider.
+
+---
+## hal config provider huaweicloud account add
+
+Add an account to the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--account-type`: The type of account.
+ * `--auth-url`: (*Required*) The auth url of cloud.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--domain-name`: (*Required*) The domain name of the cloud.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--insecure`: (*Default*: `false`) Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) The password used to access cloud.
+ * `--project-name`: (*Required*) The name of the project within the cloud.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: (*Default*: `[]`) (*Required*) The region(s) of the cloud.
+ * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--username`: (*Required*) The username used to access cloud.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider huaweicloud account delete
+
+Delete a specific huaweicloud account by name.
+
+#### Usage
+```
+hal config provider huaweicloud account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud account edit
+
+Edit an account in the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--account-type`: The type of account.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-region`: Add this region to the list of managed regions.
+ * `--add-required-group-membership`: Add this group to the list of required group memberships.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--auth-url`: The auth url of cloud.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--domain-name`: The domain name of the cloud.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--insecure`: Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: The password used to access cloud.
+ * `--project-name`: The name of the project within the cloud.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: (*Default*: `[]`) The region(s) of the cloud.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-region`: Remove this region from the list of managed regions.
+ * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
+ * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--username`: The username used to access cloud.
+ * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider huaweicloud account get
+
+Get the specified account details for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud account list
+
+List the account names for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud disable
+
+Set the huaweicloud provider as disabled
+
+#### Usage
+```
+hal config provider huaweicloud disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud enable
+
+Set the huaweicloud provider as enabled
+
+#### Usage
+```
+hal config provider huaweicloud enable [parameters]
 ```
 
 #### Parameters
