@@ -427,7 +427,7 @@ public abstract class Node implements Validatable {
     if (StringUtils.isEmpty(fPath)) {
       return null;
     }
-    if (Paths.get(fPath).isAbsolute()) {
+    if (Paths.get(fPath).isAbsolute() || fPath.startsWith(LocalFile.RELATIVE_PATH_PLACEHOLDER)) {
       return null;
     }
     Path absolutePath = toAbsolutePath(rootPath, fPath);
@@ -446,9 +446,6 @@ public abstract class Node implements Validatable {
   public String makeAbsolutePathRelative(Field localFile, String rootPath) {
     String fPath = getStringFieldValue(localFile);
     if (StringUtils.isEmpty(fPath)) {
-      return null;
-    }
-    if (!Paths.get(fPath).isAbsolute()) {
       return null;
     }
     Path relativePath = toRelativePath(rootPath, fPath);

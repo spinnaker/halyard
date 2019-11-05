@@ -22,6 +22,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure;
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig;
+import com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import java.io.BufferedOutputStream;
@@ -59,6 +60,22 @@ public class BackupService {
   public void restore(String backupTar) {
     String halconfigDir = directoryStructure.getHalconfigDirectory();
     untarHalconfig(halconfigDir, backupTar);
+
+    // This is only needed to support old backups where file paths were prefixed with {%halconfig-dir%}
+    Halconfig halconfig = halconfigParser.getHalconfig();
+    removeHalconfigDirPrefix(halconfig);
+    halconfigParser.saveConfig();
+  }
+
+  /**
+   * Removes {@link com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile#RELATIVE_PATH_PLACEHOLDER} instances
+   * from a backup. This is held for backwards compatibility reading old backups, new backups don't use the prefix
+   * and relative file paths are always resolved to hal config home.
+   * @param halconfig instance from backup.
+   */
+  @Deprecated
+  private void removeHalconfigDirPrefix(Halconfig halconfig) {
+    halconfigParser.makeAbsoluteFilesRelative(halconfig, LocalFile.RELATIVE_PATH_PLACEHOLDER);
   }
 
   public String create() {
