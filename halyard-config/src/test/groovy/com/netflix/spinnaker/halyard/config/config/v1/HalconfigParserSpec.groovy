@@ -229,7 +229,7 @@ deploymentConfigurations:
         Halconfig out = parser.parseHalconfig(stream)
 
         when:
-        out.removePrefixFromUnchangedRelativeFiles(HALCONFIG_HOME)
+        parser.restoreUnchangedRelativePaths(out, HALCONFIG_HOME)
 
         then:
         out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "required-files/kubecfg-1"
@@ -243,7 +243,7 @@ deploymentConfigurations:
         out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile = "/root/updated-path/kubecfg-1"
 
         when:
-        out.removePrefixFromUnchangedRelativeFiles(HALCONFIG_HOME)
+        parser.restoreUnchangedRelativePaths(out, HALCONFIG_HOME)
 
         then:
         out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "/root/updated-path/kubecfg-1"

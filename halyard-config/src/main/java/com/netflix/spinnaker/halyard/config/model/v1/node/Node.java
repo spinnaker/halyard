@@ -36,7 +36,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
@@ -53,9 +52,6 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Slf4j
 public abstract class Node implements Validatable {
-
-  // @LocalFile fields whose file path is relative
-  @JsonIgnore private Map<Field, String> relativeFileReferences = new ConcurrentHashMap<>();
 
   @JsonIgnore
   public abstract String getNodeName();
@@ -418,129 +414,104 @@ public abstract class Node implements Validatable {
     return result;
   }
 
-  public void removePrefixFromUnchangedRelativeFiles(String prefix) {
-    Consumer<Node> fileFinder =
-        n ->
-            n.localFiles()
-                .forEach(
-                    f -> {
-                      try {
-                        f.setAccessible(true);
-                        if (!n.relativeFileReferences.containsKey(f)) {
-                          return;
-                        }
-
-                        String currentPath = (String) f.get(n);
-                        if (StringUtils.isEmpty(currentPath)) {
-                          return;
-                        }
-
-                        // restore original relative path
-                        String relativePath = n.relativeFileReferences.get(f);
-                        Path absolutePath = Paths.get(prefix, relativePath).normalize();
-                        if (currentPath.equals(absolutePath.toString())) {
-                          f.set(n, relativePath);
-                          n.relativeFileReferences.remove(f);
-                        }
-                      } catch (IllegalAccessException e) {
-                        throw new RuntimeException(
-                            "Failed to get local files for node " + n.getNodeName(), e);
-                      } finally {
-                        f.setAccessible(false);
-                      }
-                    });
-
-    recursiveConsume(fileFinder);
+  /**
+   * Changes the file path pointed by "localFile" from being relative, to an absolute path beginning
+   * with "rootPath".
+   *
+   * @param localFile the field annotated with {@see LocalFile} to transform.
+   * @param rootPath prefix to add to the local path.
+   * @return original relative file path, or null if the file path was not modified.
+   */
+  public String makeRelativePathAbsolute(Field localFile, String rootPath) {
+    String fPath = getStringFieldValue(localFile);
+    if (StringUtils.isEmpty(fPath)) {
+      return null;
+    }
+    if (Paths.get(fPath).isAbsolute()) {
+      return null;
+    }
+    Path absolutePath = toAbsolutePath(rootPath, fPath);
+    setStringFieldValue(localFile, absolutePath.toString());
+    return fPath;
   }
 
-  public void setPrefixToRelativeFiles(String prefix) {
-    Consumer<Node> fileFinder =
-        n ->
-            n.localFiles()
-                .forEach(
-                    f -> {
-                      try {
-                        f.setAccessible(true);
-                        String fPath = (String) f.get(n);
-                        if (StringUtils.isEmpty(fPath)) {
-                          return;
-                        }
-                        if (fPath.startsWith(LocalFile.RELATIVE_PATH_PLACEHOLDER)
-                            || Paths.get(fPath).isAbsolute()) {
-                          return;
-                        }
-
-                        Path absolutePath = Paths.get(prefix, fPath).normalize();
-                        if (!absolutePath.startsWith(prefix)) {
-                          throw new HalException(
-                              FATAL,
-                              "Error resolving file path '"
-                                  + fPath
-                                  + "': Relative file paths must resolve to files inside "
-                                  + prefix);
-                        }
-
-                        // backup relative path
-                        n.relativeFileReferences.put(f, fPath);
-                        f.set(n, absolutePath.toString());
-                      } catch (IllegalAccessException e) {
-                        throw new RuntimeException(
-                            "Failed to get local files for node " + n.getNodeName(), e);
-                      } finally {
-                        f.setAccessible(false);
-                      }
-                    });
-
-    recursiveConsume(fileFinder);
+  /**
+   * Changes the file path pointed by "localFile" and beginning with "rootPath" from being absolute,
+   * to a relative path by removing "rootPath".
+   *
+   * @param localFile the field annotated with {@see LocalFile} to transform.
+   * @param rootPath prefix to remove from the local path.
+   * @return original absolute file path, or null if the file path was not modified.
+   */
+  public String makeAbsolutePathRelative(Field localFile, String rootPath) {
+    String fPath = getStringFieldValue(localFile);
+    if (StringUtils.isEmpty(fPath)) {
+      return null;
+    }
+    if (!Paths.get(fPath).isAbsolute()) {
+      return null;
+    }
+    Path relativePath = toRelativePath(rootPath, fPath);
+    setStringFieldValue(localFile, relativePath.toString());
+    return fPath;
   }
 
-  private void swapLocalFilePrefixes(String to, String from) {
-    Consumer<Node> fileFinder =
-        n ->
-            n.localFiles()
-                .forEach(
-                    f -> {
-                      try {
-                        f.setAccessible(true);
-                        String fPath = (String) f.get(n);
-                        if (fPath == null) {
-                          return;
-                        }
-
-                        if (fPath.startsWith(to)) {
-                          log.info(
-                              "File " + f.getName() + " was already in correct format " + fPath);
-                          return;
-                        }
-
-                        if (!fPath.startsWith(from)) {
-                          throw new HalException(
-                              FATAL,
-                              "Local file: "
-                                  + fPath
-                                  + " has incorrect prefix - must match "
-                                  + from);
-                        }
-
-                        fPath = to + fPath.substring(from.length());
-                        f.set(n, fPath);
-                      } catch (IllegalAccessException e) {
-                        throw new RuntimeException(
-                            "Failed to get local files for node " + n.getNodeName(), e);
-                      } finally {
-                        f.setAccessible(false);
-                      }
-                    });
-
-    recursiveConsume(fileFinder);
+  public String getStringFieldValue(Field f) {
+    try {
+      f.setAccessible(true);
+      String value = (String) f.get(this);
+      if (StringUtils.isNotEmpty(value)) {
+        return value;
+      }
+      // if no value in field, try using getter
+      try {
+        return (String)
+            this.getClass().getMethod("get" + StringUtils.capitalize(f.getName())).invoke(this);
+      } catch (NoSuchMethodException | InvocationTargetException ignored) {
+        return null;
+      }
+    } catch (IllegalAccessException e) {
+      return null;
+    } finally {
+      f.setAccessible(false);
+    }
   }
 
-  public void makeLocalFilesRelative(String halconfigPath) {
-    swapLocalFilePrefixes(LocalFile.RELATIVE_PATH_PLACEHOLDER, halconfigPath);
+  public void setStringFieldValue(Field f, String value) {
+    try {
+      f.setAccessible(true);
+      f.set(this, value);
+    } catch (IllegalAccessException e) {
+      throw new HalException(
+          FATAL, String.format("Unable to set value %s to field %s", value, f.getName()));
+    } finally {
+      f.setAccessible(false);
+    }
   }
 
-  public void makeLocalFilesAbsolute(String halconfigPath) {
-    swapLocalFilePrefixes(halconfigPath, LocalFile.RELATIVE_PATH_PLACEHOLDER);
+  private Path toAbsolutePath(String rootPath, String relativePath) {
+    Path absolutePath = Paths.get(rootPath, relativePath).normalize();
+    if (!absolutePath.startsWith(rootPath)) {
+      throw new HalException(
+          FATAL,
+          "Error resolving file path '"
+              + relativePath
+              + "': Relative file paths must resolve to files inside "
+              + rootPath);
+    }
+    return absolutePath;
+  }
+
+  private Path toRelativePath(String rootPath, String absolutePath) {
+    if (!absolutePath.startsWith(rootPath)) {
+      throw new HalException(
+          FATAL,
+          "Local file: " + absolutePath + " has incorrect prefix - must begin with " + rootPath);
+    }
+    if (!rootPath.endsWith(File.separator)) {
+      rootPath += File.separator;
+    }
+    return Paths.get(absolutePath.substring(rootPath.length()));
   }
 
   public List<String> backupLocalFiles(String outputPath) {
@@ -553,23 +524,10 @@ public abstract class Node implements Validatable {
                     .map(
                         f -> {
                           try {
-                            f.setAccessible(true);
-                            String fPath = (String) f.get(n);
-                            if (fPath == null) {
-                              try {
-                                fPath =
-                                    (String)
-                                        n.getClass()
-                                            .getMethod("get" + StringUtils.capitalize(f.getName()))
-                                            .invoke(n);
-                              } catch (NoSuchMethodException | InvocationTargetException ignored) {
-                              }
-                            }
-
-                            if (fPath == null) {
+                            String fPath = n.getStringFieldValue(f);
+                            if (StringUtils.isEmpty(fPath)) {
                               return null;
                             }
-
                             File fFile = new File(fPath);
                             String fName = fFile.getName().replaceAll("[^-._a-zA-Z0-9]", "-");
 
@@ -586,16 +544,11 @@ public abstract class Node implements Validatable {
                             }
                             Files.copy(Paths.get(fPath), newName, REPLACE_EXISTING);
 
-                            f.set(n, newName.toString());
+                            n.setStringFieldValue(f, newName.toString());
                             return newName.toString();
-                          } catch (IllegalAccessException e) {
-                            throw new RuntimeException(
-                                "Failed to get local files for node " + n.getNodeName(), e);
                           } catch (IOException e) {
                             throw new HalException(
                                 FATAL, "Failed to backup user file: " + e.getMessage(), e);
-                          } finally {
-                            f.setAccessible(false);
                           }
                         })
                     .filter(Objects::nonNull)

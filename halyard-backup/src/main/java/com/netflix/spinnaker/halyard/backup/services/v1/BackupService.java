@@ -59,10 +59,6 @@ public class BackupService {
   public void restore(String backupTar) {
     String halconfigDir = directoryStructure.getHalconfigDirectory();
     untarHalconfig(halconfigDir, backupTar);
-
-    Halconfig halconfig = halconfigParser.getHalconfig();
-    halconfig.makeLocalFilesAbsolute(halconfigDir);
-    halconfigParser.saveConfig();
   }
 
   public String create() {
@@ -70,7 +66,7 @@ public class BackupService {
     halconfigParser.backupConfig();
     Halconfig halconfig = halconfigParser.getHalconfig();
     halconfig.backupLocalFiles(directoryStructure.getBackupConfigDependenciesPath().toString());
-    halconfig.makeLocalFilesRelative(halconfigDir);
+    halconfigParser.makeAbsoluteFilesRelative(halconfig, halconfigDir);
     halconfigParser.saveConfig();
 
     SimpleDateFormat dateFormatter =
