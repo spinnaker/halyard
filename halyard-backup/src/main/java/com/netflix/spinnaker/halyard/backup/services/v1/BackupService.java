@@ -61,16 +61,19 @@ public class BackupService {
     String halconfigDir = directoryStructure.getHalconfigDirectory();
     untarHalconfig(halconfigDir, backupTar);
 
-    // This is only needed to support old backups where file paths were prefixed with {%halconfig-dir%}
+    // This is only needed to support old backups where file paths were prefixed with
+    // {%halconfig-dir%}
     Halconfig halconfig = halconfigParser.getHalconfig();
     removeHalconfigDirPrefix(halconfig);
     halconfigParser.saveConfig();
   }
 
   /**
-   * Removes {@link com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile#RELATIVE_PATH_PLACEHOLDER} instances
-   * from a backup. This is held for backwards compatibility reading old backups, new backups don't use the prefix
-   * and relative file paths are always resolved to hal config home.
+   * Removes {@link
+   * com.netflix.spinnaker.halyard.config.model.v1.node.LocalFile#RELATIVE_PATH_PLACEHOLDER}
+   * instances from a backup. This is held for backwards compatibility reading old backups, new
+   * backups don't use the prefix and relative file paths are always resolved to hal config home.
+   *
    * @param halconfig instance from backup.
    */
   @Deprecated
