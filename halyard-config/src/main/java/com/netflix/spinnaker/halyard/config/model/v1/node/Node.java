@@ -486,7 +486,7 @@ public abstract class Node implements Validatable {
                               }
                             }
 
-                            if (fPath == null) {
+                            if (fPath == null || fPath.equals("*")) {
                               return null;
                             }
 
