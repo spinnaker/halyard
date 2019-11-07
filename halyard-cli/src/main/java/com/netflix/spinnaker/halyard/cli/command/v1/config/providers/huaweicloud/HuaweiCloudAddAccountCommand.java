@@ -34,6 +34,7 @@ public class HuaweiCloudAddAccountCommand extends AbstractAddAccountCommand {
   @Parameter(
       names = "--password",
       required = true,
+      password = true,
       description = HuaweiCloudCommandProperties.PASSWORD_DESCRIPTION)
   private String password;
 
@@ -63,14 +64,14 @@ public class HuaweiCloudAddAccountCommand extends AbstractAddAccountCommand {
   protected Account buildAccount(String accountName) {
     HuaweiCloudAccount account = (HuaweiCloudAccount) new HuaweiCloudAccount().setName(accountName);
     account
+        .setAccountType(accountType)
         .setAuthUrl(authUrl)
         .setUsername(username)
         .setPassword(password)
-        .setAccountType(accountType)
         .setProjectName(projectName)
         .setDomainName(domainName)
-        .setRegions(regions)
-        .setInsecure(insecure);
+        .setInsecure(insecure)
+        .setRegions(regions);
 
     return account;
   }

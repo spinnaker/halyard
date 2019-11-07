@@ -8967,7 +8967,7 @@ hal config provider huaweicloud account add ACCOUNT [parameters]
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--insecure`: (*Default*: `false`) Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--password`: (*Required*) The password used to access cloud.
+ * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The password used to access cloud.
  * `--project-name`: (*Required*) The name of the project within the cloud.
  * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
@@ -9016,7 +9016,7 @@ hal config provider huaweicloud account edit ACCOUNT [parameters]
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--insecure`: Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--password`: The password used to access cloud.
+ * `--password`: (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The password used to access cloud.
  * `--project-name`: The name of the project within the cloud.
  * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
  * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.

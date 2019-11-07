@@ -25,7 +25,10 @@ public class HuaweiCloudEditAccountCommand extends AbstractEditAccountCommand<Hu
   @Parameter(names = "--username", description = HuaweiCloudCommandProperties.USERNAME_DESCRIPTION)
   private String username;
 
-  @Parameter(names = "--password", description = HuaweiCloudCommandProperties.PASSWORD_DESCRIPTION)
+  @Parameter(
+      names = "--password",
+      password = true,
+      description = HuaweiCloudCommandProperties.PASSWORD_DESCRIPTION)
   private String password;
 
   @Parameter(

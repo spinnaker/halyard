@@ -7,7 +7,8 @@ public class HuaweiCloudCommandProperties {
 
   static final String USERNAME_DESCRIPTION = "The username used to access cloud.";
 
-  static final String PASSWORD_DESCRIPTION = "The password used to access cloud.";
+  static final String PASSWORD_DESCRIPTION =
+      "(Sensitive data - user will be prompted on standard input) The password used to access cloud.";
 
   static final String PROJECT_NAME_DESCRIPTION = "The name of the project within the cloud.";
 

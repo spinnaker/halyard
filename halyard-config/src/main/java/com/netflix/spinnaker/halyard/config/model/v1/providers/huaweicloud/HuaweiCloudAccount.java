@@ -9,7 +9,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class HuaweiCloudAccount extends Account {
-  private String accountName;
   private String accountType;
   private String authUrl;
   private String username;
