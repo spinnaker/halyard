@@ -289,4 +289,31 @@ deploymentConfigurations:
         then:
         thrown HalException
     }
+
+    void "Makes absolute paths relative"() {
+        setup:
+        InputStream stream = new ByteArrayInputStream(HALCONFIG_WITH_RELATIVE_PATHS.getBytes(StandardCharsets.UTF_8))
+        Halconfig out = parser.parseHalconfig(stream)
+        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile = "$HALCONFIG_HOME/updated-path/kubecfg-1"
+
+        when:
+        parser.makeAbsoluteFilesRelative(out, "$HALCONFIG_HOME")
+
+        then:
+        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "updated-path/kubecfg-1"
+        out.deploymentConfigurations[0].providers.kubernetes.accounts[1].kubeconfigFile == "required-files/kubecfg-2"
+    }
+
+    void "Error making absolute paths relative, when root doesn't match"() {
+        setup:
+        InputStream stream = new ByteArrayInputStream(HALCONFIG_WITH_RELATIVE_PATHS.getBytes(StandardCharsets.UTF_8))
+        Halconfig out = parser.parseHalconfig(stream)
+        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile = "${HALCONFIG_HOME}yard/updated-path/kubecfg-1"
+
+        when:
+        parser.makeAbsoluteFilesRelative(out, "$HALCONFIG_HOME")
+
+        then:
+        thrown(HalException)
+    }
 }

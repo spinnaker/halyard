@@ -499,16 +499,14 @@ public abstract class Node implements Validatable {
     return absolutePath;
   }
 
-  private Path toRelativePath(String rootPath, String absolutePath) {
+  private Path toRelativePath(String root, String absolute) {
+    Path rootPath = Paths.get(root);
+    Path absolutePath = Paths.get(absolute);
     if (!absolutePath.startsWith(rootPath)) {
       throw new HalException(
-          FATAL,
-          "Local file: " + absolutePath + " has incorrect prefix - must begin with " + rootPath);
+          FATAL, "Local file: " + absolute + " has incorrect prefix - must begin with " + root);
     }
-    if (!rootPath.endsWith(File.separator)) {
-      rootPath += File.separator;
-    }
-    return Paths.get(absolutePath.substring(rootPath.length()));
+    return rootPath.relativize(absolutePath);
   }
 
   public List<String> backupLocalFiles(String outputPath) {
