@@ -35,7 +35,7 @@ public class FileService {
   }
 
   /**
-   * Returns an absolute file path in the local file system resolved by this this file reference,
+   * Returns an absolute file path in the local file system resolved by this file reference,
    * retrieving the file from external systems if necessary.
    *
    * @param fileReference a file reference can be a secret, a config server resource or a path in
