@@ -18,7 +18,6 @@ package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import static com.netflix.spinnaker.halyard.config.model.v1.node.NodeDiff.ChangeType.*;
 import static com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity.FATAL;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +31,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -414,45 +412,6 @@ public abstract class Node implements Validatable {
     return result;
   }
 
-  /**
-   * Changes the file path pointed by "localFile" from being relative, to an absolute path beginning
-   * with "rootPath".
-   *
-   * @param localFile the field annotated with {@see LocalFile} to transform.
-   * @param rootPath prefix to add to the local path.
-   * @return original relative file path, or null if the file path was not modified.
-   */
-  public String makeRelativePathAbsolute(Field localFile, String rootPath) {
-    String fPath = getStringFieldValue(localFile);
-    if (StringUtils.isEmpty(fPath)) {
-      return null;
-    }
-    if (Paths.get(fPath).isAbsolute() || fPath.startsWith(LocalFile.RELATIVE_PATH_PLACEHOLDER)) {
-      return null;
-    }
-    Path absolutePath = toAbsolutePath(rootPath, fPath);
-    setStringFieldValue(localFile, absolutePath.toString());
-    return fPath;
-  }
-
-  /**
-   * Changes the file path pointed by "localFile" and beginning with "rootPath" from being absolute,
-   * to a relative path by removing "rootPath".
-   *
-   * @param localFile the field annotated with {@see LocalFile} to transform.
-   * @param rootPath prefix to remove from the local path.
-   * @return original absolute file path, or null if the file path was not modified.
-   */
-  public String makeAbsolutePathRelative(Field localFile, String rootPath) {
-    String fPath = getStringFieldValue(localFile);
-    if (StringUtils.isEmpty(fPath)) {
-      return null;
-    }
-    Path relativePath = toRelativePath(rootPath, fPath);
-    setStringFieldValue(localFile, relativePath.toString());
-    return fPath;
-  }
-
   public String getStringFieldValue(Field f) {
     try {
       f.setAccessible(true);
@@ -484,73 +443,6 @@ public abstract class Node implements Validatable {
     } finally {
       f.setAccessible(false);
     }
-  }
-
-  private Path toAbsolutePath(String rootPath, String relativePath) {
-    Path absolutePath = Paths.get(rootPath, relativePath).normalize();
-    if (!absolutePath.startsWith(rootPath)) {
-      throw new HalException(
-          FATAL,
-          "Error resolving file path '"
-              + relativePath
-              + "': Relative file paths must resolve to files inside "
-              + rootPath);
-    }
-    return absolutePath;
-  }
-
-  private Path toRelativePath(String root, String absolute) {
-    Path rootPath = Paths.get(root);
-    Path absolutePath = Paths.get(absolute);
-    if (!absolutePath.startsWith(rootPath)) {
-      throw new HalException(
-          FATAL, "Local file: " + absolute + " has incorrect prefix - must begin with " + root);
-    }
-    return rootPath.relativize(absolutePath);
-  }
-
-  public List<String> backupLocalFiles(String outputPath) {
-    List<String> files = new ArrayList<>();
-
-    Consumer<Node> fileFinder =
-        n ->
-            files.addAll(
-                n.localFiles().stream()
-                    .map(
-                        f -> {
-                          try {
-                            String fPath = n.getStringFieldValue(f);
-                            if (StringUtils.isEmpty(fPath)) {
-                              return null;
-                            }
-                            File fFile = new File(fPath);
-                            String fName = fFile.getName().replaceAll("[^-._a-zA-Z0-9]", "-");
-
-                            // Hash the path to uniquely flatten all files into the output directory
-                            Path newName =
-                                Paths.get(outputPath, Math.abs(fPath.hashCode()) + "-" + fName);
-                            File parent = newName.toFile().getParentFile();
-                            if (!parent.exists()) {
-                              parent.mkdirs();
-                            } else if (fFile.getParent() != null
-                                && fFile.getParent().equals(parent.toString())) {
-                              // Don't move paths that are already in the right folder
-                              return fPath;
-                            }
-                            Files.copy(Paths.get(fPath), newName, REPLACE_EXISTING);
-
-                            n.setStringFieldValue(f, newName.toString());
-                            return newName.toString();
-                          } catch (IOException e) {
-                            throw new HalException(
-                                FATAL, "Failed to backup user file: " + e.getMessage(), e);
-                          }
-                        })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList()));
-    recursiveConsume(fileFinder);
-
-    return files;
   }
 
   public <T> T cloneNode(Class<T> tClass) {

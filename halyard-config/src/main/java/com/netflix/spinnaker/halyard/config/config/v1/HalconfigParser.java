@@ -33,14 +33,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -70,9 +68,6 @@ public class HalconfigParser {
 
   private boolean useBackup = false;
 
-  // @LocalFile fields whose file path is relative
-  private Map<Node, Map<Field, String>> originalRelativePaths = new ConcurrentHashMap<>();
-
   /**
    * Parse Halyard's config.
    *
@@ -82,9 +77,7 @@ public class HalconfigParser {
    */
   Halconfig parseHalconfig(InputStream is) throws IllegalArgumentException {
     Object obj = yamlParser.load(is);
-    Halconfig halconfig = objectMapper.convertValue(obj, Halconfig.class);
-    makeRelativeFilesAbsolute(halconfig, halconfigDirectoryStructure.getHalconfigDirectory());
-    return halconfig;
+    return objectMapper.convertValue(obj, Halconfig.class);
   }
 
   /**
@@ -104,11 +97,11 @@ public class HalconfigParser {
   }
 
   private InputStream getHalconfigStream() throws FileNotFoundException {
-    String configFile =
+    String baseDirectory =
         useBackup
             ? halconfigDirectoryStructure.getBackupConfigPath().toString()
             : halconfigDirectoryStructure.getHalconfigPath();
-    return new FileInputStream(new File(configFile));
+    return new FileInputStream(new File(baseDirectory));
   }
 
   /**
@@ -238,7 +231,6 @@ public class HalconfigParser {
 
     AtomicFileWriter writer = null;
     try {
-      restoreUnchangedRelativePaths(local, halconfigDirectoryStructure.getHalconfigDirectory());
       writer = new AtomicFileWriter(path);
       writer.write(yamlParser.dump(objectMapper.convertValue(local, Map.class)));
       writer.commit();
@@ -256,54 +248,5 @@ public class HalconfigParser {
         writer.close();
       }
     }
-  }
-
-  public void makeRelativeFilesAbsolute(Halconfig halconfig, String rootPath) {
-    halconfig.recursiveConsume(
-        n ->
-            n.localFiles()
-                .forEach(
-                    field -> {
-                      String relativePath = n.makeRelativePathAbsolute(field, rootPath);
-                      if (relativePath == null) {
-                        return;
-                      }
-                      if (originalRelativePaths.get(n) == null) {
-                        originalRelativePaths.put(n, new ConcurrentHashMap<>());
-                      }
-                      originalRelativePaths.get(n).put(field, relativePath);
-                    }));
-  }
-
-  public void makeAbsoluteFilesRelative(Halconfig halconfig, String rootPath) {
-    halconfig.recursiveConsume(
-        n ->
-            n.localFiles()
-                .forEach(
-                    field -> {
-                      n.makeAbsolutePathRelative(field, rootPath);
-                    }));
-  }
-
-  public void restoreUnchangedRelativePaths(Halconfig halconfig, String rootPath) {
-    halconfig.recursiveConsume(
-        n ->
-            n.localFiles()
-                .forEach(
-                    field -> {
-                      if (!originalRelativePaths.containsKey(n)
-                          || !originalRelativePaths.get(n).containsKey(field)) {
-                        return;
-                      }
-                      String relativePath = originalRelativePaths.get(n).remove(field);
-                      if (originalRelativePaths.get(n).isEmpty()) {
-                        originalRelativePaths.remove(n);
-                      }
-                      Path absolutePath = Paths.get(rootPath, relativePath).normalize();
-                      String path = n.getStringFieldValue(field);
-                      if (path.equals(absolutePath.toString())) {
-                        n.setStringFieldValue(field, relativePath);
-                      }
-                    }));
   }
 }

@@ -17,7 +17,6 @@
 package com.netflix.spinnaker.halyard.config.config.v1
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig
-import com.netflix.spinnaker.halyard.core.error.v1.HalException
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.SafeConstructor
 import spock.lang.Specification
@@ -29,61 +28,12 @@ class HalconfigParserSpec extends Specification {
   String HALYARD_VERSION = "0.1.0"
   String SPINNAKER_VERSION = "1.0.0"
   String CURRENT_DEPLOYMENT = "my-spinnaker-deployment"
-  String HALCONFIG_HOME = "/home/spinnaker/.hal"
   HalconfigParser parser
-
-    def HALCONFIG_WITH_RELATIVE_PATHS = """
-halyardVersion: 1
-currentDeployment: $CURRENT_DEPLOYMENT
-deploymentConfigurations:
-- name: $CURRENT_DEPLOYMENT
-  version: $SPINNAKER_VERSION
-  providers:
-    kubernetes:
-      enabled: true
-      accounts:
-      - name: kubernetes-1
-        requiredGroupMembership: []
-        providerVersion: V2
-        permissions: {}
-        dockerRegistries: []
-        configureImagePullSecrets: true
-        cacheThreads: 1
-        namespaces: []
-        omitNamespaces: []
-        kinds: []
-        omitKinds: []
-        customResources: []
-        cachingPolicies: []
-        kubeconfigFile: required-files/kubecfg-1
-        oAuthScopes: []
-        onlySpinnakerManaged: false
-      - name: kubernetes-2
-        requiredGroupMembership: []
-        providerVersion: V2
-        permissions: {}
-        dockerRegistries: []
-        configureImagePullSecrets: true
-        cacheThreads: 1
-        namespaces: []
-        omitNamespaces: []
-        kinds: []
-        omitKinds: []
-        customResources: []
-        cachingPolicies: []
-        kubeconfigFile: required-files/kubecfg-2
-        oAuthScopes: []
-        onlySpinnakerManaged: false
-      primaryAccount: kubernetes
-"""
 
   void setup() {
     parser = new HalconfigParser()
     parser.yamlParser = new Yaml(new SafeConstructor())
     parser.objectMapper = new StrictObjectMapper()
-    def hcDirStructure = new HalconfigDirectoryStructure()
-    hcDirStructure.halconfigDirectory = HALCONFIG_HOME
-    parser.halconfigDirectoryStructure = hcDirStructure
   }
 
   void "Accept minimal config"() {
@@ -209,111 +159,4 @@ deploymentConfigurations:
     // Uncomment the below to implement LDAP. Then fill in the rest of the LDAP properties, one per line.
 //    "ldap"        | "enabled"    | true
   }
-
-    void "Adds hal config home to relative file paths"() {
-        setup:
-        InputStream stream = new ByteArrayInputStream(HALCONFIG_WITH_RELATIVE_PATHS.getBytes(StandardCharsets.UTF_8))
-        Halconfig out = null
-
-        when:
-        out = parser.parseHalconfig(stream)
-
-        then:
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "$HALCONFIG_HOME/required-files/kubecfg-1"
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[1].kubeconfigFile == "$HALCONFIG_HOME/required-files/kubecfg-2"
-    }
-
-    void "Removes hal config home from unchanged relative file paths"() {
-        setup:
-        InputStream stream = new ByteArrayInputStream(HALCONFIG_WITH_RELATIVE_PATHS.getBytes(StandardCharsets.UTF_8))
-        Halconfig out = parser.parseHalconfig(stream)
-
-        when:
-        parser.restoreUnchangedRelativePaths(out, HALCONFIG_HOME)
-
-        then:
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "required-files/kubecfg-1"
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[1].kubeconfigFile == "required-files/kubecfg-2"
-    }
-
-    void "Doesn't remove prefix from updated relative file paths"() {
-        setup:
-        InputStream stream = new ByteArrayInputStream(HALCONFIG_WITH_RELATIVE_PATHS.getBytes(StandardCharsets.UTF_8))
-        Halconfig out = parser.parseHalconfig(stream)
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile = "/root/updated-path/kubecfg-1"
-
-        when:
-        parser.restoreUnchangedRelativePaths(out, HALCONFIG_HOME)
-
-        then:
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "/root/updated-path/kubecfg-1"
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[1].kubeconfigFile == "required-files/kubecfg-2"
-    }
-
-    void "Throws error when trying to escape hal config home with relative local file paths"() {
-        setup:
-        String config = """
-halyardVersion: 1
-currentDeployment: $CURRENT_DEPLOYMENT
-deploymentConfigurations:
-- name: $CURRENT_DEPLOYMENT
-  version: $SPINNAKER_VERSION
-  providers:
-    kubernetes:
-      enabled: true
-      accounts:
-      - name: kubernetes
-        requiredGroupMembership: []
-        providerVersion: V2
-        permissions: {}
-        dockerRegistries: []
-        configureImagePullSecrets: true
-        cacheThreads: 1
-        namespaces: []
-        omitNamespaces: []
-        kinds: []
-        omitKinds: []
-        customResources: []
-        cachingPolicies: []
-        kubeconfigFile: poison/../../.kube/config
-        oAuthScopes: []
-        onlySpinnakerManaged: false
-      primaryAccount: kubernetes
-"""
-        InputStream stream = new ByteArrayInputStream(config.getBytes(StandardCharsets.UTF_8))
-        Halconfig out = null
-
-        when:
-        out = parser.parseHalconfig(stream)
-
-        then:
-        thrown HalException
-    }
-
-    void "Makes absolute paths relative"() {
-        setup:
-        InputStream stream = new ByteArrayInputStream(HALCONFIG_WITH_RELATIVE_PATHS.getBytes(StandardCharsets.UTF_8))
-        Halconfig out = parser.parseHalconfig(stream)
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile = "$HALCONFIG_HOME/updated-path/kubecfg-1"
-
-        when:
-        parser.makeAbsoluteFilesRelative(out, "$HALCONFIG_HOME")
-
-        then:
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile == "updated-path/kubecfg-1"
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[1].kubeconfigFile == "required-files/kubecfg-2"
-    }
-
-    void "Error making absolute paths relative, when root doesn't match"() {
-        setup:
-        InputStream stream = new ByteArrayInputStream(HALCONFIG_WITH_RELATIVE_PATHS.getBytes(StandardCharsets.UTF_8))
-        Halconfig out = parser.parseHalconfig(stream)
-        out.deploymentConfigurations[0].providers.kubernetes.accounts[0].kubeconfigFile = "${HALCONFIG_HOME}yard/updated-path/kubecfg-1"
-
-        when:
-        parser.makeAbsoluteFilesRelative(out, "$HALCONFIG_HOME")
-
-        then:
-        thrown(HalException)
-    }
 }
