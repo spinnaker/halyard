@@ -29,5 +29,6 @@ public class HuaweiCloudBaseImage
     String instanceType;
     String sourceImageId;
     String sshUserName;
+    String eipType;
   }
 }

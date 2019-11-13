@@ -6,4 +6,15 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class HuaweiCloudBakeryDefaults extends BakeryDefaults<HuaweiCloudBaseImage> {}
+public class HuaweiCloudBakeryDefaults extends BakeryDefaults<HuaweiCloudBaseImage> {
+  private String authUrl;
+  private String username;
+  private String password;
+  private String projectName;
+  private String domainName;
+  private Boolean insecure;
+  private String vpcId;
+  private String subnetId;
+  private String securityGroup;
+  private Integer eipBandwidthSize;
+}

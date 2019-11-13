@@ -18,4 +18,16 @@ public class HuaweiCloudCommandProperties {
 
   static final String INSECURE_DESCRIPTION =
       "Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.";
+
+  static final String INSTANCE_TYPE_DESCRIPTION = "The instance type for the baking configuration.";
+
+  static final String SOURCE_IMAGE_ID_DESCRIPTION =
+      "The source image ID for the baking configuration.";
+
+  static final String SSH_USER_NAME_DESCRIPTION = "The ssh username for the baking configuration.";
+
+  static final String REGION_DESCRIPTION = "The region for the baking configuration.";
+
+  static final String EIP_TYPE_DESCRIPTION =
+      "The eip type for the baking configuration. See the api doc to get its value";
 }
