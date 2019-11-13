@@ -458,6 +458,14 @@
  * [**hal config provider huaweicloud account edit**](#hal-config-provider-huaweicloud-account-edit)
  * [**hal config provider huaweicloud account get**](#hal-config-provider-huaweicloud-account-get)
  * [**hal config provider huaweicloud account list**](#hal-config-provider-huaweicloud-account-list)
+ * [**hal config provider huaweicloud bakery**](#hal-config-provider-huaweicloud-bakery)
+ * [**hal config provider huaweicloud bakery base-image**](#hal-config-provider-huaweicloud-bakery-base-image)
+ * [**hal config provider huaweicloud bakery base-image add**](#hal-config-provider-huaweicloud-bakery-base-image-add)
+ * [**hal config provider huaweicloud bakery base-image delete**](#hal-config-provider-huaweicloud-bakery-base-image-delete)
+ * [**hal config provider huaweicloud bakery base-image edit**](#hal-config-provider-huaweicloud-bakery-base-image-edit)
+ * [**hal config provider huaweicloud bakery base-image get**](#hal-config-provider-huaweicloud-bakery-base-image-get)
+ * [**hal config provider huaweicloud bakery base-image list**](#hal-config-provider-huaweicloud-bakery-base-image-list)
+ * [**hal config provider huaweicloud bakery edit**](#hal-config-provider-huaweicloud-bakery-edit)
  * [**hal config provider huaweicloud disable**](#hal-config-provider-huaweicloud-disable)
  * [**hal config provider huaweicloud enable**](#hal-config-provider-huaweicloud-enable)
  * [**hal config provider kubernetes**](#hal-config-provider-kubernetes)
@@ -8923,6 +8931,7 @@ hal config provider huaweicloud [parameters] [subcommands]
 
 #### Subcommands
  * `account`: Manage and view Spinnaker configuration for the huaweicloud provider's account
+ * `bakery`: Manage and view Spinnaker configuration for the huaweicloud provider's image bakery configuration.
  * `disable`: Set the huaweicloud provider as disabled
  * `enable`: Set the huaweicloud provider as enabled
 
@@ -9059,6 +9068,169 @@ hal config provider huaweicloud account list [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery
+
+Manage and view Spinnaker configuration for the huaweicloud provider's image bakery configuration.
+
+#### Usage
+```
+hal config provider huaweicloud bakery [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `base-image`: Manage and view Spinnaker configuration for the huaweicloud provider's base image.
+ * `edit`: Edit the huaweicloud provider's bakery default options.
+
+---
+## hal config provider huaweicloud bakery base-image
+
+Manage and view Spinnaker configuration for the huaweicloud provider's base image.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a base image for the huaweicloud provider's bakery.
+ * `delete`: Delete a specific huaweicloud base image by name.
+ * `edit`: Edit a base image for the huaweicloud provider's bakery.
+ * `get`: Get the specified base image details for the huaweicloud provider.
+ * `list`: List the base image names for the huaweicloud provider.
+
+---
+## hal config provider huaweicloud bakery base-image add
+
+Add a base image for the huaweicloud provider's bakery.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image add BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--eip-type`: (*Required*) The eip type for the baking configuration. See the api doc to get its value
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: (*Required*) The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+
+
+---
+## hal config provider huaweicloud bakery base-image delete
+
+Delete a specific huaweicloud base image by name.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image delete BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery base-image edit
+
+Edit a base image for the huaweicloud provider's bakery.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image edit BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--eip-type`: The eip type for the baking configuration. See the api doc to get its value
+ * `--id`: This is the identifier used by your cloud to find this base image.
+ * `--instance-type`: The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: The source image ID for the baking configuration.
+ * `--ssh-user-name`: The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+
+
+---
+## hal config provider huaweicloud bakery base-image get
+
+Get the specified base image details for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image get BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery base-image list
+
+List the base image names for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery edit
+
+Edit the huaweicloud provider's bakery default options.
+
+#### Usage
+```
+hal config provider huaweicloud bakery edit [parameters]
+```
+
+#### Parameters
+ * `--auth-url`: (*Required*) Set the default auth URL your images will be baked in.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--domain-name`: (*Required*) Set the default domainName your images will be baked in.
+ * `--eip-bandwidth-size`: (*Required*) Set the bandwidth size of eip your images will be baked in.
+ * `--insecure`: (*Required*) The security setting (true/false) for connecting to the HuaweiCloud account.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) Set the default password your images will be baked with.
+ * `--project-name`: (*Required*) Set the default project name your images will be baked in.
+ * `--security-group`: (*Required*) Set the default security group your images will be baked in.
+ * `--subnet-id`: (*Required*) Set the subnet your images will be baked in.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+ * `--username`: (*Required*) Set the default username your images will be baked with.
+ * `--vpc-id`: (*Required*) Set the vpc your images will be baked in.
 
 
 ---

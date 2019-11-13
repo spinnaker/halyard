@@ -12,5 +12,6 @@ public class HuaweiCloudCommand extends AbstractNamedProviderCommand {
   public HuaweiCloudCommand() {
     super();
     registerSubcommand(new HuaweiCloudAccountCommand());
+    registerSubcommand(new HuaweiCloudBakeryCommand());
   }
 }

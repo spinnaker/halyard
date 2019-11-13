@@ -27,9 +27,12 @@ public class HuaweiCloudProviderValidator extends Validator<HuaweiCloudProvider>
   @Override
   public void validate(ConfigProblemSetBuilder p, HuaweiCloudProvider n) {
 
-    HuaweiCloudAccountValidator huaweicloudAccountValidator = new HuaweiCloudAccountValidator();
+    HuaweiCloudAccountValidator accountValidator = new HuaweiCloudAccountValidator();
 
-    n.getAccounts()
-        .forEach(huaweicloudAccount -> huaweicloudAccountValidator.validate(p, huaweicloudAccount));
+    n.getAccounts().forEach(huaweicloudAccount -> accountValidator.validate(p, huaweicloudAccount));
+
+    HuaweiCloudBakeryDefaultsValidator bakeryValidator = new HuaweiCloudBakeryDefaultsValidator();
+
+    bakeryValidator.validate(p, n.getBakeryDefaults());
   }
 }
