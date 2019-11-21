@@ -18,6 +18,7 @@ package com.netflix.spinnaker.halyard.config.model.v1.canary;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.netflix.spinnaker.halyard.config.model.v1.canary.alicloud.AliCloudCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.aws.AwsCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.datadog.DatadogCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.google.GoogleCanaryServiceIntegration;
@@ -47,6 +48,9 @@ import lombok.EqualsAndHashCode;
   @JsonSubTypes.Type(
       value = SignalfxCanaryServiceIntegration.class,
       name = SignalfxCanaryServiceIntegration.NAME),
+  @JsonSubTypes.Type(
+      value = AliCloudCanaryServiceIntegration.class,
+      name = AliCloudCanaryServiceIntegration.NAME),
   @JsonSubTypes.Type(
       value = AwsCanaryServiceIntegration.class,
       name = AwsCanaryServiceIntegration.NAME),

@@ -18,6 +18,8 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
 import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
+import com.netflix.spinnaker.halyard.config.model.v1.canary.alicloud.AliCloudCanaryAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.canary.alicloud.AliCloudCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.aws.AwsCanaryAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.aws.AwsCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.datadog.DatadogCanaryAccount;
@@ -93,7 +95,9 @@ public class KayentaProfileFactory extends SpringProfileFactory {
       PrometheusConfig prometheus;
       DatadogConfig datadog;
       AwsConfig aws;
+      AlicloudConfig alicloud;
       S3Config s3;
+      OSSConfig oss;
       SignalFxConfig signalfx;
       NewRelicConfig newrelic;
 
@@ -115,6 +119,10 @@ public class KayentaProfileFactory extends SpringProfileFactory {
             AwsCanaryServiceIntegration awsSvc = (AwsCanaryServiceIntegration) svc;
             aws = new AwsConfig(awsSvc);
             s3 = new S3Config(awsSvc);
+          } else if (svc instanceof AliCloudCanaryServiceIntegration) {
+            AliCloudCanaryServiceIntegration alicloudSvc = (AliCloudCanaryServiceIntegration) svc;
+            alicloud = new AlicloudConfig(alicloudSvc);
+            oss = new OSSConfig(alicloudSvc);
           } else if (svc instanceof SignalfxCanaryServiceIntegration) {
             SignalfxCanaryServiceIntegration signalfxSvc = (SignalfxCanaryServiceIntegration) svc;
             signalfx = new SignalFxConfig(signalfxSvc);
@@ -181,6 +189,17 @@ public class KayentaProfileFactory extends SpringProfileFactory {
       }
 
       @Data
+      static class AlicloudConfig {
+        private boolean enabled;
+        List<AliCloudCanaryAccount> accounts;
+
+        AlicloudConfig(AliCloudCanaryServiceIntegration alicloudSvc) {
+          enabled = alicloudSvc.isEnabled();
+          accounts = alicloudSvc.getAccounts();
+        }
+      }
+
+      @Data
       static class AwsConfig {
         private boolean enabled;
         List<AwsCanaryAccount> accounts;
@@ -188,6 +207,15 @@ public class KayentaProfileFactory extends SpringProfileFactory {
         AwsConfig(AwsCanaryServiceIntegration awsSvc) {
           enabled = awsSvc.isEnabled();
           accounts = awsSvc.getAccounts();
+        }
+      }
+
+      @Data
+      static class OSSConfig {
+        private boolean enabled;
+
+        OSSConfig(AliCloudCanaryServiceIntegration alicloudSvc) {
+          enabled = alicloudSvc.isOssEnabled();
         }
       }
 

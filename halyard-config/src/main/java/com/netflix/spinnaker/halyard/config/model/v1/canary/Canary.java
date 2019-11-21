@@ -17,6 +17,8 @@
 package com.netflix.spinnaker.halyard.config.model.v1.canary;
 
 import com.google.common.collect.Lists;
+import com.netflix.spinnaker.halyard.config.model.v1.canary.alicloud.AliCloudCanaryAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.canary.alicloud.AliCloudCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.aws.AwsCanaryAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.aws.AwsCanaryServiceIntegration;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.datadog.DatadogCanaryAccount;
@@ -48,6 +50,7 @@ public class Canary extends Node implements Cloneable {
           new DatadogCanaryServiceIntegration(),
           new SignalfxCanaryServiceIntegration(),
           new AwsCanaryServiceIntegration(),
+          new AliCloudCanaryServiceIntegration(),
           new NewRelicCanaryServiceIntegration());
 
   boolean reduxLoggerEnabled = true;
@@ -84,6 +87,8 @@ public class Canary extends Node implements Cloneable {
         return SignalfxCanaryAccount.class;
       case AwsCanaryServiceIntegration.NAME:
         return AwsCanaryAccount.class;
+      case AliCloudCanaryServiceIntegration.NAME:
+        return AliCloudCanaryAccount.class;
       case NewRelicCanaryServiceIntegration.NAME:
         return NewRelicCanaryAccount.class;
       default:

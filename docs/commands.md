@@ -115,6 +115,16 @@
  * [**hal config artifact templates edit**](#hal-config-artifact-templates-edit)
  * [**hal config artifact templates list**](#hal-config-artifact-templates-list)
  * [**hal config canary**](#hal-config-canary)
+ * [**hal config canary alicloud**](#hal-config-canary-alicloud)
+ * [**hal config canary alicloud account**](#hal-config-canary-alicloud-account)
+ * [**hal config canary alicloud account add**](#hal-config-canary-alicloud-account-add)
+ * [**hal config canary alicloud account delete**](#hal-config-canary-alicloud-account-delete)
+ * [**hal config canary alicloud account edit**](#hal-config-canary-alicloud-account-edit)
+ * [**hal config canary alicloud account get**](#hal-config-canary-alicloud-account-get)
+ * [**hal config canary alicloud account list**](#hal-config-canary-alicloud-account-list)
+ * [**hal config canary alicloud disable**](#hal-config-canary-alicloud-disable)
+ * [**hal config canary alicloud edit**](#hal-config-canary-alicloud-edit)
+ * [**hal config canary alicloud enable**](#hal-config-canary-alicloud-enable)
  * [**hal config canary aws**](#hal-config-canary-aws)
  * [**hal config canary aws account**](#hal-config-canary-aws-account)
  * [**hal config canary aws account add**](#hal-config-canary-aws-account-add)
@@ -2566,6 +2576,7 @@ hal config canary [parameters] [subcommands]
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 #### Subcommands
+ * `alicloud`: Configure your canary analysis alicloud service integration settings for Spinnaker.
  * `aws`: Configure your canary analysis AWS service integration settings for Spinnaker.
  * `datadog`: Configure your canary analysis Datadog service integration settings for Spinnaker.
  * `disable`: Set Spinnaker's canary analysis to disabled.
@@ -2575,6 +2586,185 @@ hal config canary [parameters] [subcommands]
  * `newrelic`: Configure your canary analysis New Relic service integration settings for Spinnaker.
  * `prometheus`: Configure your canary analysis Prometheus service integration settings for Spinnaker.
  * `signalfx`: Configure your canary analysis SignalFx service integration settings for Spinnaker.
+
+---
+## hal config canary alicloud
+
+Configure your canary analysis alicloud service integration settings for Spinnaker.
+
+#### Usage
+```
+hal config canary alicloud [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the alicloud service integration's canary accounts.
+ * `disable`: Set Spinnaker's canary analysis alicloud service integration to disabled.
+ * `edit`: Edit Spinnaker's canary analysis alicloud service integration settings.
+ * `enable`: Set Spinnaker's canary analysis alicloud service integration to enabled.
+
+---
+## hal config canary alicloud account
+
+Manage and view Spinnaker configuration for the alicloud service integration's canary accounts.
+
+#### Usage
+```
+hal config canary alicloud account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a canary account to the alicloud service integration.
+ * `delete`: Delete a specific alicloud canary account by name.
+ * `edit`: Edit a canary account in the alicloud service integration.
+ * `get`: Get the specified canary account details for the alicloud service integration.
+ * `list`: List the canary account names for the alicloud service integration.
+
+---
+## hal config canary alicloud account add
+
+Add a canary account to the alicloud service integration.
+
+#### Usage
+```
+hal config canary alicloud account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--access-key-id`: The default access key used to communicate with alicloud.
+ * `--bucket`: The name of a storage bucket that your specified account has access to. If you specify a globally unique bucket name that doesn't exist yet, Kayenta will create that bucket for you.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--endpoint`: The endpoint used to reach the service implementing the alicloud api. Typical use is with Minio.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--region`: The region to use.
+ * `--root-folder`: The root folder in the chosen bucket to place all of the canary service's persistent data in (*Default*: `kayenta`).
+ * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with alicloud.
+
+
+---
+## hal config canary alicloud account delete
+
+Delete a specific alicloud canary account by name.
+
+#### Usage
+```
+hal config canary alicloud account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary alicloud account edit
+
+Edit a canary account in the alicloud service integration.
+
+#### Usage
+```
+hal config canary alicloud account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--access-key-id`: The default access key used to communicate with alicloud.
+ * `--bucket`: The name of a storage bucket that your specified account has access to. If you specify a globally unique bucket name that doesn't exist yet, Kayenta will create that bucket for you.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--endpoint`: The endpoint used to reach the service implementing the alicloud api. Typical use is with Minio.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--region`: The region to use.
+ * `--root-folder`: The root folder in the chosen bucket to place all of the canary service's persistent data in (*Default*: `kayenta`).
+ * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with alicloud.
+
+
+---
+## hal config canary alicloud account get
+
+Get the specified canary account details for the alicloud service integration.
+
+#### Usage
+```
+hal config canary alicloud account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the canary account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary alicloud account list
+
+List the canary account names for the alicloud service integration.
+
+#### Usage
+```
+hal config canary alicloud account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary alicloud disable
+
+Set Spinnaker's canary analysis alicloud service integration to disabled.
+
+#### Usage
+```
+hal config canary alicloud disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary alicloud edit
+
+Edit Spinnaker's canary analysis alicloud service integration settings.
+
+#### Usage
+```
+hal config canary alicloud edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--oss-enabled`: Whether or not to enable oss as a persistent store (*Default*: `false`).
+
+
+---
+## hal config canary alicloud enable
+
+Set Spinnaker's canary analysis alicloud service integration to enabled.
+
+#### Usage
+```
+hal config canary alicloud enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
 
 ---
 ## hal config canary aws
