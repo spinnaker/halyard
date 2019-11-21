@@ -89,6 +89,7 @@ public abstract class Provider<A extends Account> extends Node implements Clonea
   }
 
   public enum ProviderType {
+    ALICLOUD("alicloud"),
     APPENGINE("appengine"),
     AWS("aws"),
     ECS("ecs"),

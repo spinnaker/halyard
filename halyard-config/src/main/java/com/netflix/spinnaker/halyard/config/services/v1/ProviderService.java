@@ -19,6 +19,7 @@ package com.netflix.spinnaker.halyard.config.services.v1;
 import com.netflix.spinnaker.halyard.config.error.v1.ConfigNotFoundException;
 import com.netflix.spinnaker.halyard.config.error.v1.IllegalConfigException;
 import com.netflix.spinnaker.halyard.config.model.v1.node.*;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.alicloud.AliCloudProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.appengine.AppengineProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.azure.AzureProvider;
@@ -108,6 +109,8 @@ public class ProviderService {
         deploymentService.getDeploymentConfiguration(deploymentName);
     Providers providers = deploymentConfiguration.getProviders();
     switch (provider.providerType()) {
+      case ALICLOUD:
+        providers.setAlicloud((AliCloudProvider) provider);
       case APPENGINE:
         providers.setAppengine((AppengineProvider) provider);
         break;
