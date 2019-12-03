@@ -21,6 +21,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.bakery.AbstractEditBaseImageCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.node.BaseImage;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudBaseImage;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudBaseImage.HuaweiCloudVirtualizationSettings;
 
 @Parameters(separators = "=")
 public class HuaweiCloudEditBaseImageCommand
@@ -53,19 +54,12 @@ public class HuaweiCloudEditBaseImageCommand
 
   @Override
   protected BaseImage editBaseImage(HuaweiCloudBaseImage baseImage) {
-    HuaweiCloudBaseImage.HuaweiCloudImageSettings imageSettings = baseImage.getBaseImage();
-    imageSettings =
-        imageSettings != null ? imageSettings : new HuaweiCloudBaseImage.HuaweiCloudImageSettings();
-    baseImage.setBaseImage(imageSettings);
-    HuaweiCloudBaseImage.HuaweiCloudVirtualizationSettings virtualizationSettings =
+    HuaweiCloudVirtualizationSettings virtualizationSettings =
         baseImage.getVirtualizationSettings().get(0);
-    virtualizationSettings =
-        virtualizationSettings != null
-            ? virtualizationSettings
-            : new HuaweiCloudBaseImage.HuaweiCloudVirtualizationSettings();
+
+    virtualizationSettings.setRegion(isSet(region) ? region : virtualizationSettings.getRegion());
     virtualizationSettings.setSourceImageId(
         isSet(sourceImageId) ? sourceImageId : virtualizationSettings.getSourceImageId());
-    virtualizationSettings.setRegion(isSet(region) ? region : virtualizationSettings.getRegion());
     virtualizationSettings.setInstanceType(
         isSet(instanceType) ? instanceType : virtualizationSettings.getInstanceType());
     virtualizationSettings.setSshUserName(
