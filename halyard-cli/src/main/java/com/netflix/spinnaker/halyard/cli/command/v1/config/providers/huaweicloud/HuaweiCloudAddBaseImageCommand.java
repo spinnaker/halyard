@@ -21,8 +21,8 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.bakery.AbstractAddBaseImageCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.node.BaseImage;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudBaseImage;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudBaseImage.HuaweiCloudVirtualizationSettings;
 import java.util.ArrayList;
-import java.util.List;
 
 @Parameters(separators = "=")
 public class HuaweiCloudAddBaseImageCommand extends AbstractAddBaseImageCommand {
@@ -62,22 +62,24 @@ public class HuaweiCloudAddBaseImageCommand extends AbstractAddBaseImageCommand 
 
   @Override
   protected BaseImage buildBaseImage(String baseImageId) {
-    HuaweiCloudBaseImage baseImage = new HuaweiCloudBaseImage();
+    HuaweiCloudVirtualizationSettings virtualizationSettings =
+        new HuaweiCloudVirtualizationSettings();
 
-    baseImage.setBaseImage(new HuaweiCloudBaseImage.HuaweiCloudImageSettings());
-
-    HuaweiCloudBaseImage.HuaweiCloudVirtualizationSettings virtualizationSettings =
-        new HuaweiCloudBaseImage.HuaweiCloudVirtualizationSettings();
     virtualizationSettings.setSourceImageId(sourceImageId);
     virtualizationSettings.setRegion(region);
     virtualizationSettings.setInstanceType(instanceType);
     virtualizationSettings.setSshUserName(sshUserName);
     virtualizationSettings.setEipType(eipType);
 
-    List<HuaweiCloudBaseImage.HuaweiCloudVirtualizationSettings> vsList = new ArrayList<>();
-    vsList.add(virtualizationSettings);
+    HuaweiCloudBaseImage baseImage = new HuaweiCloudBaseImage();
+    baseImage.setBaseImage(new HuaweiCloudBaseImage.HuaweiCloudImageSettings());
+    baseImage.setVirtualizationSettings(
+        new ArrayList() {
+          {
+            add(virtualizationSettings);
+          }
+        });
 
-    baseImage.setVirtualizationSettings(vsList);
     return baseImage;
   }
 }
