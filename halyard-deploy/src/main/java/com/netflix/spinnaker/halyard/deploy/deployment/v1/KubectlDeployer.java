@@ -87,6 +87,8 @@ public class KubectlDeployer
                         String namespaceDefinition =
                             service.getNamespaceYaml(resolvedConfiguration);
                         String serviceDefinition = service.getServiceYaml(resolvedConfiguration);
+                        String serviceAccountDefinition =
+                            service.getServiceAccountYaml(resolvedConfiguration);
 
                         if (!executor.exists(namespaceDefinition)) {
                           executor.apply(namespaceDefinition);
@@ -94,6 +96,10 @@ public class KubectlDeployer
 
                         if (!executor.exists(serviceDefinition)) {
                           executor.apply(serviceDefinition);
+                        }
+
+                        if (!executor.exists(serviceAccountDefinition)) {
+                          executor.apply(serviceAccountDefinition);
                         }
 
                         String resourceDefinition =
