@@ -37,7 +37,7 @@ public class HuaweiCloudBakeryDefaultsValidator extends Validator<HuaweiCloudBak
             + " with "
             + HuaweiCloudBakeryDefaultsValidator.class.getSimpleName());
 
-    if (n == (new HuaweiCloudBakeryDefaults())) {
+    if ((new HuaweiCloudBakeryDefaults()).equals(n)) {
       return;
     }
 
