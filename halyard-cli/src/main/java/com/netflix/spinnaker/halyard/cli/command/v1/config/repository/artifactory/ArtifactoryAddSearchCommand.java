@@ -59,6 +59,12 @@ public class ArtifactoryAddSearchCommand extends AbstractAddSearchCommand {
       description = ArtifactoryCommandProperties.GROUP_ID_DESCRIPTION)
   public String groupId;
 
+  @Parameter(
+          names = "--repoType",
+          required = true,
+          description = ArtifactoryCommandProperties.REPO_TYPE_DESCRIPTION)
+  public String repoType;
+
   @Override
   protected Search buildSearch(String searchName) {
     ArtifactorySearch search = (ArtifactorySearch) new ArtifactorySearch().setName(searchName);
@@ -66,6 +72,7 @@ public class ArtifactoryAddSearchCommand extends AbstractAddSearchCommand {
         .setBaseUrl(baseUrl)
         .setRepo(repo)
         .setGroupId(groupId)
+        .setRepoType(repoType)
         .setPassword(password)
         .setUsername(username);
 

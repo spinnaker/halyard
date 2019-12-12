@@ -43,11 +43,15 @@ public class ArtifactoryEditSearchCommand extends AbstractEditSearchCommand<Arti
   @Parameter(names = "--groupId", description = ArtifactoryCommandProperties.GROUP_ID_DESCRIPTION)
   public String groupId;
 
+  @Parameter(names = "--repoType", description = ArtifactoryCommandProperties.REPO_TYPE_DESCRIPTION)
+  public String repoType;
+
   @Override
   protected Search editSearch(ArtifactorySearch search) {
     search.setBaseUrl(isSet(baseUrl) ? baseUrl : search.getBaseUrl());
     search.setRepo(isSet(repo) ? repo : search.getRepo());
     search.setGroupId(isSet(groupId) ? groupId : search.getGroupId());
+    search.setRepoType(isSet(repoType) ? repoType : search.getRepoType());
     search.setUsername(isSet(username) ? username : search.getUsername());
     search.setPassword(isSet(password) ? password : search.getPassword());
     return search;
