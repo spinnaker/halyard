@@ -16,6 +16,8 @@
 
 package com.netflix.spinnaker.halyard.cli.command.v1.config.repository.artifactory;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.repository.search.AbstractEditSearchCommand;
@@ -46,16 +48,16 @@ public class ArtifactoryEditSearchCommand extends AbstractEditSearchCommand<Arti
   @Parameter(
       names = "--repo-type",
       description = ArtifactoryCommandProperties.REPO_TYPE_DESCRIPTION)
-  public String repoType;
+  public RepositoryType repoType;
 
   @Override
   protected Search editSearch(ArtifactorySearch search) {
-    search.setBaseUrl(isSet(baseUrl) ? baseUrl : search.getBaseUrl());
-    search.setRepo(isSet(repo) ? repo : search.getRepo());
-    search.setGroupId(isSet(groupId) ? groupId : search.getGroupId());
-    search.setRepoType(isSet(repoType) ? repoType : search.getRepoType());
-    search.setUsername(isSet(username) ? username : search.getUsername());
-    search.setPassword(isSet(password) ? password : search.getPassword());
+    search.setBaseUrl(defaultIfNull(baseUrl, search.getBaseUrl()));
+    search.setRepo(defaultIfNull(repo, search.getRepo()));
+    search.setGroupId(defaultIfNull(groupId, search.getGroupId()));
+    search.setRepoType(isSet(repoType) ? repoType.getType() : search.getRepoType());
+    search.setUsername(defaultIfNull(username, search.getUsername()));
+    search.setPassword(defaultIfNull(password, search.getPassword()));
     return search;
   }
 }
