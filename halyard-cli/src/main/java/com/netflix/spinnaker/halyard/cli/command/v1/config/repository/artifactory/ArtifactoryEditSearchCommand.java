@@ -43,7 +43,7 @@ public class ArtifactoryEditSearchCommand extends AbstractEditSearchCommand<Arti
   @Parameter(names = "--groupId", description = ArtifactoryCommandProperties.GROUP_ID_DESCRIPTION)
   public String groupId;
 
-  @Parameter(names = "--repoType", description = ArtifactoryCommandProperties.REPO_TYPE_DESCRIPTION)
+  @Parameter(names = "--repo-type", description = ArtifactoryCommandProperties.REPO_TYPE_DESCRIPTION)
   public String repoType;
 
   @Override

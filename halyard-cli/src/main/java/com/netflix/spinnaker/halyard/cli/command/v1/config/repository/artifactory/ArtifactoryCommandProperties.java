@@ -30,5 +30,6 @@ public class ArtifactoryCommandProperties {
 
   static final String GROUP_ID_DESCRIPTION = "The group id in your artifactory to be searched.";
 
-  static final String REPO_TYPE_DESCRIPTION = "The package type of repo in your artifactory to be searched.";
+  static final String REPO_TYPE_DESCRIPTION =
+      "The package type of repo in your artifactory to be searched.";
 }

@@ -60,9 +60,8 @@ public class ArtifactoryAddSearchCommand extends AbstractAddSearchCommand {
   public String groupId;
 
   @Parameter(
-          names = "--repoType",
-          required = true,
-          description = ArtifactoryCommandProperties.REPO_TYPE_DESCRIPTION)
+      names = "--repo-type",
+      description = ArtifactoryCommandProperties.REPO_TYPE_DESCRIPTION)
   public String repoType;
 
   @Override
