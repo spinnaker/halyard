@@ -7146,7 +7146,7 @@ Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--discovery`: The endpoint your Eureka discovery system is reachable at. See [https://github.com/Netflix/eureka](https://github.com/Netflix/eureka) for more information.
 
-Example: [http://{{region}}.eureka.url.to.use:8080/eureka-server/v2](http://{{region}}.eureka.url.to.use:8080/eureka-server/v2) 
+Example: [http://{{region}}.eureka.url.to.use:8080/eureka-server/v2](http://{{region}}.eureka.url.to.use:8080/eureka-server/v2)
 
 Using {{region}} will make Spinnaker use AWS regions in the hostname to access discovery so that you can have discovery for multiple regions.
  * `--edda`: The endpoint Edda is reachable at. Edda is not a hard dependency of Spinnaker, but is helpful for reducing the request volume against AWS. See [https://github.com/Netflix/edda](https://github.com/Netflix/edda) for more information.
@@ -7211,7 +7211,7 @@ Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--discovery`: The endpoint your Eureka discovery system is reachable at. See [https://github.com/Netflix/eureka](https://github.com/Netflix/eureka) for more information.
 
-Example: [http://{{region}}.eureka.url.to.use:8080/eureka-server/v2](http://{{region}}.eureka.url.to.use:8080/eureka-server/v2) 
+Example: [http://{{region}}.eureka.url.to.use:8080/eureka-server/v2](http://{{region}}.eureka.url.to.use:8080/eureka-server/v2)
 
 Using {{region}} will make Spinnaker use AWS regions in the hostname to access discovery so that you can have discovery for multiple regions.
  * `--edda`: The endpoint Edda is reachable at. Edda is not a hard dependency of Spinnaker, but is helpful for reducing the request volume against AWS. See [https://github.com/Netflix/edda](https://github.com/Netflix/edda) for more information.
@@ -8900,7 +8900,7 @@ hal config provider google enable [parameters]
 ---
 ## hal config provider kubernetes
 
-The Kubernetes provider is used to deploy Kubernetes resources to any number of Kubernetes clusters. Spinnaker assumes you have a Kubernetes cluster already running. If you don't, you must configure one: [https://kubernetes.io/docs/getting-started-guides/](https://kubernetes.io/docs/getting-started-guides/). 
+The Kubernetes provider is used to deploy Kubernetes resources to any number of Kubernetes clusters. Spinnaker assumes you have a Kubernetes cluster already running. If you don't, you must configure one: [https://kubernetes.io/docs/getting-started-guides/](https://kubernetes.io/docs/getting-started-guides/).
 
 Before proceeding, please visit [https://kubernetes.io/docs/concepts/cluster-administration/authenticate-across-clusters-kubeconfig/](https://kubernetes.io/docs/concepts/cluster-administration/authenticate-across-clusters-kubeconfig/) to make sure you're familiar with the authentication terminology. For more information on how to configure individual accounts, or how to deploy to multiple clusters, please read the documentation under `hal config provider kubernetes account -h`.
 
@@ -9755,6 +9755,7 @@ hal config repository artifactory search add SEARCH [parameters]
  * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The password of the artifactory user to authenticate as.
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build search or use it as a trigger source.
  * `--repo`: (*Required*) The repo in your artifactory to be searched.
+ * `--repo-type`: The type of your Artifactory repository. Valid values are `maven` or `helm`.
  * `--username`: (*Required*) The username of the artifactory user to authenticate as.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build search.
 
@@ -9798,6 +9799,7 @@ hal config repository artifactory search edit SEARCH [parameters]
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--repo`: The repo in your artifactory to be searched.
+ * `--repo-type`: The type of your Artifactory repository. Valid values are `maven` or `helm`.
  * `--username`: The username of the artifactory user to authenticate as.
  * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build search.
 
@@ -10095,7 +10097,7 @@ hal config security authn ldap edit [parameters]
 
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--group-search-base`: The part of the directory tree under which group searches should be performed. 
+ * `--group-search-base`: The part of the directory tree under which group searches should be performed.
  * `--manager-dn`: An LDAP manager user is required for binding to the LDAP server for the user authentication process. This property refers to the DN of that entry. I.e. this is not the user which will be authenticated when logging into DHIS2, rather the user which binds to the LDAP server in order to do the authentication.
  * `--manager-password`: (*Sensitive data* - user will be prompted on standard input) The password for the LDAP manager user.
  * `--no-validate`: (*Default*: `false`) Skip validation.
@@ -10542,7 +10544,7 @@ hal config security authz ldap edit [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--group-role-attributes`: The attribute which contains the name of the authority defined by the group entry. Defaults to 'cn'.
- * `--group-search-base`: The part of the directory tree under which group searches should be performed. 
+ * `--group-search-base`: The part of the directory tree under which group searches should be performed.
  * `--group-search-filter`: The filter which is used to search for group membership. The default is 'uniqueMember={0}', corresponding to the groupOfUniqueMembers LDAP class. In this case, the substituted parameter is the full distinguished name of the user. The parameter '{1}' can be used if you want to filter on the login name.
  * `--manager-dn`: The manager user's distinguished name (principal) to use for querying ldap groups.
  * `--manager-password`: (*Sensitive data* - user will be prompted on standard input) The manager user's password to use for querying ldap groups.
