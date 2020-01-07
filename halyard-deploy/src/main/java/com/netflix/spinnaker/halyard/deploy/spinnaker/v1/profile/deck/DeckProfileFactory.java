@@ -145,6 +145,10 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
         "features.gremlin",
         Boolean.toString(features.getGremlin() != null ? features.getGremlin() : false));
     bindings.put(
+        "features.cloud-formation",
+        Boolean.toString(
+            features.getCloudFormation() != null ? features.getCloudFormation() : false));
+    bindings.put(
         "features.infrastructureStages",
         Boolean.toString(
             features.getInfrastructureStages() != null

@@ -102,6 +102,12 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
       arity = 1)
   private Boolean gremlin = null;
 
+  @Parameter(
+      names = "--cloud-formation",
+      description = "Enable Cloud Formation support.",
+      arity = 1)
+  private Boolean cloudFormation = null;
+
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
@@ -134,6 +140,8 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
             ? managedPipelineTemplatesV2UI
             : features.getManagedPipelineTemplatesV2UI());
     features.setGremlin(gremlin != null ? gremlin : features.getGremlin());
+    features.setCloudFormation(
+        cloudFormation != null ? cloudFormation : features.getCloudFormation());
 
     if (originalHash == features.hashCode()) {
       AnsiUi.failure("No changes supplied.");
