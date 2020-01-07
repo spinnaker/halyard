@@ -102,10 +102,7 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
       arity = 1)
   private Boolean gremlin = null;
 
-  @Parameter(
-      names = "--cloud-formation",
-      description = "Enable CloudFormation support.",
-      arity = 1)
+  @Parameter(names = "--cloud-formation", description = "Enable CloudFormation support.", arity = 1)
   private Boolean cloudFormation = null;
 
   @Override
