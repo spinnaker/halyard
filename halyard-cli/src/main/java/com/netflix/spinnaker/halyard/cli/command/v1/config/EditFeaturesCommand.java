@@ -104,7 +104,7 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
 
   @Parameter(
       names = "--cloud-formation",
-      description = "Enable Cloud Formation support.",
+      description = "Enable CloudFormation support.",
       arity = 1)
   private Boolean cloudFormation = null;
 
