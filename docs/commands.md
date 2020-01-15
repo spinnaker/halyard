@@ -11585,8 +11585,10 @@ hal plugins add PLUGIN [parameters]
 `PLUGIN`: The name of the plugin to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--enabled`: To enable or disable the plugin.
- * `--manifest-location`: (*Required*) The location of the plugin's manifest file.
+ * `--extensions`: A comma separated list of extensions to enable
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--ui-resource-location`: The location of the plugin's ui resource.
+ * `--version`: The plugin version to use
 
 
 ---
@@ -11649,8 +11651,10 @@ hal plugins edit PLUGIN [parameters]
 `PLUGIN`: The name of the plugin to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--enabled`: To enable or disable the plugin.
- * `--manifest-location`: The location of the plugin's manifest file.
+ * `--extensions`: A comma separated list of extensions to create
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--ui-resource-location`: The location of the plugin's ui resource.
+ * `--version`: The plugin version to use
 
 
 ---
