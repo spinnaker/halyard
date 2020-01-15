@@ -26,6 +26,7 @@ class PluginsSpec extends Specification {
         def plugins = new Plugins()
         def plugin = Spy(Plugin)
         def manifest = Stub(Manifest)
+        def pluginRepository = Stub(PluginRepository)
         manifest.name >> 'namespace/name'
         manifest.options >> [foo: 'bar']
         plugin.manifestLocation >> 'manifest-location'
@@ -34,6 +35,10 @@ class PluginsSpec extends Specification {
         plugin.name >> 'should-not-be-present'
         plugins.setPlugins([plugin])
 
+        pluginRepository.id >> 'plugin-repo-id'
+        pluginRepository.url >>  'example.com'
+        plugins.setRepositories([pluginRepository])
+
         plugin.generateManifest() >> manifest
 
         when:
@@ -41,6 +46,15 @@ class PluginsSpec extends Specification {
 
         then:
         def expectedOptions = [
+                spinnaker: [
+                        extensibility: [
+                                repositories: [
+                                        'plugin-repo-id': [
+                                                url: 'example.com'
+                                        ]
+                                ]
+                        ]
+                ],
                 plugins: [
                         'namespace/name': [
                                 foo: 'bar',

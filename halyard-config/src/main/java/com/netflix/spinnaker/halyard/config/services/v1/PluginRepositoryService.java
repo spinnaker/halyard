@@ -21,18 +21,19 @@ import com.netflix.spinnaker.halyard.config.error.v1.IllegalConfigException;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeFilter;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Plugins;
-import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
+import com.netflix.spinnaker.halyard.config.model.v1.plugins.PluginRepository;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.problem.v1.ProblemSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PluginService {
+public class PluginRepositoryService {
   private final LookupService lookupService;
   private final ValidateService validateService;
   private final DeploymentService deploymentService;
@@ -50,98 +51,90 @@ public class PluginService {
     deploymentConfiguration.setPlugins(newPlugins);
   }
 
-  public List<Plugin> getAllPlugins(String deploymentName) {
-    return getPlugins(deploymentName).getPlugins();
+  public List<PluginRepository> getAllPluginRepositories(String deploymentName) {
+    return getPlugins(deploymentName).getRepositories();
   }
 
-  public Plugin getPlugin(String deploymentName, String pluginName) {
-    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setPlugin(pluginName);
-    List<Plugin> matchingPlugins = lookupService.getMatchingNodesOfType(filter, Plugin.class);
+  public PluginRepository getPluginRepository(String deploymentName, String repositoryId) {
+    List<PluginRepository> matchingPluginRepositories =
+        getPlugins(deploymentName).getRepositories().stream()
+            .filter(n -> n.getId().equals(repositoryId))
+            .collect(Collectors.toList());
 
-    switch (matchingPlugins.size()) {
+    switch (matchingPluginRepositories.size()) {
       case 0:
         throw new ConfigNotFoundException(
             new ConfigProblemBuilder(
-                    Problem.Severity.FATAL, "No plugin with name \"" + pluginName + "\" was found")
-                .setRemediation("Create a new plugin with name \"" + pluginName + "\"")
+                    Problem.Severity.FATAL,
+                    "No plugin repository with id \"" + repositoryId + "\" was found")
+                .setRemediation("Create a new plugin repository with id \"" + repositoryId + "\"")
                 .build());
       case 1:
-        return matchingPlugins.get(0);
+        return matchingPluginRepositories.get(0);
       default:
         throw new IllegalConfigException(
             new ConfigProblemBuilder(
                     Problem.Severity.FATAL,
-                    "More than one plugin named \"" + pluginName + "\" was found")
+                    "More than one plugin repository with id \"" + repositoryId + "\" was found")
                 .setRemediation(
-                    "Manually delete/rename duplicate plugins with name \""
-                        + pluginName
+                    "Manually delete/rename duplicate plugin repositories with id \""
+                        + repositoryId
                         + "\" in your halconfig file")
                 .build());
     }
   }
 
-  public void setPlugin(String deploymentName, String pluginName, Plugin newPlugin) {
-    List<Plugin> plugins = getAllPlugins(deploymentName);
-    for (int i = 0; i < plugins.size(); i++) {
-      if (plugins.get(i).getNodeName().equals(pluginName)) {
-        plugins.set(i, newPlugin);
+  public void setPluginRepository(
+      String deploymentName, String pluginRepositoryId, PluginRepository newPluginRepository) {
+    List<PluginRepository> pluginRepositories = getAllPluginRepositories(deploymentName);
+    for (int i = 0; i < pluginRepositories.size(); i++) {
+      if (pluginRepositories.get(i).getNodeName().equals(pluginRepositoryId)) {
+        pluginRepositories.set(i, newPluginRepository);
         return;
       }
     }
     throw new HalException(
         new ConfigProblemBuilder(
-                Problem.Severity.FATAL, "Plugin \"" + pluginName + "\" wasn't found")
+                Problem.Severity.FATAL,
+                "Plugin repository \"" + pluginRepositoryId + "\" wasn't found")
             .build());
   }
 
-  public void deletePlugin(String deploymentName, String pluginName) {
-    List<Plugin> plugins = getAllPlugins(deploymentName);
-    boolean removed = plugins.removeIf(plugin -> plugin.getName().equals(pluginName));
+  public void deletePluginRepository(String deploymentName, String repositoryId) {
+    List<PluginRepository> pluginRepositories = getAllPluginRepositories(deploymentName);
+    boolean removed = pluginRepositories.removeIf(repo -> repo.getId().equals(repositoryId));
 
     if (!removed) {
       throw new HalException(
           new ConfigProblemBuilder(
-                  Problem.Severity.FATAL, "Plugin \"" + pluginName + "\" wasn't found")
+                  Problem.Severity.FATAL, "Plugin repository \"" + repositoryId + "\" wasn't found")
               .build());
     }
   }
 
-  public void addPlugin(String deploymentName, Plugin newPlugin) {
-    String newPluginName = newPlugin.getName();
-    List<Plugin> plugins = getAllPlugins(deploymentName);
-    for (Plugin plugin : plugins) {
-      if (plugin.getName().equals(newPluginName)) {
+  public void addPluginRepository(String deploymentName, PluginRepository newPluginRepository) {
+    String newPluginRepositoryId = newPluginRepository.getId();
+    List<PluginRepository> pluginRepositories = getAllPluginRepositories(deploymentName);
+    for (PluginRepository repo : pluginRepositories) {
+      if (repo.getId().equals(newPluginRepositoryId)) {
         throw new HalException(
             new ConfigProblemBuilder(
-                    Problem.Severity.FATAL, "Plugin \"" + newPluginName + "\" already exists")
+                    Problem.Severity.FATAL,
+                    "Plugin repository \"" + newPluginRepositoryId + "\" already exists")
                 .build());
       }
     }
-    plugins.add(newPlugin);
+    pluginRepositories.add(newPluginRepository);
   }
 
-  public void setPluginsEnabled(String deploymentName, boolean validate, boolean enable) {
-    DeploymentConfiguration deploymentConfiguration =
-        deploymentService.getDeploymentConfiguration(deploymentName);
-    Plugins plugins = deploymentConfiguration.getPlugins();
-    plugins.setEnabled(enable);
-  }
-
-  public void setPluginsDownloadingEnabled(
-      String deploymentName, boolean validate, boolean enable) {
-    DeploymentConfiguration deploymentConfiguration =
-        deploymentService.getDeploymentConfiguration(deploymentName);
-    Plugins plugins = deploymentConfiguration.getPlugins();
-    plugins.setDownloadingEnabled(enable);
-  }
-
-  public ProblemSet validateAllPlugins(String deploymentName) {
-    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).withAnyPlugin();
+  public ProblemSet validateAllPluginRepositories(String deploymentName) {
+    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).withAnyPluginRepository();
     return validateService.validateMatchingFilter(filter);
   }
 
-  public ProblemSet validatePlugin(String deploymentName, String pluginName) {
-    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setPlugin(pluginName);
+  public ProblemSet validatePluginRepository(String deploymentName, String pluginRepositoryId) {
+    NodeFilter filter =
+        new NodeFilter().setDeployment(deploymentName).setPluginRepository(pluginRepositoryId);
     return validateService.validateMatchingFilter(filter);
   }
 }
