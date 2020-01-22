@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.plugins.repositories;
+package com.netflix.spinnaker.halyard.cli.command.v1.repositories;
 
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
@@ -35,12 +35,12 @@ public class DeletePluginRepositoryCommand extends AbstractHasPluginRepositoryCo
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
     PluginRepository pluginRepository = getRepository();
-    String name = pluginRepository.getId();
+    String id = pluginRepository.getId();
 
     new OperationHandler<Void>()
-        .setFailureMesssage("Failed to delete plugin repository " + name + ".")
-        .setSuccessMessage("Successfully deleted plugin repository " + name + ".")
-        .setOperation(Daemon.deletePluginRepository(currentDeployment, name, !noValidate))
+        .setFailureMesssage("Failed to delete plugin repository " + id + ".")
+        .setSuccessMessage("Successfully deleted plugin repository " + id + ".")
+        .setOperation(Daemon.deletePluginRepository(currentDeployment, id, !noValidate))
         .get();
   }
 }

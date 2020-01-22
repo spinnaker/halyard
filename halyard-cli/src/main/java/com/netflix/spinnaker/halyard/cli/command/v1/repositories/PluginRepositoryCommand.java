@@ -16,7 +16,7 @@
  *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.plugins.repositories;
+package com.netflix.spinnaker.halyard.cli.command.v1.repositories;
 
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.NestableCommand;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.plugins.repositories;
+package com.netflix.spinnaker.halyard.cli.command.v1.repositories;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -32,18 +32,21 @@ public class AddPluginRepositoryCommand extends AbstractHasPluginRepositoryComma
   @Getter(AccessLevel.PUBLIC)
   private String shortDescription = "Add a plugin repository";
 
-  @Parameter(names = "--url", description = "The location of the plugin repo.", required = true)
+  @Parameter(
+      names = "--url",
+      description = "The location of the plugin repository.",
+      required = true)
   private String url;
 
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
-    String name = getPluginName();
-    PluginRepository pluginRepository = new PluginRepository().setId(name).setUrl(url);
+    String id = getPluginRepositoryId();
+    PluginRepository pluginRepository = new PluginRepository().setId(id).setUrl(url);
 
     new OperationHandler<Void>()
-        .setFailureMesssage("Failed to add plugin repository: " + name + ".")
-        .setSuccessMessage("Successfully added plugin repository: " + name + ".")
+        .setFailureMesssage("Failed to add plugin repository: " + id + ".")
+        .setSuccessMessage("Successfully added plugin repository: " + id + ".")
         .setOperation(Daemon.addPluginRepository(currentDeployment, !noValidate, pluginRepository))
         .get();
   }

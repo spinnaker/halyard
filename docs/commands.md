@@ -11728,7 +11728,7 @@ hal plugins repository add REPOSITORY [parameters]
 `REPOSITORY`: The name of the plugin repository to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--url`: (*Required*) The location of the plugin repo.
+ * `--url`: (*Required*) The location of the plugin repository.
 
 
 ---

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.plugins.repositories;
+package com.netflix.spinnaker.halyard.cli.command.v1.repositories;
 
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
@@ -23,6 +23,8 @@ import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.config.model.v1.plugins.PluginRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -36,10 +38,14 @@ public class ListPluginRepositoriesCommand extends AbstractConfigCommand {
 
   private List<PluginRepository> getPluginRepositories() {
     String currentDeployment = getCurrentDeployment();
-    return new OperationHandler<List<PluginRepository>>()
-        .setFailureMesssage("Failed to get plugin repositories.")
-        .setOperation(Daemon.getPluginRepositories(currentDeployment, !noValidate))
-        .get();
+    Map<String, PluginRepository> pluginRepositories =
+        new OperationHandler<Map<String, PluginRepository>>()
+            .setFailureMesssage("Failed to get plugin repositories.")
+            .setOperation(Daemon.getPluginRepositories(currentDeployment, !noValidate))
+            .get();
+    return pluginRepositories.entrySet().stream()
+        .map(r -> r.getValue())
+        .collect(Collectors.toList());
   }
 
   @Override

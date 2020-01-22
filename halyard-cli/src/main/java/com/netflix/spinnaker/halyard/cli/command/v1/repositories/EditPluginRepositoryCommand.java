@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.plugins.repositories;
+package com.netflix.spinnaker.halyard.cli.command.v1.repositories;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -44,7 +44,8 @@ public class EditPluginRepositoryCommand extends AbstractHasPluginRepositoryComm
 
     new OperationHandler<Void>()
         .setFailureMesssage("Failed to edit plugin repository " + pluginRepository.getId() + ".")
-        .setSuccessMessage("Successfully edited plugin " + pluginRepository.getId() + ".")
+        .setSuccessMessage(
+            "Successfully edited plugin repository " + pluginRepository.getId() + ".")
         .setOperation(
             Daemon.setPluginRepository(
                 currentDeployment, pluginRepository.getId(), !noValidate, pluginRepository))

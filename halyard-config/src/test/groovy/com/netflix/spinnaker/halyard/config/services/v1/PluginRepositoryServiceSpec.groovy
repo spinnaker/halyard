@@ -45,29 +45,28 @@ deploymentConfigurations:
 - name: $DEPLOYMENT
   version: 1
   providers: null
-  plugins:
-    plugins: []
-    repositories:
-    - id: test-plugin-repository
-      url: example.com
+  spinnaker:
+    extensibility:
+      repositories:
+        test-plugin-repository:
+          url: example.com
 """
     def pluginService = makePluginRepositoryService(config)
 
     when:
-    def result = pluginService.getAllPluginRepositories(DEPLOYMENT)
+    def result = pluginService.getPluginRepositories(DEPLOYMENT)
 
     then:
     result != null
     result.size() == 1
-    result[0].getId() == "test-plugin-repository"
-    result[0].getUrl() == "example.com"
+    def pluginRepository = result.get("test-plugin-repository")
+    pluginRepository.getUrl() == "example.com"
 
     when:
     result = pluginService.getPluginRepository(DEPLOYMENT, "test-plugin-repository")
 
     then:
     result != null
-    result.getId() == "test-plugin-repository"
     result.getUrl() == "example.com"
 
     when:
@@ -86,13 +85,14 @@ deploymentConfigurations:
 - name: $DEPLOYMENT
   version: 1
   providers: null
-  plugins:
-    repositories: []
+  spinnaker:
+    extensibility:
+      repositories: {}
 """
     def pluginService = makePluginRepositoryService(config)
 
     when:
-    def result = pluginService.getAllPluginRepositories(DEPLOYMENT)
+    def result = pluginService.getPluginRepositories(DEPLOYMENT)
 
     then:
     result != null
@@ -114,12 +114,14 @@ deploymentConfigurations:
 - name: $DEPLOYMENT
   version: 1
   providers: null
-  plugins:
+  spinnaker:
+    extensibility:
+      repositories:
 """
     def pluginService = makePluginRepositoryService(config)
 
     when:
-    def result = pluginService.getAllPluginRepositories(DEPLOYMENT)
+    def result = pluginService.getPluginRepositories(DEPLOYMENT)
 
     then:
     result != null
@@ -142,17 +144,18 @@ deploymentConfigurations:
 - name: $DEPLOYMENT
   version: 1
   providers: null
-  plugins:
-    repositories:
-    - id: test-repo-1
-      url: example.com
-    - id: test-repo-2
-      url: byah.org
+  spinnaker:
+    extensibility:
+      repositories:
+        test-repo-1:
+          url: example.com
+        test-repo-2:
+          url: byah.org
 """
     def pluginService = makePluginRepositoryService(config)
 
     when:
-    def result = pluginService.getAllPluginRepositories(DEPLOYMENT)
+    def result = pluginService.getPluginRepositories(DEPLOYMENT)
 
     then:
     result != null
@@ -163,7 +166,6 @@ deploymentConfigurations:
 
     then:
     result != null
-    result.getId() == "test-repo-1"
     result.getUrl() == "example.com"
 
     when:
@@ -171,7 +173,6 @@ deploymentConfigurations:
 
     then:
     result != null
-    result.getId() == "test-repo-2"
     result.getUrl() == "byah.org"
   }
 }

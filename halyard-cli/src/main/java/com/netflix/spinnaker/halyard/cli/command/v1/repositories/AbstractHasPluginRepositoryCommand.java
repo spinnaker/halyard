@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.plugins.repositories;
+package com.netflix.spinnaker.halyard.cli.command.v1.repositories;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -44,7 +44,7 @@ public abstract class AbstractHasPluginRepositoryCommand extends AbstractConfigC
         .get();
   }
 
-  public String getPluginName() {
+  public String getPluginRepositoryId() {
     switch (repositories.size()) {
       case 0:
         throw new IllegalArgumentException("No plugin repository supplied");

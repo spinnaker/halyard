@@ -26,7 +26,7 @@ import com.netflix.spinnaker.halyard.models.v1.ValidationSettings;
 import com.netflix.spinnaker.halyard.util.v1.GenericDeleteRequest;
 import com.netflix.spinnaker.halyard.util.v1.GenericGetRequest;
 import com.netflix.spinnaker.halyard.util.v1.GenericUpdateRequest;
-import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,10 +44,10 @@ public class PluginRepositoriesController {
   private final HalconfigParser halconfigParser;
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
-  DaemonTask<Halconfig, List<PluginRepository>> getPluginRepositories(
+  DaemonTask<Halconfig, Map<String, PluginRepository>> getPluginRepositories(
       @PathVariable String deploymentName, @ModelAttribute ValidationSettings validationSettings) {
-    return GenericGetRequest.<List<PluginRepository>>builder()
-        .getter(() -> pluginRepositoryService.getAllPluginRepositories(deploymentName))
+    return GenericGetRequest.<Map<String, PluginRepository>>builder()
+        .getter(() -> pluginRepositoryService.getPluginRepositories(deploymentName))
         .validator(() -> pluginRepositoryService.validateAllPluginRepositories(deploymentName))
         .description("Get plugin repositories")
         .build()
