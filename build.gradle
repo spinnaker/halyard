@@ -79,3 +79,12 @@ def createScript(project, mainClass, name) {
     }
   }
 }
+
+subprojects { project ->
+  if ([korkVersion, fiatVersion, clouddriverVersion, front50Version].any { it.endsWith("-SNAPSHOT") }) {
+    logger.info("Enabling mavenLocal")
+    repositories {
+      mavenLocal()
+    }
+  }
+}
