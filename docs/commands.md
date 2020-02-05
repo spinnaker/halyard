@@ -451,6 +451,23 @@
  * [**hal config provider google disable**](#hal-config-provider-google-disable)
  * [**hal config provider google edit**](#hal-config-provider-google-edit)
  * [**hal config provider google enable**](#hal-config-provider-google-enable)
+ * [**hal config provider huaweicloud**](#hal-config-provider-huaweicloud)
+ * [**hal config provider huaweicloud account**](#hal-config-provider-huaweicloud-account)
+ * [**hal config provider huaweicloud account add**](#hal-config-provider-huaweicloud-account-add)
+ * [**hal config provider huaweicloud account delete**](#hal-config-provider-huaweicloud-account-delete)
+ * [**hal config provider huaweicloud account edit**](#hal-config-provider-huaweicloud-account-edit)
+ * [**hal config provider huaweicloud account get**](#hal-config-provider-huaweicloud-account-get)
+ * [**hal config provider huaweicloud account list**](#hal-config-provider-huaweicloud-account-list)
+ * [**hal config provider huaweicloud bakery**](#hal-config-provider-huaweicloud-bakery)
+ * [**hal config provider huaweicloud bakery base-image**](#hal-config-provider-huaweicloud-bakery-base-image)
+ * [**hal config provider huaweicloud bakery base-image add**](#hal-config-provider-huaweicloud-bakery-base-image-add)
+ * [**hal config provider huaweicloud bakery base-image delete**](#hal-config-provider-huaweicloud-bakery-base-image-delete)
+ * [**hal config provider huaweicloud bakery base-image edit**](#hal-config-provider-huaweicloud-bakery-base-image-edit)
+ * [**hal config provider huaweicloud bakery base-image get**](#hal-config-provider-huaweicloud-bakery-base-image-get)
+ * [**hal config provider huaweicloud bakery base-image list**](#hal-config-provider-huaweicloud-bakery-base-image-list)
+ * [**hal config provider huaweicloud bakery edit**](#hal-config-provider-huaweicloud-bakery-edit)
+ * [**hal config provider huaweicloud disable**](#hal-config-provider-huaweicloud-disable)
+ * [**hal config provider huaweicloud enable**](#hal-config-provider-huaweicloud-enable)
  * [**hal config provider kubernetes**](#hal-config-provider-kubernetes)
  * [**hal config provider kubernetes account**](#hal-config-provider-kubernetes-account)
  * [**hal config provider kubernetes account add**](#hal-config-provider-kubernetes-account-add)
@@ -478,6 +495,23 @@
  * [**hal config provider oracle bakery edit**](#hal-config-provider-oracle-bakery-edit)
  * [**hal config provider oracle disable**](#hal-config-provider-oracle-disable)
  * [**hal config provider oracle enable**](#hal-config-provider-oracle-enable)
+ * [**hal config provider tencentcloud**](#hal-config-provider-tencentcloud)
+ * [**hal config provider tencentcloud account**](#hal-config-provider-tencentcloud-account)
+ * [**hal config provider tencentcloud account add**](#hal-config-provider-tencentcloud-account-add)
+ * [**hal config provider tencentcloud account delete**](#hal-config-provider-tencentcloud-account-delete)
+ * [**hal config provider tencentcloud account edit**](#hal-config-provider-tencentcloud-account-edit)
+ * [**hal config provider tencentcloud account get**](#hal-config-provider-tencentcloud-account-get)
+ * [**hal config provider tencentcloud account list**](#hal-config-provider-tencentcloud-account-list)
+ * [**hal config provider tencentcloud bakery**](#hal-config-provider-tencentcloud-bakery)
+ * [**hal config provider tencentcloud bakery base-image**](#hal-config-provider-tencentcloud-bakery-base-image)
+ * [**hal config provider tencentcloud bakery base-image add**](#hal-config-provider-tencentcloud-bakery-base-image-add)
+ * [**hal config provider tencentcloud bakery base-image delete**](#hal-config-provider-tencentcloud-bakery-base-image-delete)
+ * [**hal config provider tencentcloud bakery base-image edit**](#hal-config-provider-tencentcloud-bakery-base-image-edit)
+ * [**hal config provider tencentcloud bakery base-image get**](#hal-config-provider-tencentcloud-bakery-base-image-get)
+ * [**hal config provider tencentcloud bakery base-image list**](#hal-config-provider-tencentcloud-bakery-base-image-list)
+ * [**hal config provider tencentcloud bakery edit**](#hal-config-provider-tencentcloud-bakery-edit)
+ * [**hal config provider tencentcloud disable**](#hal-config-provider-tencentcloud-disable)
+ * [**hal config provider tencentcloud enable**](#hal-config-provider-tencentcloud-enable)
  * [**hal config pubsub**](#hal-config-pubsub)
  * [**hal config pubsub google**](#hal-config-pubsub-google)
  * [**hal config pubsub google disable**](#hal-config-pubsub-google-disable)
@@ -582,6 +616,11 @@
  * [**hal plugins enable**](#hal-plugins-enable)
  * [**hal plugins enable-downloading**](#hal-plugins-enable-downloading)
  * [**hal plugins list**](#hal-plugins-list)
+ * [**hal plugins repository**](#hal-plugins-repository)
+ * [**hal plugins repository add**](#hal-plugins-repository-add)
+ * [**hal plugins repository delete**](#hal-plugins-repository-delete)
+ * [**hal plugins repository edit**](#hal-plugins-repository-edit)
+ * [**hal plugins repository list**](#hal-plugins-repository-list)
  * [**hal shutdown**](#hal-shutdown)
  * [**hal spin**](#hal-spin)
  * [**hal spin install**](#hal-spin-install)
@@ -5934,9 +5973,10 @@ This is only required when Spinnaker is being deployed in non-Kubernetes cluster
  * `--git-origin-user`: This is the git user your github fork exists under.
  * `--git-upstream-user`: This is the upstream git user you are configuring to pull changes from & push PRs to.
  * `--image-variant`: The container image variant type to use when deploying a distributed installation of Spinnaker.
-Warning: variants other than the 'slim' one are only available with Spinnaker v1.16+
 	slim: Based on an Alpine image
 	ubuntu: Based on Canonical's ubuntu:bionic image.
+	java8: A variant of slim that uses the Java 8 runtime
+	ubuntu-java8: A variant of ubuntu that uses the Java 8 runtime
 Default value: slim
  * `--liveness-probe-enabled`: When true, enable Kubernetes liveness probes on Spinnaker services deployed in a Distributed installation. See docs for more information: [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/)
  * `--liveness-probe-initial-delay-seconds`: The number of seconds to wait before performing the first liveness probe. Should be set to the longest service startup time. See docs for more information: [https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/)
@@ -6130,7 +6170,6 @@ hal config features edit [parameters]
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--gremlin`: Enable Gremlin fault-injection support.
  * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
- * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--pipeline-templates`: Enable pipeline template support. Read more at [https://github.com/spinnaker/dcd-spec](https://github.com/spinnaker/dcd-spec).
@@ -6865,8 +6904,10 @@ hal config provider [subcommands]
  * `docker-registry`: Manage and view Spinnaker configuration for the dockerRegistry provider
  * `ecs`: Manage and view Spinnaker configuration for the ecs provider
  * `google`: Manage and view Spinnaker configuration for the google provider
+ * `huaweicloud`: Manage and view Spinnaker configuration for the huaweicloud provider
  * `kubernetes`: Manage and view Spinnaker configuration for the kubernetes provider
  * `oracle`: Manage and view Spinnaker configuration for the oracle provider
+ * `tencentcloud`: Manage and view Spinnaker configuration for the tencentcloud provider
 
 ---
 ## hal config provider appengine
@@ -8898,6 +8939,354 @@ hal config provider google enable [parameters]
 
 
 ---
+## hal config provider huaweicloud
+
+Manage and view Spinnaker configuration for the huaweicloud provider
+
+#### Usage
+```
+hal config provider huaweicloud [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the huaweicloud provider's account
+ * `bakery`: Manage and view Spinnaker configuration for the huaweicloud provider's image bakery configuration.
+ * `disable`: Set the huaweicloud provider as disabled
+ * `enable`: Set the huaweicloud provider as enabled
+
+---
+## hal config provider huaweicloud account
+
+Manage and view Spinnaker configuration for the huaweicloud provider's account
+
+#### Usage
+```
+hal config provider huaweicloud account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add an account to the huaweicloud provider.
+ * `delete`: Delete a specific huaweicloud account by name.
+ * `edit`: Edit an account in the huaweicloud provider.
+ * `get`: Get the specified account details for the huaweicloud provider.
+ * `list`: List the account names for the huaweicloud provider.
+
+---
+## hal config provider huaweicloud account add
+
+Add an account to the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--account-type`: The type of account.
+ * `--auth-url`: (*Required*) The auth url of cloud.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--domain-name`: (*Required*) The domain name of the cloud.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--insecure`: (*Default*: `false`) Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The password used to access cloud.
+ * `--project-name`: (*Required*) The name of the project within the cloud.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: (*Default*: `[]`) (*Required*) The region(s) of the cloud.
+ * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--username`: (*Required*) The username used to access cloud.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider huaweicloud account delete
+
+Delete a specific huaweicloud account by name.
+
+#### Usage
+```
+hal config provider huaweicloud account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud account edit
+
+Edit an account in the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--account-type`: The type of account.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-region`: Add this region to the list of managed regions.
+ * `--add-required-group-membership`: Add this group to the list of required group memberships.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--auth-url`: The auth url of cloud.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--domain-name`: The domain name of the cloud.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--insecure`: Disable certificate validation on SSL connections. Needed if certificates are self signed. Default false.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The password used to access cloud.
+ * `--project-name`: The name of the project within the cloud.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: (*Default*: `[]`) The region(s) of the cloud.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-region`: Remove this region from the list of managed regions.
+ * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
+ * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--username`: The username used to access cloud.
+ * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider huaweicloud account get
+
+Get the specified account details for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud account list
+
+List the account names for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery
+
+Manage and view Spinnaker configuration for the huaweicloud provider's image bakery configuration.
+
+#### Usage
+```
+hal config provider huaweicloud bakery [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `base-image`: Manage and view Spinnaker configuration for the huaweicloud provider's base image.
+ * `edit`: Edit the huaweicloud provider's bakery default options.
+
+---
+## hal config provider huaweicloud bakery base-image
+
+Manage and view Spinnaker configuration for the huaweicloud provider's base image.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a base image for the huaweicloud provider's bakery.
+ * `delete`: Delete a specific huaweicloud base image by name.
+ * `edit`: Edit a base image for the huaweicloud provider's bakery.
+ * `get`: Get the specified base image details for the huaweicloud provider.
+ * `list`: List the base image names for the huaweicloud provider.
+
+---
+## hal config provider huaweicloud bakery base-image add
+
+Add a base image for the huaweicloud provider's bakery.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image add BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--eip-type`: (*Required*) The eip type for the baking configuration. See the api doc to get its value
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: (*Required*) The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+
+
+---
+## hal config provider huaweicloud bakery base-image delete
+
+Delete a specific huaweicloud base image by name.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image delete BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery base-image edit
+
+Edit a base image for the huaweicloud provider's bakery.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image edit BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--eip-type`: The eip type for the baking configuration. See the api doc to get its value
+ * `--id`: This is the identifier used by your cloud to find this base image.
+ * `--instance-type`: The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: The source image ID for the baking configuration.
+ * `--ssh-user-name`: The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+
+
+---
+## hal config provider huaweicloud bakery base-image get
+
+Get the specified base image details for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image get BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery base-image list
+
+List the base image names for the huaweicloud provider.
+
+#### Usage
+```
+hal config provider huaweicloud bakery base-image list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud bakery edit
+
+Edit the huaweicloud provider's bakery default options.
+
+#### Usage
+```
+hal config provider huaweicloud bakery edit [parameters]
+```
+
+#### Parameters
+ * `--auth-url`: (*Required*) Set the default auth URL your images will be baked in.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--domain-name`: (*Required*) Set the default domainName your images will be baked in.
+ * `--eip-bandwidth-size`: (*Required*) Set the bandwidth size of eip your images will be baked in.
+ * `--insecure`: (*Required*) The security setting (true/false) for connecting to the HuaweiCloud account.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) Set the default password your images will be baked with.
+ * `--project-name`: (*Required*) Set the default project name your images will be baked in.
+ * `--security-group`: (*Required*) Set the default security group your images will be baked in.
+ * `--subnet-id`: (*Required*) Set the subnet your images will be baked in.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+ * `--username`: (*Required*) Set the default username your images will be baked with.
+ * `--vpc-id`: (*Required*) Set the vpc your images will be baked in.
+
+
+---
+## hal config provider huaweicloud disable
+
+Set the huaweicloud provider as disabled
+
+#### Usage
+```
+hal config provider huaweicloud disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider huaweicloud enable
+
+Set the huaweicloud provider as enabled
+
+#### Usage
+```
+hal config provider huaweicloud enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config provider kubernetes
 
 The Kubernetes provider is used to deploy Kubernetes resources to any number of Kubernetes clusters. Spinnaker assumes you have a Kubernetes cluster already running. If you don't, you must configure one: [https://kubernetes.io/docs/getting-started-guides/](https://kubernetes.io/docs/getting-started-guides/). 
@@ -9474,6 +9863,336 @@ hal config provider oracle enable [parameters]
 
 
 ---
+## hal config provider tencentcloud
+
+Manage and view Spinnaker configuration for the tencentcloud provider
+
+#### Usage
+```
+hal config provider tencentcloud [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the tencentcloud provider's account
+ * `bakery`: Manage and view Spinnaker configuration for the tencentcloud provider's image bakery configuration.
+ * `disable`: Set the tencentcloud provider as disabled
+ * `enable`: Set the tencentcloud provider as enabled
+
+---
+## hal config provider tencentcloud account
+
+Manage and view Spinnaker configuration for the tencentcloud provider's account
+
+#### Usage
+```
+hal config provider tencentcloud account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add an account to the tencentcloud provider.
+ * `delete`: Delete a specific tencentcloud account by name.
+ * `edit`: Edit an account in the tencentcloud provider.
+ * `get`: Get the specified account details for the tencentcloud provider.
+ * `list`: List the account names for the tencentcloud provider.
+
+---
+## hal config provider tencentcloud account add
+
+Add an account to the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: The Tencent CLoud regions this Spinnaker account will manage.
+ * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--secret-id`: (*Required*) The secret id used to access Tencent Cloud.
+ * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The secret key used to access Tencent Cloud.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider tencentcloud account delete
+
+Delete a specific tencentcloud account by name.
+
+#### Usage
+```
+hal config provider tencentcloud account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud account edit
+
+Edit an account in the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-region`: Add this region to the list of managed regions.
+ * `--add-required-group-membership`: Add this group to the list of required group memberships.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: The Tencent CLoud regions this Spinnaker account will manage.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-region`: Remove this region from the list of managed regions.
+ * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
+ * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--secret-id`: The secret id used to access Tencent Cloud.
+ * `--secret-key`: (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The secret key used to access Tencent Cloud.
+ * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider tencentcloud account get
+
+Get the specified account details for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud account list
+
+List the account names for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery
+
+Manage and view Spinnaker configuration for the tencentcloud provider's image bakery configuration.
+
+#### Usage
+```
+hal config provider tencentcloud bakery [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `base-image`: Manage and view Spinnaker configuration for the tencentcloud provider's base image.
+ * `edit`: Edit the tencentcloud provider's bakery default options.
+
+---
+## hal config provider tencentcloud bakery base-image
+
+Manage and view Spinnaker configuration for the tencentcloud provider's base image.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a base image for the tencentcloud provider's bakery.
+ * `delete`: Delete a specific tencentcloud base image by name.
+ * `edit`: Edit a base image for the tencentcloud provider's bakery.
+ * `get`: Get the specified base image details for the tencentcloud provider.
+ * `list`: List the base image names for the tencentcloud provider.
+
+---
+## hal config provider tencentcloud bakery base-image add
+
+Add a base image for the tencentcloud provider's bakery.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image add BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: (*Required*) The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+ * `--zone`: (*Required*) The zone for the baking configuration.
+
+
+---
+## hal config provider tencentcloud bakery base-image delete
+
+Delete a specific tencentcloud base image by name.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image delete BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery base-image edit
+
+Edit a base image for the tencentcloud provider's bakery.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image edit BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--id`: This is the identifier used by your cloud to find this base image.
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: (*Required*) The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+ * `--zone`: (*Required*) The zone for the baking configuration.
+
+
+---
+## hal config provider tencentcloud bakery base-image get
+
+Get the specified base image details for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image get BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery base-image list
+
+List the base image names for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery edit
+
+Edit the tencentcloud provider's bakery default options.
+
+#### Usage
+```
+hal config provider tencentcloud bakery edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--secret-id`: (*Required*) The default access key used to communicate with AWS.
+ * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with AWS.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+
+
+---
+## hal config provider tencentcloud disable
+
+Set the tencentcloud provider as disabled
+
+#### Usage
+```
+hal config provider tencentcloud disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud enable
+
+Set the tencentcloud provider as enabled
+
+#### Usage
+```
+hal config provider tencentcloud enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config pubsub
 
 Configure, validate, and view the specified pubsub.
@@ -9750,11 +10469,12 @@ hal config repository artifactory search add SEARCH [parameters]
 `SEARCH`: The name of the search to operate on.
  * `--base-url`: (*Required*) The base url your artifactory search is reachable at.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--groupId`: (*Required*) The group id in your artifactory to be searched.
+ * `--groupId`: The group id in your artifactory to be searched.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The password of the artifactory user to authenticate as.
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build search or use it as a trigger source.
  * `--repo`: (*Required*) The repo in your artifactory to be searched.
+ * `--repo-type`: (*Default*: `MAVEN`) The package type of repo in your artifactory to be searched.
  * `--username`: (*Required*) The username of the artifactory user to authenticate as.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build search.
 
@@ -9798,6 +10518,7 @@ hal config repository artifactory search edit SEARCH [parameters]
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-write-permission`: Remove this permission from the list of write permissions.
  * `--repo`: The repo in your artifactory to be searched.
+ * `--repo-type`: The package type of repo in your artifactory to be searched.
  * `--username`: The username of the artifactory user to authenticate as.
  * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build search.
 
@@ -11073,6 +11794,7 @@ This guarantees that no configuration will be generated for this deployment. Thi
  * `--prep-only`: (*Default*: `false`) This does just the prep work, and not the actual deployment. Only useful at the moment if you want to just clone the repositories for a localgit setup.
  * `--service-names`: (*Default*: `[]`) When supplied, only install or update the specified Spinnaker services.
  * `--wait-for-completion`: (*Default*: `false`) When supplied, wait for all containers to be ready before returning (only applies to Kubernetes V2 provider).
+ * `--wait-for-completion-timeout-minutes`: Specify timeout for deploy apply command.
 
 
 ---
@@ -11195,6 +11917,7 @@ hal plugins [parameters] [subcommands]
  * `enable`: Enable or disable all plugins
  * `enable-downloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
  * `list`: List all plugins
+ * `repository`: Configure, validate, and view the specified plugin repository.
 
 ---
 ## hal plugins add
@@ -11316,6 +12039,87 @@ List all plugins
 #### Usage
 ```
 hal plugins list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal plugins repository
+
+Configure, validate, and view the specified plugin repository.
+
+#### Usage
+```
+hal plugins repository [subcommands]
+```
+
+#### Subcommands
+ * `add`: Add a plugin repository
+ * `delete`: Delete a plugin repository
+ * `edit`: Edit a plugin repository
+ * `list`: List all plugin repositories
+
+---
+## hal plugins repository add
+
+Add a plugin repository
+
+#### Usage
+```
+hal plugins repository add REPOSITORY [parameters]
+```
+
+#### Parameters
+`REPOSITORY`: The name of the plugin repository to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--url`: (*Required*) The location of the plugin repository.
+
+
+---
+## hal plugins repository delete
+
+Delete a plugin repository
+
+#### Usage
+```
+hal plugins repository delete REPOSITORY [parameters]
+```
+
+#### Parameters
+`REPOSITORY`: The name of the plugin repository to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal plugins repository edit
+
+Edit a plugin repository
+
+#### Usage
+```
+hal plugins repository edit REPOSITORY [parameters]
+```
+
+#### Parameters
+`REPOSITORY`: The name of the plugin repository to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--url`: The location of the plugin repository.
+
+
+---
+## hal plugins repository list
+
+List all plugin repositories
+
+#### Usage
+```
+hal plugins repository list [parameters]
 ```
 
 #### Parameters

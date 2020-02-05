@@ -32,7 +32,11 @@ import com.netflix.spinnaker.halyard.config.model.v1.providers.cloudfoundry.Clou
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dcos.DCOSProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.ecs.EcsProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.google.GoogleProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.tencentcloud.TencentCloudAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.tencentcloud.TencentCloudProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.security.UiSecurity;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
 import com.netflix.spinnaker.halyard.config.services.v1.VersionsService;
@@ -136,12 +140,6 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
         "features.wercker",
         Boolean.toString(features.getWercker() != null ? features.getWercker() : false));
     bindings.put(
-        "features.managedPipelineTemplatesV2UI",
-        Boolean.toString(
-            features.getManagedPipelineTemplatesV2UI() != null
-                ? features.getManagedPipelineTemplatesV2UI()
-                : false));
-    bindings.put(
         "features.gremlin",
         Boolean.toString(features.getGremlin() != null ? features.getGremlin() : false));
     bindings.put(
@@ -201,6 +199,40 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     CloudFoundryProvider cloudFoundryProvider =
         deploymentConfiguration.getProviders().getCloudfoundry();
     bindings.put("cloudfoundry.default.account", cloudFoundryProvider.getPrimaryAccount());
+
+    // Configure HuaweiCloud
+    HuaweiCloudProvider huaweiCloudProvider =
+        deploymentConfiguration.getProviders().getHuaweicloud();
+    bindings.put("huaweicloud.default.account", huaweiCloudProvider.getPrimaryAccount());
+    if (huaweiCloudProvider.getPrimaryAccount() != null) {
+      HuaweiCloudAccount huaweiCloudAccount =
+          (HuaweiCloudAccount)
+              accountService.getProviderAccount(
+                  deploymentConfiguration.getName(),
+                  "huaweicloud",
+                  huaweiCloudProvider.getPrimaryAccount());
+      List<String> regionList = huaweiCloudAccount.getRegions();
+      if (!regionList.isEmpty()) {
+        bindings.put("huaweicloud.default.region", regionList.get(0));
+      }
+    }
+
+    // Configure TencentCloud
+    TencentCloudProvider tencentCloudProvider =
+        deploymentConfiguration.getProviders().getTencentcloud();
+    bindings.put("tencentcloud.default.account", tencentCloudProvider.getPrimaryAccount());
+    if (tencentCloudProvider.getPrimaryAccount() != null) {
+      TencentCloudAccount tencentCloudAccount =
+          (TencentCloudAccount)
+              accountService.getProviderAccount(
+                  deploymentConfiguration.getName(),
+                  "tencentcloud",
+                  tencentCloudProvider.getPrimaryAccount());
+      List<String> regionList = tencentCloudAccount.getRegions();
+      if (!regionList.isEmpty() && regionList.get(0) != null) {
+        bindings.put("tencentcloud.default.region", regionList.get(0));
+      }
+    }
 
     // Configure notifications
     bindings.put("notifications.enabled", notifications.isEnabled() + "");

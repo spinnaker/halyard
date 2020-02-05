@@ -16,6 +16,7 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,6 +28,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@JsonIgnoreProperties({"pluginConfigurations"})
 public class Plugins extends Node {
   private List<Plugin> plugins = new ArrayList<>();
   private boolean enabled;
@@ -43,7 +45,7 @@ public class Plugins extends Node {
         plugins.stream().map(a -> (Node) a).collect(Collectors.toList()));
   }
 
-  public Map<String, Object> getPluginConfigurations() {
+  public Map<String, Object> pluginConfigurations() {
     Map<String, Object> fullyRenderedYaml = new LinkedHashMap<>();
     Map<String, Object> pluginMetadata =
         plugins.stream()
@@ -51,7 +53,6 @@ public class Plugins extends Node {
             .filter(p -> !p.getManifestLocation().isEmpty())
             .collect(
                 Collectors.toMap(p -> p.generateManifest().getName(), p -> p.getCombinedOptions()));
-
     fullyRenderedYaml.put("plugins", pluginMetadata);
     return fullyRenderedYaml;
   }
