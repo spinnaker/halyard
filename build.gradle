@@ -62,6 +62,7 @@ allprojects {
       force group: 'commons-collections', name: 'commons-collections', version:'3.2.+' // remove CVE-2015-4852, bump commons-collections dependency
       force group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.+' // remove CVE-2019-10173, bump xstream dependency
       force group: 'org.codehaus.plexus', name: 'plexus-utils', version: '3.3.+' // fix XML injection issues, upgrade plexus-utils dependency
+      force group: 'com.hubspot.jinjava', name: 'jinjava', version: '2.5.+' // remove CVE-2018-18893, bump jinjava dependency
     }
   }
 }
