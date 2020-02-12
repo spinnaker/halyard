@@ -57,6 +57,11 @@ allprojects {
     testAnnotationProcessor platform("com.netflix.spinnaker.kork:kork-bom:$korkVersion")
     testAnnotationProcessor "org.projectlombok:lombok"
   }
+  configurations.all {
+    resolutionStrategy {
+      force group: 'commons-collections', name: 'commons-collections', version:'3.2.+' // remove CVE-2015-4852, bump commons-collections dependency
+    }
+  }
 }
 
 defaultTasks ':halyard-web:run'
