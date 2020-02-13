@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google, Inc.
+ * Copyright 2020 Amazon.com, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.gcb;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.codebuild;
 
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.AbstractAccountCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.account.AbstractGetAccountCommand;
+import com.netflix.spinnaker.halyard.config.model.v1.ci.codebuild.AwsCodeBuildAccount;
 
-/** Interact with Google Cloud Build accounts */
 @Parameters(separators = "=")
-public class GoogleCloudBuildAccountCommand extends AbstractAccountCommand {
+public class AwsCodeBuildGetAccountCommand extends AbstractGetAccountCommand<AwsCodeBuildAccount> {
   protected String getCiName() {
-    return "gcb";
+    return "codebuild";
   }
 
   @Override
   protected String getCiFullName() {
-    return "Google Cloud Build";
-  }
-
-  @Override
-  public String getCommandName() {
-    return "account";
-  }
-
-  public GoogleCloudBuildAccountCommand() {
-    super();
-    registerSubcommand(new GoogleCloudBuildAddAccountCommand());
-    registerSubcommand(new GoogleCloudBuildEditAccountCommand());
+    return "AWS CodeBuild";
   }
 }

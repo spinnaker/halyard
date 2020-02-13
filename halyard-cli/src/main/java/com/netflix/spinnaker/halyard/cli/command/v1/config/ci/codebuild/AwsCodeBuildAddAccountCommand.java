@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google, Inc.
+ * Copyright 2020 Amazon.com, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -14,46 +14,48 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.gcb;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.codebuild;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.account.AbstractAddAccountCommand;
-import com.netflix.spinnaker.halyard.config.model.v1.ci.gcb.GoogleCloudBuildAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.ci.codebuild.AwsCodeBuildAccount;
 
 @Parameters(separators = "=")
-public class GoogleCloudBuildAddAccountCommand extends AbstractAddAccountCommand {
+public class AwsCodeBuildAddAccountCommand extends AbstractAddAccountCommand {
   protected String getCiName() {
-    return "gcb";
+    return "codebuild";
   }
 
   @Override
   protected String getCiFullName() {
-    return "Google Cloud Build";
+    return "AWS CodeBuild";
   }
 
   @Parameter(
-      names = "--project",
+      names = "--account-id",
       required = true,
-      description = GoogleCloudBuildCommandProperties.PROJECT_DESCRIPTION)
-  private String project;
+      description = AwsCodeBuildCommandProperties.ACCOUNT_ID_DESCRIPTION)
+  private String accountId;
 
   @Parameter(
-      names = "--subscription-name",
-      description = GoogleCloudBuildCommandProperties.SUBSCRIPTION_NAME_DESCRIPTION)
-  private String subscriptionName;
+      names = "--assume-role",
+      required = true,
+      description = AwsCodeBuildCommandProperties.ASSUME_ROLE_DESCRIPTION)
+  private String assumeRole;
 
   @Parameter(
-      names = "--json-key",
-      description = GoogleCloudBuildCommandProperties.JSON_KEY_DESCRIPTION)
-  private String jsonKey;
+      names = "--region",
+      required = true,
+      description = AwsCodeBuildCommandProperties.REGION_DESCRIPTION)
+  private String region;
 
   @Override
-  protected GoogleCloudBuildAccount buildAccount(String accountName) {
-    return new GoogleCloudBuildAccount()
+  protected AwsCodeBuildAccount buildAccount(String accountName) {
+    return new AwsCodeBuildAccount()
         .setName(accountName)
-        .setProject(project)
-        .setSubscriptionName(subscriptionName)
-        .setJsonKey(jsonKey);
+        .setAccountId(accountId)
+        .setAssumeRole(assumeRole)
+        .setRegion(region);
   }
 }

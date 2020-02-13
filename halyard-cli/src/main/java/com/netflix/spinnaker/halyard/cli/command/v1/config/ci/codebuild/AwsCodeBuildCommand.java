@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Google, Inc.
+ * Copyright 2020 Amazon.com, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,33 +12,33 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.gcb;
+package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.codebuild;
 
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.AbstractAccountCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.AbstractNamedCiCommand;
 
-/** Interact with Google Cloud Build accounts */
+/** Interact with AWS CodeBuild */
 @Parameters(separators = "=")
-public class GoogleCloudBuildAccountCommand extends AbstractAccountCommand {
+public class AwsCodeBuildCommand extends AbstractNamedCiCommand {
   protected String getCiName() {
-    return "gcb";
-  }
-
-  @Override
-  protected String getCiFullName() {
-    return "Google Cloud Build";
+    return "codebuild";
   }
 
   @Override
   public String getCommandName() {
-    return "account";
+    return "codebuild";
   }
 
-  public GoogleCloudBuildAccountCommand() {
+  public AwsCodeBuildCommand() {
     super();
-    registerSubcommand(new GoogleCloudBuildAddAccountCommand());
-    registerSubcommand(new GoogleCloudBuildEditAccountCommand());
+    registerSubcommand(new AwsCodeBuildAccountCommand());
+  }
+
+  @Override
+  public String getShortDescription() {
+    return "Manage and view Spinnaker configuration for AWS CodeBuild";
   }
 }

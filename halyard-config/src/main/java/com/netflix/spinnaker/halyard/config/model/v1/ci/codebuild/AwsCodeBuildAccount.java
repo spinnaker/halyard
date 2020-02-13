@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2020 Amazon.com, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,19 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.ci;
+package com.netflix.spinnaker.halyard.config.model.v1.ci.codebuild;
 
-import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
+import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-@Parameters(separators = "=")
-public abstract class AbstractCiCommand extends AbstractConfigCommand {
-  protected abstract String getCiName();
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class AwsCodeBuildAccount extends CIAccount {
+  private String name;
+  private String accountId;
+  private String assumeRole;
+  private String region;
 
-  protected String getCiFullName() {
-    return getCiName();
+  public String getNodeName() {
+    return name;
   }
 }
