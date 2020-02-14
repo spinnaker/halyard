@@ -21,23 +21,27 @@ public class PluginManifestProfileFactory extends StringBackedProfileFactory {
       DeploymentConfiguration deploymentConfiguration,
       SpinnakerRuntimeSettings endpoints) {
     profile.appendContents("const plugins = [");
-    
+
     Map<String, Plugin> plugins = pluginService.getPlugins(deploymentConfiguration.getName());
     plugins.entrySet().stream()
-      .filter(v -> {
-        Plugin p = v.getValue();
-        return p.getEnabled() && p.getUiResourceLocation() != null && p.getUiResourceLocation() != "";
-      })
-      .forEach(v -> {
-        Plugin p = v.getValue();
-        profile.appendContents("{");
-        profile.appendContents("id: \"" + p.getId() + "\",");
-        profile.appendContents("version: \"" + p.getVersion() + "\",");
-        profile.appendContents("url: \"" + p.getUiResourceLocation() + "\",");
-        profile.appendContents("},");
-      });
-      profile.appendContents("];");
-      profile.appendContents("export { plugins };");
+        .filter(
+            v -> {
+              Plugin p = v.getValue();
+              return p.getEnabled()
+                  && p.getUiResourceLocation() != null
+                  && p.getUiResourceLocation() != "";
+            })
+        .forEach(
+            v -> {
+              Plugin p = v.getValue();
+              profile.appendContents("{");
+              profile.appendContents("id: \"" + p.getId() + "\",");
+              profile.appendContents("version: \"" + p.getVersion() + "\",");
+              profile.appendContents("url: \"" + p.getUiResourceLocation() + "\",");
+              profile.appendContents("},");
+            });
+    profile.appendContents("];");
+    profile.appendContents("export { plugins };");
   }
 
   @Override
