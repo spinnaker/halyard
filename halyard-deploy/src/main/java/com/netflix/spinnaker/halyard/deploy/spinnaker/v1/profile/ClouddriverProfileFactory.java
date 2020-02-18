@@ -17,7 +17,6 @@
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
 import com.netflix.spinnaker.halyard.config.model.v1.node.*;
-import com.netflix.spinnaker.halyard.config.model.v1.providers.aws.AwsProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.ContainerAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.containers.DockerRegistryReference;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dockerRegistry.DockerRegistryAccount;
@@ -79,14 +78,6 @@ public class ClouddriverProfileFactory extends SpringProfileFactory {
 
     if (deploymentConfiguration.getProviders() != null) {
       processProviders(deploymentConfiguration.getProviders());
-    }
-    Features features = deploymentConfiguration.getFeatures();
-    if (features.getCloudFormation()) {
-      modifiedProviders
-          .getAws()
-          .setFeatures(
-              new AwsProvider.Features(
-                  new AwsProvider.Features.CloudFormation(features.getCloudFormation())));
     }
 
     profile

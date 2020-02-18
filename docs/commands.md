@@ -374,6 +374,8 @@
  * [**hal config provider aws disable**](#hal-config-provider-aws-disable)
  * [**hal config provider aws edit**](#hal-config-provider-aws-edit)
  * [**hal config provider aws enable**](#hal-config-provider-aws-enable)
+ * [**hal config provider aws features**](#hal-config-provider-aws-features)
+ * [**hal config provider aws features edit**](#hal-config-provider-aws-features-edit)
  * [**hal config provider azure**](#hal-config-provider-azure)
  * [**hal config provider azure account**](#hal-config-provider-azure-account)
  * [**hal config provider azure account add**](#hal-config-provider-azure-account-add)
@@ -6145,7 +6147,6 @@ hal config features edit [parameters]
  * `--artifacts`: Enable artifact support. Read more at [https://spinnaker.io/reference/artifacts/](https://spinnaker.io/reference/artifacts/)
  * `--artifacts-rewrite`: Enable new artifact support. Read more at [https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/](https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/)
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here [https://github.com/Netflix/chaosmonkey/wiki](https://github.com/Netflix/chaosmonkey/wiki).
- * `--cloud-formation`: Enable CloudFormation support.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--gremlin`: Enable Gremlin fault-injection support.
  * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
@@ -7123,6 +7124,7 @@ hal config provider aws [parameters] [subcommands]
  * `disable`: Set the aws provider as disabled
  * `edit`: Set provider-wide properties for the AWS provider
  * `enable`: Set the aws provider as enabled
+ * `features`: Manage and view Spinnaker configuration for the aws features configuration.
 
 ---
 ## hal config provider aws account
@@ -7373,6 +7375,39 @@ hal config provider aws enable [parameters]
 ```
 
 #### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider aws features
+
+Manage and view Spinnaker configuration for the aws features configuration.
+
+#### Usage
+```
+hal config provider aws features [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `edit`: Edit features for AWS provider
+
+---
+## hal config provider aws features edit
+
+Edit features for AWS provider
+
+#### Usage
+```
+hal config provider aws features edit [parameters]
+```
+
+#### Parameters
+ * `--cloud-formation`: Enable CloudFormation support for AWS.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 

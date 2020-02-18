@@ -61,6 +61,8 @@ public class AwsProvider extends HasImageProvider<AwsAccount, AwsBakeryDefaults>
   @Data
   public static class Features {
 
+    public Features() {}
+
     public Features(CloudFormation cloudFormation) {
       this.cloudFormation = cloudFormation;
     }
@@ -69,6 +71,8 @@ public class AwsProvider extends HasImageProvider<AwsAccount, AwsBakeryDefaults>
 
     @Data
     public static class CloudFormation {
+      public CloudFormation() {}
+
       public CloudFormation(Boolean enabled) {
         this.enabled = enabled;
       }
