@@ -423,7 +423,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
 
   default TemplatedResource getProbe(ServiceSettings settings, Integer initialDelaySeconds) {
     TemplatedResource probe;
-    if (StringUtils.isNotEmpty(settings.getHealthEndpoint())) {
+    if (StringUtils.isNotEmpty(settings.getHealthEndpoint())
+        && !settings.getKubernetes().getUseTcpProbe()) {
       if (settings.getKubernetes().getUseExecHealthCheck()) {
         probe = new JinjaJarResource("/kubernetes/manifests/execProbe.yml");
         probe.addBinding("command", getReadinessExecCommand(settings));
