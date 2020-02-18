@@ -15,12 +15,14 @@ import org.springframework.stereotype.Component;
 public class PluginManifestProfileFactory extends StringBackedProfileFactory {
   @Autowired PluginService pluginService;
 
+  private static String PLUGIN_ENTRY = "{id: \"%s\", version: \"%s\", url: \"%s\"}";
+
   @Override
   protected void setProfile(
       Profile profile,
       DeploymentConfiguration deploymentConfiguration,
       SpinnakerRuntimeSettings endpoints) {
-    profile.appendContents("const plugins = [");
+    profile.appendContents("plugins = [");
 
     Map<String, Plugin> plugins = pluginService.getPlugins(deploymentConfiguration.getName());
     plugins.entrySet().stream()
@@ -34,14 +36,11 @@ public class PluginManifestProfileFactory extends StringBackedProfileFactory {
         .forEach(
             v -> {
               Plugin p = v.getValue();
-              profile.appendContents("{");
-              profile.appendContents("id: \"" + p.getId() + "\",");
-              profile.appendContents("version: \"" + p.getVersion() + "\",");
-              profile.appendContents("url: \"" + p.getUiResourceLocation() + "\",");
-              profile.appendContents("},");
+              profile.appendContents(
+                  String.format(
+                      PLUGIN_ENTRY, p.getId(), p.getVersion(), p.getUiResourceLocation()));
             });
-    profile.appendContents("];");
-    profile.appendContents("export { plugins };");
+    profile.appendContents("]");
   }
 
   @Override
