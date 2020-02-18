@@ -97,11 +97,6 @@ public class Features extends Node {
       tooLowMessage = "Gremlin is not available prior to this release.")
   private Boolean gremlin;
 
-  @ValidForSpinnakerVersion(
-      lowerBound = "1.17.0",
-      tooLowMessage = "CloudFormation is not available prior to this release.")
-  private Boolean cloudFormation;
-
   public boolean isAuth(DeploymentConfiguration deploymentConfiguration) {
     return deploymentConfiguration.getSecurity().getAuthn().isEnabled();
   }

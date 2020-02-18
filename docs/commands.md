@@ -7407,7 +7407,7 @@ hal config provider aws features edit [parameters]
 ```
 
 #### Parameters
- * `--cloud-formation`: Enable CloudFormation support for AWS.
+ * `--cloud-formation`: (*Required*) Enable CloudFormation support for AWS.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
