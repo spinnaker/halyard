@@ -423,7 +423,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
 
   default TemplatedResource getProbe(ServiceSettings settings, Integer initialDelaySeconds) {
     TemplatedResource probe;
-    if (!StringUtils.isNotEmpty(settings.getHealthEndpoint())
+    if (StringUtils.isEmpty(settings.getHealthEndpoint())
         || settings.getKubernetes().getUseTcpProbe()) {
       probe = new JinjaJarResource("/kubernetes/manifests/tcpSocketProbe.yml");
       probe.addBinding("port", settings.getPort());
