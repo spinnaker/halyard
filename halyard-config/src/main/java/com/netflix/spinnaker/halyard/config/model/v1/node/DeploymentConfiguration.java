@@ -86,7 +86,7 @@ public class DeploymentConfiguration extends Node {
 
   Canary canary = new Canary();
 
-  Plugins plugins = new Plugins().setDownloadingEnabled(false);
+  Spinnaker spinnaker = new Spinnaker();
 
   Webhook webhook = new Webhook();
 
