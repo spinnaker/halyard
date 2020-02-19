@@ -102,7 +102,7 @@ public abstract class DeckService extends SpinnakerService<DeckService.Deck> {
         apacheSpinnakerProfileFactory.getProfile(
             "apache2/" + filename, path, deploymentConfiguration, endpoints));
 
-    filename = "plugin-manifest.js";
+    filename = "plugin-manifest.json";
     path = Paths.get(htmlPath, filename).toString();
     result.add(
         pluginManifestProfileFactory.getProfile(
