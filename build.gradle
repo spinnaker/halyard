@@ -34,49 +34,12 @@ buildscript {
   }
 }
 
-class ManifestPluginExtension {
-  String implementationTitle
-  String implementationVersion
-  String moduleOrigin
-  String buildDate
-  String buildId
-  String moduleOwner
-  String createdBy
-  String buildJavaVersion
-  String gradleVersion
-  String builtBy
-}
-
-class GreetingPlugin implements Plugin<Project> {
-  void apply(Project project) {
-
-    def extension = project.extensions.create('spinnakerManifest', ManifestPluginExtension)
-
-    project.task('createSpinnakerManifest') {
-      doLast {
-        extension.builtBy = System.properties['user.name']
-        extension.gradleVersion = project.gradle.gradleVersion
-
-        println extension.implementationVersion
-        println extension.builtBy
-        println extension.gradleVersion
-      }
-    }
-  }
-}
-
-plugins {
-  id 'nebula.release' version '13.0.0'
-}
-
 allprojects {
   group = "com.netflix.spinnaker.halyard"
   apply plugin: 'spinnaker.base-project'
   apply plugin: 'java-library'
   apply plugin: 'groovy'
-  apply plugin: GreetingPlugin
 
-  spinnakerManifest.implementationVersion = version
   test {
     testLogging {
       showStandardStreams = false
