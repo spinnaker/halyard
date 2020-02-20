@@ -116,15 +116,15 @@ public class EchoProfileFactory extends SpringProfileFactory {
     profile.appendContents(profile.getBaseContents()).setRequiredFiles(files);
   }
 
-  private Telemetry.DeploymentMethod deploymentMethod(){
+  private Telemetry.DeploymentMethod deploymentMethod() {
     return new Telemetry.DeploymentMethod()
-            .setType(Telemetry.DeploymentMethod.HALYARD)
-            .setVersion(halyardVersion());
+        .setType(Telemetry.DeploymentMethod.HALYARD)
+        .setVersion(halyardVersion());
   }
 
   private String halyardVersion() {
     return Optional.ofNullable(EchoProfileFactory.class.getPackage().getImplementationVersion())
-            .orElse("Unknown");
+        .orElse("Unknown");
   }
 
   @Data
