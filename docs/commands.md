@@ -176,6 +176,15 @@
  * [**hal config canary signalfx disable**](#hal-config-canary-signalfx-disable)
  * [**hal config canary signalfx enable**](#hal-config-canary-signalfx-enable)
  * [**hal config ci**](#hal-config-ci)
+ * [**hal config ci codebuild**](#hal-config-ci-codebuild)
+ * [**hal config ci codebuild account**](#hal-config-ci-codebuild-account)
+ * [**hal config ci codebuild account add**](#hal-config-ci-codebuild-account-add)
+ * [**hal config ci codebuild account delete**](#hal-config-ci-codebuild-account-delete)
+ * [**hal config ci codebuild account edit**](#hal-config-ci-codebuild-account-edit)
+ * [**hal config ci codebuild account get**](#hal-config-ci-codebuild-account-get)
+ * [**hal config ci codebuild account list**](#hal-config-ci-codebuild-account-list)
+ * [**hal config ci codebuild disable**](#hal-config-ci-codebuild-disable)
+ * [**hal config ci codebuild enable**](#hal-config-ci-codebuild-enable)
  * [**hal config ci concourse**](#hal-config-ci-concourse)
  * [**hal config ci concourse disable**](#hal-config-ci-concourse-disable)
  * [**hal config ci concourse enable**](#hal-config-ci-concourse-enable)
@@ -374,6 +383,8 @@
  * [**hal config provider aws disable**](#hal-config-provider-aws-disable)
  * [**hal config provider aws edit**](#hal-config-provider-aws-edit)
  * [**hal config provider aws enable**](#hal-config-provider-aws-enable)
+ * [**hal config provider aws features**](#hal-config-provider-aws-features)
+ * [**hal config provider aws features edit**](#hal-config-provider-aws-features-edit)
  * [**hal config provider azure**](#hal-config-provider-azure)
  * [**hal config provider azure account**](#hal-config-provider-azure-account)
  * [**hal config provider azure account add**](#hal-config-provider-azure-account-add)
@@ -495,6 +506,23 @@
  * [**hal config provider oracle bakery edit**](#hal-config-provider-oracle-bakery-edit)
  * [**hal config provider oracle disable**](#hal-config-provider-oracle-disable)
  * [**hal config provider oracle enable**](#hal-config-provider-oracle-enable)
+ * [**hal config provider tencentcloud**](#hal-config-provider-tencentcloud)
+ * [**hal config provider tencentcloud account**](#hal-config-provider-tencentcloud-account)
+ * [**hal config provider tencentcloud account add**](#hal-config-provider-tencentcloud-account-add)
+ * [**hal config provider tencentcloud account delete**](#hal-config-provider-tencentcloud-account-delete)
+ * [**hal config provider tencentcloud account edit**](#hal-config-provider-tencentcloud-account-edit)
+ * [**hal config provider tencentcloud account get**](#hal-config-provider-tencentcloud-account-get)
+ * [**hal config provider tencentcloud account list**](#hal-config-provider-tencentcloud-account-list)
+ * [**hal config provider tencentcloud bakery**](#hal-config-provider-tencentcloud-bakery)
+ * [**hal config provider tencentcloud bakery base-image**](#hal-config-provider-tencentcloud-bakery-base-image)
+ * [**hal config provider tencentcloud bakery base-image add**](#hal-config-provider-tencentcloud-bakery-base-image-add)
+ * [**hal config provider tencentcloud bakery base-image delete**](#hal-config-provider-tencentcloud-bakery-base-image-delete)
+ * [**hal config provider tencentcloud bakery base-image edit**](#hal-config-provider-tencentcloud-bakery-base-image-edit)
+ * [**hal config provider tencentcloud bakery base-image get**](#hal-config-provider-tencentcloud-bakery-base-image-get)
+ * [**hal config provider tencentcloud bakery base-image list**](#hal-config-provider-tencentcloud-bakery-base-image-list)
+ * [**hal config provider tencentcloud bakery edit**](#hal-config-provider-tencentcloud-bakery-edit)
+ * [**hal config provider tencentcloud disable**](#hal-config-provider-tencentcloud-disable)
+ * [**hal config provider tencentcloud enable**](#hal-config-provider-tencentcloud-enable)
  * [**hal config pubsub**](#hal-config-pubsub)
  * [**hal config pubsub google**](#hal-config-pubsub-google)
  * [**hal config pubsub google disable**](#hal-config-pubsub-google-disable)
@@ -3650,11 +3678,172 @@ hal config ci [subcommands]
 ```
 
 #### Subcommands
+ * `codebuild`: Manage and view Spinnaker configuration for AWS CodeBuild
  * `concourse`: Manage and view Spinnaker configuration for the concourse ci
  * `gcb`: Manage and view Spinnaker configuration for Google Cloud Build
  * `jenkins`: Manage and view Spinnaker configuration for the jenkins ci
  * `travis`: Manage and view Spinnaker configuration for the travis ci
  * `wercker`: Manage and view Spinnaker configuration for the wercker ci
+
+---
+## hal config ci codebuild
+
+Manage and view Spinnaker configuration for AWS CodeBuild
+
+#### Usage
+```
+hal config ci codebuild [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for AWS CodeBuild service account.
+ * `disable`: Set the codebuild ci as disabled
+ * `enable`: Set the codebuild ci as enabled
+
+---
+## hal config ci codebuild account
+
+Manage and view Spinnaker configuration for AWS CodeBuild service account.
+
+#### Usage
+```
+hal config ci codebuild account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a AWS CodeBuild account.
+ * `delete`: Delete a AWS CodeBuild account.
+ * `edit`: Edit a AWS CodeBuild account.
+ * `get`: Get the account details for AWS CodeBuild.
+ * `list`: List the AWS CodeBuild accounts.
+
+---
+## hal config ci codebuild account add
+
+Add a AWS CodeBuild account.
+
+#### Usage
+```
+hal config ci codebuild account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--account-id`: (*Required*) The AWS account ID that will be used to trigger CodeBuild build.
+ * `--assume-role`: (*Required*) If set, Halyard will configure a credentials provider that uses AWS Security Token Service to assume the specified role.
+
+Example: "user/spinnaker" or "role/spinnakerManaged"
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--region`: (*Required*) The AWS region in which your CodeBuild projects live.
+
+
+---
+## hal config ci codebuild account delete
+
+Delete a AWS CodeBuild account.
+
+#### Usage
+```
+hal config ci codebuild account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci codebuild account edit
+
+Edit a AWS CodeBuild account.
+
+#### Usage
+```
+hal config ci codebuild account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--account-id`: The AWS account ID that will be used to trigger CodeBuild build.
+ * `--assume-role`: If set, Halyard will configure a credentials provider that uses AWS Security Token Service to assume the specified role.
+
+Example: "user/spinnaker" or "role/spinnakerManaged"
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--region`: The AWS region in which your CodeBuild projects live.
+
+
+---
+## hal config ci codebuild account get
+
+Get the account details for AWS CodeBuild.
+
+#### Usage
+```
+hal config ci codebuild account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci codebuild account list
+
+List the AWS CodeBuild accounts.
+
+#### Usage
+```
+hal config ci codebuild account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci codebuild disable
+
+Set the codebuild ci as disabled
+
+#### Usage
+```
+hal config ci codebuild disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci codebuild enable
+
+Set the codebuild ci as enabled
+
+#### Usage
+```
+hal config ci codebuild enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
 
 ---
 ## hal config ci concourse
@@ -3850,20 +4039,20 @@ hal config ci gcb account ACCOUNT [parameters] [subcommands]
 ```
 
 #### Parameters
-`ACCOUNT`: The name of the master to operate on.
+`ACCOUNT`: The name of the account to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 #### Subcommands
- * `add`: Add a Google Cloud Build account
+ * `add`: Add a Google Cloud Build account.
  * `delete`: Delete a Google Cloud Build account.
- * `edit`: Add a Google Cloud Build account
+ * `edit`: Edit a Google Cloud Build account.
  * `list`: List the Google Cloud Build accounts.
 
 ---
 ## hal config ci gcb account add
 
-Add a Google Cloud Build account
+Add a Google Cloud Build account.
 
 #### Usage
 ```
@@ -3871,12 +4060,12 @@ hal config ci gcb account add ACCOUNT [parameters]
 ```
 
 #### Parameters
-`ACCOUNT`: The name of the master to operate on.
+`ACCOUNT`: The name of the account to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--json-key`: The path to a JSON service account that Spinnaker will use as credentials
+ * `--json-key`: The path to a JSON service account that Spinnaker will use as credentials.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--project`: (*Required*) The name of the GCP project in which to trigger and monitor builds
- * `--subscription-name`: The name of the PubSub subscription on which to listen for build changes
+ * `--project`: (*Required*) The name of the GCP project in which to trigger and monitor builds.
+ * `--subscription-name`: The name of the PubSub subscription on which to listen for build changes.
 
 
 ---
@@ -3890,7 +4079,7 @@ hal config ci gcb account delete ACCOUNT [parameters]
 ```
 
 #### Parameters
-`ACCOUNT`: The name of the master to operate on.
+`ACCOUNT`: The name of the account to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
@@ -3898,7 +4087,7 @@ hal config ci gcb account delete ACCOUNT [parameters]
 ---
 ## hal config ci gcb account edit
 
-Add a Google Cloud Build account
+Edit a Google Cloud Build account.
 
 #### Usage
 ```
@@ -3906,12 +4095,12 @@ hal config ci gcb account edit ACCOUNT [parameters]
 ```
 
 #### Parameters
-`ACCOUNT`: The name of the master to operate on.
+`ACCOUNT`: The name of the account to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--json-key`: The path to a JSON service account that Spinnaker will use as credentials
+ * `--json-key`: The path to a JSON service account that Spinnaker will use as credentials.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--project`: The name of the GCP project in which to trigger and monitor builds
- * `--subscription-name`: The name of the PubSub subscription on which to listen for build changes
+ * `--project`: The name of the GCP project in which to trigger and monitor builds.
+ * `--subscription-name`: The name of the PubSub subscription on which to listen for build changes.
 
 
 ---
@@ -6153,6 +6342,7 @@ hal config features edit [parameters]
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--gremlin`: Enable Gremlin fault-injection support.
  * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
+ * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--pipeline-templates`: Enable pipeline template support. Read more at [https://github.com/spinnaker/dcd-spec](https://github.com/spinnaker/dcd-spec).
@@ -6890,6 +7080,7 @@ hal config provider [subcommands]
  * `huaweicloud`: Manage and view Spinnaker configuration for the huaweicloud provider
  * `kubernetes`: Manage and view Spinnaker configuration for the kubernetes provider
  * `oracle`: Manage and view Spinnaker configuration for the oracle provider
+ * `tencentcloud`: Manage and view Spinnaker configuration for the tencentcloud provider
 
 ---
 ## hal config provider appengine
@@ -7126,6 +7317,7 @@ hal config provider aws [parameters] [subcommands]
  * `disable`: Set the aws provider as disabled
  * `edit`: Set provider-wide properties for the AWS provider
  * `enable`: Set the aws provider as enabled
+ * `features`: Manage and view Spinnaker configuration for the aws features configuration.
 
 ---
 ## hal config provider aws account
@@ -7376,6 +7568,39 @@ hal config provider aws enable [parameters]
 ```
 
 #### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider aws features
+
+Manage and view Spinnaker configuration for the aws features configuration.
+
+#### Usage
+```
+hal config provider aws features [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `edit`: Edit features for AWS provider
+
+---
+## hal config provider aws features edit
+
+Edit features for AWS provider
+
+#### Usage
+```
+hal config provider aws features edit [parameters]
+```
+
+#### Parameters
+ * `--cloud-formation`: (*Required*) Enable CloudFormation support for AWS.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
@@ -9845,6 +10070,336 @@ hal config provider oracle enable [parameters]
 
 
 ---
+## hal config provider tencentcloud
+
+Manage and view Spinnaker configuration for the tencentcloud provider
+
+#### Usage
+```
+hal config provider tencentcloud [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `account`: Manage and view Spinnaker configuration for the tencentcloud provider's account
+ * `bakery`: Manage and view Spinnaker configuration for the tencentcloud provider's image bakery configuration.
+ * `disable`: Set the tencentcloud provider as disabled
+ * `enable`: Set the tencentcloud provider as enabled
+
+---
+## hal config provider tencentcloud account
+
+Manage and view Spinnaker configuration for the tencentcloud provider's account
+
+#### Usage
+```
+hal config provider tencentcloud account ACCOUNT [parameters] [subcommands]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add an account to the tencentcloud provider.
+ * `delete`: Delete a specific tencentcloud account by name.
+ * `edit`: Edit an account in the tencentcloud provider.
+ * `get`: Get the specified account details for the tencentcloud provider.
+ * `list`: List the account names for the tencentcloud provider.
+
+---
+## hal config provider tencentcloud account add
+
+Add an account to the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account add ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: The Tencent CLoud regions this Spinnaker account will manage.
+ * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--secret-id`: (*Required*) The secret id used to access Tencent Cloud.
+ * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The secret key used to access Tencent Cloud.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider tencentcloud account delete
+
+Delete a specific tencentcloud account by name.
+
+#### Usage
+```
+hal config provider tencentcloud account delete ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud account edit
+
+Edit an account in the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account edit ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-region`: Add this region to the list of managed regions.
+ * `--add-required-group-membership`: Add this group to the list of required group memberships.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--provider-version`: Some providers support multiple versions/release tracks. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
+ * `--regions`: The Tencent CLoud regions this Spinnaker account will manage.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-region`: Remove this region from the list of managed regions.
+ * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
+ * `--remove-write-permission`: Remove this permission to from list of write permissions.
+ * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
+ * `--secret-id`: The secret id used to access Tencent Cloud.
+ * `--secret-key`: (*Sensitive data* - user will be prompted on standard input) (Sensitive data - user will be prompted on standard input) The secret key used to access Tencent Cloud.
+ * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
+
+
+---
+## hal config provider tencentcloud account get
+
+Get the specified account details for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account get ACCOUNT [parameters]
+```
+
+#### Parameters
+`ACCOUNT`: The name of the account to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud account list
+
+List the account names for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud account list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery
+
+Manage and view Spinnaker configuration for the tencentcloud provider's image bakery configuration.
+
+#### Usage
+```
+hal config provider tencentcloud bakery [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `base-image`: Manage and view Spinnaker configuration for the tencentcloud provider's base image.
+ * `edit`: Edit the tencentcloud provider's bakery default options.
+
+---
+## hal config provider tencentcloud bakery base-image
+
+Manage and view Spinnaker configuration for the tencentcloud provider's base image.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a base image for the tencentcloud provider's bakery.
+ * `delete`: Delete a specific tencentcloud base image by name.
+ * `edit`: Edit a base image for the tencentcloud provider's bakery.
+ * `get`: Get the specified base image details for the tencentcloud provider.
+ * `list`: List the base image names for the tencentcloud provider.
+
+---
+## hal config provider tencentcloud bakery base-image add
+
+Add a base image for the tencentcloud provider's bakery.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image add BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: (*Required*) The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+ * `--zone`: (*Required*) The zone for the baking configuration.
+
+
+---
+## hal config provider tencentcloud bakery base-image delete
+
+Delete a specific tencentcloud base image by name.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image delete BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery base-image edit
+
+Edit a base image for the tencentcloud provider's bakery.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image edit BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--detailed-description`: A long description to help human operators identify the image.
+ * `--id`: This is the identifier used by your cloud to find this base image.
+ * `--instance-type`: (*Required*) The instance type for the baking configuration.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--package-type`: This is used to help Spinnaker's bakery download the build artifacts you supply it with. For example, specifying 'deb' indicates that your artifacts will need to be fetched from a debian repository.
+ * `--region`: (*Required*) The region for the baking configuration.
+ * `--short-description`: A short description to help human operators identify the image.
+ * `--source-image-id`: (*Required*) The source image ID for the baking configuration.
+ * `--ssh-user-name`: (*Required*) The ssh username for the baking configuration.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+ * `--zone`: (*Required*) The zone for the baking configuration.
+
+
+---
+## hal config provider tencentcloud bakery base-image get
+
+Get the specified base image details for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image get BASE-IMAGE [parameters]
+```
+
+#### Parameters
+`BASE-IMAGE`: The name of the base image to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery base-image list
+
+List the base image names for the tencentcloud provider.
+
+#### Usage
+```
+hal config provider tencentcloud bakery base-image list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud bakery edit
+
+Edit the tencentcloud provider's bakery default options.
+
+#### Usage
+```
+hal config provider tencentcloud bakery edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--secret-id`: (*Required*) The default access key used to communicate with AWS.
+ * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with AWS.
+ * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
+
+
+---
+## hal config provider tencentcloud disable
+
+Set the tencentcloud provider as disabled
+
+#### Usage
+```
+hal config provider tencentcloud disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config provider tencentcloud enable
+
+Set the tencentcloud provider as enabled
+
+#### Usage
+```
+hal config provider tencentcloud enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config pubsub
 
 Configure, validate, and view the specified pubsub.
@@ -11446,6 +12001,7 @@ This guarantees that no configuration will be generated for this deployment. Thi
  * `--prep-only`: (*Default*: `false`) This does just the prep work, and not the actual deployment. Only useful at the moment if you want to just clone the repositories for a localgit setup.
  * `--service-names`: (*Default*: `[]`) When supplied, only install or update the specified Spinnaker services.
  * `--wait-for-completion`: (*Default*: `false`) When supplied, wait for all containers to be ready before returning (only applies to Kubernetes V2 provider).
+ * `--wait-for-completion-timeout-minutes`: Specify timeout for deploy apply command.
 
 
 ---
@@ -11584,8 +12140,10 @@ hal plugins add PLUGIN [parameters]
 `PLUGIN`: The name of the plugin to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--enabled`: To enable or disable the plugin.
- * `--manifest-location`: (*Required*) The location of the plugin's manifest file.
+ * `--extensions`: A comma separated list of extensions to enable
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--ui-resource-location`: The location of the plugin's ui resource.
+ * `--version`: The plugin version to use
 
 
 ---
@@ -11648,8 +12206,10 @@ hal plugins edit PLUGIN [parameters]
 `PLUGIN`: The name of the plugin to operate on.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--enabled`: To enable or disable the plugin.
- * `--manifest-location`: The location of the plugin's manifest file.
+ * `--extensions`: A comma separated list of extensions to create
  * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--ui-resource-location`: The location of the plugin's ui resource.
+ * `--version`: The plugin version to use
 
 
 ---

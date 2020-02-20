@@ -831,7 +831,8 @@ public class Daemon {
       boolean validate,
       List<DeployOption> deployOptions,
       List<String> serviceNames,
-      List<String> excludeServiceNames) {
+      List<String> excludeServiceNames,
+      Integer waitForCompletionTimeoutMinutes) {
     return () -> {
       Object rawDeployResult =
           ResponseUnwrapper.get(
@@ -842,6 +843,7 @@ public class Daemon {
                       deployOptions,
                       serviceNames,
                       excludeServiceNames,
+                      waitForCompletionTimeoutMinutes,
                       ""));
       return getObjectMapper().convertValue(rawDeployResult, RemoteAction.class);
     };
@@ -1314,10 +1316,10 @@ public class Daemon {
     };
   }
 
-  public static Supplier<List<Plugin>> getPlugins(String deploymentName, boolean validate) {
+  public static Supplier<Map<String, Plugin>> getPlugins(String deploymentName, boolean validate) {
     return () -> {
       Object rawPlugin = ResponseUnwrapper.get(getService().getPlugins(deploymentName, validate));
-      return getObjectMapper().convertValue(rawPlugin, new TypeReference<List<Plugin>>() {});
+      return getObjectMapper().convertValue(rawPlugin, new TypeReference<Map<String, Plugin>>() {});
     };
   }
 
