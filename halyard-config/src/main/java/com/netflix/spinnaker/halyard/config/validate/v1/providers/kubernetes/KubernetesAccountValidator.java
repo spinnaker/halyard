@@ -55,39 +55,52 @@ import org.springframework.stereotype.Component;
 public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
   @Override
   public void validate(ConfigProblemSetBuilder psBuilder, KubernetesAccount account) {
-    DeploymentConfiguration deploymentConfiguration;
+    switch (account.getProviderVersion()) {
+        // TODO(mneterval): remove all V1-only validators after 1.21 is released
+      case V1:
+        validateV1KindConfig(psBuilder, account);
+        validateCacheThreads(psBuilder, account);
+        validateV1DockerRegistries(psBuilder, account);
+        validateKubeconfig(psBuilder, account);
+        validateOnlySpinnakerConfig(psBuilder, account);
+      case V2:
+        validateKindConfig(psBuilder, account);
+        validateCacheThreads(psBuilder, account);
+      default:
+        throw new IllegalStateException("Unknown provider version " + account.getProviderVersion());
+    }
+  }
 
-    // TODO(lwander) this is still a little messy - I should use the filters to get the necessary
-    // docker account
+  private void validateV1DockerRegistries(
+      ConfigProblemSetBuilder psBuilder, KubernetesAccount account) {
     Node parent = account.getParent();
     while (!(parent instanceof DeploymentConfiguration)) {
       // Note this will crash in the above check if the halconfig representation is corrupted
       // (that's ok, because it indicates a more serious error than we want to validate).
       parent = parent.getParent();
     }
-    deploymentConfiguration = (DeploymentConfiguration) parent;
+    DeploymentConfiguration deploymentConfiguration = (DeploymentConfiguration) parent;
 
-    validateKindConfig(psBuilder, account);
-    validateCacheThreads(psBuilder, account);
+    List<String> dockerRegistryNames =
+        account.getDockerRegistries().stream()
+            .map(DockerRegistryReference::getAccountName)
+            .collect(Collectors.toList());
 
-    // TODO(lwander) validate all config with clouddriver's v2 creds
-    switch (account.getProviderVersion()) {
-      case V1:
-        final List<String> dockerRegistryNames =
-            account.getDockerRegistries().stream()
-                .map(DockerRegistryReference::getAccountName)
-                .collect(Collectors.toList());
-        validateDockerRegistries(
-            psBuilder,
-            deploymentConfiguration,
-            dockerRegistryNames,
-            Provider.ProviderType.KUBERNETES);
-        validateKubeconfig(psBuilder, account);
-        validateOnlySpinnakerConfig(psBuilder, account);
-      case V2:
-        break;
-      default:
-        throw new IllegalStateException("Unknown provider version " + account.getProviderVersion());
+    validateDockerRegistries(
+        psBuilder, deploymentConfiguration, dockerRegistryNames, Provider.ProviderType.KUBERNETES);
+  }
+
+  private void validateV1KindConfig(ConfigProblemSetBuilder psBuilder, KubernetesAccount account) {
+    List<String> kinds = account.getKinds();
+    List<String> omitKinds = account.getOmitKinds();
+    List<KubernetesAccount.CustomKubernetesResource> customResources = account.getCustomResources();
+
+    if (CollectionUtils.isNotEmpty(kinds)
+        || CollectionUtils.isNotEmpty(omitKinds)
+        || CollectionUtils.isNotEmpty(customResources)) {
+      psBuilder.addProblem(
+          WARNING,
+          "Kubernetes accounts at V1 do no support configuring caching behavior for kinds or custom resources.");
     }
   }
 
@@ -95,18 +108,6 @@ public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
     List<String> kinds = account.getKinds();
     List<String> omitKinds = account.getOmitKinds();
     List<KubernetesAccount.CustomKubernetesResource> customResources = account.getCustomResources();
-
-    if (account.getProviderVersion() == Provider.ProviderVersion.V1) {
-      if (CollectionUtils.isNotEmpty(kinds)
-          || CollectionUtils.isNotEmpty(omitKinds)
-          || CollectionUtils.isNotEmpty(customResources)) {
-        psBuilder.addProblem(
-            WARNING,
-            "Kubernetes accounts at V1 do no support configuring caching behavior for kinds or custom resources.");
-      }
-
-      return;
-    }
 
     if (CollectionUtils.isNotEmpty(kinds) && CollectionUtils.isNotEmpty(omitKinds)) {
       psBuilder.addProblem(ERROR, "At most one of \"kinds\" and \"omitKinds\" may be specified.");
@@ -164,12 +165,10 @@ public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
       ConfigProblemSetBuilder psBuilder, KubernetesAccount account) {
     Boolean onlySpinnakerManaged = account.getOnlySpinnakerManaged();
 
-    if (account.getProviderVersion() == Provider.ProviderVersion.V1) {
-      if (onlySpinnakerManaged) {
-        psBuilder.addProblem(
-            WARNING,
-            "Kubernetes accounts at V1 does not support configuring caching behavior for a only spinnaker managed resources.");
-      }
+    if (onlySpinnakerManaged) {
+      psBuilder.addProblem(
+          WARNING,
+          "Kubernetes accounts at V1 does not support configuring caching behavior for a only spinnaker managed resources.");
     }
   }
 
