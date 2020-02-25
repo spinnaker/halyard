@@ -123,7 +123,7 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
   @Parameter(
       names = "--provider-version",
       description = KubernetesCommandProperties.PROVIDER_VERSION_DESCRIPTION)
-  private ProviderVersion providerVersion;
+  private ProviderVersion providerVersion = ProviderVersion.V2;
 
   @Override
   protected Account buildAccount(String accountName) {
