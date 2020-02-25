@@ -58,6 +58,7 @@ public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
     switch (account.getProviderVersion()) {
         // TODO(mneterval): remove all V1-only validators after 1.21 is released
       case V1:
+        addV1RemovalWarning(psBuilder, account);
         validateV1KindConfig(psBuilder, account);
         validateCacheThreads(psBuilder, account);
         validateV1DockerRegistries(psBuilder, account);
@@ -69,6 +70,16 @@ public class KubernetesAccountValidator extends Validator<KubernetesAccount> {
       default:
         throw new IllegalStateException("Unknown provider version " + account.getProviderVersion());
     }
+  }
+
+  private void addV1RemovalWarning(ConfigProblemSetBuilder psBuilder, KubernetesAccount account) {
+    psBuilder.addProblem(
+        WARNING,
+        String.format(
+            "Account %s is using Spinnaker’s legacy Kubernetes provider (V1), which is scheduled for removal in Spinnaker 1.21. "
+                + "Please migrate to the manifest-based provider (V2). Check out this RFC for more information: "
+                + "https://github.com/spinnaker/governance/blob/master/rfc/eol_kubernetes_v1.md.",
+            account.getName()));
   }
 
   private void validateV1DockerRegistries(
