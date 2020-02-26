@@ -229,6 +229,20 @@ public class HalconfigParser {
               .build());
     }
 
+    // Added for the the opt-in/opt-out switch for release 1.19
+    // This ensures that telemetry.enabled reflects the enabled/disabled state truthfully in the
+    // written halconfig. Without it, one would see this, yet telemetry would actually be enabled:
+    //   telemetry:
+    //     enabled: false
+    //     explicitlySet: false
+    local.getDeploymentConfigurations().stream()
+        .forEach(
+            dc -> {
+              if (!dc.getTelemetry().getExplicitlySet()) {
+                dc.getTelemetry().setEnabled(true);
+              }
+            });
+
     AtomicFileWriter writer = null;
     try {
       writer = new AtomicFileWriter(path);

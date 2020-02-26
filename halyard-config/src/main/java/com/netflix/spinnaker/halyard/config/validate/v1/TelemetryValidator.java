@@ -14,11 +14,17 @@ public class TelemetryValidator extends Validator<Telemetry> {
   @Override
   public void validate(ConfigProblemSetBuilder p, Telemetry t) {
     StringBuilder msg = new StringBuilder();
-    msg.append("Telemetry is currently ");
-    if (t.getEnabled()) {
+    msg.append("Telemetry is now opt-out. Your telemetry preference is currently ");
+    if (t.getExplicitlySet()) {
+      msg.append("set to ");
+    } else {
+      msg.append("unset, so it is ");
+    }
+    if (t.getEnabled() || !t.getExplicitlySet()) {
       msg.append("ENABLED. Usage statistics are being collected—Thank you! ");
       msg.append("These stats inform improvements to the product, and that helps the community. ");
       msg.append("To disable, run `hal config telemetry disable`. ");
+      t.setEnabled(true);
     } else {
       msg.append("DISABLED. Usage statistics are not being collected. ");
       msg.append("Please consider enabling statistic collection. ");

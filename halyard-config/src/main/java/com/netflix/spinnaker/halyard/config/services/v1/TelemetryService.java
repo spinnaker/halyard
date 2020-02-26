@@ -48,6 +48,7 @@ public class TelemetryService {
         deploymentService.getDeploymentConfiguration(deploymentName);
     Telemetry telemetry = deploymentConfiguration.getTelemetry();
     telemetry.setEnabled(enable);
+    telemetry.setExplicitlySet(true);
   }
 
   public ProblemSet validateTelemetry(String deploymentName) {

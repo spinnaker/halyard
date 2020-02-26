@@ -34,7 +34,12 @@ public class Telemetry extends Node {
   @ValidForSpinnakerVersion(
       lowerBound = "1.18.0",
       tooLowMessage = "Telemetry is not available prior to this release.")
-  private Boolean enabled = false;
+  private Boolean enabled = true;
+
+  @ValidForSpinnakerVersion(
+      lowerBound = "1.19.0",
+      tooLowMessage = "Will enable telemetry when not explicitly disabled.")
+  private Boolean explicitlySet = false;
 
   private String endpoint = DEFAULT_TELEMETRY_ENDPOINT;
   private String instanceId = new ULID().nextULID();
