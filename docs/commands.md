@@ -4397,8 +4397,8 @@ hal config ci travis master add MASTER [parameters]
 
 #### Parameters
 `MASTER`: The name of the master to operate on.
- * `--address`: (*Required*) The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
- * `--base-url`: (*Required*) The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--address`: (*Required*) The address of the travis API ([https://api.travis-ci.com](https://api.travis-ci.com)).
+ * `--base-url`: (*Required*) The base URL to the travis UI ([https://travis-ci.com](https://travis-ci.com)).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
@@ -4437,8 +4437,8 @@ hal config ci travis master edit MASTER [parameters]
 `MASTER`: The name of the master to operate on.
  * `--add-read-permission`: Add this permission to the list of read permissions.
  * `--add-write-permission`: Add this permission to the list of write permissions.
- * `--address`: The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
- * `--base-url`: The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--address`: The address of the travis API ([https://api.travis-ci.com](https://api.travis-ci.com)).
+ * `--base-url`: The base URL to the travis UI ([https://travis-ci.com](https://travis-ci.com)).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.

@@ -18,10 +18,10 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.ci.travis;
 
 public class TravisCommandProperties {
   static final String ADDRESS_DESCRIPTION =
-      "The address of the travis API (https://api.travis-ci.org).";
+      "The address of the travis API (https://api.travis-ci.com).";
 
   static final String BASE_URL_DESCRIPTION =
-      "The base URL to the travis UI (https://travis-ci.org).";
+      "The base URL to the travis UI (https://travis-ci.com).";
 
   static final String GITHUB_TOKEN_DESCRIPTION =
       "The github token to authentiacte against travis with.";
