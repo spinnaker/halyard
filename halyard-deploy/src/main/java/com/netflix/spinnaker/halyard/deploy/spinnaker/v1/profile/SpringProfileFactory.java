@@ -20,6 +20,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import lombok.Data;
 
 public class SpringProfileFactory extends RegistryBackedProfileFactory {
@@ -41,6 +43,22 @@ public class SpringProfileFactory extends RegistryBackedProfileFactory {
 
     profile.appendContents(
         yamlToString(deploymentConfiguration.getName(), profile, spectatorConfig));
+
+    // Front50 contains persistent storage configuration under the spinnaker top level key, so we
+    // add extensibility configuration for Front50 in Front50ProfileFactory
+    if (this.getClass() != Front50ProfileFactory.class) {
+      Map<String, Object> spinnakerYaml = new LinkedHashMap<>();
+      Map<String, Object> extensibilityYaml = new LinkedHashMap<>();
+      Map<String, Object> extensibilityContents =
+          deploymentConfiguration.getSpinnaker().getExtensibility().toMap();
+      extensibilityContents.put(
+          "plugins-root-path", "/opt/" + this.getArtifact().toString().toLowerCase() + "/plugins");
+      extensibilityYaml.put("extensibility", extensibilityContents);
+      spinnakerYaml.put("spinnaker", extensibilityYaml);
+
+      profile.appendContents(
+          yamlToString(deploymentConfiguration.getName(), profile, spinnakerYaml));
+    }
   }
 
   @Override
