@@ -23,7 +23,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Cis;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notifications;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Pubsubs;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Telemetry;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Stats;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
@@ -94,31 +94,29 @@ public class EchoProfileFactory extends SpringProfileFactory {
             yamlToString(deploymentConfiguration.getName(), profile, new GCBWrapper(gcb)));
       }
     }
-
-    Telemetry telemetry = deploymentConfiguration.getTelemetry();
-    if (telemetry != null) {
+    Stats stats = deploymentConfiguration.getStats();
+    if (stats != null) {
 
       // We don't want to accidentally log any PII that may be stuffed into custom BOM bucket names,
       // so we should only log the version if using our public releases (as indicated by using our
       // public GCS bucket).
-      String telemetryVersion = "custom";
+      String statsVersion = "custom";
       if (gcsEnabled
           && spinconfigBucket.equalsIgnoreCase(ResourceConfig.DEFAULT_HALCONFIG_BUCKET)) {
-        telemetryVersion = deploymentConfiguration.getVersion();
+        statsVersion = deploymentConfiguration.getVersion();
       }
-      telemetry.setSpinnakerVersion(telemetryVersion);
-      telemetry.setDeploymentMethod(deploymentMethod());
+      stats.setSpinnakerVersion(statsVersion);
+      stats.setDeploymentMethod(deploymentMethod());
       profile.appendContents(
-          yamlToString(
-              deploymentConfiguration.getName(), profile, new TelemetryWrapper(telemetry)));
+          yamlToString(deploymentConfiguration.getName(), profile, new TelemetryWrapper(stats)));
     }
 
     profile.appendContents(profile.getBaseContents()).setRequiredFiles(files);
   }
 
-  private Telemetry.DeploymentMethod deploymentMethod() {
-    return new Telemetry.DeploymentMethod()
-        .setType(Telemetry.DeploymentMethod.HALYARD)
+  private Stats.DeploymentMethod deploymentMethod() {
+    return new Stats.DeploymentMethod()
+        .setType(Stats.DeploymentMethod.HALYARD)
         .setVersion(halyardVersion());
   }
 
@@ -154,12 +152,13 @@ public class EchoProfileFactory extends SpringProfileFactory {
     }
   }
 
+  /** Translates Halyard's `Stats` class to Echo's `Telemetry` class */
   @Data
   private static class TelemetryWrapper {
-    private Telemetry telemetry;
+    private Stats telemetry;
 
-    TelemetryWrapper(Telemetry telemetry) {
-      this.telemetry = telemetry;
+    TelemetryWrapper(Stats stats) {
+      this.telemetry = stats;
     }
   }
 }
