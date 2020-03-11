@@ -5,6 +5,7 @@ COPY --from=halyard.compile /compiled_sources/halyard-web/build/install/halyard 
 ENV KUBECTL_RELEASE=1.14.10
 ENV AWS_BINARY_RELEASE_DATE=2019-08-22
 ENV AWS_CLI_VERSION=1.17.9
+ENV AWS_IAM_VERSION=1.14.6
 
 RUN apk --no-cache add --update \
   bash \
@@ -25,7 +26,7 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECT
     chmod +x ./kubectl && \
     mv ./kubectl /usr/local/bin/kubectl
 
-RUN curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/${KUBECTL_RELEASE}/${AWS_BINARY_RELEASE_DATE}/bin/linux/amd64/aws-iam-authenticator && \
+RUN curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/${AWS_IAM_VERSION}/${AWS_BINARY_RELEASE_DATE}/bin/linux/amd64/aws-iam-authenticator && \
   chmod +x ./aws-iam-authenticator && \
   mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator
 
