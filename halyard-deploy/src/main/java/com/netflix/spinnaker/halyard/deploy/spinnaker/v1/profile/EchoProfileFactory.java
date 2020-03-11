@@ -108,7 +108,7 @@ public class EchoProfileFactory extends SpringProfileFactory {
       stats.setSpinnakerVersion(statsVersion);
       stats.setDeploymentMethod(deploymentMethod());
       profile.appendContents(
-          yamlToString(deploymentConfiguration.getName(), profile, new TelemetryWrapper(stats)));
+          yamlToString(deploymentConfiguration.getName(), profile, new StatsWrapper(stats)));
     }
 
     profile.appendContents(profile.getBaseContents()).setRequiredFiles(files);
@@ -152,13 +152,12 @@ public class EchoProfileFactory extends SpringProfileFactory {
     }
   }
 
-  /** Translates Halyard's `Stats` class to Echo's `Telemetry` class */
   @Data
-  private static class TelemetryWrapper {
-    private Stats telemetry;
+  private static class StatsWrapper {
+    private Stats stats;
 
-    TelemetryWrapper(Stats stats) {
-      this.telemetry = stats;
+    StatsWrapper(Stats stats) {
+      this.stats = stats;
     }
   }
 }
