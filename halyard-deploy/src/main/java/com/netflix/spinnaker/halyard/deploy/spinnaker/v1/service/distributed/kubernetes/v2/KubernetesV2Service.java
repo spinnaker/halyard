@@ -95,7 +95,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
   }
 
   default List<String> getReadinessExecCommand(ServiceSettings settings) {
-    ArrayList<String> execCommandList = settings.getKubernetes().getCustomHealthCheckExecCommands();
+    List<String> execCommandList = settings.getKubernetes().getCustomHealthCheckExecCommands();
     if ( execCommandList == null || execCommandList.isEmpty() ) {
         execCommandList = Arrays.asList(
                 "wget",
