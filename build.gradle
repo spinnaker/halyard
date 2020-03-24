@@ -16,7 +16,7 @@
 
 buildscript {
   ext {
-    clouddriverVersion = "5.47.1"
+    clouddriverVersion = "5.55.1"
     front50Version = "2.15.0"
     fiatVersion = "1.13.1"
   }
