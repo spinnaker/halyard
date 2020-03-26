@@ -49,6 +49,11 @@ public class Front50ProfileFactory extends SpringProfileFactory {
   }
 
   @Override
+  public Boolean addExtensibilityConfigs() {
+    return false;
+  }
+
+  @Override
   public void setProfile(
       Profile profile,
       DeploymentConfiguration deploymentConfiguration,

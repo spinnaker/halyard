@@ -44,9 +44,7 @@ public class SpringProfileFactory extends RegistryBackedProfileFactory {
     profile.appendContents(
         yamlToString(deploymentConfiguration.getName(), profile, spectatorConfig));
 
-    // Front50 contains persistent storage configuration under the spinnaker top level key, so we
-    // add extensibility configuration for Front50 in Front50ProfileFactory
-    if (this.getClass() != Front50ProfileFactory.class) {
+    if (addExtensibilityConfigs()) {
       Map<String, Object> spinnakerYaml = new LinkedHashMap<>();
       Map<String, Object> extensibilityYaml = new LinkedHashMap<>();
       Map<String, Object> extensibilityContents =
@@ -59,6 +57,10 @@ public class SpringProfileFactory extends RegistryBackedProfileFactory {
       profile.appendContents(
           yamlToString(deploymentConfiguration.getName(), profile, spinnakerYaml));
     }
+  }
+
+  public Boolean addExtensibilityConfigs() {
+    return true;
   }
 
   @Override
