@@ -59,7 +59,7 @@ public class SpringProfileFactory extends RegistryBackedProfileFactory {
     }
   }
 
-  public Boolean addExtensibilityConfigs() {
+  protected boolean addExtensibilityConfigs() {
     return true;
   }
 

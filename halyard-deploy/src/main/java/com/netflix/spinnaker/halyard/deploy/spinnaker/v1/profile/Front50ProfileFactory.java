@@ -49,7 +49,7 @@ public class Front50ProfileFactory extends SpringProfileFactory {
   }
 
   @Override
-  public Boolean addExtensibilityConfigs() {
+  protected boolean addExtensibilityConfigs() {
     return false;
   }
 
