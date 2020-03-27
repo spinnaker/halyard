@@ -718,6 +718,13 @@ public interface DaemonService {
       @Path("ciName") String ciName,
       @Query("validate") boolean validate);
 
+  @PUT("/v1/config/deployments/{deploymentName}/ci/{ciName}/")
+  DaemonTask<Halconfig, Void> setCi(
+      @Path("deploymentName") String deploymentName,
+      @Path("ciName") String ciName,
+      @Query("validate") boolean validate,
+      @Body Ci ci);
+
   @PUT("/v1/config/deployments/{deploymentName}/ci/{ciName}/enabled/")
   DaemonTask<Halconfig, Void> setCiEnabled(
       @Path("deploymentName") String deploymentName,
@@ -958,18 +965,18 @@ public interface DaemonService {
       @Path("repositoryName") String pluginRepositoryName,
       @Query("validate") boolean validate);
 
-  @GET("/v1/config/deployments/{deploymentName}/telemetry/")
-  DaemonTask<Halconfig, Object> getTelemetry(
+  @GET("/v1/config/deployments/{deploymentName}/stats/")
+  DaemonTask<Halconfig, Object> getStats(
       @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
 
-  @PUT("/v1/config/deployments/{deploymentName}/telemetry/")
-  DaemonTask<Halconfig, Void> setTelemetry(
+  @PUT("/v1/config/deployments/{deploymentName}/stats/")
+  DaemonTask<Halconfig, Void> setStats(
       @Path("deploymentName") String deploymentName,
       @Query("validate") boolean validate,
-      @Body Telemetry telemetry);
+      @Body Stats stats);
 
-  @PUT("/v1/config/deployments/{deploymentName}/telemetry/enabled/")
-  DaemonTask<Halconfig, Void> setTelemetryEnabled(
+  @PUT("/v1/config/deployments/{deploymentName}/stats/enabled/")
+  DaemonTask<Halconfig, Void> setStatsEnabled(
       @Path("deploymentName") String deploymentName,
       @Query("validate") boolean validate,
       @Body boolean enabled);
