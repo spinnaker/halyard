@@ -136,7 +136,8 @@ public class DeploymentEnvironment extends Node {
   private Map<String, List<Toleration>> tolerations = new HashMap<>();
   private Map<String, String> nodeSelectors = new HashMap<>();
   private GitConfig gitConfig = new GitConfig();
-  private LivenessProbeConfig livenessProbeConfig = new LivenessProbeConfig();
+  private K8SProbeConfig livenessProbeConfig = new K8SProbeConfig();
+  private K8SProbeConfig readinessProbeConfig = new K8SProbeConfig();
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.10.0",
@@ -167,8 +168,12 @@ public class DeploymentEnvironment extends Node {
   }
 
   @Data
-  public static class LivenessProbeConfig {
+  public static class K8SProbeConfig {
     boolean enabled;
     Integer initialDelaySeconds;
+    Integer periodSeconds;
+    Integer timeoutSeconds;
+    Integer successThreshold;
+    Integer failureThreshold;
   }
 }

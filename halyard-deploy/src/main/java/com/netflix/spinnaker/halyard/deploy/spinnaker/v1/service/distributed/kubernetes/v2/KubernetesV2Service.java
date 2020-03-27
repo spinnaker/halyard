@@ -61,6 +61,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import org.apache.commons.lang3.StringUtils;
 
 public interface KubernetesV2Service<T> extends HasServiceSettings<T>, KubernetesService {
@@ -410,16 +411,17 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
     container.addBinding("port", port.toString());
     container.addBinding("volumeMounts", volumeMounts);
 
-    TemplatedResource readinessProbe = getProbe(settings, null);
+    DeploymentEnvironment.K8SProbeConfig readinessProbeConfig =
+        deploymentEnvironment.getReadinessProbeConfig();
+    TemplatedResource readinessProbe = getProbe(settings, readinessProbeConfig);
     container.addBinding("readinessProbe", readinessProbe.toString());
 
-    DeploymentEnvironment.LivenessProbeConfig livenessProbeConfig =
+    DeploymentEnvironment.K8SProbeConfig livenessProbeConfig =
         deploymentEnvironment.getLivenessProbeConfig();
     if (livenessProbeConfig != null
         && livenessProbeConfig.isEnabled()
         && livenessProbeConfig.getInitialDelaySeconds() != null) {
-      TemplatedResource livenessProbe =
-          getProbe(settings, livenessProbeConfig.getInitialDelaySeconds());
+      TemplatedResource livenessProbe = getProbe(settings, livenessProbeConfig);
       container.addBinding("livenessProbe", livenessProbe.toString());
     }
 
@@ -430,7 +432,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
     return container.toString();
   }
 
-  default TemplatedResource getProbe(ServiceSettings settings, Integer initialDelaySeconds) {
+  default TemplatedResource getProbe(
+      ServiceSettings settings, @Nonnull DeploymentEnvironment.K8SProbeConfig probeConfig) {
     TemplatedResource probe;
     if (StringUtils.isEmpty(settings.getHealthEndpoint())
         || settings.getKubernetes().getUseTcpProbe()) {
@@ -445,7 +448,13 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
       probe.addBinding("path", settings.getHealthEndpoint());
       probe.addBinding("scheme", settings.getScheme().toUpperCase());
     }
-    probe.addBinding("initialDelaySeconds", initialDelaySeconds);
+
+    probe.addBinding("initialDelaySeconds", probeConfig.getInitialDelaySeconds());
+    probe.addBinding("periodSeconds", probeConfig.getPeriodSeconds());
+    probe.addBinding("timeoutSeconds", probeConfig.getTimeoutSeconds());
+    probe.addBinding("successThreshold", probeConfig.getSuccessThreshold());
+    probe.addBinding("failureThreshold", probeConfig.getFailureThreshold());
+
     return probe;
   }
 

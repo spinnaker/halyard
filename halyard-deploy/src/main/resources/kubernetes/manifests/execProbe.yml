@@ -6,5 +6,9 @@
       {% endfor %}
     ]
   },
-  "initialDelaySeconds": {{ initialDelaySeconds }}
+  "initialDelaySeconds": {{ initialDelaySeconds }},
+  "periodSeconds": {{ periodSeconds }},
+  "timeoutSeconds": {{ timeoutSeconds }},
+  "successThreshold": {{ successThreshold }},
+  "failureThreshold": {{ failureThreshold }}
 }

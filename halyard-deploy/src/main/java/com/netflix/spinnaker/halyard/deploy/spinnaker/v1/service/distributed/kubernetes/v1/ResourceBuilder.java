@@ -80,7 +80,7 @@ class ResourceBuilder {
     ProbeBuilder readinessProbeBuilder = buildProbeBuilder(port, scheme, healthEndpoint, null);
     ProbeBuilder livenessProbeBuilder = null;
 
-    DeploymentEnvironment.LivenessProbeConfig livenessProbeConfig =
+    DeploymentEnvironment.K8SProbeConfig livenessProbeConfig =
         deploymentEnvironment.getLivenessProbeConfig();
     if (livenessProbeConfig != null
         && livenessProbeConfig.isEnabled()
