@@ -66,7 +66,7 @@ public class Front50ProfileFactory extends SpringProfileFactory {
     }
 
     Map<String, Object> spinnakerYaml =
-        spinnakerVersionSupportsPlugins(deploymentConfiguration)
+        spinnakerVersionSupportsPlugins(deploymentConfiguration.getVersion())
             ? getSpinnakerYaml(deploymentConfiguration)
             : new LinkedHashMap<>();
     List<String> files = backupRequiredFiles(persistentStorage, deploymentConfiguration.getName());
