@@ -74,15 +74,23 @@ public class SpringProfileFactory extends RegistryBackedProfileFactory {
   protected boolean spinnakerVersionSupportsPlugins(String version) {
     String[] versionParts = version.split("-");
     if (versionParts.length == 1) {
-      return Versions.greaterThanEqual(version, "1.19.4");
+      return Versions.greaterThanEqual(version, concreteReleaseWithPlugins());
     } else if (versionParts[0].equals("master")) {
       return pluginsDateCheck(versionParts[1]);
     } else if (versionParts[0].equals("release")
         && versionParts.length >= 3
-        && Versions.greaterThanEqual(versionParts[1].replace("x", "0"), "1.19.0")) {
+        && Versions.greaterThanEqual(versionParts[1].replace("x", "0"), baseReleaseWithPlugins())) {
       return pluginsDateCheck(versionParts[2]);
     }
     return false;
+  }
+
+  protected String baseReleaseWithPlugins() {
+    return "1.19.0";
+  }
+
+  protected String concreteReleaseWithPlugins() {
+    return "1.19.4";
   }
 
   private boolean pluginsDateCheck(String dateOrLatest) {
