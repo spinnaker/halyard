@@ -77,6 +77,11 @@ public class OrcaProfileFactory extends SpringProfileFactory {
     profile.appendContents("pipelineTemplate.enabled: " + pipelineTemplates);
   }
 
+  @Override
+  protected String concreteReleaseWithPlugins() {
+    return "1.19.0";
+  }
+
   @Data
   @RequiredArgsConstructor
   private static class WebhookWrapper {

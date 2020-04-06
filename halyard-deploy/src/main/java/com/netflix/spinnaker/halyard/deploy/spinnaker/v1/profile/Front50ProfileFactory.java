@@ -29,6 +29,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerServic
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class Front50ProfileFactory extends SpringProfileFactory {
   }
 
   @Override
-  protected boolean addExtensibilityConfigs() {
+  protected boolean addExtensibilityConfigs(DeploymentConfiguration deploymentConfiguration) {
     return false;
   }
 
@@ -64,7 +65,10 @@ public class Front50ProfileFactory extends SpringProfileFactory {
       throw new HalException(Problem.Severity.FATAL, "No persistent storage type was configured.");
     }
 
-    Map<String, Object> spinnakerYaml = deploymentConfiguration.getSpinnaker().toMap();
+    Map<String, Object> spinnakerYaml =
+        spinnakerVersionSupportsPlugins(deploymentConfiguration.getVersion())
+            ? getSpinnakerYaml(deploymentConfiguration)
+            : new LinkedHashMap<>();
     List<String> files = backupRequiredFiles(persistentStorage, deploymentConfiguration.getName());
 
     NodeIterator children = persistentStorage.getChildren();
