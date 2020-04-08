@@ -31,11 +31,6 @@ public class Spinnaker extends Node {
     return "spinnaker";
   }
 
-  @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeSingletonIterator(extensibility);
-  }
-
   public Map<String, Object> toMap() {
     Map<String, Object> spinnakerYaml = new LinkedHashMap<>();
     spinnakerYaml.put("extensibility", extensibility.toMap());

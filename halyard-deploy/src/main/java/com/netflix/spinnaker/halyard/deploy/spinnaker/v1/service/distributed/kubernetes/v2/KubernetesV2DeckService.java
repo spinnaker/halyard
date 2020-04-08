@@ -22,10 +22,10 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguratio
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.deck.DeckDockerProfileFactory;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.deck.PluginManifestProfileFactory;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.DeckService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +46,8 @@ public class KubernetesV2DeckService extends DeckService
   @Delegate @Autowired KubernetesV2ServiceDelegate serviceDelegate;
 
   @Autowired DeckDockerProfileFactory deckDockerProfileFactory;
+
+  @Autowired PluginManifestProfileFactory pluginManifestProfileFactory;
 
   private final String settingsPath = "/opt/spinnaker/config";
   private final String settingsJs = "settings.js";
@@ -77,18 +79,17 @@ public class KubernetesV2DeckService extends DeckService
     String path = Paths.get(settingsPath, settingsJs).toString();
     result.add(
         deckDockerProfileFactory.getProfile(settingsJs, path, deploymentConfiguration, endpoints));
+
+    String filename = "plugin-manifest.json";
+    path = Paths.get(settingsPath, filename).toString();
+    result.add(
+        pluginManifestProfileFactory.getProfile(
+            filename, path, deploymentConfiguration, endpoints));
     return result;
   }
 
   @Override
-  public ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
-    KubernetesSharedServiceSettings kubernetesSharedServiceSettings =
-        new KubernetesSharedServiceSettings(deploymentConfiguration);
-    ServiceSettings settings = defaultServiceSettings(deploymentConfiguration);
-    settings
-        .setArtifactId(getArtifactId(deploymentConfiguration))
-        .setLocation(kubernetesSharedServiceSettings.getDeployLocation())
-        .setEnabled(true);
-    return settings;
+  public Optional<String> buildAddress(String namespace) {
+    return Optional.empty();
   }
 }
