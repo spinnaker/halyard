@@ -121,9 +121,6 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
         "features.mineCanary",
         Boolean.toString(features.getMineCanary() != null ? features.getMineCanary() : false));
     bindings.put(
-        "features.travis",
-        Boolean.toString(features.getTravis() != null ? features.getTravis() : false));
-    bindings.put(
         "features.wercker",
         Boolean.toString(features.getWercker() != null ? features.getWercker() : false));
     bindings.put(

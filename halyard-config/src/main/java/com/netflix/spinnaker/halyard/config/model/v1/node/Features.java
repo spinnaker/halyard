@@ -73,7 +73,9 @@ public class Features extends Node {
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.9.0",
-      tooLowMessage = "Travis stage is not available prior to this release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "Travis stage is not available prior to this release.",
+      tooHighMessage = "Travis stage is now enabled by default.")
   private Boolean travis;
 
   @ValidForSpinnakerVersion(

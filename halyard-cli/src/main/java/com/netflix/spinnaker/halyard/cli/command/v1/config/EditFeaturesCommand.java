@@ -64,9 +64,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
       arity = 1)
   private Boolean infrastructureStages = null;
 
-  @Parameter(names = "--travis", description = "Enable the Travis CI stage.", arity = 1)
-  private Boolean travis = null;
-
   @Parameter(names = "--wercker", description = "Enable the Wercker CI stage.", arity = 1)
   private Boolean wercker = null;
 
@@ -100,7 +97,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
     features.setMineCanary(mineCanary != null ? mineCanary : features.getMineCanary());
     features.setInfrastructureStages(
         infrastructureStages != null ? infrastructureStages : features.getInfrastructureStages());
-    features.setTravis(travis != null ? travis : features.getTravis());
     features.setWercker(wercker != null ? wercker : features.getWercker());
     features.setManagedPipelineTemplatesV2UI(
         managedPipelineTemplatesV2UI != null

@@ -6362,7 +6362,6 @@ hal config features edit [parameters]
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--pipeline-templates`: Enable pipeline template support. Read more at [https://github.com/spinnaker/dcd-spec](https://github.com/spinnaker/dcd-spec).
- * `--travis`: Enable the Travis CI stage.
  * `--wercker`: Enable the Wercker CI stage.
 
 
