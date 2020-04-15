@@ -80,7 +80,9 @@ public class Features extends Node {
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.9.0",
-      tooLowMessage = "Wercker stage is not available prior to this release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "Wercker stage is not available prior to this release.",
+      tooHighMessage = "Wercker stage is now enabled by default.")
   private Boolean wercker;
 
   @ValidForSpinnakerVersion(

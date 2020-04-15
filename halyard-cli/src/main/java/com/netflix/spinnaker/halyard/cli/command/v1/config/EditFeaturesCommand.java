@@ -64,9 +64,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
       arity = 1)
   private Boolean infrastructureStages = null;
 
-  @Parameter(names = "--wercker", description = "Enable the Wercker CI stage.", arity = 1)
-  private Boolean wercker = null;
-
   @Parameter(
       names = "--managed-pipeline-templates-v2-ui",
       description = "Enable managed pipeline templates v2 UI support.",
@@ -97,7 +94,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
     features.setMineCanary(mineCanary != null ? mineCanary : features.getMineCanary());
     features.setInfrastructureStages(
         infrastructureStages != null ? infrastructureStages : features.getInfrastructureStages());
-    features.setWercker(wercker != null ? wercker : features.getWercker());
     features.setManagedPipelineTemplatesV2UI(
         managedPipelineTemplatesV2UI != null
             ? managedPipelineTemplatesV2UI
