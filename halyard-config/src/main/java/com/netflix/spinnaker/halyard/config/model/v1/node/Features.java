@@ -92,7 +92,9 @@ public class Features extends Node {
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.13.0",
-      tooLowMessage = "Gremlin is not available prior to this release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "Gremlin stage is not available prior to this release.",
+      tooHighMessage = "Gremlin stage is now enabled by default.")
   private Boolean gremlin;
 
   public boolean isAuth(DeploymentConfiguration deploymentConfiguration) {

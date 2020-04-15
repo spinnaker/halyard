@@ -127,9 +127,6 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
                 ? features.getManagedPipelineTemplatesV2UI()
                 : false));
     bindings.put(
-        "features.gremlin",
-        Boolean.toString(features.getGremlin() != null ? features.getGremlin() : false));
-    bindings.put(
         "features.infrastructureStages",
         Boolean.toString(
             features.getInfrastructureStages() != null
