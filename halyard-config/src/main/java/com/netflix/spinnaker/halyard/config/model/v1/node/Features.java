@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@JsonIgnoreProperties({"jobs"})
+@JsonIgnoreProperties({"jobs", "appengineContainerImageUrlDeployments"})
 public class Features extends Node {
   @Override
   public String getNodeName() {
@@ -46,14 +46,17 @@ public class Features extends Node {
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.5.0",
+      upperBound = "1.20.0",
       tooLowMessage =
-          "Artifacts are not configurable prior to this release. Will be stable at a later release.")
+          "Artifacts are not configurable prior to this release. Will be stable at a later release.",
+      tooHighMessage = "Artifacts are now enabled by default.")
   private Boolean artifacts;
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.15.0",
-      tooLowMessage =
-          "Artifacts rewrite is a rewrite of the artifacts ui. Artifacts are not configurable prior to this release. Will be stable at a later release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "The artifacts rewrite UI is not configurable prior to this release.",
+      tooHighMessage = "The artifacts rewrite UI is now enabled by default.")
   private Boolean artifactsRewrite;
 
   @ValidForSpinnakerVersion(
@@ -61,15 +64,6 @@ public class Features extends Node {
       tooLowMessage =
           "Canary is not configurable prior to this release. Will be stable at a later release.")
   private Boolean mineCanary;
-
-  @ValidForSpinnakerVersion(
-      lowerBound = "1.7.0",
-      upperBound = "1.11.0",
-      tooLowMessage =
-          "Appengine container URL deployments were not supported prior to this version.",
-      tooHighMessage =
-          "Appengine container URL deployments are stable; the feature flag will be removed in a future version of Halyard.")
-  private Boolean appengineContainerImageUrlDeployments;
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.7.0",

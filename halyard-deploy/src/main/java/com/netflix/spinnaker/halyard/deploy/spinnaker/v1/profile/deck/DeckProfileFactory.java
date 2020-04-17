@@ -118,21 +118,8 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
         Boolean.toString(
             features.getPipelineTemplates() != null ? features.getPipelineTemplates() : false));
     bindings.put(
-        "features.artifacts",
-        Boolean.toString(features.getArtifacts() != null ? features.getArtifacts() : false));
-    bindings.put(
-        "features.artifactsRewrite",
-        Boolean.toString(
-            features.getArtifactsRewrite() != null ? features.getArtifactsRewrite() : false));
-    bindings.put(
         "features.mineCanary",
         Boolean.toString(features.getMineCanary() != null ? features.getMineCanary() : false));
-    bindings.put(
-        "features.appengineContainerImageUrlDeployments",
-        Boolean.toString(
-            features.getAppengineContainerImageUrlDeployments() != null
-                ? features.getAppengineContainerImageUrlDeployments()
-                : false));
     bindings.put(
         "features.travis",
         Boolean.toString(features.getTravis() != null ? features.getTravis() : false));
