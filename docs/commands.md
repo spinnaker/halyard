@@ -6356,7 +6356,6 @@ hal config features edit [parameters]
 #### Parameters
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here [https://github.com/Netflix/chaosmonkey/wiki](https://github.com/Netflix/chaosmonkey/wiki).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
  * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.

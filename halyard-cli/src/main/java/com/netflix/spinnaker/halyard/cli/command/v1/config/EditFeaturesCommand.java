@@ -58,13 +58,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   private Boolean mineCanary = null;
 
   @Parameter(
-      names = "--infrastructure-stages",
-      description =
-          "Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.",
-      arity = 1)
-  private Boolean infrastructureStages = null;
-
-  @Parameter(
       names = "--managed-pipeline-templates-v2-ui",
       description = "Enable managed pipeline templates v2 UI support.",
       arity = 1)
@@ -86,8 +79,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
     features.setPipelineTemplates(
         pipelineTemplates != null ? pipelineTemplates : features.getPipelineTemplates());
     features.setMineCanary(mineCanary != null ? mineCanary : features.getMineCanary());
-    features.setInfrastructureStages(
-        infrastructureStages != null ? infrastructureStages : features.getInfrastructureStages());
     features.setManagedPipelineTemplatesV2UI(
         managedPipelineTemplatesV2UI != null
             ? managedPipelineTemplatesV2UI

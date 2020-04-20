@@ -126,12 +126,6 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
             features.getManagedPipelineTemplatesV2UI() != null
                 ? features.getManagedPipelineTemplatesV2UI()
                 : false));
-    bindings.put(
-        "features.infrastructureStages",
-        Boolean.toString(
-            features.getInfrastructureStages() != null
-                ? features.getInfrastructureStages()
-                : false));
 
     // Configure Kubernetes
     KubernetesProvider kubernetesProvider = deploymentConfiguration.getProviders().getKubernetes();
