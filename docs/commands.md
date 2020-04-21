@@ -184,6 +184,7 @@
  * [**hal config ci codebuild account get**](#hal-config-ci-codebuild-account-get)
  * [**hal config ci codebuild account list**](#hal-config-ci-codebuild-account-list)
  * [**hal config ci codebuild disable**](#hal-config-ci-codebuild-disable)
+ * [**hal config ci codebuild edit**](#hal-config-ci-codebuild-edit)
  * [**hal config ci codebuild enable**](#hal-config-ci-codebuild-enable)
  * [**hal config ci concourse**](#hal-config-ci-concourse)
  * [**hal config ci concourse disable**](#hal-config-ci-concourse-disable)
@@ -589,6 +590,10 @@
  * [**hal config security ui ssl disable**](#hal-config-security-ui-ssl-disable)
  * [**hal config security ui ssl edit**](#hal-config-security-ui-ssl-edit)
  * [**hal config security ui ssl enable**](#hal-config-security-ui-ssl-enable)
+ * [**hal config stats**](#hal-config-stats)
+ * [**hal config stats disable**](#hal-config-stats-disable)
+ * [**hal config stats edit**](#hal-config-stats-edit)
+ * [**hal config stats enable**](#hal-config-stats-enable)
  * [**hal config storage**](#hal-config-storage)
  * [**hal config storage azs**](#hal-config-storage-azs)
  * [**hal config storage azs edit**](#hal-config-storage-azs-edit)
@@ -599,10 +604,6 @@
  * [**hal config storage oracle edit**](#hal-config-storage-oracle-edit)
  * [**hal config storage s3**](#hal-config-storage-s3)
  * [**hal config storage s3 edit**](#hal-config-storage-s3-edit)
- * [**hal config telemetry**](#hal-config-telemetry)
- * [**hal config telemetry disable**](#hal-config-telemetry-disable)
- * [**hal config telemetry edit**](#hal-config-telemetry-edit)
- * [**hal config telemetry enable**](#hal-config-telemetry-enable)
  * [**hal config version**](#hal-config-version)
  * [**hal config version edit**](#hal-config-version-edit)
  * [**hal config webhook**](#hal-config-webhook)
@@ -890,8 +891,8 @@ hal config [parameters] [subcommands]
  * `pubsub`: Configure, validate, and view the specified pubsub.
  * `repository`: Configure, validate, and view the specified repository.
  * `security`: Configure Spinnaker's security. This includes external SSL, authentication mechanisms, and authorization policies.
+ * `stats`: Show Spinnaker's stats settings.
  * `storage`: Show Spinnaker's persistent storage configuration.
- * `telemetry`: Show Spinnaker's telemetry settings.
  * `version`: Configure & view the current deployment of Spinnaker's version.
  * `webhook`: Show Spinnaker's webhook configuration.
 
@@ -3702,6 +3703,7 @@ hal config ci codebuild [parameters] [subcommands]
 #### Subcommands
  * `account`: Manage and view Spinnaker configuration for AWS CodeBuild service account.
  * `disable`: Set the codebuild ci as disabled
+ * `edit`: Set CI provider-wide properties for AWS CodeBuild
  * `enable`: Set the codebuild ci as enabled
 
 ---
@@ -3738,8 +3740,8 @@ hal config ci codebuild account add ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
- * `--account-id`: (*Required*) The AWS account ID that will be used to trigger CodeBuild build.
- * `--assume-role`: (*Required*) If set, Halyard will configure a credentials provider that uses AWS Security Token Service to assume the specified role.
+ * `--account-id`: The AWS account ID that will be used to trigger CodeBuild build.
+ * `--assume-role`: If set, Halyard will configure a credentials provider that uses AWS Security Token Service to assume the specified role.
 
 Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
@@ -3828,6 +3830,23 @@ hal config ci codebuild disable [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config ci codebuild edit
+
+Set CI provider-wide properties for AWS CodeBuild
+
+#### Usage
+```
+hal config ci codebuild edit [parameters]
+```
+
+#### Parameters
+ * `--access-key-id`: Your AWS Access Key ID. If not provided, Halyard/Spinnaker will try to find AWS credentials as described at [http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default](http://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html#credentials-default)
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) Your AWS Secret Key.
 
 
 ---
@@ -6335,19 +6354,12 @@ hal config features edit [parameters]
 ```
 
 #### Parameters
- * `--appengine-container-image-url-deployments`: Enable appengine deployments using a container image URL from gcr.io.
- * `--artifacts`: Enable artifact support. Read more at [https://spinnaker.io/reference/artifacts/](https://spinnaker.io/reference/artifacts/)
- * `--artifacts-rewrite`: Enable new artifact support. Read more at [https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/](https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/)
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here [https://github.com/Netflix/chaosmonkey/wiki](https://github.com/Netflix/chaosmonkey/wiki).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--gremlin`: Enable Gremlin fault-injection support.
- * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
  * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--pipeline-templates`: Enable pipeline template support. Read more at [https://github.com/spinnaker/dcd-spec](https://github.com/spinnaker/dcd-spec).
- * `--travis`: Enable the Travis CI stage.
- * `--wercker`: Enable the Wercker CI stage.
 
 
 ---
@@ -11562,6 +11574,71 @@ hal config security ui ssl enable [parameters]
 
 
 ---
+## hal config stats
+
+Show Spinnaker's stats settings.
+
+#### Usage
+```
+hal config stats [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set Spinnaker's stats settings to disabled.
+ * `edit`: Edit Spinnaker's stats settings.
+ * `enable`: Set Spinnaker's stats settings to enabled.
+
+---
+## hal config stats disable
+
+Set Spinnaker's stats settings to disabled.
+
+#### Usage
+```
+hal config stats disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config stats edit
+
+Edit Spinnaker's stats settings.
+
+#### Usage
+```
+hal config stats edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--endpoint`: Set the endpoint for stats metrics.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config stats enable
+
+Set Spinnaker's stats settings to enabled.
+
+#### Usage
+```
+hal config stats enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
 ## hal config storage
 
 Show Spinnaker's persistent storage configuration.
@@ -11752,71 +11829,6 @@ Example: "user/spinnaker" or "role/spinnakerManaged"
  * `--root-folder`: The root folder in the chosen bucket to place all of Spinnaker's persistent data in.
  * `--secret-access-key`: (*Sensitive data* - user will be prompted on standard input) Your AWS Secret Key.
  * `--server-side-encryption`: Use Amazon Server-Side Encryption ('x-amz-server-side-encryption' header). Supports 'AES256' (for Amazon S3-managed encryption keys, equivalent to a header value of 'AES256') and 'AWSKMS' (for AWS KMS-managed encryption keys, equivalent to a header value of 'aws:kms'.
-
-
----
-## hal config telemetry
-
-Show Spinnaker's telemetry settings.
-
-#### Usage
-```
-hal config telemetry [parameters] [subcommands]
-```
-
-#### Parameters
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--no-validate`: (*Default*: `false`) Skip validation.
-
-#### Subcommands
- * `disable`: Set Spinnaker's telemetry settings to disabled.
- * `edit`: Edit Spinnaker's telemetry settings.
- * `enable`: Set Spinnaker's telemetry settings to enabled.
-
----
-## hal config telemetry disable
-
-Set Spinnaker's telemetry settings to disabled.
-
-#### Usage
-```
-hal config telemetry disable [parameters]
-```
-
-#### Parameters
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--no-validate`: (*Default*: `false`) Skip validation.
-
-
----
-## hal config telemetry edit
-
-Edit Spinnaker's telemetry settings.
-
-#### Usage
-```
-hal config telemetry edit [parameters]
-```
-
-#### Parameters
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--endpoint`: Set the endpoint for telemetry metrics.
- * `--no-validate`: (*Default*: `false`) Skip validation.
-
-
----
-## hal config telemetry enable
-
-Set Spinnaker's telemetry settings to enabled.
-
-#### Usage
-```
-hal config telemetry enable [parameters]
-```
-
-#### Parameters
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--no-validate`: (*Default*: `false`) Skip validation.
 
 
 ---

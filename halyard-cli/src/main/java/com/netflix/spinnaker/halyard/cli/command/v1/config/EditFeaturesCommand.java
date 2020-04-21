@@ -50,20 +50,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   private Boolean pipelineTemplates = null;
 
   @Parameter(
-      names = "--artifacts",
-      description =
-          "Enable artifact support. Read more at https://spinnaker.io/reference/artifacts/",
-      arity = 1)
-  private Boolean artifacts = null;
-
-  @Parameter(
-      names = "--artifacts-rewrite",
-      description =
-          "Enable new artifact support. Read more at https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/",
-      arity = 1)
-  private Boolean artifactsRewrite = null;
-
-  @Parameter(
       names = "--mine-canary",
       description =
           "Enable canary support. For this to work, you'll need a canary judge configured. "
@@ -72,35 +58,10 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   private Boolean mineCanary = null;
 
   @Parameter(
-      names = "--infrastructure-stages",
-      description =
-          "Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.",
-      arity = 1)
-  private Boolean infrastructureStages = null;
-
-  @Parameter(
-      names = "--appengine-container-image-url-deployments",
-      description = "Enable appengine deployments using a container image URL from gcr.io.",
-      arity = 1)
-  private Boolean appengineContainerImageUrlDeployments = null;
-
-  @Parameter(names = "--travis", description = "Enable the Travis CI stage.", arity = 1)
-  private Boolean travis = null;
-
-  @Parameter(names = "--wercker", description = "Enable the Wercker CI stage.", arity = 1)
-  private Boolean wercker = null;
-
-  @Parameter(
       names = "--managed-pipeline-templates-v2-ui",
       description = "Enable managed pipeline templates v2 UI support.",
       arity = 1)
   private Boolean managedPipelineTemplatesV2UI = null;
-
-  @Parameter(
-      names = "--gremlin",
-      description = "Enable Gremlin fault-injection support.",
-      arity = 1)
-  private Boolean gremlin = null;
 
   @Override
   protected void executeThis() {
@@ -117,23 +78,11 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
     features.setChaos(chaos != null ? chaos : features.isChaos());
     features.setPipelineTemplates(
         pipelineTemplates != null ? pipelineTemplates : features.getPipelineTemplates());
-    features.setArtifacts(artifacts != null ? artifacts : features.getArtifacts());
-    features.setArtifactsRewrite(
-        artifactsRewrite != null ? artifactsRewrite : features.getArtifactsRewrite());
     features.setMineCanary(mineCanary != null ? mineCanary : features.getMineCanary());
-    features.setInfrastructureStages(
-        infrastructureStages != null ? infrastructureStages : features.getInfrastructureStages());
-    features.setAppengineContainerImageUrlDeployments(
-        appengineContainerImageUrlDeployments != null
-            ? appengineContainerImageUrlDeployments
-            : features.getAppengineContainerImageUrlDeployments());
-    features.setTravis(travis != null ? travis : features.getTravis());
-    features.setWercker(wercker != null ? wercker : features.getWercker());
     features.setManagedPipelineTemplatesV2UI(
         managedPipelineTemplatesV2UI != null
             ? managedPipelineTemplatesV2UI
             : features.getManagedPipelineTemplatesV2UI());
-    features.setGremlin(gremlin != null ? gremlin : features.getGremlin());
 
     if (originalHash == features.hashCode()) {
       AnsiUi.failure("No changes supplied.");

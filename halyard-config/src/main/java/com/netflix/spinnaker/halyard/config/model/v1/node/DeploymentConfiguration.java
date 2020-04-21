@@ -17,6 +17,7 @@
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
@@ -86,11 +87,17 @@ public class DeploymentConfiguration extends Node {
 
   Canary canary = new Canary();
 
+  // For backwards compatibility, removed in spinnaker/halyard#1520
+  @JsonIgnore String plugins = "";
+
   Spinnaker spinnaker = new Spinnaker();
 
   Webhook webhook = new Webhook();
 
-  Telemetry telemetry = new Telemetry();
+  // Remove after 2021-03-01 in favor of Stats.
+  @JsonIgnore Telemetry telemetry = new Telemetry();
+
+  Stats stats = new Stats();
 
   @Override
   public String getNodeName() {
