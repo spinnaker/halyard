@@ -6354,8 +6354,11 @@ hal config features edit [parameters]
 ```
 
 #### Parameters
+ * `--artifacts`: Enable artifact support. Read more at [https://spinnaker.io/reference/artifacts/](https://spinnaker.io/reference/artifacts/)
+ * `--artifacts-rewrite`: Enable new artifact support. Read more at [https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/](https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/)
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here [https://github.com/Netflix/chaosmonkey/wiki](https://github.com/Netflix/chaosmonkey/wiki).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--gremlin`: Enable Gremlin fault-injection support.
  * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
@@ -12132,7 +12135,6 @@ hal plugins add PLUGIN [parameters]
  * `--enabled`: To enable or disable the plugin.
  * `--extensions`: A comma separated list of extensions to enable
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--ui-resource-location`: The location of the plugin's ui resource.
  * `--version`: The plugin version to use
 
 
@@ -12198,7 +12200,6 @@ hal plugins edit PLUGIN [parameters]
  * `--enabled`: To enable or disable the plugin.
  * `--extensions`: A comma separated list of extensions to create
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--ui-resource-location`: The location of the plugin's ui resource.
  * `--version`: The plugin version to use
 
 
