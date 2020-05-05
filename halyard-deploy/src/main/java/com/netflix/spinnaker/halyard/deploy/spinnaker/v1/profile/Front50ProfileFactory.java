@@ -28,7 +28,6 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSetting
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,13 +101,9 @@ public class Front50ProfileFactory extends SpringProfileFactory {
       child = children.getNext();
     }
 
-    Map<String, Object> spinnakerObjectMap = new HashMap<>();
-    spinnakerObjectMap.put("spinnaker", spinnakerYaml);
-
     super.setProfile(profile, deploymentConfiguration, endpoints);
     profile
-        .appendContents(
-            yamlToString(deploymentConfiguration.getName(), profile, spinnakerObjectMap))
+        .appendContents(yamlToString(deploymentConfiguration.getName(), profile, spinnakerYaml))
         .appendContents(profile.getBaseContents())
         .setRequiredFiles(files);
   }
