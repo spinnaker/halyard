@@ -439,7 +439,7 @@ public interface KubernetesV1DistributedService<T>
     readinessProbe.setHandler(readinessHandler);
     container.setReadinessProbe(readinessProbe);
 
-    DeploymentEnvironment.LivenessProbeConfig livenessProbeConfig =
+    DeploymentEnvironment.K8SProbeConfig livenessProbeConfig =
         deploymentEnvironment.getLivenessProbeConfig();
     if (livenessProbeConfig != null
         && livenessProbeConfig.isEnabled()

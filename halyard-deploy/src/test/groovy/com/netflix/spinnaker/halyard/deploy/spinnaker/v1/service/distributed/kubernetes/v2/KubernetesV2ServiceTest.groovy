@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.netflix.spinnaker.halyard.config.config.v1.StrictObjectMapper
 import com.netflix.spinnaker.halyard.config.model.v1.node.AffinityConfig
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment
 import com.netflix.spinnaker.halyard.config.model.v1.node.SidecarConfig
 import com.netflix.spinnaker.halyard.config.model.v1.node.Toleration
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount
@@ -422,13 +423,10 @@ class KubernetesV2ServiceTest extends Specification {
         yaml.contains('''"readinessProbe": {
   "tcpSocket": {
     "port": 8000
-  },
-  "initialDelaySeconds": 
-}
-''')
+  }''')
     }
 
-    def "Readiness probe"() {
+    def "Readiness probe type"() {
         setup:
         def settings = new KubernetesSettings()
         serviceSettings.kubernetes = settings
@@ -443,7 +441,7 @@ class KubernetesV2ServiceTest extends Specification {
         }
 
         when:
-        String yaml = testService.getProbe(serviceSettings, null).toString()
+        String yaml = testService.getProbe(serviceSettings, new DeploymentEnvironment.K8SProbeConfig()).toString()
 
         then:
         yaml.contains(readinessProbeResult)
@@ -455,5 +453,35 @@ class KubernetesV2ServiceTest extends Specification {
         "tcpProbe off"      | false      | null         | "exec"
         "exec probe on"     | null       | true         | "exec"
         "exec probe off"    | null      | false       | "http"
+    }
+
+    def "Readiness probe config"() {
+        setup:
+        def settings = new KubernetesSettings()
+        serviceSettings.kubernetes = settings
+        serviceSettings.port = 8000
+        serviceSettings.scheme = "http"
+        serviceSettings.healthEndpoint = "/health"
+        settings.useTcpProbe = true
+
+        def probeSettings = new DeploymentEnvironment.K8SProbeConfig()
+        probeSettings.enabled = true;
+        probeSettings.failureThreshold = failureThreshold
+        probeSettings.successThreshold = successThreshold
+        probeSettings.initialDelaySeconds = initialDelaySeconds
+        probeSettings.periodSeconds = periodSeconds
+        probeSettings.timeoutSeconds = timeoutSeconds
+
+        when:
+        String yaml = testService.getProbe(serviceSettings, probeSettings).toString()
+
+        then:
+        for(def prop : probeSettings.properties) {
+            yaml.contains("\"${prop.key}\": ${prop.value}")
+        }
+
+        where:
+        description | failureThreshold | successThreshold | initialDelaySeconds | periodSeconds | timeoutSeconds
+        "all set"   | 5                | 2                | 300                 | 10            | 20
     }
 }

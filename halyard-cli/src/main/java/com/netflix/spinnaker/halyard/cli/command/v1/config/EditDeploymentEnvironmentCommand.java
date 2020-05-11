@@ -174,10 +174,10 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
       vault = new DeploymentEnvironment.Vault();
     }
 
-    DeploymentEnvironment.LivenessProbeConfig livenessProbeConfig =
+    DeploymentEnvironment.K8SProbeConfig livenessProbeConfig =
         deploymentEnvironment.getLivenessProbeConfig();
     if (livenessProbeConfig == null) {
-      livenessProbeConfig = new DeploymentEnvironment.LivenessProbeConfig();
+      livenessProbeConfig = new DeploymentEnvironment.K8SProbeConfig();
     }
 
     deploymentEnvironment.setAccountName(
