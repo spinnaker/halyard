@@ -40,7 +40,6 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.security.ui.UiSecurit
 import com.netflix.spinnaker.halyard.cli.command.v1.config.stats.StatsCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.plugins.AddPluginCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.plugins.DeletePluginCommand
-
 import com.netflix.spinnaker.halyard.cli.command.v1.plugins.ListPluginsCommand
 import spock.lang.Specification
 import spock.lang.Unroll
