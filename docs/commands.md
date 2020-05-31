@@ -624,7 +624,6 @@
  * [**hal plugins delete**](#hal-plugins-delete)
  * [**hal plugins disable**](#hal-plugins-disable)
  * [**hal plugins disable-downloading**](#hal-plugins-disable-downloading)
- * [**hal plugins edit**](#hal-plugins-edit)
  * [**hal plugins enable**](#hal-plugins-enable)
  * [**hal plugins enable-downloading**](#hal-plugins-enable-downloading)
  * [**hal plugins list**](#hal-plugins-list)
@@ -6359,13 +6358,10 @@ hal config features edit [parameters]
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here [https://github.com/Netflix/chaosmonkey/wiki](https://github.com/Netflix/chaosmonkey/wiki).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--gremlin`: Enable Gremlin fault-injection support.
- * `--infrastructure-stages`: Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.
  * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--pipeline-templates`: Enable pipeline template support. Read more at [https://github.com/spinnaker/dcd-spec](https://github.com/spinnaker/dcd-spec).
- * `--travis`: Enable the Travis CI stage.
- * `--wercker`: Enable the Wercker CI stage.
 
 
 ---
@@ -8497,7 +8493,7 @@ hal config provider docker-registry account add ACCOUNT [parameters]
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
  * `--repositories`: (*Default*: `[]`) An optional list of repositories to cache images from. If not provided, Spinnaker will attempt to read accessible repositories from the registries _catalog endpoint
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
- * `--sort-tags-by-date`: (*Default*: `false`) Sort tags by creation date.
+ * `--sort-tags-by-date`: (*Default*: `false`) Sort tags by creation date. Not recommended for use with large registries; sorting performance scales poorly due to limitations of the Docker V2 API.
  * `--track-digests`: (*Default*: `false`) Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
  * `--username`: Your docker registry username
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
@@ -8561,7 +8557,7 @@ hal config provider docker-registry account edit ACCOUNT [parameters]
  * `--remove-write-permission`: Remove this permission to from list of write permissions.
  * `--repositories`: (*Default*: `[]`) An optional list of repositories to cache images from. If not provided, Spinnaker will attempt to read accessible repositories from the registries _catalog endpoint
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
- * `--sort-tags-by-date`: Sort tags by creation date.
+ * `--sort-tags-by-date`: Sort tags by creation date. Not recommended for use with large registries; sorting performance scales poorly due to limitations of the Docker V2 API.
  * `--track-digests`: Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
  * `--username`: Your docker registry username
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
@@ -12116,7 +12112,6 @@ hal plugins [parameters] [subcommands]
  * `delete`: Delete a plugin
  * `disable`: Enable or disable all plugins
  * `disable-downloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
- * `edit`: Edit a plugin
  * `enable`: Enable or disable all plugins
  * `enable-downloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
  * `list`: List all plugins
@@ -12138,7 +12133,6 @@ hal plugins add PLUGIN [parameters]
  * `--enabled`: To enable or disable the plugin.
  * `--extensions`: A comma separated list of extensions to enable
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--ui-resource-location`: The location of the plugin's ui resource.
  * `--version`: The plugin version to use
 
 
@@ -12186,26 +12180,6 @@ hal plugins disable-downloading [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
-
-
----
-## hal plugins edit
-
-Edit a plugin
-
-#### Usage
-```
-hal plugins edit PLUGIN [parameters]
-```
-
-#### Parameters
-`PLUGIN`: The name of the plugin to operate on.
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--enabled`: To enable or disable the plugin.
- * `--extensions`: A comma separated list of extensions to create
- * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--ui-resource-location`: The location of the plugin's ui resource.
- * `--version`: The plugin version to use
 
 
 ---
