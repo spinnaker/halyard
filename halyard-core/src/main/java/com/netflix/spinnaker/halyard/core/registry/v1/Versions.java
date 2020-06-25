@@ -71,11 +71,14 @@ public class Versions {
     }
 
     static SemVer fromString(String version) {
+      String versionExpression = version;
       if (isBranch(version)) {
         return null;
+      } else if (isLocal(version)) {
+        versionExpression = fromLocal(version);
       }
 
-      String[] parts = truncateToHyphen(version).split(Pattern.quote("."));
+      String[] parts = truncateToHyphen(versionExpression).split(Pattern.quote("."));
       if (parts.length != 3) {
         throw new IllegalArgumentException("Versions must satisfy the X.Y.Z naming convention");
       }
