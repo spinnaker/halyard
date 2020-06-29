@@ -21,6 +21,7 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.master.AbstractEditMasterCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.travis.TravisMaster;
 import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.node.ValidForSpinnakerVersion;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,6 +61,9 @@ public class TravisEditMasterCommand extends AbstractEditMasterCommand<TravisMas
   @Parameter(
       names = "--filtered-repositories",
       description = TravisCommandProperties.FILTERED_REPOSITORIES_DESCRIPTION)
+  @ValidForSpinnakerVersion(
+      lowerBound = "1.22.0",
+      tooLowMessage = "Filtered repositories is not supported prior to this release.")
   public List<String> filteredRepositories = new ArrayList<>();
 
   @Override
