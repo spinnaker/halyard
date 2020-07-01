@@ -624,7 +624,6 @@
  * [**hal plugins delete**](#hal-plugins-delete)
  * [**hal plugins disable**](#hal-plugins-disable)
  * [**hal plugins disable-downloading**](#hal-plugins-disable-downloading)
- * [**hal plugins edit**](#hal-plugins-edit)
  * [**hal plugins enable**](#hal-plugins-enable)
  * [**hal plugins enable-downloading**](#hal-plugins-enable-downloading)
  * [**hal plugins list**](#hal-plugins-list)
@@ -4418,10 +4417,13 @@ hal config ci travis master add MASTER [parameters]
 `MASTER`: The name of the master to operate on.
  * `--address`: (*Required*) The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
  * `--base-url`: (*Required*) The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--build-result-limit`: Defines how many builds Igor should return when querying for builds for a specific repo. This affects for instance how many builds that will be displayed in the drop down when starting a manual execution of a pipeline. If set too high, the Travis API might return an error for jobs that writes a lot of logs, which is why the default setting is a bit conservative. Defaults to 10. Used for spinnaker >= 1.17.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--filtered-repositories`: (*Default*: `[]`) Defines the list of repositories that will be scraped. Useful if the organization has a lot of repositories and you wish to speed things up by scanning only a subset.
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--number-of-repositories`: How many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
+ * `--number-of-jobs`: Defines how many jobs the Travis integration should retrieve per polling cycle. Defaults to 100. Used for spinnaker >= 1.17.
+ * `--number-of-repositories`: This property is no longer in use for Spinnaker >= 1.17 and the value will be ignored. If you want to limit the number of builds retrieved per polling cycle, you can use the property --number-of-jobs. Set this property only if you use Spinnaker < 1.17. Specifies how many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build master.
 
@@ -4458,10 +4460,13 @@ hal config ci travis master edit MASTER [parameters]
  * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--address`: The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
  * `--base-url`: The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--build-result-limit`: Defines how many builds Igor should return when querying for builds for a specific repo. This affects for instance how many builds that will be displayed in the drop down when starting a manual execution of a pipeline. If set too high, the Travis API might return an error for jobs that writes a lot of logs, which is why the default setting is a bit conservative. Defaults to 10. Used for spinnaker >= 1.17.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--filtered-repositories`: (*Default*: `[]`) Defines the list of repositories that will be scraped. Useful if the organization has a lot of repositories and you wish to speed things up by scanning only a subset.
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--number-of-repositories`: How many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
+ * `--number-of-jobs`: Defines how many jobs the Travis integration should retrieve per polling cycle. Defaults to 100. Used for spinnaker >= 1.17.
+ * `--number-of-repositories`: This property is no longer in use for Spinnaker >= 1.17 and the value will be ignored. If you want to limit the number of builds retrieved per polling cycle, you can use the property --number-of-jobs. Set this property only if you use Spinnaker < 1.17. Specifies how many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
  * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-write-permission`: Remove this permission from the list of write permissions.
@@ -6354,8 +6359,11 @@ hal config features edit [parameters]
 ```
 
 #### Parameters
+ * `--artifacts`: Enable artifact support. Read more at [https://spinnaker.io/reference/artifacts/](https://spinnaker.io/reference/artifacts/)
+ * `--artifacts-rewrite`: Enable new artifact support. Read more at [https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/](https://www.spinnaker.io/reference/artifacts-with-artifactsrewrite/)
  * `--chaos`: Enable Chaos Monkey support. For this to work, you'll need a running Chaos Monkey deployment. Currently, Halyard doesn't configure Chaos Monkey for you; read more instructions here [https://github.com/Netflix/chaosmonkey/wiki](https://github.com/Netflix/chaosmonkey/wiki).
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--gremlin`: Enable Gremlin fault-injection support.
  * `--managed-pipeline-templates-v2-ui`: Enable managed pipeline templates v2 UI support.
  * `--mine-canary`: Enable canary support. For this to work, you'll need a canary judge configured. Currently, Halyard does not configure canary judge for you.
  * `--no-validate`: (*Default*: `false`) Skip validation.
@@ -8491,7 +8499,7 @@ hal config provider docker-registry account add ACCOUNT [parameters]
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
  * `--repositories`: (*Default*: `[]`) An optional list of repositories to cache images from. If not provided, Spinnaker will attempt to read accessible repositories from the registries _catalog endpoint
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
- * `--sort-tags-by-date`: (*Default*: `false`) Sort tags by creation date.
+ * `--sort-tags-by-date`: (*Default*: `false`) Sort tags by creation date. Not recommended for use with large registries; sorting performance scales poorly due to limitations of the Docker V2 API.
  * `--track-digests`: (*Default*: `false`) Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
  * `--username`: Your docker registry username
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
@@ -8555,7 +8563,7 @@ hal config provider docker-registry account edit ACCOUNT [parameters]
  * `--remove-write-permission`: Remove this permission to from list of write permissions.
  * `--repositories`: (*Default*: `[]`) An optional list of repositories to cache images from. If not provided, Spinnaker will attempt to read accessible repositories from the registries _catalog endpoint
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
- * `--sort-tags-by-date`: Sort tags by creation date.
+ * `--sort-tags-by-date`: Sort tags by creation date. Not recommended for use with large registries; sorting performance scales poorly due to limitations of the Docker V2 API.
  * `--track-digests`: Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
  * `--username`: Your docker registry username
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
@@ -10354,8 +10362,8 @@ hal config provider tencentcloud bakery edit [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--secret-id`: (*Required*) The default access key used to communicate with AWS.
- * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with AWS.
+ * `--secret-id`: (*Required*) The default secret id used to communicate with Tencent Cloud.
+ * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with Tencent Cloud.
  * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
 
 
@@ -12110,7 +12118,6 @@ hal plugins [parameters] [subcommands]
  * `delete`: Delete a plugin
  * `disable`: Enable or disable all plugins
  * `disable-downloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
- * `edit`: Edit a plugin
  * `enable`: Enable or disable all plugins
  * `enable-downloading`: Enable or disable the ability for Spinnaker services to download jars for plugins
  * `list`: List all plugins
@@ -12132,7 +12139,6 @@ hal plugins add PLUGIN [parameters]
  * `--enabled`: To enable or disable the plugin.
  * `--extensions`: A comma separated list of extensions to enable
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--ui-resource-location`: The location of the plugin's ui resource.
  * `--version`: The plugin version to use
 
 
@@ -12180,26 +12186,6 @@ hal plugins disable-downloading [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
-
-
----
-## hal plugins edit
-
-Edit a plugin
-
-#### Usage
-```
-hal plugins edit PLUGIN [parameters]
-```
-
-#### Parameters
-`PLUGIN`: The name of the plugin to operate on.
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--enabled`: To enable or disable the plugin.
- * `--extensions`: A comma separated list of extensions to create
- * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--ui-resource-location`: The location of the plugin's ui resource.
- * `--version`: The plugin version to use
 
 
 ---

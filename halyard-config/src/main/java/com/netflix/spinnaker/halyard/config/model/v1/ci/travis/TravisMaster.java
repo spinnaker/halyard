@@ -20,6 +20,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
 import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
+import com.netflix.spinnaker.halyard.config.model.v1.node.ValidForSpinnakerVersion;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -35,4 +37,11 @@ public class TravisMaster extends CIAccount {
   private String baseUrl;
   @Secret private String githubToken;
   private Integer numberOfRepositories;
+  private Integer numberOfJobs;
+  private Integer buildResultLimit;
+
+  @ValidForSpinnakerVersion(
+      lowerBound = "1.22.0",
+      tooLowMessage = "Filtered repositories is not supported prior to this release.")
+  private List<String> filteredRepositories;
 }
