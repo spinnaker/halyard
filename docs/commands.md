@@ -4417,10 +4417,13 @@ hal config ci travis master add MASTER [parameters]
 `MASTER`: The name of the master to operate on.
  * `--address`: (*Required*) The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
  * `--base-url`: (*Required*) The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--build-result-limit`: Defines how many builds Igor should return when querying for builds for a specific repo. This affects for instance how many builds that will be displayed in the drop down when starting a manual execution of a pipeline. If set too high, the Travis API might return an error for jobs that writes a lot of logs, which is why the default setting is a bit conservative. Defaults to 10. Used for spinnaker >= 1.17.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--filtered-repositories`: (*Default*: `[]`) Defines the list of repositories that will be scraped. Useful if the organization has a lot of repositories and you wish to speed things up by scanning only a subset.
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--number-of-repositories`: How many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
+ * `--number-of-jobs`: Defines how many jobs the Travis integration should retrieve per polling cycle. Defaults to 100. Used for spinnaker >= 1.17.
+ * `--number-of-repositories`: This property is no longer in use for Spinnaker >= 1.17 and the value will be ignored. If you want to limit the number of builds retrieved per polling cycle, you can use the property --number-of-jobs. Set this property only if you use Spinnaker < 1.17. Specifies how many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build master.
 
@@ -4457,10 +4460,13 @@ hal config ci travis master edit MASTER [parameters]
  * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--address`: The address of the travis API ([https://api.travis-ci.org](https://api.travis-ci.org)).
  * `--base-url`: The base URL to the travis UI ([https://travis-ci.org](https://travis-ci.org)).
+ * `--build-result-limit`: Defines how many builds Igor should return when querying for builds for a specific repo. This affects for instance how many builds that will be displayed in the drop down when starting a manual execution of a pipeline. If set too high, the Travis API might return an error for jobs that writes a lot of logs, which is why the default setting is a bit conservative. Defaults to 10. Used for spinnaker >= 1.17.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--filtered-repositories`: (*Default*: `[]`) Defines the list of repositories that will be scraped. Useful if the organization has a lot of repositories and you wish to speed things up by scanning only a subset.
  * `--github-token`: (*Sensitive data* - user will be prompted on standard input) The github token to authentiacte against travis with.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--number-of-repositories`: How many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
+ * `--number-of-jobs`: Defines how many jobs the Travis integration should retrieve per polling cycle. Defaults to 100. Used for spinnaker >= 1.17.
+ * `--number-of-repositories`: This property is no longer in use for Spinnaker >= 1.17 and the value will be ignored. If you want to limit the number of builds retrieved per polling cycle, you can use the property --number-of-jobs. Set this property only if you use Spinnaker < 1.17. Specifies how many repositories the travis integration should fetch from the api each time the poller runs. Should be set a bit higher than the expected maximum number of repositories built within the poll interval.
  * `--read-permissions`: A user must have at least one of these roles in order to view this build master or use it as a trigger source.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-write-permission`: Remove this permission from the list of write permissions.
@@ -10356,8 +10362,8 @@ hal config provider tencentcloud bakery edit [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--secret-id`: (*Required*) The default access key used to communicate with AWS.
- * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with AWS.
+ * `--secret-id`: (*Required*) The default secret id used to communicate with Tencent Cloud.
+ * `--secret-key`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The secret key used to communicate with Tencent Cloud.
  * `--template-file`: This is the name of the packer template that will be used to bake images from this base image. The template file must be found in this list [https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer](https://github.com/spinnaker/rosco/tree/master/rosco-web/config/packer), or supplied as described here: [https://spinnaker.io/setup/bakery/](https://spinnaker.io/setup/bakery/)
 
 
