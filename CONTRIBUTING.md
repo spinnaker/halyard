@@ -73,3 +73,4 @@ make
 ## Deprecating Functionality
 
 * [Deprecating a command](/docs/deprecating-commands.md)
+* [Deprecating a field](/docs/deprecating-fields.md)
