@@ -119,7 +119,7 @@ public class SamlValidator extends Validator<Saml> {
     // and we don't want to prevent installing Spinnaker if new algorithms are added to Gate but not
     // to this validator
     String digest = saml.getSignatureDigest();
-    if (digest != null && !KNOWN_DIGEST_ALGORITHMS.contains(digest.toUpperCase())) {
+    if (digest != null && !KNOWN_DIGEST_ALGORITHMS.contains(digest)) {
       p.addProblem(
           Problem.Severity.WARNING,
           String.format(
