@@ -73,7 +73,7 @@ function process_args() {
         ;;
       *)
         echo "ERROR: Unknown argument '$key'"
-        exit -1
+        exit 1
     esac
   done
 }
