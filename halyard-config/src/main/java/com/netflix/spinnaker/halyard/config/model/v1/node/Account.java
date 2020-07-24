@@ -29,7 +29,6 @@ public abstract class Account extends Node implements Cloneable {
   String name;
   String environment;
   List<String> requiredGroupMembership = new ArrayList<>();
-  Provider.ProviderVersion providerVersion = Provider.ProviderVersion.V1;
   Permissions.Builder permissions = new Permissions.Builder();
 
   @Override
