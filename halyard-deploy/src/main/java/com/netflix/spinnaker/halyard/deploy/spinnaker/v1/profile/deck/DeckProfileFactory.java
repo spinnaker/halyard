@@ -21,6 +21,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Features;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Notifications;
+import com.netflix.spinnaker.halyard.config.model.v1.notifications.GithubStatusNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.SlackNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.notifications.TwilioNotification;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.appengine.AppengineProvider;
@@ -31,7 +32,11 @@ import com.netflix.spinnaker.halyard.config.model.v1.providers.cloudfoundry.Clou
 import com.netflix.spinnaker.halyard.config.model.v1.providers.dcos.DCOSProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.ecs.EcsProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.google.GoogleProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud.HuaweiCloudProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesProvider;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.tencentcloud.TencentCloudAccount;
+import com.netflix.spinnaker.halyard.config.model.v1.providers.tencentcloud.TencentCloudProvider;
 import com.netflix.spinnaker.halyard.config.model.v1.security.UiSecurity;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
 import com.netflix.spinnaker.halyard.config.services.v1.VersionsService;
@@ -96,7 +101,7 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     if (validatedVersion.isPresent()) {
       String changelog = validatedVersion.get().getChangelog();
       bindings.put("changelog.gist.id", changelog.substring(changelog.lastIndexOf("/") + 1));
-      bindings.put("changelog.gist.name", "changelog.md");
+      bindings.put("changelog.gist.name", String.format("%s.md", version));
     } else {
       bindings.put("changelog.gist.id", "");
       bindings.put("changelog.gist.name", "");
@@ -105,7 +110,6 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     // Configure feature-flags
     bindings.put("features.auth", Boolean.toString(features.isAuth(deploymentConfiguration)));
     bindings.put("features.chaos", Boolean.toString(features.isChaos()));
-    bindings.put("features.jobs", Boolean.toString(features.isJobs()));
     bindings.put(
         "features.fiat",
         Boolean.toString(deploymentConfiguration.getSecurity().getAuthz().isEnabled()));
@@ -117,20 +121,12 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
         "features.artifacts",
         Boolean.toString(features.getArtifacts() != null ? features.getArtifacts() : false));
     bindings.put(
+        "features.artifactsRewrite",
+        Boolean.toString(
+            features.getArtifactsRewrite() != null ? features.getArtifactsRewrite() : false));
+    bindings.put(
         "features.mineCanary",
         Boolean.toString(features.getMineCanary() != null ? features.getMineCanary() : false));
-    bindings.put(
-        "features.appengineContainerImageUrlDeployments",
-        Boolean.toString(
-            features.getAppengineContainerImageUrlDeployments() != null
-                ? features.getAppengineContainerImageUrlDeployments()
-                : false));
-    bindings.put(
-        "features.travis",
-        Boolean.toString(features.getTravis() != null ? features.getTravis() : false));
-    bindings.put(
-        "features.wercker",
-        Boolean.toString(features.getWercker() != null ? features.getWercker() : false));
     bindings.put(
         "features.managedPipelineTemplatesV2UI",
         Boolean.toString(
@@ -140,12 +136,6 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     bindings.put(
         "features.gremlin",
         Boolean.toString(features.getGremlin() != null ? features.getGremlin() : false));
-    bindings.put(
-        "features.infrastructureStages",
-        Boolean.toString(
-            features.getInfrastructureStages() != null
-                ? features.getInfrastructureStages()
-                : false));
 
     // Configure Kubernetes
     KubernetesProvider kubernetesProvider = deploymentConfiguration.getProviders().getKubernetes();
@@ -167,8 +157,6 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     // Configure Appengine
     AppengineProvider appengineProvider = deploymentConfiguration.getProviders().getAppengine();
     bindings.put("appengine.default.account", appengineProvider.getPrimaryAccount());
-    bindings.put(
-        "appengine.enabled", Boolean.toString(appengineProvider.getPrimaryAccount() != null));
 
     // Configure DC/OS
     final DCOSProvider dcosProvider = deploymentConfiguration.getProviders().getDcos();
@@ -198,15 +186,50 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
         deploymentConfiguration.getProviders().getCloudfoundry();
     bindings.put("cloudfoundry.default.account", cloudFoundryProvider.getPrimaryAccount());
 
-    // Configure notifications
-    bindings.put("notifications.enabled", notifications.isEnabled() + "");
+    // Configure HuaweiCloud
+    HuaweiCloudProvider huaweiCloudProvider =
+        deploymentConfiguration.getProviders().getHuaweicloud();
+    bindings.put("huaweicloud.default.account", huaweiCloudProvider.getPrimaryAccount());
+    if (huaweiCloudProvider.getPrimaryAccount() != null) {
+      HuaweiCloudAccount huaweiCloudAccount =
+          (HuaweiCloudAccount)
+              accountService.getProviderAccount(
+                  deploymentConfiguration.getName(),
+                  "huaweicloud",
+                  huaweiCloudProvider.getPrimaryAccount());
+      List<String> regionList = huaweiCloudAccount.getRegions();
+      if (!regionList.isEmpty()) {
+        bindings.put("huaweicloud.default.region", regionList.get(0));
+      }
+    }
 
+    // Configure TencentCloud
+    TencentCloudProvider tencentCloudProvider =
+        deploymentConfiguration.getProviders().getTencentcloud();
+    bindings.put("tencentcloud.default.account", tencentCloudProvider.getPrimaryAccount());
+    if (tencentCloudProvider.getPrimaryAccount() != null) {
+      TencentCloudAccount tencentCloudAccount =
+          (TencentCloudAccount)
+              accountService.getProviderAccount(
+                  deploymentConfiguration.getName(),
+                  "tencentcloud",
+                  tencentCloudProvider.getPrimaryAccount());
+      List<String> regionList = tencentCloudAccount.getRegions();
+      if (!regionList.isEmpty() && regionList.get(0) != null) {
+        bindings.put("tencentcloud.default.region", regionList.get(0));
+      }
+    }
+
+    // Configure notifications
     SlackNotification slackNotification = notifications.getSlack();
     bindings.put("notifications.slack.enabled", slackNotification.isEnabled() + "");
     bindings.put("notifications.slack.botName", slackNotification.getBotName());
 
     TwilioNotification twilioNotification = notifications.getTwilio();
     bindings.put("notifications.twilio.enabled", twilioNotification.isEnabled() + "");
+
+    GithubStatusNotification githubStatusNotification = notifications.getGithubStatus();
+    bindings.put("notifications.github-status.enabled", githubStatusNotification.isEnabled() + "");
 
     // Configure canary
     Canary canary = deploymentConfiguration.getCanary();

@@ -21,6 +21,7 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.aws.CanaryAwsCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.datadog.CanaryDatadogCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.google.CanaryGoogleCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.newrelic.CanaryNewRelicCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.prometheus.CanaryPrometheusCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.canary.signalfx.CanarySignalfxCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
@@ -48,6 +49,7 @@ public class CanaryCommand extends AbstractConfigCommand {
     registerSubcommand(new CanaryDatadogCommand());
     registerSubcommand(new CanarySignalfxCommand());
     registerSubcommand(new CanaryAwsCommand());
+    registerSubcommand(new CanaryNewRelicCommand());
   }
 
   @Override

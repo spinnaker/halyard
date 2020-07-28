@@ -21,6 +21,8 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.master.AbstractAddMasterCommand;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.travis.TravisMaster;
 import com.netflix.spinnaker.halyard.config.model.v1.node.CIAccount;
+import java.util.ArrayList;
+import java.util.List;
 
 @Parameters(separators = "=")
 public class TravisAddMasterCommand extends AbstractAddMasterCommand {
@@ -51,6 +53,21 @@ public class TravisAddMasterCommand extends AbstractAddMasterCommand {
       description = TravisCommandProperties.NUMBER_OF_REPOSITORIES_DESCRIPTION)
   public Integer numberOfRepositories;
 
+  @Parameter(
+      names = "--number-of-jobs",
+      description = TravisCommandProperties.NUMBER_OF_JOBS_DESCRIPTION)
+  public Integer numberOfJobs;
+
+  @Parameter(
+      names = "--build-result-limit",
+      description = TravisCommandProperties.BUILD_RESULT_LIMIT_DESCRIPTION)
+  public Integer buildResultLimit;
+
+  @Parameter(
+      names = "--filtered-repositories",
+      description = TravisCommandProperties.FILTERED_REPOSITORIES_DESCRIPTION)
+  public List<String> filteredRepositories = new ArrayList<>();
+
   @Override
   protected CIAccount buildMaster(String masterName) {
     TravisMaster master = (TravisMaster) new TravisMaster().setName(masterName);
@@ -58,7 +75,10 @@ public class TravisAddMasterCommand extends AbstractAddMasterCommand {
         .setAddress(address)
         .setBaseUrl(baseUrl)
         .setGithubToken(githubToken)
-        .setNumberOfRepositories(numberOfRepositories);
+        .setNumberOfRepositories(numberOfRepositories)
+        .setNumberOfJobs(numberOfJobs)
+        .setBuildResultLimit(buildResultLimit)
+        .setFilteredRepositories(filteredRepositories);
 
     return master;
   }

@@ -8,10 +8,12 @@ dependencies {
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-aws:$clouddriverVersion"
   implementation 'com.netflix.spinnaker.kork:kork-secrets'
   implementation 'com.netflix.spinnaker.kork:kork-secrets-aws'
+  implementation 'com.netflix.spinnaker.kork:kork-secrets-gcp'
   implementation 'com.google.apis:google-api-services-storage'
   implementation 'com.google.api.grpc:grpc-google-common-protos:1.0.5'
+  implementation 'com.google.auth:google-auth-library-oauth2-http'
   implementation 'org.apache.commons:commons-exec'
-  implementation 'org.apache.commons:commons-compress:1.14'
+  implementation 'org.apache.commons:commons-compress:1.20'
   implementation 'commons-io:commons-io:2.6'
   implementation 'io.reactivex:rxjava'
   implementation 'com.hubspot.jinjava:jinjava:2.2.3'

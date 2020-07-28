@@ -21,6 +21,7 @@ import com.netflix.spinnaker.halyard.config.config.v1.StrictObjectMapper
 import com.netflix.spinnaker.halyard.config.model.v1.node.AffinityConfig
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration
 import com.netflix.spinnaker.halyard.config.model.v1.node.SidecarConfig
+import com.netflix.spinnaker.halyard.config.model.v1.node.Toleration
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetails
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService
@@ -64,6 +65,7 @@ class KubernetesV2ServiceTest extends Specification {
 
         serviceSettings = new ServiceSettings()
         serviceSettings.env = new HashMap<String, String>()
+        serviceSettings.healthEndpoint = "/health"
 
         config = new GenerateService.ResolvedConfiguration()
         config.runtimeSettings = Stub(SpinnakerRuntimeSettings) {
@@ -372,5 +374,86 @@ class KubernetesV2ServiceTest extends Specification {
 
         then:
         yaml.contains('"podAntiAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"weight":100,"podAffinityTerm":{"labelSelector":{"matchExpressions":[{"key":"test_key","operator":"In","values":["test_value"]}]},"namespaces":["test_namespace"],"topologyKey":"failure-domain.beta.kubernetes.io/zone"}}]}}')
+    }
+
+    def "Can we set PodTolerations"() {
+        setup:
+        def executor = Mock(KubernetesV2Executor)
+        def toleration = new Toleration(
+                key: "test",
+                value: "a",
+                effect: "NoSchedule",
+                operator: Toleration.Operator.Equal
+        )
+
+        details.deploymentConfiguration = new DeploymentConfiguration()
+        details.deploymentConfiguration.deploymentEnvironment.tolerations.put("spin-orca", Collections.singletonList(toleration))
+
+        when:
+        String yaml = testService.getPodSpecYaml(executor, details, config)
+
+        then:
+        yaml.contains('"tolerations": [{"key":"test","operator":"Equal","value":"a","effect":"NoSchedule"}]')
+    }
+
+    def "Can we set ServiceAccountNames"() {
+        setup:
+        def executor = Mock(KubernetesV2Executor)
+        serviceSettings.getKubernetes().serviceAccountName = "customServiceAccount"
+
+        when:
+        String podSpecYaml = testService.getPodSpecYaml(executor, details, config)
+
+        then:
+        podSpecYaml.contains('"serviceAccountName": customServiceAccount')
+    }
+
+    def "Can we use TCP probe"() {
+        setup:
+        def settings = new KubernetesSettings()
+        settings.useTcpProbe = true
+        serviceSettings.kubernetes = settings
+        serviceSettings.port = 8000
+
+        when:
+        String yaml = testService.buildContainer("orca", details, serviceSettings, new ArrayList<>(), new HashMap<>())
+
+        then:
+        yaml.contains('''"readinessProbe": {
+  "tcpSocket": {
+    "port": 8000
+  },
+  "initialDelaySeconds": 
+}
+''')
+    }
+
+    def "Readiness probe"() {
+        setup:
+        def settings = new KubernetesSettings()
+        serviceSettings.kubernetes = settings
+        serviceSettings.port = 8000
+        serviceSettings.scheme = "http"
+        serviceSettings.healthEndpoint = "/health"
+        if (tcpProbe != null) {
+            settings.useTcpProbe = tcpProbe
+        }
+        if (execProbe != null) {
+            settings.useExecHealthCheck = execProbe
+        }
+
+        when:
+        String yaml = testService.getProbe(serviceSettings, null).toString()
+
+        then:
+        yaml.contains(readinessProbeResult)
+
+        where:
+        description         | tcpProbe   | execProbe    | readinessProbeResult
+        "default"           | null       | null         | "exec"
+        "tcpProbe on"       | true       | null         | "tcpSocket"
+        "tcpProbe off"      | false      | null         | "exec"
+        "exec probe on"     | null       | true         | "exec"
+        "exec probe off"    | null      | false       | "http"
     }
 }

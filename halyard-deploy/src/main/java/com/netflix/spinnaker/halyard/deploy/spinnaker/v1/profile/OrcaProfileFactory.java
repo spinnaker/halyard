@@ -26,8 +26,10 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.integrations.In
 import java.util.List;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class OrcaProfileFactory extends SpringProfileFactory {
   @Override
@@ -73,6 +75,11 @@ public class OrcaProfileFactory extends SpringProfileFactory {
     profile.appendContents("pipelineTemplates.enabled: " + pipelineTemplates);
     // For backward compatibility
     profile.appendContents("pipelineTemplate.enabled: " + pipelineTemplates);
+  }
+
+  @Override
+  protected String concreteReleaseWithPlugins() {
+    return "1.19.0";
   }
 
   @Data

@@ -16,22 +16,57 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
-import com.netflix.spinnaker.halyard.config.model.v1.util.ValidatingFileReader;
+import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemBuilder;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
+import com.netflix.spinnaker.halyard.config.services.v1.FileService;
+import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
-import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class Validator<T extends Node> {
+
+  private static final String NO_ACCESS_REMEDIATION =
+      "Halyard is running as user "
+          + System.getProperty("user.name")
+          + ". Make sure that user can read the requested file.";
+
   @Autowired protected SecretSessionManager secretSessionManager;
+  @Autowired private FileService fileService;
 
   public abstract void validate(ConfigProblemSetBuilder p, T n);
 
   protected String validatingFileDecrypt(ConfigProblemSetBuilder p, String filePath) {
-    if (EncryptedSecret.isEncryptedSecret(filePath)) {
-      return secretSessionManager.decrypt(filePath);
-    } else {
-      return ValidatingFileReader.contents(p, filePath);
+    byte[] contentBytes = validatingFileDecryptBytes(p, filePath);
+    if (contentBytes != null) {
+      return new String(contentBytes);
+    }
+    return null;
+  }
+
+  protected byte[] validatingFileDecryptBytes(ConfigProblemSetBuilder p, String filePath) {
+    try {
+      return fileService.getFileContentBytes(filePath);
+    } catch (FileNotFoundException e) {
+      buildProblem(p, "Cannot find provided path: " + e.getMessage() + ".", e);
+    } catch (IOException e) {
+      buildProblem(p, "Failed to read path \"" + filePath + "\".", e);
+    }
+    return null;
+  }
+
+  protected Path validatingFileDecryptPath(String filePath) {
+    return fileService.getLocalFilePath(filePath);
+  }
+
+  private void buildProblem(ConfigProblemSetBuilder ps, String message, Exception exception) {
+    ConfigProblemBuilder problemBuilder =
+        ps.addProblem(Problem.Severity.FATAL, message + ": " + exception.getMessage() + ".");
+
+    if (exception.getMessage().contains("denied")) {
+      problemBuilder.setRemediation(NO_ACCESS_REMEDIATION);
     }
   }
 }

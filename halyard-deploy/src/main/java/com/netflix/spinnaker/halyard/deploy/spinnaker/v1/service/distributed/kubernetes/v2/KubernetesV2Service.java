@@ -20,23 +20,19 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.KubernetesUtil;
-import com.netflix.spinnaker.clouddriver.kubernetes.v1.deploy.description.servergroup.KubernetesImageDescription;
 import com.netflix.spinnaker.halyard.config.model.v1.node.AffinityConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.CustomSizing;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.SidecarConfig;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Toleration;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
-import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
 import com.netflix.spinnaker.halyard.core.resource.v1.JinjaJarResource;
 import com.netflix.spinnaker.halyard.core.resource.v1.TemplatedResource;
 import com.netflix.spinnaker.halyard.deploy.deployment.v1.AccountDeploymentDetails;
-import com.netflix.spinnaker.halyard.deploy.services.v1.ArtifactService;
 import com.netflix.spinnaker.halyard.deploy.services.v1.GenerateService;
-import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.Profile;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ConfigSource;
@@ -46,9 +42,9 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerMonitoringDaemonService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.DistributedService.DeployPriority;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.SidecarService;
+import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2Utils.SecretMountPair;
-import io.fabric8.utils.Strings;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -60,21 +56,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 
-public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
+public interface KubernetesV2Service<T> extends HasServiceSettings<T>, KubernetesService {
   String getServiceName();
-
-  String getDockerRegistry(String deploymentName, SpinnakerArtifact artifact);
 
   String getSpinnakerStagingPath(String deploymentName);
 
   String getSpinnakerStagingDependenciesPath(String deploymentName);
-
-  ArtifactService getArtifactService();
 
   ServiceSettings defaultServiceSettings(DeploymentConfiguration deploymentConfiguration);
 
@@ -101,12 +94,20 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
   }
 
   default List<String> getReadinessExecCommand(ServiceSettings settings) {
-    return Arrays.asList(
-        "wget",
-        "--no-check-certificate",
-        "--spider",
-        "-q",
-        settings.getScheme() + "://localhost:" + settings.getPort() + settings.getHealthEndpoint());
+    List<String> execCommandList = settings.getKubernetes().getCustomHealthCheckExecCommands();
+    if (execCommandList == null || execCommandList.isEmpty()) {
+      execCommandList =
+          Arrays.asList(
+              "wget",
+              "--no-check-certificate",
+              "--spider",
+              "-q",
+              settings.getScheme()
+                  + "://localhost:"
+                  + settings.getPort()
+                  + settings.getHealthEndpoint());
+    }
+    return execCommandList;
   }
 
   default boolean hasPreStopCommand() {
@@ -145,6 +146,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     service.addBinding("type", settings.getKubernetes().getServiceType());
     service.addBinding("nodePort", settings.getKubernetes().getNodePort());
     service.addBinding("serviceLabels", settings.getKubernetes().getServiceLabels());
+    service.addBinding("serviceAnnotations", settings.getKubernetes().getServiceAnnotations());
 
     return service.toString();
   }
@@ -261,6 +263,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
         .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
         .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
         .addBinding("affinity", getAffinity(details))
+        .addBinding("tolerations", getTolerations(details))
         .addBinding(
             "volumes", combineVolumes(configSources, settings.getKubernetes(), sidecarConfigs))
         .addBinding("securityContext", settings.getKubernetes().getSecurityContext())
@@ -429,19 +432,18 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
 
   default TemplatedResource getProbe(ServiceSettings settings, Integer initialDelaySeconds) {
     TemplatedResource probe;
-    if (StringUtils.isNotEmpty(settings.getHealthEndpoint())) {
-      if (settings.getKubernetes().getUseExecHealthCheck()) {
-        probe = new JinjaJarResource("/kubernetes/manifests/execProbe.yml");
-        probe.addBinding("command", getReadinessExecCommand(settings));
-      } else {
-        probe = new JinjaJarResource("/kubernetes/manifests/httpProbe.yml");
-        probe.addBinding("port", settings.getPort());
-        probe.addBinding("path", settings.getHealthEndpoint());
-        probe.addBinding("scheme", settings.getScheme().toUpperCase());
-      }
-    } else {
+    if (StringUtils.isEmpty(settings.getHealthEndpoint())
+        || settings.getKubernetes().getUseTcpProbe()) {
       probe = new JinjaJarResource("/kubernetes/manifests/tcpSocketProbe.yml");
       probe.addBinding("port", settings.getPort());
+    } else if (settings.getKubernetes().getUseExecHealthCheck()) {
+      probe = new JinjaJarResource("/kubernetes/manifests/execProbe.yml");
+      probe.addBinding("command", getReadinessExecCommand(settings));
+    } else {
+      probe = new JinjaJarResource("/kubernetes/manifests/httpProbe.yml");
+      probe.addBinding("port", settings.getPort());
+      probe.addBinding("path", settings.getHealthEndpoint());
+      probe.addBinding("scheme", settings.getScheme().toUpperCase());
     }
     probe.addBinding("initialDelaySeconds", initialDelaySeconds);
     return probe;
@@ -681,6 +683,31 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     }
   }
 
+  default String getTolerations(AccountDeploymentDetails<KubernetesAccount> details) {
+    List<Toleration> toleration =
+        details
+            .getDeploymentConfiguration()
+            .getDeploymentEnvironment()
+            .getTolerations()
+            .getOrDefault(getService().getServiceName(), new ArrayList<>());
+
+    if (toleration.isEmpty()) {
+      toleration =
+          details
+              .getDeploymentConfiguration()
+              .getDeploymentEnvironment()
+              .getTolerations()
+              .getOrDefault(getService().getBaseCanonicalName(), new ArrayList<>());
+    }
+
+    try {
+      return getObjectMapper().writeValueAsString(toleration);
+    } catch (JsonProcessingException e) {
+      throw new HalException(
+          Problem.Severity.FATAL, "Invalid tolerations format: " + e.getMessage(), e);
+    }
+  }
+
   default List<String> getInitContainers(AccountDeploymentDetails<KubernetesAccount> details) {
     List<Map> initContainersConfig =
         details
@@ -733,22 +760,8 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     return result;
   }
 
-  default String getArtifactId(String deploymentName) {
-    String artifactName = getArtifact().getName();
-    String version = getArtifactService().getArtifactVersion(deploymentName, getArtifact());
-    version = Versions.isLocal(version) ? Versions.fromLocal(version) : version;
-
-    KubernetesImageDescription image =
-        KubernetesImageDescription.builder()
-            .registry(getDockerRegistry(deploymentName, getArtifact()))
-            .repository(artifactName)
-            .tag(version)
-            .build();
-    return KubernetesUtil.getImageId(image);
-  }
-
-  default String buildAddress(String namespace) {
-    return Strings.join(".", getServiceName(), namespace);
+  default Optional<String> buildAddress(String namespace) {
+    return Optional.of(String.join(".", getServiceName(), namespace));
   }
 
   default ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
@@ -757,17 +770,13 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T> {
     ServiceSettings settings = defaultServiceSettings(deploymentConfiguration);
     String location = kubernetesSharedServiceSettings.getDeployLocation();
     settings
-        .setAddress(buildAddress(location))
-        .setArtifactId(getArtifactId(deploymentConfiguration.getName()))
+        .setArtifactId(getArtifactId(deploymentConfiguration))
         .setLocation(location)
         .setEnabled(isEnabled(deploymentConfiguration));
+    buildAddress(location).ifPresent(settings::setAddress);
     if (runsOnJvm()) {
       // Use half the available memory allocated to the container for the JVM heap
-      settings
-          .getEnv()
-          .put(
-              "JAVA_OPTS",
-              "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -XX:MaxRAMFraction=2");
+      settings.getEnv().put("JAVA_OPTS", "-XX:MaxRAMPercentage=50.0");
     }
     return settings;
   }

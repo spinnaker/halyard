@@ -20,11 +20,13 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.converter.DeploymentTypeConverter;
+import com.netflix.spinnaker.halyard.cli.command.v1.converter.ImageVariantConverter;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiUi;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment.DeploymentType;
+import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentEnvironment.ImageVariant;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -102,6 +104,18 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
           "This is the location spinnaker will be deployed to. When deploying to "
               + "Kubernetes, use this flag to specify the namespace to deploy to (defaults to 'spinnaker')")
   private String location;
+
+  @Parameter(
+      names = "--image-variant",
+      description =
+          "The container image variant type to use when deploying a distributed installation of Spinnaker.\n"
+              + "\tslim: Based on an Alpine image\n"
+              + "\tubuntu: Based on Canonical's ubuntu:bionic image.\n"
+              + "\tjava8: A variant of slim that uses the Java 8 runtime\n"
+              + "\tubuntu-java8: A variant of ubuntu that uses the Java 8 runtime\n"
+              + "Default value: slim",
+      converter = ImageVariantConverter.class)
+  private ImageVariant imageVariant;
 
   @Parameter(
       names = "--git-upstream-user",
@@ -192,6 +206,9 @@ public class EditDeploymentEnvironmentCommand extends AbstractConfigCommand {
 
     deploymentEnvironment.setLocation(
         isSet(location) ? location : deploymentEnvironment.getLocation());
+
+    deploymentEnvironment.setImageVariant(
+        isSet(imageVariant) ? imageVariant : deploymentEnvironment.getImageVariant());
 
     if (originalHash == deploymentEnvironment.hashCode()) {
       AnsiUi.failure("No changes supplied.");

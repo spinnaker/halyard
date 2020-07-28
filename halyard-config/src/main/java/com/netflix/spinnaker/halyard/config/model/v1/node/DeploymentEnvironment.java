@@ -91,9 +91,38 @@ public class DeploymentEnvironment extends Node {
     }
   }
 
+  public enum ImageVariant {
+    SLIM("Based on an Alpine image"),
+    UBUNTU("Based on Canonical's ubuntu:bionic image"),
+    JAVA8("A variant of SLIM that uses the Java 8 runtime"),
+    UBUNTU_JAVA8("A variant of UBUNTU that uses the Java 8 runtime");
+
+    @Getter final String description;
+
+    ImageVariant(String description) {
+      this.description = description;
+    }
+
+    public static ImageVariant fromString(String name) {
+      try {
+        return ImageVariant.valueOf(name.toUpperCase().replace('-', '_'));
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException(
+            String.format(
+                "ImageVariant \"%s\" is not a valid choice. The options are: %s",
+                name, Arrays.toString(ImageVariant.values())));
+      }
+    }
+
+    public String getContainerSuffix() {
+      return name().toLowerCase().replace("_", "-");
+    }
+  }
+
   private Size size = Size.SMALL;
   private DeploymentType type = DeploymentType.LocalDebian;
   private String accountName;
+  private ImageVariant imageVariant = ImageVariant.SLIM;
   private Boolean bootstrapOnly;
   private Boolean updateVersions = true;
   private Consul consul = new Consul();
@@ -104,6 +133,7 @@ public class DeploymentEnvironment extends Node {
   private Map<String, List<Map>> initContainers = new HashMap<>();
   private Map<String, List<Map>> hostAliases = new HashMap<>();
   private Map<String, AffinityConfig> affinity = new HashMap<>();
+  private Map<String, List<Toleration>> tolerations = new HashMap<>();
   private Map<String, String> nodeSelectors = new HashMap<>();
   private GitConfig gitConfig = new GitConfig();
   private LivenessProbeConfig livenessProbeConfig = new LivenessProbeConfig();

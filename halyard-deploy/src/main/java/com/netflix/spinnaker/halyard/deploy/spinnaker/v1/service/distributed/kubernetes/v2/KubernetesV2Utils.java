@@ -21,16 +21,17 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.ku
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.kubernetes.KubernetesAccount;
+import com.netflix.spinnaker.halyard.config.services.v1.FileService;
 import com.netflix.spinnaker.halyard.core.error.v1.HalException;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
 import com.netflix.spinnaker.halyard.core.resource.v1.JinjaJarResource;
 import com.netflix.spinnaker.halyard.core.resource.v1.TemplatedResource;
 import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
-import com.netflix.spinnaker.kork.configserver.ConfigFileService;
-import com.netflix.spinnaker.kork.secrets.EncryptedSecret;
+import com.netflix.spinnaker.kork.configserver.CloudConfigResourceService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -51,12 +52,17 @@ public class KubernetesV2Utils {
 
   private final SecretSessionManager secretSessionManager;
 
-  private final ConfigFileService configFileService;
+  private final CloudConfigResourceService cloudConfigResourceService;
+
+  private final FileService fileService;
 
   public KubernetesV2Utils(
-      SecretSessionManager secretSessionManager, ConfigFileService configFileService) {
+      SecretSessionManager secretSessionManager,
+      CloudConfigResourceService cloudConfigResourceService,
+      FileService fileService) {
     this.secretSessionManager = secretSessionManager;
-    this.configFileService = configFileService;
+    this.cloudConfigResourceService = cloudConfigResourceService;
+    this.fileService = fileService;
   }
 
   public List<String> kubectlPrefix(KubernetesAccount account) {
@@ -73,16 +79,10 @@ public class KubernetesV2Utils {
       command.add(context);
     }
 
-    String kubeconfig;
-    String kubeconfigFile = account.getKubeconfigFile();
-    if (EncryptedSecret.isEncryptedSecret(kubeconfigFile)) {
-      kubeconfig = secretSessionManager.decryptAsFile(kubeconfigFile);
-    } else {
-      kubeconfig = configFileService.getLocalPath(kubeconfigFile);
-    }
-    if (kubeconfig != null && !kubeconfig.isEmpty()) {
+    Path kubeconfig = fileService.getLocalFilePath(account.getKubeconfigFile());
+    if (kubeconfig != null) {
       command.add("--kubeconfig");
-      command.add(kubeconfig);
+      command.add(kubeconfig.toString());
     }
 
     return command;

@@ -21,6 +21,8 @@ import com.netflix.spinnaker.halyard.config.model.v1.canary.AbstractCanaryAccoun
 import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaService;
 import com.netflix.spinnaker.halyard.config.model.v1.node.*;
+import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
+import com.netflix.spinnaker.halyard.config.model.v1.plugins.PluginRepository;
 import com.netflix.spinnaker.halyard.config.model.v1.security.*;
 import com.netflix.spinnaker.halyard.config.model.v1.webook.WebhookTrust;
 import com.netflix.spinnaker.halyard.core.DaemonOptions;
@@ -99,6 +101,7 @@ public interface DaemonService {
       @Query("deployOptions") List<DeployOption> deployOptions,
       @Query("serviceNames") List<String> serviceNames,
       @Query("excludeServiceNames") List<String> excludeServiceNames,
+      @Query("waitForCompletionTimeoutMinutes") Integer waitForCompletionTimeoutMinutes,
       @Body String _ignore);
 
   @POST("/v1/config/deployments/{deploymentName}/prep/")
@@ -715,6 +718,13 @@ public interface DaemonService {
       @Path("ciName") String ciName,
       @Query("validate") boolean validate);
 
+  @PUT("/v1/config/deployments/{deploymentName}/ci/{ciName}/")
+  DaemonTask<Halconfig, Void> setCi(
+      @Path("deploymentName") String deploymentName,
+      @Path("ciName") String ciName,
+      @Query("validate") boolean validate,
+      @Body Ci ci);
+
   @PUT("/v1/config/deployments/{deploymentName}/ci/{ciName}/enabled/")
   DaemonTask<Halconfig, Void> setCiEnabled(
       @Path("deploymentName") String deploymentName,
@@ -884,6 +894,92 @@ public interface DaemonService {
       @Path("deploymentName") String deploymentName,
       @Path("templateName") String templateName,
       @Query("validate") boolean validate);
+
+  @POST("/v1/config/deployments/{deploymentName}/plugins/")
+  DaemonTask<Halconfig, Void> addPlugin(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body Plugin plugin);
+
+  @GET("/v1/config/deployments/{deploymentName}/plugins/")
+  DaemonTask<Halconfig, Object> getPlugins(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
+  @GET("/v1/config/deployments/{deploymentName}/plugins/{pluginName}/")
+  DaemonTask<Halconfig, Object> getPlugin(
+      @Path("deploymentName") String deploymentName,
+      @Path("pluginName") String pluginName,
+      @Query("validate") boolean validate);
+
+  @PUT("/v1/config/deployments/{deploymentName}/plugins/{pluginName}/")
+  DaemonTask<Halconfig, Void> setPlugin(
+      @Path("deploymentName") String deploymentName,
+      @Path("pluginName") String pluginName,
+      @Query("validate") boolean validate,
+      @Body Plugin plugin);
+
+  @PUT("/v1/config/deployments/{deploymentName}/plugins/enabled/")
+  DaemonTask<Halconfig, Void> setPluginsEnabled(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body boolean enabled);
+
+  @PUT("/v1/config/deployments/{deploymentName}/plugins/downloadingEnabled/")
+  DaemonTask<Halconfig, Void> setPluginsDownloadingEnabled(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body boolean enabled);
+
+  @DELETE("/v1/config/deployments/{deploymentName}/plugins/{pluginName}/")
+  DaemonTask<Halconfig, Void> deletePlugin(
+      @Path("deploymentName") String deploymentName,
+      @Path("pluginName") String pluginName,
+      @Query("validate") boolean validate);
+
+  @POST("/v1/config/deployments/{deploymentName}/pluginRepositories/")
+  DaemonTask<Halconfig, Void> addPluginRepository(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body PluginRepository pluginRepository);
+
+  @GET("/v1/config/deployments/{deploymentName}/pluginRepositories/")
+  DaemonTask<Halconfig, Object> getPluginRepositories(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
+  @GET("/v1/config/deployments/{deploymentName}/pluginRepositories/{repositoryName}/")
+  DaemonTask<Halconfig, Object> getPluginRepository(
+      @Path("deploymentName") String deploymentName,
+      @Path("repositoryName") String pluginRepositoryName,
+      @Query("validate") boolean validate);
+
+  @PUT("/v1/config/deployments/{deploymentName}/pluginRepositories/{repositoryName}/")
+  DaemonTask<Halconfig, Void> setPluginRepository(
+      @Path("deploymentName") String deploymentName,
+      @Path("repositoryName") String pluginRepositoryName,
+      @Query("validate") boolean validate,
+      @Body PluginRepository pluginRepository);
+
+  @DELETE("/v1/config/deployments/{deploymentName}/pluginRepositories/{repositoryName}/")
+  DaemonTask<Halconfig, Void> deletePluginRepository(
+      @Path("deploymentName") String deploymentName,
+      @Path("repositoryName") String pluginRepositoryName,
+      @Query("validate") boolean validate);
+
+  @GET("/v1/config/deployments/{deploymentName}/stats/")
+  DaemonTask<Halconfig, Object> getStats(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
+  @PUT("/v1/config/deployments/{deploymentName}/stats/")
+  DaemonTask<Halconfig, Void> setStats(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body Stats stats);
+
+  @PUT("/v1/config/deployments/{deploymentName}/stats/enabled/")
+  DaemonTask<Halconfig, Void> setStatsEnabled(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body boolean enabled);
 
   @GET("/v1/spin/install/latest")
   DaemonTask<Halconfig, Object> installSpin();
