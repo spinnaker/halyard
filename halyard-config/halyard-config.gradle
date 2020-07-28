@@ -4,7 +4,6 @@ dependencies {
 
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-docker:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-google:$clouddriverVersion"
-  implementation "com.netflix.spinnaker.clouddriver:clouddriver-kubernetes-v1:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-appengine:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-azure:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-cloudfoundry:$clouddriverVersion"
@@ -27,7 +26,7 @@ dependencies {
   implementation 'commons-collections:commons-collections:3.2.2'
   implementation 'org.apache.commons:commons-lang3'
   implementation 'commons-io:commons-io:2.6'
-  implementation 'io.fabric8:kubernetes-client:4.1.1'
+  implementation 'io.fabric8:kubernetes-client'
   implementation 'com.squareup.retrofit:retrofit'
   implementation 'com.jcraft:jsch'
   implementation 'de.huxhorn.sulky:de.huxhorn.sulky.ulid'

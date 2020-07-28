@@ -28,7 +28,7 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSetting
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.SpinnakerService.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +49,11 @@ public class Front50ProfileFactory extends SpringProfileFactory {
   }
 
   @Override
+  protected boolean addExtensibilityConfigs(DeploymentConfiguration deploymentConfiguration) {
+    return false;
+  }
+
+  @Override
   public void setProfile(
       Profile profile,
       DeploymentConfiguration deploymentConfiguration,
@@ -59,8 +64,15 @@ public class Front50ProfileFactory extends SpringProfileFactory {
       throw new HalException(Problem.Severity.FATAL, "No persistent storage type was configured.");
     }
 
+    Map<String, Map<String, Object>> spinnakerYaml;
+    if (spinnakerVersionSupportsPlugins(deploymentConfiguration.getVersion())) {
+      spinnakerYaml = getSpinnakerYaml(deploymentConfiguration);
+    } else {
+      spinnakerYaml = new LinkedHashMap<>();
+      spinnakerYaml.put("spinnaker", new LinkedHashMap<>());
+    }
+
     List<String> files = backupRequiredFiles(persistentStorage, deploymentConfiguration.getName());
-    Map<String, Map<String, Object>> persistentStorageMap = new HashMap<>();
 
     NodeIterator children = persistentStorage.getChildren();
     Node child = children.getNext();
@@ -87,19 +99,15 @@ public class Front50ProfileFactory extends SpringProfileFactory {
         persistentStoreMap.put(
             "enabled", persistentStoreType.equals(persistentStorage.getPersistentStoreType()));
 
-        persistentStorageMap.put(persistentStoreType.getId(), persistentStoreMap);
+        spinnakerYaml.get("spinnaker").put(persistentStoreType.getId(), persistentStoreMap);
       }
 
       child = children.getNext();
     }
 
-    Map<String, Object> spinnakerObjectMap = new HashMap<>();
-    spinnakerObjectMap.put("spinnaker", persistentStorageMap);
-
     super.setProfile(profile, deploymentConfiguration, endpoints);
     profile
-        .appendContents(
-            yamlToString(deploymentConfiguration.getName(), profile, spinnakerObjectMap))
+        .appendContents(yamlToString(deploymentConfiguration.getName(), profile, spinnakerYaml))
         .appendContents(profile.getBaseContents())
         .setRequiredFiles(files);
   }
