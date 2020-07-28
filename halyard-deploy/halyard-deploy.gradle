@@ -5,8 +5,6 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-actuator'
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-core:$clouddriverVersion"
-  implementation "com.netflix.spinnaker.clouddriver:clouddriver-kubernetes:$clouddriverVersion"
-  implementation "com.netflix.spinnaker.clouddriver:clouddriver-kubernetes-v1:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-google:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-security:$clouddriverVersion"
   implementation "com.netflix.spinnaker.kork:kork-secrets"
@@ -15,13 +13,12 @@ dependencies {
   implementation 'com.google.apis:google-api-services-storage'
   implementation 'com.google.apis:google-api-services-compute'
   implementation 'com.amazonaws:aws-java-sdk-core:1.11.534'
-  implementation 'org.apache.commons:commons-compress:1.2'
+  implementation 'org.apache.commons:commons-compress:1.20'
   implementation 'org.apache.commons:commons-lang3'
   implementation 'commons-io:commons-io:2.6'
   implementation 'com.squareup.retrofit:retrofit'
   implementation 'com.squareup.okhttp:okhttp'
-  implementation 'io.fabric8:kubernetes-client:4.1.1'
-  implementation 'io.fabric8:fabric8-utils:2.2.216'
+  implementation 'io.fabric8:kubernetes-client'
   implementation 'redis.clients:jedis'
   implementation 'org.codehaus.groovy:groovy'
 

@@ -45,7 +45,6 @@ import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.Sid
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesService;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.KubernetesSharedServiceSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.distributed.kubernetes.v2.KubernetesV2Utils.SecretMountPair;
-import io.fabric8.utils.Strings;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -147,6 +146,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
     service.addBinding("type", settings.getKubernetes().getServiceType());
     service.addBinding("nodePort", settings.getKubernetes().getNodePort());
     service.addBinding("serviceLabels", settings.getKubernetes().getServiceLabels());
+    service.addBinding("serviceAnnotations", settings.getKubernetes().getServiceAnnotations());
 
     return service.toString();
   }
@@ -773,7 +773,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
   }
 
   default Optional<String> buildAddress(String namespace) {
-    return Optional.of(Strings.join(".", getServiceName(), namespace));
+    return Optional.of(String.join(".", getServiceName(), namespace));
   }
 
   default ServiceSettings buildServiceSettings(DeploymentConfiguration deploymentConfiguration) {
