@@ -16,11 +16,19 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@JsonIgnoreProperties({
+  "jobs",
+  "appengineContainerImageUrlDeployments",
+  "auth",
+  "entityTags",
+  "fiat"
+})
 public class Features extends Node {
   @Override
   public String getNodeName() {
@@ -32,11 +40,7 @@ public class Features extends Node {
     return NodeIteratorFactory.makeEmptyIterator();
   }
 
-  private boolean auth;
-  private boolean fiat;
   private boolean chaos;
-  private boolean entityTags;
-  private boolean jobs;
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.2.0",
@@ -45,14 +49,17 @@ public class Features extends Node {
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.5.0",
+      upperBound = "1.20.0",
       tooLowMessage =
-          "Artifacts are not configurable prior to this release. Will be stable at a later release.")
+          "Artifacts are not configurable prior to this release. Will be stable at a later release.",
+      tooHighMessage = "Artifacts are now enabled by default.")
   private Boolean artifacts;
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.15.0",
-      tooLowMessage =
-          "Artifacts rewrite is a rewrite of the artifacts ui. Artifacts are not configurable prior to this release. Will be stable at a later release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "The artifacts rewrite UI is not configurable prior to this release.",
+      tooHighMessage = "The artifacts rewrite UI is now enabled by default.")
   private Boolean artifactsRewrite;
 
   @ValidForSpinnakerVersion(
@@ -63,27 +70,24 @@ public class Features extends Node {
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.7.0",
-      upperBound = "1.11.0",
+      upperBound = "1.20.0",
       tooLowMessage =
-          "Appengine container URL deployments were not supported prior to this version.",
-      tooHighMessage =
-          "Appengine container URL deployments are stable; the feature flag will be removed in a future version of Halyard.")
-  private Boolean appengineContainerImageUrlDeployments;
-
-  @ValidForSpinnakerVersion(
-      lowerBound = "1.7.0",
-      tooLowMessage =
-          "Infrastructure Stages is not configurable prior to this release. Will be stable at a later release.")
+          "Infrastructure Stages is not configurable prior to this release. Will be stable at a later release.",
+      tooHighMessage = "Travis stage is now enabled by default.")
   private Boolean infrastructureStages;
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.9.0",
-      tooLowMessage = "Travis stage is not available prior to this release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "Travis stage is not available prior to this release.",
+      tooHighMessage = "Travis stage is now enabled by default.")
   private Boolean travis;
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.9.0",
-      tooLowMessage = "Wercker stage is not available prior to this release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "Wercker stage is not available prior to this release.",
+      tooHighMessage = "Wercker stage is now enabled by default.")
   private Boolean wercker;
 
   @ValidForSpinnakerVersion(
@@ -93,7 +97,9 @@ public class Features extends Node {
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.13.0",
-      tooLowMessage = "Gremlin is not available prior to this release.")
+      upperBound = "1.20.0",
+      tooLowMessage = "Gremlin stage is not available prior to this release.",
+      tooHighMessage = "Gremlin stage is now enabled by default.")
   private Boolean gremlin;
 
   public boolean isAuth(DeploymentConfiguration deploymentConfiguration) {

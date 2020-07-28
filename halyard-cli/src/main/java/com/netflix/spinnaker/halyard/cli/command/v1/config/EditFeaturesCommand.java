@@ -43,13 +43,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   private Boolean chaos = null;
 
   @Parameter(
-      names = "--jobs",
-      description =
-          "Allow Spinnaker to run containers in Kubernetes and Titus as Job stages in pipelines.",
-      arity = 1)
-  private Boolean jobs = null;
-
-  @Parameter(
       names = "--pipeline-templates",
       description =
           "Enable pipeline template support. Read more at https://github.com/spinnaker/dcd-spec.",
@@ -79,25 +72,6 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
   private Boolean mineCanary = null;
 
   @Parameter(
-      names = "--infrastructure-stages",
-      description =
-          "Enable infrastructure stages. Allows for creating Load Balancers as part of pipelines.",
-      arity = 1)
-  private Boolean infrastructureStages = null;
-
-  @Parameter(
-      names = "--appengine-container-image-url-deployments",
-      description = "Enable appengine deployments using a container image URL from gcr.io.",
-      arity = 1)
-  private Boolean appengineContainerImageUrlDeployments = null;
-
-  @Parameter(names = "--travis", description = "Enable the Travis CI stage.", arity = 1)
-  private Boolean travis = null;
-
-  @Parameter(names = "--wercker", description = "Enable the Wercker CI stage.", arity = 1)
-  private Boolean wercker = null;
-
-  @Parameter(
       names = "--managed-pipeline-templates-v2-ui",
       description = "Enable managed pipeline templates v2 UI support.",
       arity = 1)
@@ -122,21 +96,12 @@ public class EditFeaturesCommand extends AbstractConfigCommand {
     int originalHash = features.hashCode();
 
     features.setChaos(chaos != null ? chaos : features.isChaos());
-    features.setJobs(jobs != null ? jobs : features.isJobs());
     features.setPipelineTemplates(
         pipelineTemplates != null ? pipelineTemplates : features.getPipelineTemplates());
     features.setArtifacts(artifacts != null ? artifacts : features.getArtifacts());
     features.setArtifactsRewrite(
         artifactsRewrite != null ? artifactsRewrite : features.getArtifactsRewrite());
     features.setMineCanary(mineCanary != null ? mineCanary : features.getMineCanary());
-    features.setInfrastructureStages(
-        infrastructureStages != null ? infrastructureStages : features.getInfrastructureStages());
-    features.setAppengineContainerImageUrlDeployments(
-        appengineContainerImageUrlDeployments != null
-            ? appengineContainerImageUrlDeployments
-            : features.getAppengineContainerImageUrlDeployments());
-    features.setTravis(travis != null ? travis : features.getTravis());
-    features.setWercker(wercker != null ? wercker : features.getWercker());
     features.setManagedPipelineTemplatesV2UI(
         managedPipelineTemplatesV2UI != null
             ? managedPipelineTemplatesV2UI

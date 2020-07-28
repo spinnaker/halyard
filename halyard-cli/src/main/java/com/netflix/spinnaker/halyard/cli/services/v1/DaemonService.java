@@ -22,6 +22,7 @@ import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.ha.HaService;
 import com.netflix.spinnaker.halyard.config.model.v1.node.*;
 import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
+import com.netflix.spinnaker.halyard.config.model.v1.plugins.PluginRepository;
 import com.netflix.spinnaker.halyard.config.model.v1.security.*;
 import com.netflix.spinnaker.halyard.config.model.v1.webook.WebhookTrust;
 import com.netflix.spinnaker.halyard.core.DaemonOptions;
@@ -100,6 +101,7 @@ public interface DaemonService {
       @Query("deployOptions") List<DeployOption> deployOptions,
       @Query("serviceNames") List<String> serviceNames,
       @Query("excludeServiceNames") List<String> excludeServiceNames,
+      @Query("waitForCompletionTimeoutMinutes") Integer waitForCompletionTimeoutMinutes,
       @Body String _ignore);
 
   @POST("/v1/config/deployments/{deploymentName}/prep/")
@@ -716,6 +718,13 @@ public interface DaemonService {
       @Path("ciName") String ciName,
       @Query("validate") boolean validate);
 
+  @PUT("/v1/config/deployments/{deploymentName}/ci/{ciName}/")
+  DaemonTask<Halconfig, Void> setCi(
+      @Path("deploymentName") String deploymentName,
+      @Path("ciName") String ciName,
+      @Query("validate") boolean validate,
+      @Body Ci ci);
+
   @PUT("/v1/config/deployments/{deploymentName}/ci/{ciName}/enabled/")
   DaemonTask<Halconfig, Void> setCiEnabled(
       @Path("deploymentName") String deploymentName,
@@ -927,18 +936,47 @@ public interface DaemonService {
       @Path("pluginName") String pluginName,
       @Query("validate") boolean validate);
 
-  @GET("/v1/config/deployments/{deploymentName}/telemetry/")
-  DaemonTask<Halconfig, Object> getTelemetry(
-      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
-
-  @PUT("/v1/config/deployments/{deploymentName}/telemetry/")
-  DaemonTask<Halconfig, Void> setTelemetry(
+  @POST("/v1/config/deployments/{deploymentName}/pluginRepositories/")
+  DaemonTask<Halconfig, Void> addPluginRepository(
       @Path("deploymentName") String deploymentName,
       @Query("validate") boolean validate,
-      @Body Telemetry telemetry);
+      @Body PluginRepository pluginRepository);
 
-  @PUT("/v1/config/deployments/{deploymentName}/telemetry/enabled/")
-  DaemonTask<Halconfig, Void> setTelemetryEnabled(
+  @GET("/v1/config/deployments/{deploymentName}/pluginRepositories/")
+  DaemonTask<Halconfig, Object> getPluginRepositories(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
+  @GET("/v1/config/deployments/{deploymentName}/pluginRepositories/{repositoryName}/")
+  DaemonTask<Halconfig, Object> getPluginRepository(
+      @Path("deploymentName") String deploymentName,
+      @Path("repositoryName") String pluginRepositoryName,
+      @Query("validate") boolean validate);
+
+  @PUT("/v1/config/deployments/{deploymentName}/pluginRepositories/{repositoryName}/")
+  DaemonTask<Halconfig, Void> setPluginRepository(
+      @Path("deploymentName") String deploymentName,
+      @Path("repositoryName") String pluginRepositoryName,
+      @Query("validate") boolean validate,
+      @Body PluginRepository pluginRepository);
+
+  @DELETE("/v1/config/deployments/{deploymentName}/pluginRepositories/{repositoryName}/")
+  DaemonTask<Halconfig, Void> deletePluginRepository(
+      @Path("deploymentName") String deploymentName,
+      @Path("repositoryName") String pluginRepositoryName,
+      @Query("validate") boolean validate);
+
+  @GET("/v1/config/deployments/{deploymentName}/stats/")
+  DaemonTask<Halconfig, Object> getStats(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
+  @PUT("/v1/config/deployments/{deploymentName}/stats/")
+  DaemonTask<Halconfig, Void> setStats(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body Stats stats);
+
+  @PUT("/v1/config/deployments/{deploymentName}/stats/enabled/")
+  DaemonTask<Halconfig, Void> setStatsEnabled(
       @Path("deploymentName") String deploymentName,
       @Query("validate") boolean validate,
       @Body boolean enabled);

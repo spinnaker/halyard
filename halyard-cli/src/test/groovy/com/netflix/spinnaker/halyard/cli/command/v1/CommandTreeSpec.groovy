@@ -37,11 +37,9 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.saml.S
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.x509.X509Command
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authz.AuthzCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.ui.UiSecurityCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.config.telemetry.TelemetryCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.config.telemetry.TelemetryEnableDisableCommandBuilder
+import com.netflix.spinnaker.halyard.cli.command.v1.config.stats.StatsCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.plugins.AddPluginCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.plugins.DeletePluginCommand
-import com.netflix.spinnaker.halyard.cli.command.v1.plugins.EditPluginCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.plugins.ListPluginsCommand
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -101,7 +99,7 @@ class CommandTreeSpec extends Specification {
     ConfigCommand   | "security"      | SecurityCommand
     ConfigCommand   | "version"       | VersionConfigCommand
     ConfigCommand   | "ci"            | CiCommand
-    ConfigCommand   | "telemetry"     | TelemetryCommand
+    ConfigCommand   | "stats"         | StatsCommand
 
     SecurityCommand | "api"           | ApiSecurityCommand
     SecurityCommand | "authn"         | AuthnCommand
@@ -126,7 +124,6 @@ class CommandTreeSpec extends Specification {
     LdapCommand     | "edit"          | EditLdapCommand
 
     PluginCommand   | "list"          | ListPluginsCommand
-    PluginCommand   | "edit"          | EditPluginCommand
     PluginCommand   | "delete"        | DeletePluginCommand
     PluginCommand   | "add"           | AddPluginCommand
   }

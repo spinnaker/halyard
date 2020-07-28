@@ -16,9 +16,11 @@
 
 package com.netflix.spinnaker.halyard.config.services.v1
 
+import com.netflix.spinnaker.halyard.config.config.v1.HalconfigDirectoryStructure
 import com.netflix.spinnaker.halyard.config.config.v1.HalconfigParser
 import com.netflix.spinnaker.halyard.config.config.v1.StrictObjectMapper
 import com.netflix.spinnaker.halyard.config.model.v1.node.Halconfig
+import org.springframework.context.ApplicationContext
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.constructor.SafeConstructor
 import spock.lang.Specification
@@ -28,9 +30,11 @@ import java.nio.charset.StandardCharsets
 class HalconfigParserMocker extends Specification {
   HalconfigParser mockHalconfigParser(String config) {
     def parserStub = new HalconfigParser()
+    ApplicationContext applicationContext = Stub(ApplicationContext.class)
+    applicationContext.getBean(Yaml.class) >> new Yaml(new SafeConstructor())
     parserStub.objectMapper = new StrictObjectMapper()
-    parserStub.yamlParser = new Yaml(new SafeConstructor())
-    parserStub.halconfigPath = "/some/nonsense/file"
+    parserStub.applicationContext = applicationContext
+    parserStub.halconfigDirectoryStructure = new HalconfigDirectoryStructure();
 
     def stream = new ByteArrayInputStream(config.getBytes(StandardCharsets.UTF_8))
     Halconfig halconfig = parserStub.parseHalconfig(stream)

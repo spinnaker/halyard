@@ -21,6 +21,8 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.config.model.v1.plugins.Plugin;
+import com.netflix.spinnaker.halyard.config.model.v1.plugins.PluginExtension;
+import java.util.Arrays;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -32,14 +34,14 @@ public class AddPluginCommand extends AbstractHasPluginCommand {
   @Getter(AccessLevel.PUBLIC)
   private String shortDescription = "Add a plugin";
 
-  @Parameter(
-      names = "--manifest-location",
-      description = "The location of the plugin's manifest file.",
-      required = true)
-  private String manifestLocation;
+  @Parameter(names = "--version", description = "The plugin version to use", required = false)
+  private String version;
 
   @Parameter(names = "--enabled", description = "To enable or disable the plugin.")
   private String enabled;
+
+  @Parameter(names = "--extensions", description = "A comma separated list of extensions to enable")
+  private String extensions;
 
   @Override
   protected void executeThis() {
@@ -47,9 +49,11 @@ public class AddPluginCommand extends AbstractHasPluginCommand {
     String name = getPluginName();
     Plugin plugin =
         new Plugin()
-            .setName(name)
+            .setId(name)
             .setEnabled(isSet(enabled) ? Boolean.parseBoolean(enabled) : false)
-            .setManifestLocation(manifestLocation);
+            .setVersion(version);
+    Arrays.stream(extensions.split(","))
+        .forEach(e -> plugin.getExtensions().put(e, new PluginExtension().setId(e)));
 
     new OperationHandler<Void>()
         .setFailureMesssage("Failed to add plugin: " + name + ".")

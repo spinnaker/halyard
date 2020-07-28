@@ -26,7 +26,9 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.dcos.DCOSCo
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.dockerRegistry.DockerRegistryCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ecs.EcsCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.google.GoogleCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.huaweicloud.HuaweiCloudCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.kubernetes.KubernetesCommand;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.tencentcloud.TencentCloudCommand;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -52,9 +54,11 @@ public class ProviderCommand extends NestableCommand {
     registerSubcommand(new DockerRegistryCommand());
     registerSubcommand(new EcsCommand());
     registerSubcommand(new GoogleCommand());
+    registerSubcommand(new HuaweiCloudCommand());
     registerSubcommand(new KubernetesCommand());
     registerSubcommand(
         new com.netflix.spinnaker.halyard.cli.command.v1.config.providers.oracle.OracleCommand());
+    registerSubcommand(new TencentCloudCommand());
   }
 
   @Override

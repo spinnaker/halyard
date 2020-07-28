@@ -14,34 +14,16 @@
  * limitations under the License.
  */
 
-buildscript {
-  ext {
-    clouddriverVersion = "5.8.0"
-    front50Version = "2.1.0"
-    fiatVersion = "1.0.5"
-  }
-  repositories {
-    jcenter()
-    maven { url "https://spinnaker.bintray.com/gradle" }
-    maven { url "https://plugins.gradle.org/m2/" }
-  }
-  dependencies {
-    classpath 'com.netflix.spinnaker.gradle:spinnaker-dev-plugin:6.5.0'
-    if (Boolean.valueOf(enablePublishing)) {
-      classpath "com.netflix.spinnaker.gradle:spinnaker-gradle-project:6.5.0"
-    }
-    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
-  }
+plugins {
+  id 'io.spinnaker.project' version "$spinnakerGradleVersion" apply false
+  id 'com.google.protobuf' version "0.8.12" apply false
 }
 
-allprojects {
+subprojects {
   group = "com.netflix.spinnaker.halyard"
-  apply plugin: 'spinnaker.base-project'
+  apply plugin: 'io.spinnaker.project'
   apply plugin: 'java-library'
   apply plugin: 'groovy'
-
-  sourceSets.main.java.srcDirs = []
-  sourceSets.main.groovy.srcDirs += ["src/main/java"]
 
   test {
     testLogging {
@@ -50,6 +32,13 @@ allprojects {
     }
     minHeapSize = "512m"
     maxHeapSize = "512m"
+  }
+
+  if ([korkVersion, fiatVersion, clouddriverVersion, front50Version].any { it.endsWith("-SNAPSHOT") }) {
+    logger.info("Enabling mavenLocal")
+    repositories {
+      mavenLocal()
+    }
   }
 
   dependencies {

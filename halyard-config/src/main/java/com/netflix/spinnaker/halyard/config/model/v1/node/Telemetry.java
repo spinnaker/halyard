@@ -16,25 +16,13 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
-import de.huxhorn.sulky.ulid.ULID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+/** @deprecated Use {@link Stats} instead. */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Deprecated
 public class Telemetry extends Node {
-
-  public static String DEFAULT_TELEMETRY_ENDPOINT = "https://stats.spinnaker.io";
-
-  @Override
-  public String getNodeName() {
-    return "telemetry";
-  }
-
-  private Boolean enabled = false;
-  private String endpoint = DEFAULT_TELEMETRY_ENDPOINT;
-  private String instanceId = new ULID().nextULID();
-  private String spinnakerVersion;
-  private int connectionTimeoutMillis = 3000;
-  private int readTimeoutMillis = 5000;
+  private final String nodeName = "telemetry";
 }

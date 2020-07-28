@@ -105,7 +105,11 @@ public class CloudFoundryAccountValidator extends Validator<CloudFoundryAccount>
             user,
             password,
             environment,
-            skipSslValidation);
+            skipSslValidation,
+            /* resultsPerPage= */ null,
+            /* maxCapiConnectionsForCache= */ null,
+            /* cacheRepository */ null,
+            /* Permissions */ null);
 
     try {
       int count = cloudFoundryCredentials.getCredentials().getSpaces().all().size();

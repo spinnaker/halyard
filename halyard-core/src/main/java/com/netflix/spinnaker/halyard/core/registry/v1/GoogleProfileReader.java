@@ -19,7 +19,6 @@
 package com.netflix.spinnaker.halyard.core.registry.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -34,6 +33,7 @@ import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
@@ -50,7 +50,11 @@ public class GoogleProfileReader implements ProfileReader {
 
   @Autowired ObjectMapper relaxedObjectMapper;
 
-  @Autowired Yaml yamlParser;
+  @Autowired ApplicationContext applicationContext;
+
+  private Yaml getYamlParser() {
+    return applicationContext.getBean(Yaml.class);
+  }
 
   @Bean
   public Storage applicationDefaultGoogleStorage() {
@@ -72,12 +76,12 @@ public class GoogleProfileReader implements ProfileReader {
     String bomName = bomPath(version);
 
     return relaxedObjectMapper.convertValue(
-        yamlParser.load(getContents(bomName)), BillOfMaterials.class);
+        getYamlParser().load(getContents(bomName)), BillOfMaterials.class);
   }
 
   public Versions readVersions() throws IOException {
     return relaxedObjectMapper.convertValue(
-        yamlParser.load(getContents("versions.yml")), Versions.class);
+        getYamlParser().load(getContents("versions.yml")), Versions.class);
   }
 
   public InputStream readArchiveProfile(String artifactName, String version, String profileName)
@@ -118,25 +122,27 @@ public class GoogleProfileReader implements ProfileReader {
   private Storage createGoogleStorage(boolean useApplicationDefaultCreds) {
     JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
     String applicationName = "Spinnaker/Halyard";
-    HttpRequestInitializer requestInitializer;
+    HttpRequestInitializer requestInitializer = null;
 
-    try {
-      GoogleCredential credential =
-          useApplicationDefaultCreds
-              ? GoogleCredential.getApplicationDefault()
-              : new GoogleCredential();
-      if (credential.createScopedRequired()) {
-        credential =
-            credential.createScoped(Collections.singleton(StorageScopes.DEVSTORAGE_FULL_CONTROL));
+    if (useApplicationDefaultCreds) {
+      try {
+        com.google.auth.oauth2.GoogleCredentials credentials =
+            com.google.auth.oauth2.GoogleCredentials.getApplicationDefault();
+        if (credentials.createScopedRequired()) {
+          credentials =
+              credentials.createScoped(
+                  Collections.singleton(StorageScopes.DEVSTORAGE_FULL_CONTROL));
+        }
+        requestInitializer = GoogleCredentials.setHttpTimeout(credentials);
+        log.info("Loaded application default credential for reading BOMs & profiles.");
+      } catch (Exception e) {
+        log.debug(
+            "No application default credential could be loaded for reading BOMs & profiles. Continuing unauthenticated: {}",
+            e.getMessage());
       }
-      requestInitializer = GoogleCredentials.setHttpTimeout(credential);
-
-      log.info("Loaded application default credential for reading BOMs & profiles.");
-    } catch (Exception e) {
+    }
+    if (requestInitializer == null) {
       requestInitializer = GoogleCredentials.retryRequestInitializer();
-      log.debug(
-          "No application default credential could be loaded for reading BOMs & profiles. Continuing unauthenticated: {}",
-          e.getMessage());
     }
 
     return new Storage.Builder(

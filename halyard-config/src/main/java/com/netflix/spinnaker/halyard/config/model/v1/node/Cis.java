@@ -16,11 +16,15 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.node;
 
+import com.netflix.spinnaker.halyard.config.model.v1.ci.codebuild.AwsCodeBuild;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.concourse.ConcourseCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.gcb.GoogleCloudBuild;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.jenkins.JenkinsCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.travis.TravisCi;
 import com.netflix.spinnaker.halyard.config.model.v1.ci.wercker.WerckerCi;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -32,6 +36,7 @@ public class Cis extends Node implements Cloneable {
   WerckerCi wercker = new WerckerCi();
   ConcourseCi concourse = new ConcourseCi();
   GoogleCloudBuild gcb = new GoogleCloudBuild();
+  AwsCodeBuild codebuild = new AwsCodeBuild();
 
   public boolean ciEnabled() {
     NodeIterator iterator = getChildren();
@@ -50,5 +55,19 @@ public class Cis extends Node implements Cloneable {
   @Override
   public String getNodeName() {
     return "ci";
+  }
+
+  public static Class<? extends Ci> translateCiType(String ciName) {
+    Optional<? extends Class<?>> res =
+        Arrays.stream(Cis.class.getDeclaredFields())
+            .filter(f -> f.getName().equals(ciName))
+            .map(Field::getType)
+            .findFirst();
+
+    if (res.isPresent()) {
+      return (Class<? extends Ci>) res.get();
+    } else {
+      throw new IllegalArgumentException("No ci with name \"" + ciName + "\" handled by halyard");
+    }
   }
 }
