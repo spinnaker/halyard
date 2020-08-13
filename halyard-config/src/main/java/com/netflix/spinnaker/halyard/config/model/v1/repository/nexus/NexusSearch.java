@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 Huawei Technologies Co.,Ltd.
+ * Copyright 2019 Pivotal, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License")
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package com.netflix.spinnaker.halyard.config.model.v1.providers.huaweicloud;
+package com.netflix.spinnaker.halyard.config.model.v1.repository.nexus;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.BakeryDefaults;
+import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
+import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Search;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class HuaweiCloudBakeryDefaults extends BakeryDefaults<HuaweiCloudBaseImage> {
-  private String authUrl;
+public class NexusSearch extends Search {
+  @Override
+  public NodeIterator getChildren() {
+    return NodeIteratorFactory.makeEmptyIterator();
+  }
+
+  private String baseUrl;
+  private String repo;
+  private String nodeId;
   private String username;
   @Secret private String password;
-  private String projectName;
-  private String domainName;
-  private Boolean insecure;
-  private String vpcId;
-  private String subnetId;
-  private String securityGroup;
-  private Integer eipBandwidthSize;
 }

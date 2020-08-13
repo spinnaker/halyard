@@ -133,6 +133,7 @@
  * [**hal config canary datadog account get**](#hal-config-canary-datadog-account-get)
  * [**hal config canary datadog account list**](#hal-config-canary-datadog-account-list)
  * [**hal config canary datadog disable**](#hal-config-canary-datadog-disable)
+ * [**hal config canary datadog edit**](#hal-config-canary-datadog-edit)
  * [**hal config canary datadog enable**](#hal-config-canary-datadog-enable)
  * [**hal config canary disable**](#hal-config-canary-disable)
  * [**hal config canary edit**](#hal-config-canary-edit)
@@ -544,6 +545,15 @@
  * [**hal config repository artifactory search edit**](#hal-config-repository-artifactory-search-edit)
  * [**hal config repository artifactory search get**](#hal-config-repository-artifactory-search-get)
  * [**hal config repository artifactory search list**](#hal-config-repository-artifactory-search-list)
+ * [**hal config repository nexus**](#hal-config-repository-nexus)
+ * [**hal config repository nexus disable**](#hal-config-repository-nexus-disable)
+ * [**hal config repository nexus enable**](#hal-config-repository-nexus-enable)
+ * [**hal config repository nexus search**](#hal-config-repository-nexus-search)
+ * [**hal config repository nexus search add**](#hal-config-repository-nexus-search-add)
+ * [**hal config repository nexus search delete**](#hal-config-repository-nexus-search-delete)
+ * [**hal config repository nexus search edit**](#hal-config-repository-nexus-search-edit)
+ * [**hal config repository nexus search get**](#hal-config-repository-nexus-search-get)
+ * [**hal config repository nexus search list**](#hal-config-repository-nexus-search-list)
  * [**hal config security**](#hal-config-security)
  * [**hal config security api**](#hal-config-security-api)
  * [**hal config security api edit**](#hal-config-security-api-edit)
@@ -2806,6 +2816,7 @@ hal config canary datadog [parameters] [subcommands]
 #### Subcommands
  * `account`: Manage and view Spinnaker configuration for the Datadog service integration's canary accounts.
  * `disable`: Set Spinnaker's canary analysis Datadog service integration to disabled.
+ * `edit`: Edit Spinnaker's canary analysis Datadog service integration settings.
  * `enable`: Set Spinnaker's canary analysis Datadog service integration to enabled.
 
 ---
@@ -2927,6 +2938,22 @@ hal config canary datadog disable [parameters]
 
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config canary datadog edit
+
+Edit Spinnaker's canary analysis Datadog service integration settings.
+
+#### Usage
+```
+hal config canary datadog edit [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--metadata-caching-interval-ms`: Number of milliseconds to wait in between caching the names of available metric types (for use in building canary configs; *Default*: `60000`).
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 
@@ -10588,6 +10615,7 @@ hal config repository [subcommands]
 
 #### Subcommands
  * `artifactory`: Manage and view Spinnaker configuration for the artifactory repository
+ * `nexus`: Manage and view Spinnaker configuration for the nexus repository
 
 ---
 ## hal config repository artifactory
@@ -10752,6 +10780,174 @@ List the search names for artifactory.
 #### Usage
 ```
 hal config repository artifactory search list [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository nexus
+
+Manage and view Spinnaker configuration for the nexus repository
+
+#### Usage
+```
+hal config repository nexus [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `disable`: Set the nexus repository as disabled
+ * `enable`: Set the nexus repository as enabled
+ * `search`: Manage and view Spinnaker configuration for the nexus repository services's search
+
+---
+## hal config repository nexus disable
+
+Set the nexus repository as disabled
+
+#### Usage
+```
+hal config repository nexus disable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository nexus enable
+
+Set the nexus repository as enabled
+
+#### Usage
+```
+hal config repository nexus enable [parameters]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository nexus search
+
+Manage and view Spinnaker configuration for the nexus repository services's search
+
+#### Usage
+```
+hal config repository nexus search SEARCH [parameters] [subcommands]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `add`: Add a search for the nexus repository service.
+ * `delete`: Delete a specific nexus search by name.
+ * `edit`: Edit a search for the nexus repository service.
+ * `get`: Get the specified search details for nexus.
+ * `list`: List the search names for nexus.
+
+---
+## hal config repository nexus search add
+
+Add a search for the nexus repository service.
+
+#### Usage
+```
+hal config repository nexus search add SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--base-url`: (*Required*) The base url your nexus search is reachable at.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--nodeId`: The optional node ID for the repo in your nexus to be searched. Used when repo name is ambiguous.
+ * `--password`: (*Required*) (*Sensitive data* - user will be prompted on standard input) The password of the nexus user to authenticate as.
+ * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this build search or use it as a trigger source.
+ * `--repo`: (*Required*) The repo in your nexus to be searched.
+ * `--username`: (*Required*) The username of the nexus user to authenticate as.
+ * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to be able to run jobs on this build search.
+
+
+---
+## hal config repository nexus search delete
+
+Delete a specific nexus search by name.
+
+#### Usage
+```
+hal config repository nexus search delete SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository nexus search edit
+
+Edit a search for the nexus repository service.
+
+#### Usage
+```
+hal config repository nexus search edit SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--add-read-permission`: Add this permission to the list of read permissions.
+ * `--add-write-permission`: Add this permission to the list of write permissions.
+ * `--base-url`: The base url your nexus search is reachable at.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--nodeId`: The optional node ID for the repo in your nexus to be searched. Used when repo name is ambiguous.
+ * `--password`: The password of the nexus user to authenticate as.
+ * `--read-permissions`: A user must have at least one of these roles in order to view this build search or use it as a trigger source.
+ * `--remove-read-permission`: Remove this permission from the list of read permissions.
+ * `--remove-write-permission`: Remove this permission from the list of write permissions.
+ * `--repo`: The repo in your nexus to be searched.
+ * `--username`: The username of the nexus user to authenticate as.
+ * `--write-permissions`: A user must have at least one of these roles in order to be able to run jobs on this build search.
+
+
+---
+## hal config repository nexus search get
+
+Get the specified search details for nexus.
+
+#### Usage
+```
+hal config repository nexus search get SEARCH [parameters]
+```
+
+#### Parameters
+`SEARCH`: The name of the search to operate on.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config repository nexus search list
+
+List the search names for nexus.
+
+#### Usage
+```
+hal config repository nexus search list [parameters]
 ```
 
 #### Parameters
@@ -11177,6 +11373,7 @@ hal config security authn saml edit [parameters]
  * `--metadata`: The address to your identity provider's metadata XML file. This can be a URL or the path of a local file.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--service-address-url`: The address of the Gate server that will be accesible by the SAML identity provider. This should be the full URL, including port, e.g. [https://gate.org.com:8084/](https://gate.org.com:8084/). If deployed behind a load balancer, this would be the laod balancer's address.
+ * `--signature-digest`: Digest algorithm to sign SAML messages (optional). Valid values include "SHA1", "SHA256", "SHA384", "SHA512", "RIPEMD160" and "MD5".
  * `--user-attribute-mapping-email`: The email field returned from your SAML provider.
  * `--user-attribute-mapping-first-name`: The first name field returned from your SAML provider.
  * `--user-attribute-mapping-last-name`: The last name field returned from your SAML provider.
