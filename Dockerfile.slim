@@ -1,5 +1,5 @@
 FROM alpine:3.11
-MAINTAINER sig-platform@spinnaker.io
+LABEL maintainer="sig-platform@spinnaker.io"
 COPY halyard-web/build/install/halyard /opt/halyard
 
 ENV KUBECTL_RELEASE=1.15.10
