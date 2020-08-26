@@ -24,6 +24,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 @EqualsAndHashCode(callSuper = true)
 public class Plugin extends Node {
 
