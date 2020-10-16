@@ -143,6 +143,10 @@ public class DeckProfileFactory extends RegistryBackedProfileFactory {
     bindings.put("kubernetes.default.namespace", "default");
     bindings.put("kubernetes.default.proxy", "localhost:8001");
 
+    bindings.put("oracle.default.account", "Default");
+    bindings.put("oracle.default.bakeryRegions", "us-phoenix-1");
+    bindings.put("oracle.default.region", "us-phoenix-1");
+
     // Configure GCE
     GoogleProvider googleProvider = deploymentConfiguration.getProviders().getGoogle();
     bindings.put("google.default.account", googleProvider.getPrimaryAccount());
