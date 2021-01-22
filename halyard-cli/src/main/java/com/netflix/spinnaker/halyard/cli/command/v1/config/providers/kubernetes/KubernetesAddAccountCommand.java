@@ -121,6 +121,18 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
   private int cacheThreads = 1;
 
   @Parameter(
+      names = "--raw-resource-endpoint-kind-expressions",
+      variableArity = true,
+      description = KubernetesCommandProperties.RAW_RESOURCES_ENDPOINT_KIND_EXPRESSIONS)
+  public List<String> rawResourcekindExpressions = new ArrayList<>();
+
+  @Parameter(
+      names = "--raw-resource-endpoint-omit-kind-expressions",
+      variableArity = true,
+      description = KubernetesCommandProperties.RAW_RESOURCES_ENDPOINT_OMIT_KIND_EXPRESSIONS)
+  public List<String> rawResourceOmitKindExpressions = new ArrayList<>();
+
+  @Parameter(
       names = "--provider-version",
       description = KubernetesCommandProperties.PROVIDER_VERSION_DESCRIPTION)
   private ProviderVersion providerVersion = ProviderVersion.V2;
@@ -149,6 +161,8 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
     account.setCheckPermissionsOnStartup(checkPermissionsOnStartup);
     account.setLiveManifestCalls(liveManifestCalls);
     account.setCacheThreads(cacheThreads);
+    account.getRawResourcesEndpointConfig().setKindExpressions(rawResourcekindExpressions);
+    account.getRawResourcesEndpointConfig().setOmitKindExpressions(rawResourceOmitKindExpressions);
     account.setProviderVersion(providerVersion);
 
     return account;
