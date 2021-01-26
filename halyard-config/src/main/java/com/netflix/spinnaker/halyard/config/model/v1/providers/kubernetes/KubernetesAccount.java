@@ -82,6 +82,7 @@ public class KubernetesAccount extends ContainerAccount implements Cloneable {
   Integer kubectlRequestTimeoutSeconds;
   Boolean checkPermissionsOnStartup;
   RawResourcesEndpointConfig rawResourcesEndpointConfig = new RawResourcesEndpointConfig();
+  Boolean cacheAllApplicationRelationships;
 
   @ValidForSpinnakerVersion(
       lowerBound = "1.12.0",

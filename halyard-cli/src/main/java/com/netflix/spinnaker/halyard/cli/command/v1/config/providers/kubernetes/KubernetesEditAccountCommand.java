@@ -255,6 +255,12 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
   private Integer cacheThreads;
 
   @Parameter(
+      names = "--cache-all-application-relationships",
+      arity = 1,
+      description = KubernetesCommandProperties.CACHE_ALL_APPLICATION_RELATIONSHIPS)
+  public Boolean cacheAllApplicationRelationships;
+
+  @Parameter(
       names = "--provider-version",
       description = KubernetesCommandProperties.PROVIDER_VERSION_DESCRIPTION)
   private ProviderVersion providerVersion;
@@ -378,6 +384,10 @@ public class KubernetesEditAccountCommand extends AbstractEditAccountCommand<Kub
     account.setLiveManifestCalls(
         isSet(liveManifestCalls) ? liveManifestCalls : account.getLiveManifestCalls());
     account.setCacheThreads(isSet(cacheThreads) ? cacheThreads : account.getCacheThreads());
+    account.setCacheAllApplicationRelationships(
+        isSet(cacheAllApplicationRelationships)
+            ? cacheAllApplicationRelationships
+            : account.getCacheAllApplicationRelationships());
 
     try {
       account

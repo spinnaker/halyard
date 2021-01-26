@@ -121,6 +121,12 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
   private int cacheThreads = 1;
 
   @Parameter(
+      names = "--cache-all-application-relationships",
+      arity = 1,
+      description = KubernetesCommandProperties.CACHE_ALL_APPLICATION_RELATIONSHIPS)
+  public Boolean cacheAllApplicationRelationships;
+
+  @Parameter(
       names = "--raw-resource-endpoint-kind-expressions",
       variableArity = true,
       description = KubernetesCommandProperties.RAW_RESOURCES_ENDPOINT_KIND_EXPRESSIONS)
@@ -161,6 +167,7 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
     account.setCheckPermissionsOnStartup(checkPermissionsOnStartup);
     account.setLiveManifestCalls(liveManifestCalls);
     account.setCacheThreads(cacheThreads);
+    account.setCacheAllApplicationRelationships(cacheAllApplicationRelationships);
     account.getRawResourcesEndpointConfig().setKindExpressions(rawResourcekindExpressions);
     account.getRawResourcesEndpointConfig().setOmitKindExpressions(rawResourceOmitKindExpressions);
     account.setProviderVersion(providerVersion);
