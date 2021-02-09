@@ -16,10 +16,12 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.canary.google;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.storage.Storage;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
 import com.netflix.spinnaker.front50.model.GcsStorageService;
-import com.netflix.spinnaker.front50.model.StorageService;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.google.GoogleCanaryAccount;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.validate.v1.canary.CanaryAccountValidator;
@@ -28,6 +30,8 @@ import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import com.netflix.spinnaker.halyard.core.secrets.v1.SecretSessionManager;
 import com.netflix.spinnaker.halyard.core.tasks.v1.DaemonTaskHandler;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +44,7 @@ public class GoogleCanaryAccountValidator extends CanaryAccountValidator<GoogleC
   private String halyardVersion;
 
   private Registry registry;
+  private Storage googleCloudStorage;
 
   TaskScheduler taskScheduler;
 
@@ -73,24 +78,23 @@ public class GoogleCanaryAccountValidator extends CanaryAccountValidator<GoogleC
     Path jsonPath = validatingFileDecryptPath(n.getJsonPath());
 
     try {
-      StorageService storageService =
+      ExecutorService executor =
+          Executors.newCachedThreadPool(
+              new ThreadFactoryBuilder()
+                  .setNameFormat(GcsStorageService.class.getName() + "-%s")
+                  .build());
+      GcsStorageService storageService =
           new GcsStorageService(
+              googleCloudStorage,
               n.getBucket(),
               n.getBucketLocation(),
               n.getRootFolder(),
               n.getProject(),
-              jsonPath != null ? jsonPath.toString() : "",
-              "halyard",
-              connectTimeoutSec,
-              readTimeoutSec,
-              maxWaitInterval,
-              retryIntervalBase,
-              jitterMultiplier,
-              maxRetries,
-              taskScheduler,
-              registry);
+              new ObjectMapper(),
+              executor);
 
       storageService.ensureBucketExists();
+
     } catch (Exception e) {
       p.addProblem(
           Severity.ERROR,

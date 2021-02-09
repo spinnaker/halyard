@@ -16,15 +16,19 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.persistentStorage;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.storage.Storage;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spinnaker.front50.model.GcsStorageService;
-import com.netflix.spinnaker.front50.model.StorageService;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.persistentStorage.GcsPersistentStore;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.services.v1.AccountService;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem.Severity;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -36,6 +40,7 @@ public class GCSValidator extends Validator<GcsPersistentStore> {
   @Autowired private Registry registry;
 
   @Autowired TaskScheduler taskScheduler;
+  private Storage googleCloudStorage;
 
   private int connectTimeoutSec = 45;
   private int readTimeoutSec = 45;
@@ -48,22 +53,20 @@ public class GCSValidator extends Validator<GcsPersistentStore> {
   public void validate(ConfigProblemSetBuilder ps, GcsPersistentStore n) {
     Path jsonPath = validatingFileDecryptPath(n.getJsonPath());
     try {
-      StorageService storageService =
+      ExecutorService executor =
+          Executors.newCachedThreadPool(
+              new ThreadFactoryBuilder()
+                  .setNameFormat(GcsStorageService.class.getName() + "-%s")
+                  .build());
+      GcsStorageService storageService =
           new GcsStorageService(
+              googleCloudStorage,
               n.getBucket(),
               n.getBucketLocation(),
               n.getRootFolder(),
               n.getProject(),
-              jsonPath != null ? jsonPath.toString() : "",
-              "halyard",
-              connectTimeoutSec,
-              readTimeoutSec,
-              maxWaitInterval,
-              retryIntervalbase,
-              jitterMultiplier,
-              maxRetries,
-              taskScheduler,
-              registry);
+              new ObjectMapper(),
+              executor);
 
       storageService.ensureBucketExists();
     } catch (Exception e) {
