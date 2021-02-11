@@ -49,7 +49,6 @@ public class GoogleCanaryAccountValidator extends CanaryAccountValidator<GoogleC
 
   private Registry registry;
 
-  @Autowired Storage googleCloudStorage;
 
   TaskScheduler taskScheduler;
 
