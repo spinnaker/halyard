@@ -17,10 +17,13 @@
 package com.netflix.spinnaker.halyard.config.validate.v1.persistentStorage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.auth.Credentials;
 import com.google.cloud.storage.Storage;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.spectator.api.Registry;
+import com.netflix.spinnaker.front50.config.GcsProperties;
 import com.netflix.spinnaker.front50.model.GcsStorageService;
+import com.netflix.spinnaker.halyard.config.config.v1.GCSConfig;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.persistentStorage.GcsPersistentStore;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
@@ -40,7 +43,6 @@ public class GCSValidator extends Validator<GcsPersistentStore> {
   @Autowired private Registry registry;
 
   @Autowired TaskScheduler taskScheduler;
-  private Storage googleCloudStorage;
 
   private int connectTimeoutSec = 45;
   private int readTimeoutSec = 45;
@@ -51,8 +53,12 @@ public class GCSValidator extends Validator<GcsPersistentStore> {
 
   @Override
   public void validate(ConfigProblemSetBuilder ps, GcsPersistentStore n) {
+    GcsProperties gcsProperties = new GcsProperties();
     Path jsonPath = validatingFileDecryptPath(n.getJsonPath());
+    gcsProperties.setJsonPath(jsonPath.toString());
     try {
+      Credentials credentials = GCSConfig.getGcsCredentials(gcsProperties);
+      Storage googleCloudStorage = GCSConfig.getGoogleCloudStorage(credentials, gcsProperties);
       ExecutorService executor =
           Executors.newCachedThreadPool(
               new ThreadFactoryBuilder()

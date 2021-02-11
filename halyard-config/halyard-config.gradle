@@ -34,6 +34,7 @@ dependencies {
   implementation "com.squareup.retrofit:converter-jackson"
   implementation 'com.jcraft:jsch'
   implementation 'de.huxhorn.sulky:de.huxhorn.sulky.ulid'
+  implementation "net.logstash.logback:logstash-logback-encoder"
 
 //  TODO: add clouddriverDCOS once that's merged
   implementation project(':halyard-core')
