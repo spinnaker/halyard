@@ -38,7 +38,6 @@ import java.util.concurrent.Executors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 
 @Data
@@ -48,7 +47,6 @@ public class GoogleCanaryAccountValidator extends CanaryAccountValidator<GoogleC
   private String halyardVersion;
 
   private Registry registry;
-
 
   TaskScheduler taskScheduler;
 
