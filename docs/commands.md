@@ -8050,6 +8050,7 @@ hal config provider cloudfoundry account add ACCOUNT [parameters]
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--skip-ssl-validation`: (*Default*: `false`) Skip SSL server certificate validation of the API endpoint
+ * `--space-filter, --spaceFilter`: Organization and Space filter applied to the Spinnaker CF account
  * `--user`: (*Required*) User name for the account to use on for this CloudFoundry Foundation
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
@@ -8098,6 +8099,7 @@ hal config provider cloudfoundry account edit ACCOUNT [parameters]
  * `--remove-write-permission`: Remove this permission to from list of write permissions.
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--skip-ssl-validation`: (*Default*: `false`) Skip SSL server certificate validation of the API endpoint
+ * `--space-filter, --spaceFilter`: Organization and Space filter applied to the Spinnaker CF account
  * `--user`: User name for the account to use on for this CloudFoundry Foundation
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
 
@@ -9582,6 +9584,8 @@ hal config provider kubernetes account add ACCOUNT [parameters]
 
 #### Parameters
 `ACCOUNT`: The name of the account to operate on.
+ * `--cache-all-application-relationships`: If true, will add application relationships in the cache for all types of resources.
+This includes CRDs and resources that aren't used in the Clusters, Load Balancers or Firewalls sections.
  * `--cache-threads`: (*Default*: `1`) Number of caching agents for this kubernetes account. Each agent handles a subset of the namespaces available to this account. By default, only 1 agent caches all kinds for all namespaces in the account.
  * `--check-permissions-on-startup`: When false, clouddriver will skip the permission checks for all kubernetes kinds at startup. This can save a great deal of time
 during clouddriver startup when you have many kubernetes accounts configured. This disables the log messages at startup about missing permissions.
@@ -9606,6 +9610,8 @@ This can only be set when --namespaces is empty or not set.
  * `--only-spinnaker-managed`: (*Default*: `false`) (V2 Only) When true, Spinnaker will only cache/display applications that have been
 created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes.
  * `--provider-version`: (*Default*: `v2`) There are currently two versions of the Kubernetes Provider: V1 and V2. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.V1 is scheduled for removal in Spinnaker 1.21; we recommend using V2 only.
+ * `--raw-resource-endpoint-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources matching one or more of the provided expressions will be returned.
+ * `--raw-resource-endpoint-omit-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources that don't match any of the provided expressions will be returned. This can only be set when --raw-resource-endpoint-kinds is empty or not set
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--service-account`: When true, Spinnaker attempt to authenticate against Kubernetes using a Kubernetes service account. This only works when Halyard & Spinnaker are deployed in Kubernetes. Read more about service accounts here: [https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/).
@@ -9646,11 +9652,15 @@ hal config provider kubernetes account edit ACCOUNT [parameters]
  * `--add-namespace`: Add this namespace to the list of namespaces to manage.
  * `--add-omit-kind`: Add this kind to the list of kinds to omit.
  * `--add-omit-namespace`: Add this namespace to the list of namespaces to omit.
+ * `--add-raw-resource-endpoint-kind-expression`: Add this expression to the list of kind expressions for the raw resource endpoint configuration.
+ * `--add-raw-resource-endpoint-omit-kind-expression`: Add this expression to the list of omit kind expressions for the raw resources endpoint configuration.
  * `--add-read-permission`: Add this permission to the list of read permissions.
  * `--add-required-group-membership`: Add this group to the list of required group memberships.
  * `--add-write-permission`: Add this permission to the list of write permissions.
  * `--all-kinds`: (*Default*: `false`) Set the list of kinds to cache and deploy to every kind available to your supplied credentials.
  * `--all-namespaces`: (*Default*: `false`) Set the list of namespaces to cache and deploy to every namespace available to your supplied credentials.
+ * `--cache-all-application-relationships`: If true, will add application relationships in the cache for all types of resources.
+This includes CRDs and resources that aren't used in the Clusters, Load Balancers or Firewalls sections.
  * `--cache-threads`: Number of caching agents for this kubernetes account. Each agent handles a subset of the namespaces available to this account. By default, only 1 agent caches all kinds for all namespaces in the account.
  * `--check-permissions-on-startup`: When false, clouddriver will skip the permission checks for all kubernetes kinds at startup. This can save a great deal of time
 during clouddriver startup when you have many kubernetes accounts configured. This disables the log messages at startup about missing permissions.
@@ -9676,6 +9686,8 @@ This can only be set when --namespaces is empty or not set.
  * `--only-spinnaker-managed`: (V2 Only) When true, Spinnaker will only cache/display applications that have been
 created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes.
  * `--provider-version`: There are currently two versions of the Kubernetes Provider: V1 and V2. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.V1 is scheduled for removal in Spinnaker 1.21; we recommend using V2 only.
+ * `--raw-resource-endpoint-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources matching one or more of the provided expressions will be returned.
+ * `--raw-resource-endpoint-omit-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources that don't match any of the provided expressions will be returned. This can only be set when --raw-resource-endpoint-kinds is empty or not set
  * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
  * `--remove-custom-resource`: Remove this Kubernetes custom resource by name from the list of custom resources to manage.
  * `--remove-docker-registry`: Remove this docker registry from the list of docker registries to use as a source of images.
@@ -9683,6 +9695,8 @@ created by Spinnaker; as opposed to attempting to configure applications for res
  * `--remove-namespace`: Remove this namespace to the list of namespaces to manage.
  * `--remove-omit-kind`: Remove this kind to the list of kinds to omit.
  * `--remove-omit-namespace`: Remove this namespace to the list of namespaces to omit.
+ * `--remove-raw-resource-endpoint-kind-expression`: Remove this expression from list of kind expressions for the raw resource endpoint configuration.
+ * `--remove-raw-resource-endpoint-omit-kind-expression`: Remove this expression from the list of omit kind expressions for the raw resources endpoint configuration.
  * `--remove-read-permission`: Remove this permission from the list of read permissions.
  * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
  * `--remove-write-permission`: Remove this permission to from list of write permissions.
