@@ -8534,6 +8534,7 @@ hal config provider docker-registry account add ACCOUNT [parameters]
  * `--track-digests`: (*Default*: `false`) Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
  * `--username`: Your docker registry username
  * `--write-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to make changes to this account's cloud resources.
+ * `--repositories-regex`: (*Default*: `false`) Filter the repositories by a Regular Expression.
 
 
 ---
@@ -8598,6 +8599,7 @@ hal config provider docker-registry account edit ACCOUNT [parameters]
  * `--track-digests`: Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
  * `--username`: Your docker registry username
  * `--write-permissions`: A user must have at least one of these roles in order to make changes to this account's cloud resources.
+ * `--repositories-regex`: Filter the repositories by a Regular Expression.
 
 
 ---
