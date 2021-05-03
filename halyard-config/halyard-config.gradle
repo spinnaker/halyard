@@ -2,6 +2,8 @@ dependencies {
   compileOnly 'org.projectlombok:lombok'
   annotationProcessor 'org.projectlombok:lombok'
 
+  // TODO(plumpy): remove version once added to kork
+  implementation "com.google.cloud:google-cloud-storage:1.108.0"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-api:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-docker:$clouddriverVersion"
   implementation "com.netflix.spinnaker.clouddriver:clouddriver-google:$clouddriverVersion"
@@ -13,11 +15,11 @@ dependencies {
   implementation "com.netflix.spinnaker.front50:front50-core:$front50Version"
   implementation "com.netflix.spinnaker.front50:front50-gcs:$front50Version"
   implementation "com.netflix.spinnaker.front50:front50-s3:$front50Version"
-  implementation 'com.netflix.spinnaker.kork:kork-secrets'
-  implementation 'com.netflix.spinnaker.kork:kork-secrets-aws'
-  implementation 'com.netflix.spinnaker.kork:kork-secrets-gcp'
-  implementation "com.netflix.spinnaker.kork:kork-web"
-  implementation "com.netflix.spinnaker.kork:kork-cloud-config-server"
+  implementation 'io.spinnaker.kork:kork-secrets'
+  implementation 'io.spinnaker.kork:kork-secrets-aws'
+  implementation 'io.spinnaker.kork:kork-secrets-gcp'
+  implementation "io.spinnaker.kork:kork-web"
+  implementation "io.spinnaker.kork:kork-cloud-config-server"
   implementation 'com.amazonaws:aws-java-sdk-core:1.11.534'
   implementation 'com.amazonaws:aws-java-sdk-s3:1.11.534'
   implementation 'com.google.apis:google-api-services-compute'
@@ -28,9 +30,13 @@ dependencies {
   implementation 'org.apache.commons:commons-lang3'
   implementation 'commons-io:commons-io:2.6'
   implementation 'io.fabric8:kubernetes-client'
+
+  implementation "com.jakewharton.retrofit:retrofit1-okhttp3-client:1.1.0"
   implementation 'com.squareup.retrofit:retrofit'
+  implementation "com.squareup.retrofit:converter-jackson"
   implementation 'com.jcraft:jsch'
   implementation 'de.huxhorn.sulky:de.huxhorn.sulky.ulid'
+  implementation "net.logstash.logback:logstash-logback-encoder"
 
 //  TODO: add clouddriverDCOS once that's merged
   implementation project(':halyard-core')
