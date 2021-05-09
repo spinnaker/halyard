@@ -9610,7 +9610,7 @@ This can only be set when --kinds is empty or not set.
  * `--omit-namespaces`: (*Default*: `[]`) A list of namespaces this Spinnaker account cannot deploy to or cache.
 This can only be set when --namespaces is empty or not set.
  * `--only-spinnaker-managed`: (*Default*: `false`) (V2 Only) When true, Spinnaker will only cache/display applications that have been
-created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes.
+created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes. Resources already present in Kubernetes will need to be annotated manually with the Spinnaker [application moniker](https://spinnaker.io/reference/providers/kubernetes-v2/#moniker) if set to true.
  * `--provider-version`: (*Default*: `v2`) There are currently two versions of the Kubernetes Provider: V1 and V2. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.V1 is scheduled for removal in Spinnaker 1.21; we recommend using V2 only.
  * `--raw-resource-endpoint-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources matching one or more of the provided expressions will be returned.
  * `--raw-resource-endpoint-omit-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources that don't match any of the provided expressions will be returned. This can only be set when --raw-resource-endpoint-kinds is empty or not set
@@ -9686,7 +9686,7 @@ This can only be set when --kinds is empty or not set.
  * `--omit-namespaces`: (*Default*: `[]`) A list of namespaces this Spinnaker account cannot deploy to or cache.
 This can only be set when --namespaces is empty or not set.
  * `--only-spinnaker-managed`: (V2 Only) When true, Spinnaker will only cache/display applications that have been
-created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes.
+created by Spinnaker; as opposed to attempting to configure applications for resources already present in Kubernetes. Resources already present in Kubernetes will need to be annotated manually with the Spinnaker [application moniker](https://spinnaker.io/reference/providers/kubernetes-v2/#moniker) if set to true.
  * `--provider-version`: There are currently two versions of the Kubernetes Provider: V1 and V2. This allows you to pick the version of the provider (not the resources it manages) to run within Spinnaker.V1 is scheduled for removal in Spinnaker 1.21; we recommend using V2 only.
  * `--raw-resource-endpoint-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources matching one or more of the provided expressions will be returned.
  * `--raw-resource-endpoint-omit-kind-expressions`: (*Default*: `[]`) (V2 Only) A list of resource kind regular expressions that the raw resources endpoint will use to filter resources. Only resources that don't match any of the provided expressions will be returned. This can only be set when --raw-resource-endpoint-kinds is empty or not set
