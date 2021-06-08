@@ -124,7 +124,7 @@ public class KubernetesAddAccountCommand extends AbstractAddAccountCommand {
       names = "--cache-interval-seconds",
       arity = 1,
       description = KubernetesCommandProperties.CACHE_INTERVAL_SECONDS_DESCRIPTION)
-  private Long cacheIntervalSeconds = 30L;
+  private Long cacheIntervalSeconds;
 
   @Parameter(
       names = "--cache-all-application-relationships",
