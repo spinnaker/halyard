@@ -115,6 +115,7 @@ public class OAuth2 extends AuthnMethod {
         newUserInfoMapping.setEmail("userPrincipalName");
         newUserInfoMapping.setFirstName("givenName");
         newUserInfoMapping.setLastName("surname");
+        newUserInfoMapping.setUsername("userPrincipalName");
         break;
       case OTHER:
         newClient.setAccessTokenUri(client.getAccessTokenUri());
