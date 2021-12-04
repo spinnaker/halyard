@@ -7412,6 +7412,7 @@ Using {{region}} will make Spinnaker use AWS regions in the hostname to access d
  * `--edda`: The endpoint Edda is reachable at. Edda is not a hard dependency of Spinnaker, but is helpful for reducing the request volume against AWS. See [https://github.com/Netflix/edda](https://github.com/Netflix/edda) for more information.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--external-id`: Optional parameter used to identify and control access to AWS resources. Set this to the same value as the ExternalID parameter in the trust policy for the role you want to assume.
+ * `--lambda-enabled`: Enables Lambda Functions in the account
  * `--launching-lifecycle-hook-default-result`: (*Default*: `ABANDON`) Defines the action the Auto Scaling group should take when the lifecycle hook timeout elapses or if an unexpected failure occurs. This parameter can be either CONTINUE or ABANDON. The default value is ABANDON.
  * `--launching-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3600`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
           "remain in a wait state for a finite period of time. The default is one hour (3600 seconds).
@@ -7477,6 +7478,7 @@ Using {{region}} will make Spinnaker use AWS regions in the hostname to access d
  * `--edda`: The endpoint Edda is reachable at. Edda is not a hard dependency of Spinnaker, but is helpful for reducing the request volume against AWS. See [https://github.com/Netflix/edda](https://github.com/Netflix/edda) for more information.
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--external-id`: Optional parameter used to identify and control access to AWS resources. Set this to the same value as the ExternalID parameter in the trust policy for the role you want to assume.
+ * `--lambda-enabled`: Enables Lambda Functions in the account
  * `--launching-lifecycle-hook-default-result`: (*Default*: `ABANDON`) Defines the action the Auto Scaling group should take when the lifecycle hook timeout elapses or if an unexpected failure occurs. This parameter can be either CONTINUE or ABANDON. The default value is ABANDON.
  * `--launching-lifecycle-hook-heartbeat-timeout-seconds`: (*Default*: `3600`) Set the heartbeat timeout for the lifecycle hook. Instances can " +
           "remain in a wait state for a finite period of time. The default is one hour (3600 seconds).
@@ -7647,6 +7649,7 @@ hal config provider aws features edit [parameters]
 #### Parameters
  * `--cloud-formation`: (*Required*) Enable CloudFormation support for AWS.
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--lambda`: (*Required*) Enable Lambda support for AWS.
  * `--no-validate`: (*Default*: `false`) Skip validation.
 
 
@@ -8529,6 +8532,7 @@ hal config provider docker-registry account add ACCOUNT [parameters]
  * `--password-file`: The path to a file containing your docker password in plaintext (not a docker/config.json file)
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
  * `--repositories`: (*Default*: `[]`) An optional list of repositories to cache images from. If not provided, Spinnaker will attempt to read accessible repositories from the registries _catalog endpoint
+ * `--repositories-regex`: Allows to specify a Regular Expression to filter the repositories.
  * `--required-group-membership`: (*Default*: `[]`) A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--sort-tags-by-date`: (*Default*: `false`) Sort tags by creation date. Not recommended for use with large registries; sorting performance scales poorly due to limitations of the Docker V2 API.
  * `--track-digests`: (*Default*: `false`) Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
@@ -8593,6 +8597,7 @@ hal config provider docker-registry account edit ACCOUNT [parameters]
  * `--remove-required-group-membership`: Remove this group from the list of required group memberships.
  * `--remove-write-permission`: Remove this permission to from list of write permissions.
  * `--repositories`: (*Default*: `[]`) An optional list of repositories to cache images from. If not provided, Spinnaker will attempt to read accessible repositories from the registries _catalog endpoint
+ * `--repositories-regex`: Allows to specify a Regular Expression to filter the repositories.
  * `--required-group-membership`: A user must be a member of at least one specified group in order to make changes to this account's cloud resources.
  * `--sort-tags-by-date`: Sort tags by creation date. Not recommended for use with large registries; sorting performance scales poorly due to limitations of the Docker V2 API.
  * `--track-digests`: Track digest changes. This is not recommended as it consumes a high QPM, and most registries are flaky.
@@ -9586,6 +9591,7 @@ hal config provider kubernetes account add ACCOUNT [parameters]
 `ACCOUNT`: The name of the account to operate on.
  * `--cache-all-application-relationships`: If true, will add application relationships in the cache for all types of resources.
 This includes CRDs and resources that aren't used in the Clusters, Load Balancers or Firewalls sections.
+ * `--cache-interval-seconds`: How many seconds elapse between polling your kubernetes api. Kubernetes apis are sensitive to over-polling, and larger intervals (e.g. 10 minutes = 600 seconds) are desirable if you're seeing rate limiting.
  * `--cache-threads`: (*Default*: `1`) Number of caching agents for this kubernetes account. Each agent handles a subset of the namespaces available to this account. By default, only 1 agent caches all kinds for all namespaces in the account.
  * `--check-permissions-on-startup`: When false, clouddriver will skip the permission checks for all kubernetes kinds at startup. This can save a great deal of time
 during clouddriver startup when you have many kubernetes accounts configured. This disables the log messages at startup about missing permissions.
@@ -9661,6 +9667,7 @@ hal config provider kubernetes account edit ACCOUNT [parameters]
  * `--all-namespaces`: (*Default*: `false`) Set the list of namespaces to cache and deploy to every namespace available to your supplied credentials.
  * `--cache-all-application-relationships`: If true, will add application relationships in the cache for all types of resources.
 This includes CRDs and resources that aren't used in the Clusters, Load Balancers or Firewalls sections.
+ * `--cache-interval-seconds`: How many seconds elapse between polling your kubernetes api. Kubernetes apis are sensitive to over-polling, and larger intervals (e.g. 10 minutes = 600 seconds) are desirable if you're seeing rate limiting.
  * `--cache-threads`: Number of caching agents for this kubernetes account. Each agent handles a subset of the namespaces available to this account. By default, only 1 agent caches all kinds for all namespaces in the account.
  * `--check-permissions-on-startup`: When false, clouddriver will skip the permission checks for all kubernetes kinds at startup. This can save a great deal of time
 during clouddriver startup when you have many kubernetes accounts configured. This disables the log messages at startup about missing permissions.
