@@ -8896,6 +8896,8 @@ hal config provider google account add ACCOUNT [parameters]
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--image-projects`: (*Default*: `[]`) A list of Google Cloud Platform projects Spinnaker will be able to cache and deploy images from. When this is omitted, it defaults to the current project. Each project must have granted the IAM role `compute.imageUser` to the service account associated with the json key used by this account, as well as to the 'Google APIs service account' automatically created for the project being managed (should look similar to `12345678912@cloudservices.gserviceaccount.com`). See [https://cloud.google.com/compute/docs/images/sharing-images-across-projects](https://cloud.google.com/compute/docs/images/sharing-images-across-projects) for more information about sharing images across GCP projects.
  * `--json-path`: The path to a JSON service account that Spinnaker will use as credentials. This is only needed if Spinnaker is not deployed on a Google Compute Engine VM, or needs permissions not afforded to the VM it is running on. See [https://cloud.google.com/compute/docs/access/service-accounts](https://cloud.google.com/compute/docs/access/service-accounts) for more information.
+ * `--service-account-id`: The service account to be impersonated.
+ * `--service-account-project`: The google cloud project associated with the service account to be impersonated.
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--project`: (*Required*) The Google Cloud Platform project this Spinnaker account will manage.
  * `--read-permissions`: (*Default*: `[]`) A user must have at least one of these roles in order to view this account's cloud resources.
@@ -8942,6 +8944,8 @@ hal config provider google account edit ACCOUNT [parameters]
  * `--environment`: The environment name for the account. Many accounts can share the same environment (e.g. dev, test, prod)
  * `--image-projects`: A list of Google Cloud Platform projects Spinnaker will be able to cache and deploy images from. When this is omitted, it defaults to the current project. Each project must have granted the IAM role `compute.imageUser` to the service account associated with the json key used by this account, as well as to the 'Google APIs service account' automatically created for the project being managed (should look similar to `12345678912@cloudservices.gserviceaccount.com`). See [https://cloud.google.com/compute/docs/images/sharing-images-across-projects](https://cloud.google.com/compute/docs/images/sharing-images-across-projects) for more information about sharing images across GCP projects.
  * `--json-path`: The path to a JSON service account that Spinnaker will use as credentials. This is only needed if Spinnaker is not deployed on a Google Compute Engine VM, or needs permissions not afforded to the VM it is running on. See [https://cloud.google.com/compute/docs/access/service-accounts](https://cloud.google.com/compute/docs/access/service-accounts) for more information.
+ * `--service-account-id`: The service account to be impersonated.
+ * `--service-account-project`: The google cloud project associated with the service account to be impersonated. 
  * `--no-validate`: (*Default*: `false`) Skip validation.
  * `--project`: The Google Cloud Platform project this Spinnaker account will manage.
  * `--read-permissions`: A user must have at least one of these roles in order to view this account's cloud resources.
