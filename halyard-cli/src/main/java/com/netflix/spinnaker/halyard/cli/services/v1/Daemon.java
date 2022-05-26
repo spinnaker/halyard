@@ -51,7 +51,17 @@ import retrofit.converter.JacksonConverter;
 @Slf4j
 public class Daemon {
   public static boolean isHealthy() {
-    return getService().getHealth().get("status").equalsIgnoreCase("up");
+    // Hal /health endpoint can return:
+    // {
+    //   "status" : "UP",
+    //   "groups" : [ "liveness", "readiness" ]
+    // }
+    // So the return type must be Map<String, Object>
+    Object status = getService().getHealth().get("status");
+    if (status instanceof String) {
+      return ((String) status).equalsIgnoreCase("up");
+    }
+    return false;
   }
 
   public static String shutdown() {

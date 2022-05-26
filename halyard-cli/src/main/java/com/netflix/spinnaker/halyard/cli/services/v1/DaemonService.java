@@ -37,8 +37,14 @@ import retrofit.client.Response;
 import retrofit.http.*;
 
 public interface DaemonService {
+  // Hal /health endpoint can return:
+  // {
+  //   "status" : "UP",
+  //   "groups" : [ "liveness", "readiness" ]
+  // }
+  // So the return type must be Map<String, Object>
   @GET("/health")
-  Map<String, String> getHealth();
+  Map<String, Object> getHealth();
 
   @POST("/shutdown")
   Map<String, String> shutdown(@Body StringBodyRequest _ignore);
