@@ -43,7 +43,7 @@ public class KubernetesV2RedisService extends RedisService implements Kubernetes
   }
 
   public String getArtifactId(DeploymentConfiguration deploymentConfiguration) {
-    return "redis:5";
+    return "redis:6.2";
   }
 
   @Override
