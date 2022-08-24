@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 ## auto-generated debian install file written by halyard
+## which is executed when running 'hal deploy apply'.
 
 set -e
 set -o pipefail
@@ -8,7 +9,7 @@ set -o pipefail
 # install redis as a local service
 INSTALL_REDIS="{%install-redis%}"
 
-# install first-time spinnaker dependencies (java, setup apt repos)
+# install first-time spinnaker dependencies (setup apt repos)
 PREPARE_ENVIRONMENT="{%prepare-environment%}"
 
 REPOSITORY_URL="{%debian-repository%}"
@@ -63,41 +64,15 @@ function add_redis_apt_repository() {
 }
 
 function add_spinnaker_apt_repository() {
-  echo "Adding Spinnaker apt repository"
-  REPOSITORY_HOST=$(echo $REPOSITORY_URL | cut -d/ -f3)
-  echo "deb [arch=all] $REPOSITORY_URL apt main" | tee /etc/apt/sources.list.d/spinnaker.list > /dev/null
-}
-
-function add_java_apt_repository() {
-  # Only Ubuntu prior to 18.04 LTS requires this PPA
-  if [ "${DISTRIB_RELEASE%%.*}" -lt "18" ]; then
-    echo "Adding Java PPA repository for Ubuntu version less than 18.04"
-    add-apt-repository -y ppa:openjdk-r/ppa
+  # Most probably not required since the repo would already
+  # need to exist in order to install the spinnaker-halyard
+  # package in the first place.
+  if [ ! -f /etc/apt/sources.list.d/spinnaker.list ]; then
+    echo "Adding Spinnaker apt repository"
+    REPOSITORY_HOST=$(echo $REPOSITORY_URL | cut -d/ -f3)
+    curl -fsSL https://us-apt.pkg.dev/doc/repo-signing-key.gpg | gpg --dearmor | sudo tee /usr/share/keyrings/spinnaker.gpg > /dev/null
+    echo "deb [signed-by=/usr/share/keyrings/spinnaker.gpg arch=all] $REPOSITORY_URL apt main" | tee /etc/apt/sources.list.d/spinnaker.list > /dev/null
   fi
-}
-
-function install_java() {
-  set +e
-  local java_version=$(java -version 2>&1 head -1)
-  set -e
-
-  if [[ "$java_version" == *11.0* ]]; then
-    echo "Java dependency is already installed"
-    return 0;
-  fi
-
-  echo "Installing Java"
-  apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages unzip
-  apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages openjdk-11-jre-headless
-
-  # https://bugs.launchpad.net/ubuntu/+source/ca-certificates-java/+bug/983302
-  # It seems a circular dependency was introduced on 2016-04-22 with an openjdk-8 release, where
-  # the JRE relies on the ca-certificates-java package, which itself relies on the JRE.
-  # This causes the /etc/ssl/certs/java/cacerts file to never be generated, causing a startup
-  # failure in Clouddriver.
-  echo "Reinstalling Java CA certificates"
-  dpkg --purge --force-depends ca-certificates-java
-  apt-get install ca-certificates-java
 }
 
 echo "Updating apt package lists..."
@@ -107,7 +82,6 @@ if [ -n "$INSTALL_REDIS" ]; then
 fi
 
 if [ -n "$PREPARE_ENVIRONMENT" ]; then
-  add_java_apt_repository
   add_spinnaker_apt_repository
   {%upstart-init%}
 fi
@@ -115,10 +89,6 @@ fi
 apt-get update ||:
 
 echo "Installing desired components..."
-
-if [ -n "$PREPARE_ENVIRONMENT" ]; then
-  install_java
-fi
 
 if [ -z "$(getent group spinnaker)" ]; then
   groupadd spinnaker
