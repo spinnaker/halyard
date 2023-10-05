@@ -2,9 +2,7 @@
 
 # Halyard
 
-<a href="https://app.travis-ci.com/spinnaker/halyard">
-    <img src="./spinnaker-seeklogo.svg" alt="Logo" width="120" height="120">
-</a>
+<img src="./spinnaker-seeklogo.svg" alt="Logo" width="120" height="120">
 
 A tool for configuring, installing, and updating Spinnaker.
 
