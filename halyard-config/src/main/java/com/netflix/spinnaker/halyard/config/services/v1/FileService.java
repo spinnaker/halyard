@@ -84,7 +84,7 @@ public class FileService {
       String localPath = cloudConfigResourceService.getLocalPath(fileReference);
       return configFileService.getContents(localPath).getBytes();
     }
-    if (EncryptedSecret.isEncryptedSecret(fileReference)) {
+    if (EncryptedSecret.isEncryptedFile(fileReference)) {
       return secretSessionManager.decryptAsBytes(fileReference);
     }
 
