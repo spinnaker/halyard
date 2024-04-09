@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
@@ -54,16 +53,6 @@ public class GoogleProfileReader implements ProfileReader {
 
   private Yaml getYamlParser() {
     return applicationContext.getBean(Yaml.class);
-  }
-
-  @Bean
-  public Storage applicationDefaultGoogleStorage() {
-    return createGoogleStorage(true);
-  }
-
-  @Bean
-  public Storage unauthenticatedGoogleStorage() {
-    return createGoogleStorage(false);
   }
 
   public InputStream readProfile(String artifactName, String version, String profileName)
