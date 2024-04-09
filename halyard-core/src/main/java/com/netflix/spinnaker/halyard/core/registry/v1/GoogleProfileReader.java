@@ -19,17 +19,11 @@
 package com.netflix.spinnaker.halyard.core.registry.v1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.storage.Storage;
-import com.google.api.services.storage.StorageScopes;
-import com.netflix.spinnaker.halyard.core.provider.v1.google.GoogleCredentials;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -106,37 +100,5 @@ public class GoogleProfileReader implements ProfileReader {
     }
 
     return new ByteArrayInputStream(output.toByteArray());
-  }
-
-  private Storage createGoogleStorage(boolean useApplicationDefaultCreds) {
-    JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-    String applicationName = "Spinnaker/Halyard";
-    HttpRequestInitializer requestInitializer = null;
-
-    if (useApplicationDefaultCreds) {
-      try {
-        com.google.auth.oauth2.GoogleCredentials credentials =
-            com.google.auth.oauth2.GoogleCredentials.getApplicationDefault();
-        if (credentials.createScopedRequired()) {
-          credentials =
-              credentials.createScoped(
-                  Collections.singleton(StorageScopes.DEVSTORAGE_FULL_CONTROL));
-        }
-        requestInitializer = GoogleCredentials.setHttpTimeout(credentials);
-        log.info("Loaded application default credential for reading BOMs & profiles.");
-      } catch (Exception e) {
-        log.debug(
-            "No application default credential could be loaded for reading BOMs & profiles. Continuing unauthenticated: {}",
-            e.getMessage());
-      }
-    }
-    if (requestInitializer == null) {
-      requestInitializer = GoogleCredentials.retryRequestInitializer();
-    }
-
-    return new Storage.Builder(
-            GoogleCredentials.buildHttpTransport(), jsonFactory, requestInitializer)
-        .setApplicationName(applicationName)
-        .build();
   }
 }
