@@ -29,12 +29,9 @@ import java.nio.charset.StandardCharsets
 
 class HalconfigParserMocker extends Specification {
   HalconfigParser mockHalconfigParser(String config) {
-    def parserStub = new HalconfigParser()
     ApplicationContext applicationContext = Stub(ApplicationContext.class)
     applicationContext.getBean(Yaml.class) >> new Yaml(new SafeConstructor())
-    parserStub.objectMapper = new StrictObjectMapper()
-    parserStub.applicationContext = applicationContext
-    parserStub.halconfigDirectoryStructure = new HalconfigDirectoryStructure();
+    def parserStub = new HalconfigParser(new StrictObjectMapper(), new HalconfigDirectoryStructure(), applicationContext)
 
     def stream = new ByteArrayInputStream(config.getBytes(StandardCharsets.UTF_8))
     Halconfig halconfig = parserStub.parseHalconfig(stream)
