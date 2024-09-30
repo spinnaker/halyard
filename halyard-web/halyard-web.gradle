@@ -1,12 +1,5 @@
 apply plugin: 'io.spinnaker.package'
 
-ext {
-  springConfigLocation = System.getProperty('spring.config.additional-location', "${System.getProperty('user.home')}/.spinnaker/".toString())
-}
-
-run {
-  systemProperty('spring.config.additional-location', project.springConfigLocation)
-}
 mainClassName = 'com.netflix.spinnaker.halyard.Main'
 
 configurations.all {
@@ -31,8 +24,9 @@ dependencies {
   implementation 'org.apache.commons:commons-lang3'
   implementation 'com.squareup.retrofit:retrofit'
   implementation 'io.github.lognet:grpc-spring-boot-starter:2.4.4'
-  implementation 'org.codehaus.groovy:groovy'
+  implementation 'org.apache.groovy:groovy'
   implementation "io.spinnaker.kork:kork-web"
+  implementation "io.spinnaker.kork:kork-cloud-config-server"
   implementation "io.spinnaker.kork:kork-config"
   runtimeOnly    "io.spinnaker.kork:kork-actuator"
 
@@ -45,8 +39,6 @@ dependencies {
   implementation project(':halyard-core')
   implementation project(':halyard-deploy')
   implementation project(':halyard-proto')
-
-  runtimeOnly 'org.springframework.cloud:spring-cloud-starter-bootstrap'
 }
 
 def cliScript = project.tasks.create('createCliStartScripts', CreateStartScripts) {

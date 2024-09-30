@@ -12,6 +12,7 @@ RUN apt-get update && \
       openjdk-11-jre-headless \
       curl \
       python-pip && \
+    rm -rf /var/lib/apt/lists/* && \
     pip install awscli==${AWS_CLI_VERSION} --upgrade
 
 RUN echo '#!/usr/bin/env bash' > /usr/local/bin/hal && \
@@ -28,5 +29,7 @@ RUN curl -f -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-wes
 RUN adduser --system --uid 1000 --group spinnaker
 COPY halyard-web/build/install/halyard /opt/halyard
 USER spinnaker
+
+HEALTHCHECK CMD curl http://localhost:8064/health | grep UP || exit 1
 
 CMD ["/opt/halyard/bin/halyard"]
