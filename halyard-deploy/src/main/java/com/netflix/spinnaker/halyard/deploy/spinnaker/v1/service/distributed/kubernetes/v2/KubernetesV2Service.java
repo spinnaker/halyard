@@ -205,6 +205,18 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
         .toString();
   }
 
+  default String getServiceAccountYaml(
+      GenerateService.ResolvedConfiguration resolvedConfiguration) {
+    ServiceSettings settings = resolvedConfiguration.getServiceSettings(getService());
+    String namespace = getNamespace(settings);
+    return new JinjaJarResource("/kubernetes/manifests/serviceAccount.yml")
+        .addBinding("name", getService().getCanonicalName())
+        .addBinding("namespace", getNamespace(settings))
+        .addBinding(
+            "serviceAccountAnnotations", settings.getKubernetes().getServiceAccountAnnotations())
+        .toString();
+  }
+
   default String getPodSpecYaml(
       KubernetesV2Executor executor,
       AccountDeploymentDetails<KubernetesAccount> details,
@@ -262,7 +274,7 @@ public interface KubernetesV2Service<T> extends HasServiceSettings<T>, Kubernete
         .addBinding("initContainers", getInitContainers(details))
         .addBinding("hostAliases", getHostAliases(details))
         .addBinding("imagePullSecrets", settings.getKubernetes().getImagePullSecrets())
-        .addBinding("serviceAccountName", settings.getKubernetes().getServiceAccountName())
+        .addBinding("serviceAccountName", getService().getCanonicalName())
         .addBinding("terminationGracePeriodSeconds", terminationGracePeriodSeconds())
         .addBinding("nodeSelector", settings.getKubernetes().getNodeSelector())
         .addBinding("affinity", getAffinity(details))
