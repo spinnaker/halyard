@@ -13,8 +13,8 @@ RUN apt-get update && \
       curl \
       wget \
       python3-pip \
-      python3 \
-    rm -rf /var/lib/apt/lists/* --upgrade
+      python3 && \
+    rm -rf /var/lib/apt/lists/*
 
 # AWS CLI 2
 RUN if [ "${TARGETARCH}" = "arm64" ]; then \
