@@ -13,7 +13,7 @@ RUN apt-get update && \
       curl \
       wget \
       python3-pip \
-      python3 && \
+      python3 \
       unzip && \
     rm -rf /var/lib/apt/lists/*
 
