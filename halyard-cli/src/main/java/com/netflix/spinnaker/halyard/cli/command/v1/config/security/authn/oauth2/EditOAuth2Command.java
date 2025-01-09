@@ -81,6 +81,11 @@ public class EditOAuth2Command extends AbstractEditAuthnMethodCommand<OAuth2> {
   private String userInfoMappingUsername;
 
   @Parameter(
+      names = "--user-info-mapping-roles",
+      description = "The roles field returned from your OAuth provider.")
+  private String userInfoMappingRoles;
+
+  @Parameter(
       names = "--provider",
       description =
           "The OAuth provider handling authentication. The supported options are Google, GitHub, Oracle, Azure and Other",
@@ -143,6 +148,9 @@ public class EditOAuth2Command extends AbstractEditAuthnMethodCommand<OAuth2> {
         isSet(userInfoMappingLastName) ? userInfoMappingLastName : userInfoMapping.getLastName());
     userInfoMapping.setUsername(
         isSet(userInfoMappingUsername) ? userInfoMappingUsername : userInfoMapping.getUsername());
+
+    userInfoMapping.setRoles(
+        isSet(userInfoMappingRoles) ? userInfoMappingRoles : userInfoMapping.getRoles());
 
     authnMethod.setProvider(provider != null ? provider : authnMethod.getProvider());
 
