@@ -6,7 +6,7 @@ ENV KUBECTL_RELEASE=1.15.10
 ENV AWS_BINARY_RELEASE_DATE=2020-02-22
 ENV AWS_CLI_VERSION=2.15.57
 
-RUN rm /var/lib/dpkg/info/libc-bin.* && apt-get clean && apt-get update && \
+RUN rm /var/lib/dpkg/info/libc-bin.* && apt-get clean && apt-get update && apt-get --reinstall install libc-bin && \
     apt-get upgrade -y && \
     apt-get install -y \
       openjdk-17-jre-headless \
