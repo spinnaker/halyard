@@ -128,6 +128,7 @@ public class OAuth2 extends AuthnMethod {
         newUserInfoMapping.setFirstName(userInfoMapping.getFirstName());
         newUserInfoMapping.setLastName(userInfoMapping.getLastName());
         newUserInfoMapping.setUsername(userInfoMapping.getUsername());
+        newUserInfoMapping.setRoles(userInfoMapping.getRoles());
         break;
       default:
         throw new RuntimeException("Unknown provider type " + provider);
@@ -161,6 +162,7 @@ public class OAuth2 extends AuthnMethod {
     private String firstName;
     private String lastName;
     private String username;
+    private String roles;
   }
 
   @Data
