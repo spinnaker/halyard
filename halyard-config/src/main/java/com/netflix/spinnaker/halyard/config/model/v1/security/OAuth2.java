@@ -78,16 +78,29 @@ public class OAuth2 extends AuthnMethod {
         newUserInfoMapping.setLastName("family_name");
         break;
       case GITHUB:
-        newClient.setAccessTokenUri("https://github.com/login/oauth/access_token");
-        newClient.setUserAuthorizationUri("https://github.com/login/oauth/authorize");
-        newClient.setScope("user:email");
+        newClient.setAccessTokenUri(
+            isSet(client.getAccessTokenUri())
+                ? client.getAccessTokenUri()
+                : "https://github.com/login/oauth/access_token");
+        newClient.setUserAuthorizationUri(
+            isSet(client.getUserAuthorizationUri())
+                ? client.getUserAuthorizationUri()
+                : "https://github.com/login/oauth/authorize");
+        newClient.setScope(isSet(client.getScope()) ? client.getScope() : "user:email");
 
-        newResource.setUserInfoUri("https://api.github.com/user");
+        newResource.setUserInfoUri(
+            isSet(resource.getUserInfoUri())
+                ? resource.getUserInfoUri()
+                : "https://api.github.com/user");
 
-        newUserInfoMapping.setEmail("email");
-        newUserInfoMapping.setFirstName("");
-        newUserInfoMapping.setLastName("name");
-        newUserInfoMapping.setUsername("login");
+        newUserInfoMapping.setEmail(
+            isSet(userInfoMapping.getEmail()) ? userInfoMapping.getEmail() : "email");
+        newUserInfoMapping.setFirstName(
+            isSet(userInfoMapping.getFirstName()) ? userInfoMapping.getFirstName() : "");
+        newUserInfoMapping.setLastName(
+            isSet(userInfoMapping.getLastName()) ? userInfoMapping.getLastName() : "name");
+        newUserInfoMapping.setUsername(
+            isSet(userInfoMapping.getUsername()) ? userInfoMapping.getUsername() : "login");
         break;
       case ORACLE:
         final String idcsBaseUrl = "https://idcs-${idcsTenantId}.identity.oraclecloud.com";
@@ -199,5 +212,9 @@ public class OAuth2 extends AuthnMethod {
               + "\" is not a valid choice. The options are: "
               + Arrays.toString(Provider.values()));
     }
+  }
+
+  private static boolean isSet(String config) {
+    return config != null;
   }
 }
