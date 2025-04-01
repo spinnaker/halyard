@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.netflix.spinnaker.halyard.config.model.v1.canary.Canary;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Spring;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.services.v1.VersionsService;
 import com.netflix.spinnaker.halyard.core.registry.v1.Versions;
@@ -79,6 +80,8 @@ public class DeploymentConfiguration extends Node {
 
   /** Authn & Authz configuration. */
   Security security = new Security();
+
+  Spring spring = new Spring();
 
   /** Artifact configuration (how to talk to git, gcs, s3, etc...) */
   Artifacts artifacts = new Artifacts();

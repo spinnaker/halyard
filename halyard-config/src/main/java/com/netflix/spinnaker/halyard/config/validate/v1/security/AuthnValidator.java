@@ -20,7 +20,6 @@ import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Authn;
 import com.netflix.spinnaker.halyard.config.model.v1.security.IAP;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Ldap;
-import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Saml;
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder;
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem;
@@ -46,15 +45,12 @@ public class AuthnValidator extends Validator<Authn> {
    *     ID/secret, or path to a certficate store.
    */
   private boolean maybeShouldBeEnabled(Authn n) {
-    OAuth2 o = n.getOauth2();
     Saml s = n.getSaml();
     Ldap l = n.getLdap();
     IAP i = n.getIap();
     // There isn't a good "core fields" for X509
 
-    return StringUtils.isNotEmpty(o.getClient().getClientId())
-        || StringUtils.isNotEmpty(o.getClient().getClientSecret())
-        || StringUtils.isNotEmpty(s.getIssuerId())
+    return StringUtils.isNotEmpty(s.getIssuerId())
         || StringUtils.isNotEmpty(s.getKeyStore())
         || StringUtils.isNotEmpty(l.getUserDnPattern())
         || StringUtils.isNotEmpty(l.getUserSearchBase())

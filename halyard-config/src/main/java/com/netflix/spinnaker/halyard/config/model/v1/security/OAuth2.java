@@ -17,11 +17,8 @@
 
 package com.netflix.spinnaker.halyard.config.model.v1.security;
 
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIterator;
-import com.netflix.spinnaker.halyard.config.model.v1.node.NodeIteratorFactory;
-import com.netflix.spinnaker.halyard.config.model.v1.node.Secret;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -34,125 +31,135 @@ public class OAuth2 extends AuthnMethod {
   }
 
   @Override
-  public NodeIterator getChildren() {
-    return NodeIteratorFactory.makeEmptyIterator();
-  }
-
-  @Override
   public Method getMethod() {
     return Method.OAuth2;
   }
 
   private Client client = new Client();
-  private UserInfoRequirements userInfoRequirements;
-  private Resource resource = new Resource();
-  private UserInfoMapping userInfoMapping = new UserInfoMapping();
-  private Provider provider;
 
-  public void setProvider(Provider provider) {
-    this.provider = provider;
-
+  public void setProvider(String provider) {
     if (provider == null) {
       return;
     }
 
-    Client newClient =
-        new Client()
-            .setClientId(client.getClientId())
-            .setClientSecret(client.getClientSecret())
-            .setPreEstablishedRedirectUri(client.getPreEstablishedRedirectUri())
-            .setUseCurrentUri(client.getUseCurrentUri());
-    Resource newResource = new Resource();
-    UserInfoMapping newUserInfoMapping = new UserInfoMapping();
-
     switch (provider) {
-      case GOOGLE:
-        newClient.setAccessTokenUri("https://www.googleapis.com/oauth2/v4/token");
-        newClient.setUserAuthorizationUri("https://accounts.google.com/o/oauth2/v2/auth");
-        newClient.setScope("profile email");
+      case "GOOGLE":
+        client.getProvider().setGoogle(new HashMap<>());
+        client.getRegistration().setGoogle(new HashMap<>());
+        client
+            .getProvider()
+            .getGoogle()
+            .put("token-uri", "https://www.googleapis.com/oauth2/v4/token");
+        client
+            .getProvider()
+            .getGoogle()
+            .put("authorization-uri", "https://accounts.google.com/o/oauth2/v2/auth");
+        client
+            .getProvider()
+            .getGoogle()
+            .put("user-info-uri", "https://www.googleapis.com/oauth2/v3/userinfo");
 
-        newResource.setUserInfoUri("https://www.googleapis.com/oauth2/v3/userinfo");
-
-        newUserInfoMapping.setEmail("email");
-        newUserInfoMapping.setFirstName("given_name");
-        newUserInfoMapping.setLastName("family_name");
+        client.getRegistration().getGoogle().put("scope", "profile, email");
+        client.getRegistration().getUserInfoMapping().setEmail("email");
+        client.getRegistration().getUserInfoMapping().setFirstName("given_name");
+        client.getRegistration().getUserInfoMapping().setLastName("family_name");
         break;
-      case GITHUB:
-        newClient.setAccessTokenUri("https://github.com/login/oauth/access_token");
-        newClient.setUserAuthorizationUri("https://github.com/login/oauth/authorize");
-        newClient.setScope("user:email");
+      case "GITHUB":
+        client.getProvider().setGithub(new HashMap<>());
+        client.getRegistration().setGithub(new HashMap<>());
+        client
+            .getProvider()
+            .getGithub()
+            .put("token-uri", "https://github.com/login/oauth/access_token");
+        client
+            .getProvider()
+            .getGithub()
+            .put("authorization-uri", "https://github.com/login/oauth/authorize");
+        client.getRegistration().getGithub().put("scope", "user:email");
 
-        newResource.setUserInfoUri("https://api.github.com/user");
+        client.getProvider().getGithub().put("user-info-uri", "https://api.github.com/user");
 
-        newUserInfoMapping.setEmail("email");
-        newUserInfoMapping.setFirstName("");
-        newUserInfoMapping.setLastName("name");
-        newUserInfoMapping.setUsername("login");
+        client.getRegistration().getUserInfoMapping().setEmail("email");
+        client.getRegistration().getUserInfoMapping().setFirstName("");
+        client.getRegistration().getUserInfoMapping().setLastName("name");
+        client.getRegistration().getUserInfoMapping().setUsername("login");
         break;
-      case ORACLE:
+      case "ORACLE":
         final String idcsBaseUrl = "https://idcs-${idcsTenantId}.identity.oraclecloud.com";
-        newClient.setAccessTokenUri(idcsBaseUrl + "/oauth2/v1/token");
-        newClient.setUserAuthorizationUri(idcsBaseUrl + "/oauth2/v1/authorize");
-        newClient.setScope("openid urn:opc:idm:__myscopes__");
+        client.getProvider().setOracle(new HashMap<>());
+        client.getRegistration().setOracle(new HashMap<>());
+        client.getProvider().getOracle().put("token-uri", idcsBaseUrl + "/oauth2/v1/token");
+        client
+            .getProvider()
+            .getOracle()
+            .put("authorization-uri", idcsBaseUrl + "/oauth2/v1/authorize");
+        client.getRegistration().getOracle().put("scope", "openid urn:opc:idm:__myscopes__");
 
-        newResource.setUserInfoUri(idcsBaseUrl + "/oauth2/v1/userinfo");
+        client.getProvider().getOracle().put("user-info-uri", idcsBaseUrl + "/oauth2/v1/userinfo");
 
-        newUserInfoMapping.setEmail("");
-        newUserInfoMapping.setFirstName("given_name");
-        newUserInfoMapping.setLastName("family_name");
-        newUserInfoMapping.setUsername("preferred_username");
+        client.getRegistration().getUserInfoMapping().setEmail("");
+        client.getRegistration().getUserInfoMapping().setFirstName("given_name");
+        client.getRegistration().getUserInfoMapping().setLastName("family_name");
+        client.getRegistration().getUserInfoMapping().setUsername("preferred_username");
         break;
-      case AZURE:
-        newClient.setAccessTokenUri(
-            "https://login.microsoftonline.com/${azureTenantId}/oauth2/token");
-        newClient.setUserAuthorizationUri(
-            "https://login.microsoftonline.com/${azureTenantId}/oauth2/authorize?resource=https://graph.windows.net");
-        newClient.setScope("profile");
-        newClient.setClientAuthenticationScheme("query");
+      case "AZURE":
+        client.getProvider().setAzure(new HashMap<>());
+        client.getRegistration().setAzure(new HashMap<>());
+        client
+            .getProvider()
+            .getAzure()
+            .put("token-uri", "https://login.microsoftonline.com/${azureTenantId}/oauth2/token");
+        client
+            .getProvider()
+            .getAzure()
+            .put(
+                "authorization-uri",
+                "https://login.microsoftonline.com/${azureTenantId}/oauth2/authorize?resource=https://graph.windows.net");
+        client.getRegistration().getAzure().put("scope", "profile");
+        client.getRegistration().getAzure().put("clientAuthenticationScheme", "query");
 
-        newResource.setUserInfoUri("https://graph.windows.net/me?api-version=1.6");
+        client
+            .getProvider()
+            .getAzure()
+            .put("user-info-uri", "https://graph.windows.net/me?api-version=1.6");
 
-        newUserInfoMapping.setEmail("userPrincipalName");
-        newUserInfoMapping.setFirstName("givenName");
-        newUserInfoMapping.setLastName("surname");
+        client.getRegistration().getUserInfoMapping().setEmail("userPrincipalName");
+        client.getRegistration().getUserInfoMapping().setFirstName("givenName");
+        client.getRegistration().getUserInfoMapping().setLastName("surname");
         break;
-      case OTHER:
-        newClient.setAccessTokenUri(client.getAccessTokenUri());
-        newClient.setUserAuthorizationUri(client.getUserAuthorizationUri());
-        newClient.setScope(client.getScope());
-        newClient.setClientAuthenticationScheme(client.getClientAuthenticationScheme());
-
-        newResource.setUserInfoUri(resource.getUserInfoUri());
-
-        newUserInfoMapping.setEmail(userInfoMapping.getEmail());
-        newUserInfoMapping.setFirstName(userInfoMapping.getFirstName());
-        newUserInfoMapping.setLastName(userInfoMapping.getLastName());
-        newUserInfoMapping.setUsername(userInfoMapping.getUsername());
+      case "OTHER":
+        client.getProvider().setOther(new HashMap<>());
+        client.getRegistration().setOther(new HashMap<>());
         break;
       default:
         throw new RuntimeException("Unknown provider type " + provider);
     }
-
-    this.client = newClient;
-    this.resource = newResource;
-    this.userInfoMapping = newUserInfoMapping;
   }
 
   @Data
   public static class Client {
-    private String clientId;
-    @Secret private String clientSecret;
-    private String accessTokenUri;
-    private String userAuthorizationUri;
-    private String clientAuthenticationScheme;
-    private String scope;
-    private String preEstablishedRedirectUri;
-    private Boolean useCurrentUri;
+    private Registration registration = new Registration();
+    private Provider provider = new Provider();
   }
 
   @Data
-  public static class Resource {
-    private String userInfoUri;
+  public static class Registration {
+    private UserInfoMapping userInfoMapping = new UserInfoMapping();
+    private Map<String, String> userInfoRequirements;
+    private Map<String, String> google;
+    private Map<String, String> github;
+    private Map<String, String> azure;
+    private Map<String, String> oracle;
+    private Map<String, String> other;
+  }
+
+  @Data
+  public static class Provider {
+    private Map<String, String> google;
+    private Map<String, String> github;
+    private Map<String, String> azure;
+    private Map<String, String> oracle;
+    private Map<String, String> other;
   }
 
   @Data
@@ -170,34 +177,6 @@ public class OAuth2 extends AuthnMethod {
     @Override
     public String toString() {
       return this.isEmpty() ? "(empty)" : super.toString();
-    }
-  }
-
-  public enum Provider {
-    AZURE("azure"),
-    GITHUB("github"),
-    ORACLE("oracle"),
-    OTHER("other"),
-    GOOGLE("google");
-
-    private String id;
-
-    Provider(String id) {
-      this.id = id;
-    }
-
-    public static Provider fromString(String name) {
-      for (Provider type : Provider.values()) {
-        if (type.toString().equalsIgnoreCase(name)) {
-          return type;
-        }
-      }
-
-      throw new IllegalArgumentException(
-          "Provider \""
-              + name
-              + "\" is not a valid choice. The options are: "
-              + Arrays.toString(Provider.values()));
     }
   }
 }

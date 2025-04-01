@@ -51,6 +51,28 @@ public class SecurityController {
         .execute(validationSettings);
   }
 
+  @RequestMapping(value = "/spring", method = RequestMethod.GET)
+  DaemonTask<Halconfig, Spring> getSpring(
+      @PathVariable String deploymentName, @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<Spring>builder()
+        .getter(() -> securityService.getSpring(deploymentName))
+        .validator(() -> securityService.validateSpring(deploymentName))
+        .description("Get all security settings")
+        .build()
+        .execute(validationSettings);
+  }
+
+  @RequestMapping(value = "/oauth2Security", method = RequestMethod.GET)
+  DaemonTask<Halconfig, OAuth2Security> getOAuth2Security(
+      @PathVariable String deploymentName, @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<OAuth2Security>builder()
+        .getter(() -> securityService.getOAuth2Security(deploymentName))
+        .validator(() -> securityService.validateOAuth2Security(deploymentName))
+        .description("Get all security settings")
+        .build()
+        .execute(validationSettings);
+  }
+
   @RequestMapping(value = "/ui/", method = RequestMethod.GET)
   DaemonTask<Halconfig, UiSecurity> getUiSecurity(
       @PathVariable String deploymentName, @ModelAttribute ValidationSettings validationSettings) {
@@ -215,6 +237,17 @@ public class SecurityController {
         .execute(validationSettings);
   }
 
+  @RequestMapping(value = "/oauth2", method = RequestMethod.GET)
+  DaemonTask<Halconfig, OAuth2> getOAuth2(
+      @PathVariable String deploymentName, @ModelAttribute ValidationSettings validationSettings) {
+    return GenericGetRequest.<OAuth2>builder()
+        .getter(() -> securityService.getOAuth2(deploymentName))
+        .validator(() -> securityService.validateOAuth2(deploymentName))
+        .description("Get authentication settings")
+        .build()
+        .execute(validationSettings);
+  }
+
   @RequestMapping(
       value = "/authz/groupMembership/{roleProviderName:.+}",
       method = RequestMethod.GET)
@@ -259,6 +292,20 @@ public class SecurityController {
         .description("Edit " + methodName + " authentication settings")
         .build()
         .execute(validationSettings, method);
+  }
+
+  @RequestMapping(value = "/oauth2", method = RequestMethod.PUT)
+  DaemonTask<Halconfig, Void> setOAuth2(
+      @PathVariable String deploymentName,
+      @ModelAttribute ValidationSettings validationSettings,
+      @RequestBody OAuth2 oAuth2) {
+    return GenericUpdateRequest.<OAuth2>builder(halconfigParser)
+        .stagePath(halconfigDirectoryStructure.getStagingPath(deploymentName))
+        .updater(m -> securityService.setOAuth2(deploymentName, m))
+        .validator(() -> securityService.validateOAuth2(deploymentName))
+        .description("Edit OAuth2 authentication settings")
+        .build()
+        .execute(validationSettings, oAuth2);
   }
 
   @RequestMapping(
