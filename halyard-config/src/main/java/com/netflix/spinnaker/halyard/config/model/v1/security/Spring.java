@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2025 OpsMx, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,17 @@
  *
  */
 
-package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
+package com.netflix.spinnaker.halyard.config.model.v1.security;
 
-import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2;
-import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2Security;
+import com.netflix.spinnaker.halyard.config.model.v1.node.Node;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
-class SpringConfig {
-  OAuth2 oauth2;
-  OAuth2Security security;
+public class Spring extends Node {
+  @Getter private String nodeName = "spring";
 
-  SpringConfig(OAuth2Security security) {
-    this.security = security;
-  }
-
-  SpringConfig(OAuth2 oauth2) {
-    this.oauth2 = oauth2;
-  }
+  private OAuth2Security security = new OAuth2Security();
 }

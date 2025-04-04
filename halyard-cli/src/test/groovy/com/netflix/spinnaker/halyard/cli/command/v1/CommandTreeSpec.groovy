@@ -21,8 +21,10 @@ import com.netflix.spinnaker.halyard.cli.command.v1.config.EditConfigCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.FeaturesCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.GenerateCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.MetricStoresCommand
+import com.netflix.spinnaker.halyard.cli.command.v1.config.OAuthSecurityCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.PersistentStorageCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.SecurityCommand
+import com.netflix.spinnaker.halyard.cli.command.v1.config.SpringCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.VersionConfigCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.ci.CiCommand
 import com.netflix.spinnaker.halyard.cli.command.v1.config.providers.ProviderCommand
@@ -100,19 +102,19 @@ class CommandTreeSpec extends Specification {
     ConfigCommand   | "version"       | VersionConfigCommand
     ConfigCommand   | "ci"            | CiCommand
     ConfigCommand   | "stats"         | StatsCommand
+    ConfigCommand   | "spring"        | SpringCommand
+
+    SpringCommand   | "security"      | OAuthSecurityCommand
 
     SecurityCommand | "api"           | ApiSecurityCommand
     SecurityCommand | "authn"         | AuthnCommand
     SecurityCommand | "authz"         | AuthzCommand
     SecurityCommand | "ui"            | UiSecurityCommand
 
-    AuthnCommand    | "oauth2"        | OAuth2Command
     AuthnCommand    | "saml"          | SamlCommand
     AuthnCommand    | "ldap"          | LdapCommand
     AuthnCommand    | "x509"          | X509Command
 
-    OAuth2Command   | "disable"       | AuthnMethodEnableDisableCommand
-    OAuth2Command   | "enable"        | AuthnMethodEnableDisableCommand
     OAuth2Command   | "edit"          | EditOAuth2Command
 
     SamlCommand     | "disable"       | AuthnMethodEnableDisableCommand

@@ -463,6 +463,10 @@ public interface DaemonService {
   DaemonTask<Halconfig, Security> getSecurity(
       @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
 
+  @GET("/v1/config/deployments/{deploymentName}/security/spring/")
+  DaemonTask<Halconfig, Spring> getSpring(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
   @PUT("/v1/config/deployments/{deploymentName}/security/")
   DaemonTask<Halconfig, Void> setSecurity(
       @Path("deploymentName") String deploymentName,
@@ -535,6 +539,10 @@ public interface DaemonService {
   DaemonTask<Halconfig, Object> getApiSecurity(
       @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
 
+  @GET("/v1/config/deployments/{deploymentName}/security/oauth2Security/")
+  DaemonTask<Halconfig, Object> getOAuth2Security(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
   @PUT("/v1/config/deployments/{deploymentName}/security/api/")
   DaemonTask<Halconfig, Void> setApiSecurity(
       @Path("deploymentName") String deploymentName,
@@ -589,12 +597,22 @@ public interface DaemonService {
       @Path("methodName") String methodName,
       @Query("validate") boolean validate);
 
+  @GET("/v1/config/deployments/{deploymentName}/security/oauth2")
+  DaemonTask<Halconfig, Object> getOAuth2(
+      @Path("deploymentName") String deploymentName, @Query("validate") boolean validate);
+
   @PUT("/v1/config/deployments/{deploymentName}/security/authn/{methodName}/")
   DaemonTask<Halconfig, Void> setAuthnMethod(
       @Path("deploymentName") String deploymentName,
       @Path("methodName") String methodName,
       @Query("validate") boolean validate,
       @Body AuthnMethod authnMethod);
+
+  @PUT("/v1/config/deployments/{deploymentName}/security/oauth2")
+  DaemonTask<Halconfig, Void> setOAuth2(
+      @Path("deploymentName") String deploymentName,
+      @Query("validate") boolean validate,
+      @Body OAuth2 authnMethod);
 
   @PUT("/v1/config/deployments/{deploymentName}/security/authn/{methodName}/enabled/")
   DaemonTask<Halconfig, Void> setAuthnMethodEnabled(

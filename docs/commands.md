@@ -580,10 +580,6 @@
  * [**hal config security authn ldap disable**](#hal-config-security-authn-ldap-disable)
  * [**hal config security authn ldap edit**](#hal-config-security-authn-ldap-edit)
  * [**hal config security authn ldap enable**](#hal-config-security-authn-ldap-enable)
- * [**hal config security authn oauth2**](#hal-config-security-authn-oauth2)
- * [**hal config security authn oauth2 disable**](#hal-config-security-authn-oauth2-disable)
- * [**hal config security authn oauth2 edit**](#hal-config-security-authn-oauth2-edit)
- * [**hal config security authn oauth2 enable**](#hal-config-security-authn-oauth2-enable)
  * [**hal config security authn saml**](#hal-config-security-authn-saml)
  * [**hal config security authn saml disable**](#hal-config-security-authn-saml-disable)
  * [**hal config security authn saml edit**](#hal-config-security-authn-saml-edit)
@@ -610,6 +606,10 @@
  * [**hal config security ui ssl disable**](#hal-config-security-ui-ssl-disable)
  * [**hal config security ui ssl edit**](#hal-config-security-ui-ssl-edit)
  * [**hal config security ui ssl enable**](#hal-config-security-ui-ssl-enable)
+ * [**hal config spring**](#hal-config-spring)
+ * [**hal config spring security**](#hal-config-spring-security)
+ * [**hal config spring security oauth2**](#hal-config-spring-security-oauth2)
+ * [**hal config spring security oauth2 edit**](#hal-config-spring-security-oauth2-edit)
  * [**hal config stats**](#hal-config-stats)
  * [**hal config stats disable**](#hal-config-stats-disable)
  * [**hal config stats edit**](#hal-config-stats-edit)
@@ -910,6 +910,7 @@ hal config [parameters] [subcommands]
  * `pubsub`: Configure, validate, and view the specified pubsub.
  * `repository`: Configure, validate, and view the specified repository.
  * `security`: Configure Spinnaker's security. This includes external SSL, authentication mechanisms, and authorization policies.
+ * `spring`: Configure Spinnaker's spring security settings.
  * `stats`: Show Spinnaker's stats settings.
  * `storage`: Show Spinnaker's persistent storage configuration.
  * `version`: Configure & view the current deployment of Spinnaker's version.
@@ -11331,7 +11332,6 @@ hal config security authn [parameters] [subcommands]
 #### Subcommands
  * `iap`: Configure the iap method for authenticating.
  * `ldap`: Configure the ldap method for authenticating.
- * `oauth2`: Configure the oauth2 method for authenticating.
  * `saml`: Configure the saml method for authenticating.
  * `x509`: Configure the x509 method for authenticating.
 
@@ -11467,84 +11467,6 @@ Set the ldap method as enabled
 #### Usage
 ```
 hal config security authn ldap enable [parameters]
-```
-
-#### Parameters
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--no-validate`: (*Default*: `false`) Skip validation.
-
-
----
-## hal config security authn oauth2
-
-Configure the oauth2 method for authenticating.
-
-#### Usage
-```
-hal config security authn oauth2 [parameters] [subcommands]
-```
-
-#### Parameters
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--no-validate`: (*Default*: `false`) Skip validation.
-
-#### Subcommands
- * `disable`: Set the oauth2 method as disabled
- * `edit`: Edit the oauth2 authentication method.
- * `enable`: Set the oauth2 method as enabled
-
----
-## hal config security authn oauth2 disable
-
-Set the oauth2 method as disabled
-
-#### Usage
-```
-hal config security authn oauth2 disable [parameters]
-```
-
-#### Parameters
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--no-validate`: (*Default*: `false`) Skip validation.
-
-
----
-## hal config security authn oauth2 edit
-
-Edit the oauth2 authentication method.
-
-#### Usage
-```
-hal config security authn oauth2 edit [parameters]
-```
-
-#### Parameters
- * `--access-token-uri`: The access token uri for your OAuth provider.
- * `--client-authentication-scheme`: The client authentication scheme for your OAuth provider.
- * `--client-id`: The OAuth client ID you have configured with your OAuth provider.
- * `--client-secret`: The OAuth client secret you have configured with your OAuth provider.
- * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
- * `--no-validate`: (*Default*: `false`) Skip validation.
- * `--pre-established-redirect-uri`: The externally accessible URL for Gate. For use with load balancers that do any kind of address manipulation for Gate traffic, such as an SSL terminating load balancer.
- * `--provider`: The OAuth provider handling authentication. The supported options are Google, GitHub, Oracle, Azure and Other
- * `--scope`: The scope for your OAuth provider.
- * `--user-authorization-uri`: The user authorization uri for your OAuth provider.
- * `--user-info-mapping-email`: The email field returned from your OAuth provider.
- * `--user-info-mapping-first-name`: The first name field returned from your OAuth provider.
- * `--user-info-mapping-last-name`: The last name field returned from your OAuth provider.
- * `--user-info-mapping-username`: The username field returned from your OAuth provider.
- * `--user-info-requirements`: (*Default*: `(empty)`) The map of requirements the userInfo request must have. This is used to restrict user login to specific domains or having a specific attribute. Use equal signs between key and value, and additional key/value pairs need to repeat the flag. Example: '--user-info-requirements foo=bar --userInfoRequirements baz=qux'.
- * `--user-info-uri`: The user info uri for your OAuth provider.
-
-
----
-## hal config security authn oauth2 enable
-
-Set the oauth2 method as enabled
-
-#### Usage
-```
-hal config security authn oauth2 enable [parameters]
 ```
 
 #### Parameters
@@ -12008,6 +11930,86 @@ hal config security ui ssl enable [parameters]
 #### Parameters
  * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
  * `--no-validate`: (*Default*: `false`) Skip validation.
+
+
+---
+## hal config spring
+
+Configure Spinnaker's spring security settings.
+
+#### Usage
+```
+hal config spring [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `security`: Configure Spinnaker's oauth2 security.
+
+---
+## hal config spring security
+
+Configure Spinnaker's oauth2 security.
+
+#### Usage
+```
+hal config spring security [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `oauth2`: 
+
+---
+## hal config spring security oauth2
+
+
+
+#### Usage
+```
+hal config spring security oauth2 [parameters] [subcommands]
+```
+
+#### Parameters
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+
+#### Subcommands
+ * `edit`: Edit OAuth2 config.
+
+---
+## hal config spring security oauth2 edit
+
+Edit OAuth2 config.
+
+#### Usage
+```
+hal config spring security oauth2 edit [parameters]
+```
+
+#### Parameters
+ * `--access-token-uri`: The access token uri for your OAuth provider.
+ * `--client-authentication-scheme`: The client authentication scheme for your OAuth provider.
+ * `--client-id`: The OAuth client ID you have configured with your OAuth provider.
+ * `--client-secret`: The OAuth client secret you have configured with your OAuth provider.
+ * `--deployment`: If supplied, use this Halyard deployment. This will _not_ create a new deployment.
+ * `--no-validate`: (*Default*: `false`) Skip validation.
+ * `--pre-established-redirect-uri`: The externally accessible URL for Gate. For use with load balancers that do any kind of address manipulation for Gate traffic, such as an SSL terminating load balancer.
+ * `--provider`: The OAuth provider handling authentication. The supported options are Google, GitHub, Oracle, Azure and Other
+ * `--scope`: The scope for your OAuth provider.
+ * `--user-authorization-uri`: The user authorization uri for your OAuth provider.
+ * `--user-info-mapping-email`: The email field returned from your OAuth provider.
+ * `--user-info-mapping-first-name`: The first name field returned from your OAuth provider.
+ * `--user-info-mapping-last-name`: The last name field returned from your OAuth provider.
+ * `--user-info-mapping-username`: The username field returned from your OAuth provider.
+ * `--user-info-requirements`: (*Default*: `(empty)`) The map of requirements the userInfo request must have. This is used to restrict user login to specific domains or having a specific attribute. Use equal signs between key and value, and additional key/value pairs need to repeat the flag. Example: '--user-info-requirements foo=bar --userInfoRequirements baz=qux'.
+ * `--user-info-uri`: The user info uri for your OAuth provider.
 
 
 ---

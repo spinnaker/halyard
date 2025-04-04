@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Google, Inc.
+ * Copyright 2025 OpsMx, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
@@ -12,49 +12,41 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.oauth2;
+package com.netflix.spinnaker.halyard.cli.command.v1.config;
 
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
 import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
 import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.cli.ui.v1.AnsiFormatUtils;
-import com.netflix.spinnaker.halyard.config.model.v1.security.AuthnMethod;
-import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Spring;
+import lombok.AccessLevel;
+import lombok.Getter;
 
 @Parameters(separators = "=")
-public class OAuth2Command extends AbstractConfigCommand {
-  public AuthnMethod.Method getMethod() {
-    return AuthnMethod.Method.OAuth2;
-  }
+public class SpringCommand extends AbstractConfigCommand {
+  @Getter(AccessLevel.PUBLIC)
+  private String commandName = "spring";
 
-  public OAuth2Command() {
-    registerSubcommand(new EditOAuth2Command());
-  }
+  @Getter(AccessLevel.PUBLIC)
+  private String shortDescription = "Configure Spinnaker's spring security settings.";
 
-  @Override
-  public String getCommandName() {
-    return AuthnMethod.Method.OAuth2.id;
+  public SpringCommand() {
+    registerSubcommand(new OAuthSecurityCommand());
   }
 
   @Override
   protected void executeThis() {
     String currentDeployment = getCurrentDeployment();
-    String authnMethodName = getMethod().id;
 
-    new OperationHandler<OAuth2>()
-        .setOperation(Daemon.getOAuth2(currentDeployment, !noValidate))
-        .setFailureMesssage("Failed to get " + authnMethodName + " method.")
-        .setSuccessMessage("Configured " + authnMethodName + " method: ")
+    new OperationHandler<Spring>()
+        .setOperation(Daemon.getSpring(currentDeployment, !noValidate))
+        .setFailureMesssage("Failed to load spring security settings.")
+        .setSuccessMessage("Configured spring security settings: ")
         .setFormat(AnsiFormatUtils.Format.STRING)
         .setUserFormatted(true)
         .get();
-  }
-
-  @Override
-  protected String getShortDescription() {
-    return "";
   }
 }

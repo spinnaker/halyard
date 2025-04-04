@@ -17,6 +17,7 @@
 package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Spring;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.service.ServiceSettings;
 import org.springframework.stereotype.Component;
 
@@ -24,11 +25,11 @@ import org.springframework.stereotype.Component;
 public class GateBoot128ProfileFactory extends GateProfileFactory {
 
   @Override
-  protected GateConfig getGateConfig(ServiceSettings gate, Security security) {
+  protected GateConfig getGateConfig(ServiceSettings gate, Security security, Spring spring) {
     GateConfig config = new GateConfig(gate, security);
 
-    if (security.getAuthn().getOauth2().isEnabled()) {
-      config.spring = new SpringConfig(security);
+    if (spring != null && spring.getSecurity() != null) {
+      config.spring = new SpringConfig(spring.getSecurity().getOAuth2());
     } else if (security.getAuthn().getSaml().isEnabled()) {
       config.saml = new SamlConfig(security);
     } else if (security.getAuthn().getLdap().isEnabled()) {

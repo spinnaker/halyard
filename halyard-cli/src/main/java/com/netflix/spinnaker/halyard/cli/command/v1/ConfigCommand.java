@@ -72,6 +72,7 @@ public class ConfigCommand extends AbstractConfigCommand {
     registerSubcommand(new ListCommand());
     registerSubcommand(new RepositoryCommand());
     registerSubcommand(new StatsCommand());
+    registerSubcommand(new SpringCommand());
   }
 
   @Override

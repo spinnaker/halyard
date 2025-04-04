@@ -103,6 +103,40 @@ public class SecurityService {
         filter, Security.class, Security::new, n -> setSecurity(deploymentName, n));
   }
 
+  public Spring getSpring(String deploymentName) {
+    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setSpring();
+
+    return lookupService.getSingularNodeOrDefault(
+        filter, Spring.class, Spring::new, n -> setSpring(deploymentName, n));
+  }
+
+  public OAuth2Security getOAuth2Security(String deploymentName) {
+    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setOAuth2Security();
+
+    return lookupService.getSingularNodeOrDefault(
+        filter,
+        OAuth2Security.class,
+        OAuth2Security::new,
+        n -> setOAuth2Security(deploymentName, n));
+  }
+
+  public OAuth2 getOAuth2(String deploymentName) {
+    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setOAuth2Security();
+
+    return lookupService.getSingularNodeOrDefault(
+        filter, OAuth2.class, OAuth2::new, n -> setOAuth2(deploymentName, n));
+  }
+
+  public void setOAuth2Security(String deploymentName, OAuth2Security oAuth2Security) {
+    Spring spring = getSpring(deploymentName);
+    spring.setSecurity(oAuth2Security);
+  }
+
+  public void setOAuth2(String deploymentName, OAuth2 oAuth2) {
+    Spring spring = getSpring(deploymentName);
+    spring.getSecurity().setOAuth2(oAuth2);
+  }
+
   public void setAuthnMethodEnabled(String deploymentName, String methodName, boolean enabled) {
     AuthnMethod method = getAuthnMethod(deploymentName, methodName);
     method.setEnabled(enabled);
@@ -189,6 +223,12 @@ public class SecurityService {
     deploymentConfiguration.setSecurity(newSecurity);
   }
 
+  public void setSpring(String deploymentName, Spring newSpring) {
+    DeploymentConfiguration deploymentConfiguration =
+        deploymentService.getDeploymentConfiguration(deploymentName);
+    deploymentConfiguration.setSpring(newSpring);
+  }
+
   public void setAuthn(String deploymentName, Authn authn) {
     getSecurity(deploymentName).setAuthn(authn);
   }
@@ -204,9 +244,6 @@ public class SecurityService {
   public void setAuthnMethod(String deploymentName, AuthnMethod method) {
     Authn authn = getAuthn(deploymentName);
     switch (method.getMethod()) {
-      case OAuth2:
-        authn.setOauth2((OAuth2) method);
-        break;
       case SAML:
         authn.setSaml((Saml) method);
         break;
@@ -280,6 +317,23 @@ public class SecurityService {
 
   public ProblemSet validateSecurity(String deploymentName) {
     NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setSecurity();
+    return validateService.validateMatchingFilter(filter);
+  }
+
+  public ProblemSet validateSpring(String deploymentName) {
+    NodeFilter filter = new NodeFilter().setDeployment(deploymentName).setSpring();
+    return validateService.validateMatchingFilter(filter);
+  }
+
+  public ProblemSet validateOAuth2Security(String deploymentName) {
+    NodeFilter filter =
+        new NodeFilter().setDeployment(deploymentName).setSpring().setOAuth2Security();
+    return validateService.validateMatchingFilter(filter);
+  }
+
+  public ProblemSet validateOAuth2(String deploymentName) {
+    NodeFilter filter =
+        new NodeFilter().setDeployment(deploymentName).setSpring().setOAuth2Security().setOAuth2();
     return validateService.validateMatchingFilter(filter);
   }
 

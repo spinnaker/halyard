@@ -232,6 +232,11 @@ public class NodeFilter implements Cloneable {
     return this;
   }
 
+  public NodeFilter setSpring() {
+    matchers.add(Node.thisNodeAcceptor(Spring.class));
+    return this;
+  }
+
   public NodeFilter setUiSecurity() {
     matchers.add(Node.thisNodeAcceptor(UiSecurity.class));
     return this;
@@ -244,6 +249,11 @@ public class NodeFilter implements Cloneable {
 
   public NodeFilter setApiSecurity() {
     matchers.add(Node.thisNodeAcceptor(ApiSecurity.class));
+    return this;
+  }
+
+  public NodeFilter setOAuth2Security() {
+    matchers.add(Node.thisNodeAcceptor(OAuth2Security.class));
     return this;
   }
 
@@ -368,5 +378,10 @@ public class NodeFilter implements Cloneable {
 
   public NodeFilter() {
     withAnyHalconfigFile();
+  }
+
+  public NodeFilter setOAuth2() {
+    matchers.add(Node.thisNodeAcceptor(OAuth2.class));
+    return this;
   }
 }
