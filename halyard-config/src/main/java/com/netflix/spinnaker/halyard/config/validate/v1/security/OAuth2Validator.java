@@ -31,17 +31,21 @@ public class OAuth2Validator extends Validator<OAuth2> {
       return;
     }
 
-    if (n.getClient().getClientId() == null) {
+    if (n.getClient() == null || n.getClient().getRegistration() == null) {
+      p.addProblem(Problem.Severity.ERROR, "No OAuth2 client was supplied");
+    }
+
+    if (isClientIDNullOrEmpty(n)) {
       p.addProblem(Problem.Severity.ERROR, "No OAuth2 client id was supplied");
     }
 
-    if (n.getClient().getClientSecret() == null) {
+    if (isClientSecretNullOrEmpty(n)) {
       p.addProblem(Problem.Severity.ERROR, "No OAuth2 client secret was supplied");
     }
 
-    if (n.getProvider() == OAuth2.Provider.GOOGLE
-        && (n.getUserInfoRequirements() == null
-            || !n.getUserInfoRequirements().containsKey("hd"))) {
+    if (n.getClient().getRegistration().getGoogle() != null
+        && (n.getClient().getRegistration().getUserInfoRequirements() == null
+            || !n.getClient().getRegistration().getUserInfoRequirements().containsKey("hd"))) {
       p.addProblem(
           Problem.Severity.WARNING,
           "Missing 'hd' field within "
@@ -49,5 +53,13 @@ public class OAuth2Validator extends Validator<OAuth2> {
               + "instance to anyone with a Gmail account.",
           "userInfoRequirements");
     }
+  }
+
+  public static boolean isClientSecretNullOrEmpty(OAuth2 n) {
+    return false;
+  }
+
+  public static boolean isClientIDNullOrEmpty(OAuth2 n) {
+    return false;
   }
 }

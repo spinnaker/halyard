@@ -952,6 +952,13 @@ public class Daemon {
     };
   }
 
+  public static Supplier<Spring> getSpring(String deploymentName, boolean validate) {
+    return () -> {
+      Object rawSecurity = ResponseUnwrapper.get(getService().getSpring(deploymentName, validate));
+      return getObjectMapper().convertValue(rawSecurity, Spring.class);
+    };
+  }
+
   public static Supplier<Void> setSecurity(
       String deploymentName, boolean validate, Security security) {
     return () -> {
@@ -1050,11 +1057,25 @@ public class Daemon {
     };
   }
 
+  public static Supplier<OAuth2> getOAuth2(String deploymentName, boolean validate) {
+    return () -> {
+      Object rawOAuth2 = ResponseUnwrapper.get(getService().getOAuth2(deploymentName, validate));
+      return getObjectMapper().convertValue(rawOAuth2, OAuth2.class);
+    };
+  }
+
   public static Supplier<Void> setAuthnMethod(
       String deploymentName, String methodName, boolean validate, AuthnMethod authnMethod) {
     return () -> {
       ResponseUnwrapper.get(
           getService().setAuthnMethod(deploymentName, methodName, validate, authnMethod));
+      return null;
+    };
+  }
+
+  public static Supplier<Void> setOAuth2(String deploymentName, boolean validate, OAuth2 oauth2) {
+    return () -> {
+      ResponseUnwrapper.get(getService().setOAuth2(deploymentName, validate, oauth2));
       return null;
     };
   }
@@ -1457,5 +1478,13 @@ public class Daemon {
         .setLogLevel(log ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
         .build()
         .create(DaemonService.class);
+  }
+
+  public static Supplier<OAuth2Security> getOAuthSecurity(String deploymentName, boolean validate) {
+    return () -> {
+      Object rawApiSecurity =
+          ResponseUnwrapper.get(getService().getOAuth2Security(deploymentName, validate));
+      return getObjectMapper().convertValue(rawApiSecurity, OAuth2Security.class);
+    };
   }
 }

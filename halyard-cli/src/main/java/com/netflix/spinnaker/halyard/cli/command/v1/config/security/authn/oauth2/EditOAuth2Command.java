@@ -19,15 +19,16 @@ package com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.oauth
 import com.beust.jcommander.DynamicParameter;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.AbstractEditAuthnMethodCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.converter.OAuth2ProviderTypeConverter;
-import com.netflix.spinnaker.halyard.config.model.v1.security.AuthnMethod;
+import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
+import com.netflix.spinnaker.halyard.cli.services.v1.Daemon;
+import com.netflix.spinnaker.halyard.cli.services.v1.OperationHandler;
 import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2;
-import lombok.Getter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Parameters(separators = "=")
-public class EditOAuth2Command extends AbstractEditAuthnMethodCommand<OAuth2> {
-  @Getter private AuthnMethod.Method method = AuthnMethod.Method.OAuth2;
+public class EditOAuth2Command extends AbstractConfigCommand {
 
   @Parameter(
       names = "--client-id",
@@ -83,9 +84,8 @@ public class EditOAuth2Command extends AbstractEditAuthnMethodCommand<OAuth2> {
   @Parameter(
       names = "--provider",
       description =
-          "The OAuth provider handling authentication. The supported options are Google, GitHub, Oracle, Azure and Other",
-      converter = OAuth2ProviderTypeConverter.class)
-  private OAuth2.Provider provider;
+          "The OAuth provider handling authentication. The supported options are Google, GitHub, Oracle, Azure and Other")
+  private String provider;
 
   @Parameter(
       names = "--pre-established-redirect-uri",
@@ -104,52 +104,148 @@ public class EditOAuth2Command extends AbstractEditAuthnMethodCommand<OAuth2> {
               + "flag. Example: '--user-info-requirements foo=bar --userInfoRequirements baz=qux'.")
   private OAuth2.UserInfoRequirements userInfoRequirements = new OAuth2.UserInfoRequirements();
 
-  @Override
-  protected AuthnMethod editAuthnMethod(OAuth2 authnMethod) {
-    OAuth2.Client client = authnMethod.getClient();
-    OAuth2.Resource resource = authnMethod.getResource();
-    OAuth2.UserInfoMapping userInfoMapping = authnMethod.getUserInfoMapping();
-
-    client.setClientId(isSet(clientId) ? clientId : client.getClientId());
-    client.setClientSecret(isSet(clientSecret) ? clientSecret : client.getClientSecret());
-    client.setAccessTokenUri(isSet(accessTokenUri) ? accessTokenUri : client.getAccessTokenUri());
-    client.setUserAuthorizationUri(
-        isSet(userAuthorizationUri) ? userAuthorizationUri : client.getUserAuthorizationUri());
-    client.setScope(isSet(scope) ? scope : client.getScope());
-    client.setClientAuthenticationScheme(
-        isSet(clientAuthenticationScheme)
-            ? clientAuthenticationScheme
-            : client.getClientAuthenticationScheme());
-
-    if (isSet(preEstablishedRedirectUri)) {
-      if (preEstablishedRedirectUri.isEmpty()) {
-        client.setPreEstablishedRedirectUri(null);
-        client.setUseCurrentUri(null);
-      } else {
-        client.setPreEstablishedRedirectUri(preEstablishedRedirectUri);
-        client.setUseCurrentUri(false);
-      }
+  private OAuth2 editOAuth2(OAuth2 oAuth2) {
+    OAuth2.Client client = oAuth2.getClient();
+    Map<String, String> registration = new HashMap<>();
+    Map<String, String> provider = new HashMap<>();
+    if (isSet(clientId)) {
+      registration.put("client-id", clientId);
     }
 
-    resource.setUserInfoUri(isSet(userInfoUri) ? userInfoUri : resource.getUserInfoUri());
+    if (isSet(clientSecret)) {
+      registration.put("client-secret", clientSecret);
+    }
+    if (isSet(accessTokenUri)) {
+      provider.put("token-uri", accessTokenUri);
+    }
 
-    userInfoMapping.setEmail(
-        isSet(userInfoMappingEmail) ? userInfoMappingEmail : userInfoMapping.getEmail());
-    userInfoMapping.setFirstName(
-        isSet(userInfoMappingFirstName)
-            ? userInfoMappingFirstName
-            : userInfoMapping.getFirstName());
-    userInfoMapping.setLastName(
-        isSet(userInfoMappingLastName) ? userInfoMappingLastName : userInfoMapping.getLastName());
-    userInfoMapping.setUsername(
-        isSet(userInfoMappingUsername) ? userInfoMappingUsername : userInfoMapping.getUsername());
+    if (isSet(userAuthorizationUri)) {
+      provider.put("authorization-uri", userAuthorizationUri);
+    }
 
-    authnMethod.setProvider(provider != null ? provider : authnMethod.getProvider());
+    if (isSet(scope)) {
+      registration.put("scope", scope);
+    }
+
+    if (isSet(clientAuthenticationScheme)) {
+      registration.put("clientAuthenticationScheme", clientAuthenticationScheme);
+    }
+
+    if (isSet(userInfoUri)) {
+      provider.put("user-info-uri", userInfoUri);
+    }
+
+    oAuth2.setProvider(this.provider);
+    OAuth2.UserInfoMapping userInfoMapping = client.getRegistration().getUserInfoMapping();
+
+    Optional.ofNullable(userInfoMappingEmail).ifPresent(userInfoMapping::setEmail);
+    Optional.ofNullable(userInfoMappingFirstName).ifPresent(userInfoMapping::setFirstName);
+    Optional.ofNullable(userInfoMappingLastName).ifPresent(userInfoMapping::setLastName);
+    Optional.ofNullable(userInfoMappingUsername).ifPresent(userInfoMapping::setUsername);
 
     if (!userInfoRequirements.isEmpty()) {
-      authnMethod.setUserInfoRequirements(userInfoRequirements);
+      oAuth2.getClient().getRegistration().setUserInfoRequirements(userInfoRequirements);
     }
 
-    return authnMethod;
+    switch (this.provider) {
+      case "GOOGLE":
+        if (client.getRegistration() != null) {
+          client.getRegistration().getGoogle().putAll(registration);
+        } else {
+          client.getRegistration().setGoogle(registration);
+        }
+
+        if (client.getProvider() != null) {
+          client.getProvider().getGoogle().putAll(provider);
+        } else {
+          client.getProvider().setGoogle(provider);
+        }
+        break;
+
+      case "GITHUB":
+        if (client.getRegistration() != null) {
+          client.getRegistration().getGithub().putAll(registration);
+        } else {
+          client.getRegistration().setGithub(registration);
+        }
+
+        if (client.getProvider() != null) {
+          client.getProvider().getGithub().putAll(provider);
+        } else {
+          client.getProvider().setGithub(provider);
+        }
+        break;
+
+      case "ORACLE":
+        if (client.getRegistration() != null) {
+          client.getRegistration().getOracle().putAll(registration);
+        } else {
+          client.getRegistration().setOracle(registration);
+        }
+
+        if (client.getProvider() != null) {
+          client.getProvider().getOracle().putAll(provider);
+        } else {
+          client.getProvider().setOracle(provider);
+        }
+        break;
+
+      case "AZURE":
+        if (client.getRegistration() != null) {
+          client.getRegistration().getAzure().putAll(registration);
+        } else {
+          client.getRegistration().setAzure(registration);
+        }
+
+        if (client.getProvider() != null) {
+          client.getProvider().getAzure().putAll(provider);
+        } else {
+          client.getProvider().setAzure(provider);
+        }
+        break;
+
+      case "OTHER":
+        if (client.getRegistration() != null) {
+          client.getRegistration().getOther().putAll(registration);
+        } else {
+          client.getRegistration().setOther(registration);
+        }
+
+        if (client.getProvider() != null) {
+          client.getProvider().getOther().putAll(provider);
+        } else {
+          client.getProvider().setOther(provider);
+        }
+        break;
+    }
+
+    return oAuth2;
+  }
+
+  @Override
+  public String getCommandName() {
+    return "edit";
+  }
+
+  @Override
+  protected void executeThis() {
+    String currentDeployment = getCurrentDeployment();
+
+    // Disable validation here, since we don't want an illegal config to prevent us from fixing it.
+    OAuth2 oAuth2 =
+        new OperationHandler<OAuth2>()
+            .setOperation(Daemon.getOAuth2(currentDeployment, false))
+            .setFailureMesssage("Failed to get OAuth2 config.")
+            .get();
+
+    new OperationHandler<Void>()
+        .setOperation(Daemon.setOAuth2(currentDeployment, !noValidate, editOAuth2(oAuth2)))
+        .setFailureMesssage("Failed to edit OAuth2 config.")
+        .setSuccessMessage("Successfully edited OAuth2 config.")
+        .get();
+  }
+
+  public String getShortDescription() {
+    return "Edit OAuth2 config.";
   }
 }

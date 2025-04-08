@@ -19,6 +19,7 @@ package com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile;
 import com.netflix.spinnaker.halyard.config.model.v1.node.DeploymentConfiguration;
 import com.netflix.spinnaker.halyard.config.model.v1.security.ApiSecurity;
 import com.netflix.spinnaker.halyard.config.model.v1.security.Security;
+import com.netflix.spinnaker.halyard.config.model.v1.security.Spring;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerArtifact;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.SpinnakerRuntimeSettings;
 import com.netflix.spinnaker.halyard.deploy.spinnaker.v1.profile.integrations.IntegrationsConfigWrapper;
@@ -62,7 +63,9 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
         backupRequiredFiles(security.getAuthn(), deploymentConfiguration.getName()));
     requiredFiles.addAll(
         backupRequiredFiles(security.getAuthz(), deploymentConfiguration.getName()));
-    GateConfig gateConfig = getGateConfig(endpoints.getServiceSettings(Type.GATE), security);
+    GateConfig gateConfig =
+        getGateConfig(
+            endpoints.getServiceSettings(Type.GATE), security, deploymentConfiguration.getSpring());
     gateConfig.getCors().setAllowedOriginsPattern(security.getApiSecurity());
     IntegrationsConfigWrapper integrationsConfig =
         new IntegrationsConfigWrapper(deploymentConfiguration.getFeatures());
@@ -75,7 +78,8 @@ public abstract class GateProfileFactory extends SpringProfileFactory {
         .setRequiredFiles(requiredFiles);
   }
 
-  protected abstract GateConfig getGateConfig(ServiceSettings gate, Security security);
+  protected abstract GateConfig getGateConfig(
+      ServiceSettings gate, Security security, Spring spring);
 
   @EqualsAndHashCode(callSuper = true)
   @Data

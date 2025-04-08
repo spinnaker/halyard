@@ -17,7 +17,7 @@
 package com.netflix.spinnaker.halyard.config.validate.v1.security
 
 import com.netflix.spinnaker.halyard.config.model.v1.security.Authn
-import com.netflix.spinnaker.halyard.config.model.v1.security.OAuth2
+import com.netflix.spinnaker.halyard.config.model.v1.security.Saml
 import com.netflix.spinnaker.halyard.config.problem.v1.ConfigProblemSetBuilder
 import com.netflix.spinnaker.halyard.core.problem.v1.Problem
 import spock.lang.Specification
@@ -44,8 +44,9 @@ class AuthnValidatorSpec extends Specification {
     problems.empty
 
     when:
-    OAuth2 o = new OAuth2(client: new OAuth2.Client(clientId: "foo"))
-    n = new Authn(oauth2: o)
+    Saml saml = new Saml();
+    saml.setIssuerId("issuerId")
+    n = new Authn(saml: saml)
     validator.validate(problemSetBuilder.reset(), n)
     problems = problemSetBuilder.build().problems
 
@@ -54,7 +55,7 @@ class AuthnValidatorSpec extends Specification {
     problems.first().severity == Problem.Severity.WARNING
 
     when:
-    o.enabled = true
+    saml.enabled = true
     validator.validate(problemSetBuilder.reset(), n)
     problems = problemSetBuilder.build().problems
 

@@ -21,7 +21,6 @@ import com.beust.jcommander.Parameters;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.AbstractConfigCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.iap.IAPCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.ldap.LdapCommand;
-import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.oauth2.OAuth2Command;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.saml.SamlCommand;
 import com.netflix.spinnaker.halyard.cli.command.v1.config.security.authn.x509.X509Command;
 import lombok.Data;
@@ -45,7 +44,6 @@ public class AuthnCommand extends AbstractConfigCommand {
   }
 
   public AuthnCommand() {
-    registerSubcommand(new OAuth2Command());
     registerSubcommand(new SamlCommand());
     registerSubcommand(new LdapCommand());
     registerSubcommand(new X509Command());
