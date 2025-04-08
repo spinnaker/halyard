@@ -396,16 +396,28 @@ class KubernetesV2ServiceTest extends Specification {
         yaml.contains('"tolerations": [{"key":"test","operator":"Equal","value":"a","effect":"NoSchedule"}]')
     }
 
-    def "Can we set ServiceAccountNames"() {
+    def "Does the serviceAccountName get set correctly?"() {
         setup:
         def executor = Mock(KubernetesV2Executor)
-        serviceSettings.getKubernetes().serviceAccountName = "customServiceAccount"
 
         when:
         String podSpecYaml = testService.getPodSpecYaml(executor, details, config)
 
         then:
-        podSpecYaml.contains('"serviceAccountName": customServiceAccount')
+        podSpecYaml.contains('"serviceAccountName": orca')
+    }
+
+    def "Can we set ServiceAccount.serviceAccountAnnotations?"() {
+        setup:
+        serviceSettings.getKubernetes().serviceAccountAnnotations = [
+            "example-service-account-annotation": "test"
+        ]
+
+        when:
+        String yaml = testService.getServiceAccountYaml(config)
+
+        then:
+        yaml.matches(/(?ms).+annotations: \{.+"example-service-account-annotation": "test".+\}.*/)
     }
 
     def "Can we use TCP probe"() {
